@@ -2372,6 +2372,1686 @@
           "example_scenario": "First principles say X is optimal but regulatory constraints make it impossible"
         }
       ]
+    },
+    {
+      "model_id": 43,
+      "model_name": "Opportunity Cost",
+      "failures": [
+        {
+          "id": "fm_43_1",
+          "name": "Opportunity Cost Blindness",
+          "description": "Not considering what else could be done with the same resources",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["alternatives_not_considered", "single_option_evaluated", "no_comparison"],
+          "prevention_strategies": ["Always list alternatives", "Compare to next best option", "Explicit opportunity cost calculation"],
+          "example_scenario": "Evaluating investment without considering what else the capital could do"
+        },
+        {
+          "id": "fm_43_2",
+          "name": "Sunk Cost Confusion",
+          "description": "Confusing sunk costs with opportunity costs",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["past_investment_cited", "sunk_cost_in_decision", "backward_looking"],
+          "prevention_strategies": ["Ignore sunk costs", "Focus on future costs and benefits", "Fresh start analysis"],
+          "example_scenario": "Continuing project because of money already spent rather than future opportunity cost"
+        },
+        {
+          "id": "fm_43_3",
+          "name": "Time Opportunity Cost Neglect",
+          "description": "Not considering the opportunity cost of time",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["time_not_valued", "only_money_considered", "time_opportunity_ignored"],
+          "prevention_strategies": ["Value time explicitly", "Consider time alternatives", "Include time in opportunity cost"],
+          "example_scenario": "Spending 100 hours on analysis that could have been spent on higher-value activities"
+        },
+        {
+          "id": "fm_43_4",
+          "name": "Attention Opportunity Cost",
+          "description": "Not considering the opportunity cost of attention and focus",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["attention_not_valued", "focus_dilution_ignored", "cognitive_resources_unlimited_assumption"],
+          "prevention_strategies": ["Recognize attention as scarce", "Consider focus opportunity cost", "Prioritize ruthlessly"],
+          "example_scenario": "Tracking 50 positions when attention would be better spent on 10"
+        },
+        {
+          "id": "fm_43_5",
+          "name": "Dynamic Opportunity Cost",
+          "description": "Not updating opportunity cost as circumstances change",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["static_opportunity_cost", "circumstances_changed", "old_alternatives_assumed"],
+          "prevention_strategies": ["Regularly reassess alternatives", "Update opportunity cost", "Dynamic comparison"],
+          "example_scenario": "Holding investment based on old opportunity cost when better alternatives now exist"
+        }
+      ]
+    },
+    {
+      "model_id": 44,
+      "model_name": "Supply and Demand",
+      "failures": [
+        {
+          "id": "fm_44_1",
+          "name": "Static Supply/Demand Analysis",
+          "description": "Treating supply and demand as static when they're dynamic",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["point_in_time_analysis", "no_dynamic_modeling", "equilibrium_assumed_stable"],
+          "prevention_strategies": ["Model supply/demand dynamics", "Consider feedback loops", "Scenario analysis"],
+          "example_scenario": "Assuming current supply shortage will persist without modeling supply response"
+        },
+        {
+          "id": "fm_44_2",
+          "name": "Elasticity Misjudgment",
+          "description": "Misjudging price elasticity of supply or demand",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["elasticity_not_analyzed", "linear_response_assumed", "sensitivity_ignored"],
+          "prevention_strategies": ["Analyze elasticity explicitly", "Test sensitivity", "Historical elasticity data"],
+          "example_scenario": "Assuming demand will stay constant if prices rise when demand is actually elastic"
+        },
+        {
+          "id": "fm_44_3",
+          "name": "Supply Response Timing",
+          "description": "Misjudging how quickly supply can respond to price signals",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["supply_lag_ignored", "instant_response_assumed", "capacity_constraints_missed"],
+          "prevention_strategies": ["Analyze supply response time", "Consider capacity constraints", "Model supply lag"],
+          "example_scenario": "Expecting commodity supply to increase immediately when it takes years to bring new capacity online"
+        },
+        {
+          "id": "fm_44_4",
+          "name": "Demand Substitution Blindness",
+          "description": "Not considering demand substitution effects",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["substitutes_ignored", "isolated_market_analysis", "no_cross_elasticity"],
+          "prevention_strategies": ["Identify substitutes", "Analyze cross-elasticity", "Consider switching behavior"],
+          "example_scenario": "Analyzing oil demand without considering electric vehicle substitution"
+        },
+        {
+          "id": "fm_44_5",
+          "name": "Non-Price Factors Neglect",
+          "description": "Focusing only on price while ignoring other supply/demand factors",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["price_only_analysis", "non_price_factors_ignored", "oversimplified_model"],
+          "prevention_strategies": ["Consider all demand drivers", "Analyze non-price supply factors", "Comprehensive model"],
+          "example_scenario": "Modeling demand based only on price when quality and brand matter more"
+        }
+      ]
+    },
+    {
+      "model_id": 45,
+      "model_name": "Scarcity",
+      "failures": [
+        {
+          "id": "fm_45_1",
+          "name": "Artificial Scarcity Confusion",
+          "description": "Confusing artificial scarcity with true scarcity",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["scarcity_source_not_analyzed", "artificial_vs_natural_confused", "manipulation_possible"],
+          "prevention_strategies": ["Analyze scarcity source", "Distinguish artificial from natural", "Consider scarcity sustainability"],
+          "example_scenario": "Valuing asset based on artificial scarcity that could be eliminated"
+        },
+        {
+          "id": "fm_45_2",
+          "name": "Scarcity Permanence Assumption",
+          "description": "Assuming current scarcity will persist indefinitely",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["permanent_scarcity_assumed", "technology_change_ignored", "substitution_ignored"],
+          "prevention_strategies": ["Question scarcity permanence", "Consider technology disruption", "Analyze substitution potential"],
+          "example_scenario": "Assuming rare earth scarcity will persist when recycling and substitutes are developing"
+        },
+        {
+          "id": "fm_45_3",
+          "name": "Scarcity Value Overestimation",
+          "description": "Overvaluing something simply because it's scarce",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["scarcity_equals_value_assumption", "utility_not_analyzed", "rarity_premium_excessive"],
+          "prevention_strategies": ["Separate scarcity from utility", "Value based on use", "Question rarity premium"],
+          "example_scenario": "Paying premium for scarce asset that has limited practical utility"
+        },
+        {
+          "id": "fm_45_4",
+          "name": "Scarcity Mindset Trap",
+          "description": "Scarcity mindset leading to suboptimal decisions",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["scarcity_driven_decisions", "abundance_opportunities_missed", "defensive_posture"],
+          "prevention_strategies": ["Recognize scarcity mindset", "Consider abundance scenarios", "Balance scarcity and opportunity"],
+          "example_scenario": "Hoarding cash due to scarcity mindset when opportunities abound"
+        },
+        {
+          "id": "fm_45_5",
+          "name": "Relative Scarcity Blindness",
+          "description": "Not considering relative scarcity across alternatives",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["absolute_scarcity_focus", "relative_scarcity_ignored", "no_comparison"],
+          "prevention_strategies": ["Compare scarcity across options", "Relative scarcity analysis", "Consider alternatives"],
+          "example_scenario": "Focusing on scarcity of one resource while ignoring more scarce alternatives"
+        }
+      ]
+    },
+    {
+      "model_id": 46,
+      "model_name": "Marginal Utility",
+      "failures": [
+        {
+          "id": "fm_46_1",
+          "name": "Diminishing Returns Blindness",
+          "description": "Not recognizing diminishing marginal utility",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["linear_utility_assumed", "diminishing_returns_ignored", "more_is_always_better"],
+          "prevention_strategies": ["Analyze marginal utility curve", "Recognize diminishing returns", "Optimize at margin"],
+          "example_scenario": "Continuing to add features when marginal utility to customers is near zero"
+        },
+        {
+          "id": "fm_46_2",
+          "name": "Average vs Marginal Confusion",
+          "description": "Confusing average utility with marginal utility",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["average_used_for_decisions", "marginal_not_calculated", "total_vs_incremental_confused"],
+          "prevention_strategies": ["Focus on marginal analysis", "Calculate incremental utility", "Decide at the margin"],
+          "example_scenario": "Expanding production because average profit is good when marginal profit is negative"
+        },
+        {
+          "id": "fm_46_3",
+          "name": "Utility Function Misspecification",
+          "description": "Incorrectly specifying what creates utility",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["wrong_utility_drivers", "customer_value_misunderstood", "utility_proxy_wrong"],
+          "prevention_strategies": ["Validate utility assumptions", "Customer research", "Test utility hypotheses"],
+          "example_scenario": "Assuming customers value features when they actually value simplicity"
+        },
+        {
+          "id": "fm_46_4",
+          "name": "Interpersonal Utility Comparison",
+          "description": "Incorrectly comparing utility across different people",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["utility_compared_across_people", "heterogeneity_ignored", "one_size_fits_all"],
+          "prevention_strategies": ["Recognize utility heterogeneity", "Segment by utility function", "Avoid interpersonal comparison"],
+          "example_scenario": "Assuming all customers have same utility function when preferences vary widely"
+        },
+        {
+          "id": "fm_46_5",
+          "name": "Negative Marginal Utility Blindness",
+          "description": "Not recognizing when marginal utility becomes negative",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["always_positive_utility_assumed", "too_much_ignored", "satiation_not_considered"],
+          "prevention_strategies": ["Consider negative marginal utility", "Recognize satiation points", "Know when to stop"],
+          "example_scenario": "Adding more information to report when it actually reduces usefulness"
+        }
+      ]
+    },
+    {
+      "model_id": 47,
+      "model_name": "Comparative Advantage",
+      "failures": [
+        {
+          "id": "fm_47_1",
+          "name": "Absolute vs Comparative Confusion",
+          "description": "Confusing absolute advantage with comparative advantage",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["absolute_advantage_focus", "opportunity_cost_ignored", "comparative_not_calculated"],
+          "prevention_strategies": ["Calculate comparative advantage", "Focus on opportunity cost", "Relative efficiency matters"],
+          "example_scenario": "Insourcing activity because you're good at it, ignoring you're even better at something else"
+        },
+        {
+          "id": "fm_47_2",
+          "name": "Static Comparative Advantage",
+          "description": "Treating comparative advantage as static when it evolves",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["fixed_advantage_assumed", "capability_evolution_ignored", "no_dynamic_analysis"],
+          "prevention_strategies": ["Monitor advantage evolution", "Invest in future advantages", "Dynamic strategy"],
+          "example_scenario": "Relying on current comparative advantage without building future capabilities"
+        },
+        {
+          "id": "fm_47_3",
+          "name": "Comparative Advantage Erosion",
+          "description": "Not recognizing erosion of comparative advantage",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["advantage_erosion_missed", "competition_catching_up", "complacency"],
+          "prevention_strategies": ["Monitor competitive position", "Track advantage metrics", "Continuous improvement"],
+          "example_scenario": "Assuming cost advantage will persist while competitors are catching up"
+        },
+        {
+          "id": "fm_47_4",
+          "name": "Narrow Comparative Advantage View",
+          "description": "Defining comparative advantage too narrowly",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["narrow_definition", "related_advantages_missed", "ecosystem_ignored"],
+          "prevention_strategies": ["Broad advantage analysis", "Consider ecosystem", "Related capabilities"],
+          "example_scenario": "Focusing on manufacturing advantage while missing distribution advantage"
+        },
+        {
+          "id": "fm_47_5",
+          "name": "Comparative Advantage Overconfidence",
+          "description": "Overconfidence in sustainability of comparative advantage",
+          "category": "overconfidence",
+          "severity": "high",
+          "detection_signals": ["advantage_taken_for_granted", "threats_dismissed", "invincibility_assumption"],
+          "prevention_strategies": ["Stress test advantages", "Assume advantages can erode", "Paranoid planning"],
+          "example_scenario": "Believing brand advantage is permanent when customer preferences are shifting"
+        }
+      ]
+    },
+    {
+      "model_id": 48,
+      "model_name": "Trade-offs",
+      "failures": [
+        {
+          "id": "fm_48_1",
+          "name": "Trade-off Denial",
+          "description": "Believing you can have it all without trade-offs",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["no_trade_offs_acknowledged", "have_it_all_mentality", "constraints_ignored"],
+          "prevention_strategies": ["Explicitly identify trade-offs", "Accept constraints", "Choose deliberately"],
+          "example_scenario": "Strategy claiming to be lowest cost AND most differentiated without acknowledging tension"
+        },
+        {
+          "id": "fm_48_2",
+          "name": "Hidden Trade-off Blindness",
+          "description": "Not seeing hidden or delayed trade-offs",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["obvious_trade_offs_only", "hidden_costs_missed", "delayed_consequences_ignored"],
+          "prevention_strategies": ["Look for hidden trade-offs", "Consider delayed effects", "Second-order consequences"],
+          "example_scenario": "Cost cutting that saves money now but damages capabilities for future"
+        },
+        {
+          "id": "fm_48_3",
+          "name": "Trade-off Quantification Failure",
+          "description": "Not quantifying trade-offs to enable comparison",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["qualitative_trade_offs_only", "no_quantification", "apples_to_oranges"],
+          "prevention_strategies": ["Quantify trade-offs", "Common unit of measure", "Explicit comparison"],
+          "example_scenario": "Knowing there's a quality-cost trade-off but not quantifying the relationship"
+        },
+        {
+          "id": "fm_48_4",
+          "name": "False Trade-off Acceptance",
+          "description": "Accepting trade-offs that don't actually exist",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["unnecessary_trade_off_accepted", "innovation_not_considered", "false_dichotomy"],
+          "prevention_strategies": ["Question trade-off necessity", "Look for innovations", "Challenge false dichotomies"],
+          "example_scenario": "Accepting speed-quality trade-off when process improvement could deliver both"
+        },
+        {
+          "id": "fm_48_5",
+          "name": "Trade-off Timing Mismatch",
+          "description": "Not considering when trade-offs materialize",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["timing_ignored", "immediate_vs_delayed_confused", "present_bias_in_trade_offs"],
+          "prevention_strategies": ["Consider trade-off timing", "Discount appropriately", "Long-term view"],
+          "example_scenario": "Choosing option with immediate benefit ignoring larger delayed cost"
+        }
+      ]
+    },
+    {
+      "model_id": 49,
+      "model_name": "Incentives",
+      "failures": [
+        {
+          "id": "fm_49_1",
+          "name": "Incentive Mapping Failure",
+          "description": "Not mapping all relevant incentives in a situation",
+          "category": "incomplete_analysis",
+          "severity": "critical",
+          "detection_signals": ["incomplete_incentive_map", "stakeholders_missed", "hidden_incentives_ignored"],
+          "prevention_strategies": ["Map all stakeholder incentives", "Look for hidden incentives", "Comprehensive analysis"],
+          "example_scenario": "Analyzing company without understanding management's personal incentives"
+        },
+        {
+          "id": "fm_49_2",
+          "name": "Incentive Alignment Assumption",
+          "description": "Assuming incentives are aligned when they're not",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["alignment_assumed", "conflicts_not_analyzed", "principal_agent_ignored"],
+          "prevention_strategies": ["Verify alignment explicitly", "Look for conflicts", "Assume misalignment possible"],
+          "example_scenario": "Trusting management recommendations without checking their incentives"
+        },
+        {
+          "id": "fm_49_3",
+          "name": "Incentive Gaming Blindness",
+          "description": "Not anticipating how incentives will be gamed",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["gaming_not_considered", "goodhart_law_ignored", "metric_manipulation_possible"],
+          "prevention_strategies": ["Anticipate gaming", "Multiple metrics", "Audit for manipulation"],
+          "example_scenario": "Setting sales targets without considering how they might be gamed"
+        },
+        {
+          "id": "fm_49_4",
+          "name": "Non-Financial Incentive Neglect",
+          "description": "Focusing only on financial incentives",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["financial_incentives_only", "status_power_ignored", "intrinsic_motivation_missed"],
+          "prevention_strategies": ["Consider all incentive types", "Status, power, autonomy matter", "Intrinsic motivation"],
+          "example_scenario": "Analyzing CEO behavior based only on compensation, missing empire-building motivation"
+        },
+        {
+          "id": "fm_49_5",
+          "name": "Incentive Change Blindness",
+          "description": "Not recognizing when incentives have changed",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["old_incentives_assumed", "changes_not_tracked", "behavior_change_unexplained"],
+          "prevention_strategies": ["Monitor incentive changes", "Update incentive maps", "Explain behavior changes"],
+          "example_scenario": "Expecting same behavior after compensation structure changed"
+        }
+      ]
+    },
+    {
+      "model_id": 50,
+      "model_name": "Externalities",
+      "failures": [
+        {
+          "id": "fm_50_1",
+          "name": "Externality Blindness",
+          "description": "Not identifying externalities in analysis",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["externalities_not_mentioned", "third_party_effects_ignored", "narrow_scope"],
+          "prevention_strategies": ["Explicitly look for externalities", "Consider all affected parties", "Broad impact analysis"],
+          "example_scenario": "Valuing company without considering environmental externalities that may be regulated"
+        },
+        {
+          "id": "fm_50_2",
+          "name": "Externality Internalization Risk",
+          "description": "Not anticipating when externalities will be internalized",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["regulation_risk_ignored", "social_pressure_dismissed", "externality_assumed_free"],
+          "prevention_strategies": ["Anticipate internalization", "Regulatory scenario analysis", "Social pressure monitoring"],
+          "example_scenario": "Valuing polluter without considering carbon pricing risk"
+        },
+        {
+          "id": "fm_50_3",
+          "name": "Positive Externality Neglect",
+          "description": "Focusing only on negative externalities, missing positive ones",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["negative_externalities_only", "positive_spillovers_missed", "value_creation_ignored"],
+          "prevention_strategies": ["Consider positive externalities", "Value spillover effects", "Ecosystem benefits"],
+          "example_scenario": "Missing platform value because positive network externalities not considered"
+        },
+        {
+          "id": "fm_50_4",
+          "name": "Externality Quantification Failure",
+          "description": "Not quantifying externalities for proper analysis",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["externalities_qualitative_only", "no_dollar_value", "impact_not_measured"],
+          "prevention_strategies": ["Quantify externalities", "Estimate costs/benefits", "Include in valuation"],
+          "example_scenario": "Acknowledging environmental impact but not estimating potential liability"
+        },
+        {
+          "id": "fm_50_5",
+          "name": "Externality Attribution Error",
+          "description": "Incorrectly attributing externalities to wrong source",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["wrong_attribution", "causation_unclear", "responsibility_misassigned"],
+          "prevention_strategies": ["Trace externality source", "Verify causation", "Correct attribution"],
+          "example_scenario": "Blaming downstream company for upstream pollution"
+        }
+      ]
+    },
+    {
+      "model_id": 51,
+      "model_name": "Economies of Scale",
+      "failures": [
+        {
+          "id": "fm_51_1",
+          "name": "Scale Economies Overestimation",
+          "description": "Overestimating the magnitude of scale economies",
+          "category": "overconfidence",
+          "severity": "high",
+          "detection_signals": ["aggressive_scale_assumptions", "historical_not_verified", "industry_benchmarks_ignored"],
+          "prevention_strategies": ["Verify scale economies empirically", "Benchmark against industry", "Conservative assumptions"],
+          "example_scenario": "Projecting 50% cost reduction from scale when industry shows 20%"
+        },
+        {
+          "id": "fm_51_2",
+          "name": "Diseconomies of Scale Blindness",
+          "description": "Not recognizing diseconomies that emerge at large scale",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["only_positive_scale_effects", "complexity_costs_ignored", "coordination_costs_missed"],
+          "prevention_strategies": ["Analyze diseconomies", "Consider complexity costs", "Optimal scale analysis"],
+          "example_scenario": "Assuming bigger is always better without considering bureaucracy costs"
+        },
+        {
+          "id": "fm_51_3",
+          "name": "Scale Timing Misjudgment",
+          "description": "Misjudging how quickly scale economies can be achieved",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["rapid_scale_assumed", "learning_curve_ignored", "ramp_up_time_underestimated"],
+          "prevention_strategies": ["Realistic scale timeline", "Learning curve analysis", "Ramp-up planning"],
+          "example_scenario": "Expecting immediate cost benefits from acquisition when integration takes years"
+        },
+        {
+          "id": "fm_51_4",
+          "name": "Scale Source Confusion",
+          "description": "Not understanding the source of scale economies",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["scale_source_unclear", "wrong_scale_driver", "mechanism_not_understood"],
+          "prevention_strategies": ["Identify scale mechanism", "Understand cost drivers", "Verify scale source"],
+          "example_scenario": "Assuming scale benefits from volume when they actually come from scope"
+        },
+        {
+          "id": "fm_51_5",
+          "name": "Minimum Efficient Scale Misjudgment",
+          "description": "Misjudging the minimum efficient scale for an industry",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["MES_not_analyzed", "subscale_operation", "scale_threshold_unknown"],
+          "prevention_strategies": ["Analyze minimum efficient scale", "Industry benchmarking", "Scale threshold identification"],
+          "example_scenario": "Entering market at scale below minimum efficient scale"
+        }
+      ]
+    },
+    {
+      "model_id": 52,
+      "model_name": "Network Effects",
+      "failures": [
+        {
+          "id": "fm_52_1",
+          "name": "Network Effect Existence Assumption",
+          "description": "Assuming network effects exist when they don't",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["network_effects_claimed_not_proven", "value_not_increasing_with_users", "no_empirical_evidence"],
+          "prevention_strategies": ["Verify network effects empirically", "Measure value vs. user growth", "Test network effect hypothesis"],
+          "example_scenario": "Claiming network effects for product where user value doesn't increase with more users"
+        },
+        {
+          "id": "fm_52_2",
+          "name": "Network Effect Strength Overestimation",
+          "description": "Overestimating the strength of network effects",
+          "category": "overconfidence",
+          "severity": "high",
+          "detection_signals": ["strong_network_effects_assumed", "switching_costs_overestimated", "winner_take_all_assumed"],
+          "prevention_strategies": ["Quantify network effect strength", "Analyze switching costs", "Consider multi-homing"],
+          "example_scenario": "Assuming winner-take-all when users easily multi-home across platforms"
+        },
+        {
+          "id": "fm_52_3",
+          "name": "Negative Network Effects Blindness",
+          "description": "Not recognizing negative network effects",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["only_positive_effects_considered", "congestion_ignored", "quality_degradation_missed"],
+          "prevention_strategies": ["Consider negative network effects", "Analyze congestion", "Quality at scale"],
+          "example_scenario": "Not recognizing that more users degrade experience through congestion or spam"
+        },
+        {
+          "id": "fm_52_4",
+          "name": "Network Effect Timing",
+          "description": "Misjudging when network effects kick in or plateau",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["timing_misjudged", "critical_mass_unknown", "plateau_not_anticipated"],
+          "prevention_strategies": ["Analyze critical mass", "Model network effect curve", "Anticipate plateau"],
+          "example_scenario": "Expecting immediate network effects when critical mass hasn't been reached"
+        },
+        {
+          "id": "fm_52_5",
+          "name": "Local vs Global Network Effects",
+          "description": "Confusing local and global network effects",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["global_effects_assumed", "local_nature_ignored", "geographic_limits_missed"],
+          "prevention_strategies": ["Analyze network effect scope", "Local vs global distinction", "Geographic analysis"],
+          "example_scenario": "Assuming global network effects for marketplace that's actually local"
+        }
+      ]
+    },
+    {
+      "model_id": 53,
+      "model_name": "Switching Costs",
+      "failures": [
+        {
+          "id": "fm_53_1",
+          "name": "Switching Cost Overestimation",
+          "description": "Overestimating customer switching costs",
+          "category": "overconfidence",
+          "severity": "high",
+          "detection_signals": ["high_switching_costs_assumed", "customer_lock_in_overstated", "churn_higher_than_expected"],
+          "prevention_strategies": ["Measure actual switching behavior", "Customer research", "Churn analysis"],
+          "example_scenario": "Assuming customers are locked in when they're actually switching to competitors"
+        },
+        {
+          "id": "fm_53_2",
+          "name": "Switching Cost Erosion",
+          "description": "Not recognizing erosion of switching costs over time",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["static_switching_costs_assumed", "technology_reducing_costs", "competition_lowering_barriers"],
+          "prevention_strategies": ["Monitor switching cost trends", "Technology impact analysis", "Competitive dynamics"],
+          "example_scenario": "Assuming data migration costs will persist when tools make migration easy"
+        },
+        {
+          "id": "fm_53_3",
+          "name": "Switching Cost Type Confusion",
+          "description": "Not distinguishing between different types of switching costs",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["switching_costs_lumped_together", "type_not_analyzed", "different_dynamics_ignored"],
+          "prevention_strategies": ["Categorize switching costs", "Analyze each type", "Different strategies for each"],
+          "example_scenario": "Treating financial and learning switching costs the same when they behave differently"
+        },
+        {
+          "id": "fm_53_4",
+          "name": "Switching Cost Asymmetry",
+          "description": "Not recognizing asymmetric switching costs",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["symmetric_costs_assumed", "direction_not_analyzed", "in_vs_out_different"],
+          "prevention_strategies": ["Analyze both directions", "Switching in vs out", "Asymmetry identification"],
+          "example_scenario": "Assuming switching costs work both ways when it's easier to switch out than in"
+        },
+        {
+          "id": "fm_53_5",
+          "name": "Switching Cost vs Value Confusion",
+          "description": "Confusing switching costs with genuine value creation",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["lock_in_mistaken_for_value", "retention_without_satisfaction", "captive_vs_loyal_confused"],
+          "prevention_strategies": ["Distinguish lock-in from loyalty", "Measure customer satisfaction", "Value vs switching cost analysis"],
+          "example_scenario": "Interpreting low churn as customer satisfaction when it's actually high switching costs"
+        }
+      ]
+    },
+    {
+      "model_id": 54,
+      "model_name": "Moats/Competitive Advantage",
+      "failures": [
+        {
+          "id": "fm_54_1",
+          "name": "Moat Existence Assumption",
+          "description": "Assuming moat exists without verification",
+          "category": "overconfidence",
+          "severity": "critical",
+          "detection_signals": ["moat_claimed_not_proven", "no_evidence_of_advantage", "returns_not_above_average"],
+          "prevention_strategies": ["Verify moat empirically", "Check returns on capital", "Competitive analysis"],
+          "example_scenario": "Claiming brand moat when brand doesn't command pricing power"
+        },
+        {
+          "id": "fm_54_2",
+          "name": "Moat Durability Overestimation",
+          "description": "Overestimating how long moat will last",
+          "category": "temporal_error",
+          "severity": "critical",
+          "detection_signals": ["permanent_moat_assumed", "disruption_risk_ignored", "moat_erosion_not_monitored"],
+          "prevention_strategies": ["Analyze moat durability", "Monitor erosion signals", "Disruption scenario planning"],
+          "example_scenario": "Assuming 20-year moat when technology could disrupt in 5 years"
+        },
+        {
+          "id": "fm_54_3",
+          "name": "Moat Width Misjudgment",
+          "description": "Misjudging the width/strength of the moat",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["moat_width_not_quantified", "competitive_pressure_ignored", "margin_erosion"],
+          "prevention_strategies": ["Quantify moat width", "Competitive pressure analysis", "Margin sustainability"],
+          "example_scenario": "Calling it a wide moat when margins are under constant pressure"
+        },
+        {
+          "id": "fm_54_4",
+          "name": "Moat Source Misidentification",
+          "description": "Misidentifying the source of competitive advantage",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["wrong_moat_source", "advantage_misattributed", "real_source_missed"],
+          "prevention_strategies": ["Deep moat source analysis", "Test moat hypotheses", "Multiple perspectives"],
+          "example_scenario": "Attributing success to brand when it's actually distribution"
+        },
+        {
+          "id": "fm_54_5",
+          "name": "Moat Reinforcement Failure",
+          "description": "Not recognizing when moat is being reinforced or weakened",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["moat_dynamics_ignored", "reinforcement_not_tracked", "weakening_signals_missed"],
+          "prevention_strategies": ["Monitor moat dynamics", "Track reinforcement investments", "Early warning indicators"],
+          "example_scenario": "Missing that competitor is systematically eroding your moat"
+        }
+      ]
+    },
+    {
+      "model_id": 55,
+      "model_name": "Creative Destruction",
+      "failures": [
+        {
+          "id": "fm_55_1",
+          "name": "Disruption Denial",
+          "description": "Denying or dismissing disruption threats",
+          "category": "context_blindness",
+          "severity": "critical",
+          "detection_signals": ["disruption_dismissed", "incumbent_bias", "new_entrants_underestimated"],
+          "prevention_strategies": ["Take disruption seriously", "Study disruptors", "Assume disruption possible"],
+          "example_scenario": "Dismissing new technology as 'not good enough' when it's improving rapidly"
+        },
+        {
+          "id": "fm_55_2",
+          "name": "Disruption Timing Misjudgment",
+          "description": "Misjudging the timing of creative destruction",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["timing_wrong", "too_early_or_late", "adoption_curve_misjudged"],
+          "prevention_strategies": ["Analyze adoption curves", "Multiple timing scenarios", "Monitor leading indicators"],
+          "example_scenario": "Expecting immediate disruption when adoption takes decades"
+        },
+        {
+          "id": "fm_55_3",
+          "name": "Disruption Path Blindness",
+          "description": "Not seeing the path disruption will take",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["disruption_path_unclear", "attack_vector_missed", "vulnerable_segments_ignored"],
+          "prevention_strategies": ["Map disruption paths", "Identify vulnerable segments", "Attack vector analysis"],
+          "example_scenario": "Missing that disruption will come from low end of market"
+        },
+        {
+          "id": "fm_55_4",
+          "name": "Creative Destruction Opportunity Miss",
+          "description": "Seeing only threat, missing opportunity in creative destruction",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["threat_only_focus", "opportunity_missed", "defensive_only_posture"],
+          "prevention_strategies": ["Look for opportunities", "Offensive strategies", "Ride the disruption wave"],
+          "example_scenario": "Focusing on defending against disruption instead of benefiting from it"
+        },
+        {
+          "id": "fm_55_5",
+          "name": "Destruction Without Creation",
+          "description": "Expecting destruction without understanding what's being created",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["destruction_focus_only", "creation_not_analyzed", "new_value_missed"],
+          "prevention_strategies": ["Analyze what's being created", "New value proposition", "Winners from destruction"],
+          "example_scenario": "Predicting industry destruction without identifying who captures new value"
+        }
+      ]
+    },
+    {
+      "model_id": 56,
+      "model_name": "Specialization",
+      "failures": [
+        {
+          "id": "fm_56_1",
+          "name": "Over-Specialization Risk",
+          "description": "Specializing too narrowly, creating fragility",
+          "category": "context_blindness",
+          "severity": "high",
+          "detection_signals": ["narrow_specialization", "single_point_of_failure", "no_diversification"],
+          "prevention_strategies": ["Balance specialization and flexibility", "Core plus adjacent", "Avoid single dependency"],
+          "example_scenario": "Company so specialized that single customer loss is existential"
+        },
+        {
+          "id": "fm_56_2",
+          "name": "Specialization Obsolescence",
+          "description": "Specialization becoming obsolete due to change",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["specialization_becoming_irrelevant", "skills_obsolescence", "market_shift"],
+          "prevention_strategies": ["Monitor relevance", "Continuous learning", "Adjacent capability building"],
+          "example_scenario": "Deep expertise in technology that's being replaced"
+        },
+        {
+          "id": "fm_56_3",
+          "name": "Specialization vs Generalization Trade-off",
+          "description": "Not optimizing the specialization-generalization trade-off",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["trade_off_not_analyzed", "wrong_balance", "context_not_considered"],
+          "prevention_strategies": ["Analyze optimal balance", "Context-dependent choice", "Dynamic adjustment"],
+          "example_scenario": "Generalizing when market rewards specialization or vice versa"
+        },
+        {
+          "id": "fm_56_4",
+          "name": "Specialization Coordination Failure",
+          "description": "Specialization without proper coordination mechanisms",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["coordination_costs_ignored", "integration_problems", "silos_created"],
+          "prevention_strategies": ["Plan coordination", "Integration mechanisms", "Avoid harmful silos"],
+          "example_scenario": "Specialized teams that can't work together effectively"
+        },
+        {
+          "id": "fm_56_5",
+          "name": "False Specialization",
+          "description": "Claiming specialization without true expertise",
+          "category": "overconfidence",
+          "severity": "medium",
+          "detection_signals": ["specialization_claimed_not_real", "shallow_expertise", "no_differentiation"],
+          "prevention_strategies": ["Verify true expertise", "Depth over breadth claims", "Demonstrate specialization"],
+          "example_scenario": "Claiming industry specialization with only surface-level knowledge"
+        }
+      ]
+    },
+    {
+      "model_id": 57,
+      "model_name": "Seizing the Middle",
+      "failures": [
+        {
+          "id": "fm_57_1",
+          "name": "Stuck in the Middle",
+          "description": "Being stuck in middle without advantages of either extreme",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["no_clear_position", "neither_low_cost_nor_differentiated", "mediocre_returns"],
+          "prevention_strategies": ["Choose clear position", "Commit to strategy", "Avoid middle trap"],
+          "example_scenario": "Company neither cheapest nor best, losing to both"
+        },
+        {
+          "id": "fm_57_2",
+          "name": "Middle Position Erosion",
+          "description": "Middle position being squeezed from both ends",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["pressure_from_both_ends", "margin_compression", "market_share_loss"],
+          "prevention_strategies": ["Monitor squeeze dynamics", "Strengthen position", "Consider repositioning"],
+          "example_scenario": "Mid-market retailer squeezed by discounters and premium players"
+        },
+        {
+          "id": "fm_57_3",
+          "name": "False Middle Opportunity",
+          "description": "Seeing middle opportunity that doesn't exist",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["middle_opportunity_assumed", "market_not_validated", "customer_need_unclear"],
+          "prevention_strategies": ["Validate middle market", "Customer research", "Test before committing"],
+          "example_scenario": "Launching mid-tier product when customers want cheap or premium only"
+        },
+        {
+          "id": "fm_57_4",
+          "name": "Middle Differentiation Failure",
+          "description": "Failing to differentiate middle position",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["undifferentiated_middle", "no_unique_value", "commodity_middle"],
+          "prevention_strategies": ["Differentiate middle position", "Unique value proposition", "Clear positioning"],
+          "example_scenario": "Middle position with no clear reason for customers to choose it"
+        },
+        {
+          "id": "fm_57_5",
+          "name": "Middle Scaling Challenge",
+          "description": "Not recognizing scaling challenges of middle position",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["scale_challenges_ignored", "neither_volume_nor_premium", "growth_limited"],
+          "prevention_strategies": ["Analyze scaling path", "Volume or value strategy", "Growth mechanism"],
+          "example_scenario": "Middle position that can't achieve scale economies or premium pricing"
+        }
+      ]
+    },
+    {
+      "model_id": 58,
+      "model_name": "Trademarks/Patents/Copyrights",
+      "failures": [
+        {
+          "id": "fm_58_1",
+          "name": "IP Value Overestimation",
+          "description": "Overestimating the value of intellectual property",
+          "category": "overconfidence",
+          "severity": "high",
+          "detection_signals": ["IP_value_inflated", "enforcement_costs_ignored", "workarounds_possible"],
+          "prevention_strategies": ["Realistic IP valuation", "Consider enforcement costs", "Analyze workaround risk"],
+          "example_scenario": "Valuing patent portfolio highly when patents are easily designed around"
+        },
+        {
+          "id": "fm_58_2",
+          "name": "IP Expiration Blindness",
+          "description": "Not planning for IP expiration",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["expiration_not_planned", "cliff_approaching", "no_succession_strategy"],
+          "prevention_strategies": ["Track expiration dates", "Plan for post-expiration", "Build non-IP advantages"],
+          "example_scenario": "Pharma company without plan for patent cliff"
+        },
+        {
+          "id": "fm_58_3",
+          "name": "IP Enforcement Assumption",
+          "description": "Assuming IP can be easily enforced",
+          "category": "overconfidence",
+          "severity": "medium",
+          "detection_signals": ["enforcement_assumed_easy", "litigation_costs_ignored", "jurisdiction_issues"],
+          "prevention_strategies": ["Realistic enforcement assessment", "Budget for litigation", "Jurisdiction analysis"],
+          "example_scenario": "Assuming patent will stop competitors when enforcement is costly and uncertain"
+        },
+        {
+          "id": "fm_58_4",
+          "name": "IP vs Real Advantage Confusion",
+          "description": "Confusing IP protection with real competitive advantage",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["IP_equals_moat_assumption", "underlying_advantage_weak", "IP_as_only_defense"],
+          "prevention_strategies": ["Build real advantages", "IP as supplement not substitute", "Multiple moat sources"],
+          "example_scenario": "Relying solely on patents when execution and brand matter more"
+        },
+        {
+          "id": "fm_58_5",
+          "name": "IP Landscape Blindness",
+          "description": "Not understanding the broader IP landscape",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["competitor_IP_ignored", "freedom_to_operate_not_analyzed", "IP_risks_missed"],
+          "prevention_strategies": ["Analyze IP landscape", "Freedom to operate analysis", "Monitor competitor IP"],
+          "example_scenario": "Launching product without checking for blocking patents"
+        }
+      ]
+    },
+    {
+      "model_id": 59,
+      "model_name": "Double-Entry Bookkeeping",
+      "failures": [
+        {
+          "id": "fm_59_1",
+          "name": "Off-Balance Sheet Blindness",
+          "description": "Missing off-balance sheet items",
+          "category": "incomplete_analysis",
+          "severity": "critical",
+          "detection_signals": ["off_balance_sheet_ignored", "hidden_liabilities", "incomplete_picture"],
+          "prevention_strategies": ["Analyze off-balance sheet items", "Read footnotes carefully", "Adjust for hidden items"],
+          "example_scenario": "Missing operating lease liabilities that are effectively debt"
+        },
+        {
+          "id": "fm_59_2",
+          "name": "Accounting Policy Blindness",
+          "description": "Not understanding impact of accounting policy choices",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["accounting_policies_ignored", "comparability_issues", "aggressive_accounting_missed"],
+          "prevention_strategies": ["Analyze accounting policies", "Adjust for comparability", "Identify aggressive choices"],
+          "example_scenario": "Comparing companies without adjusting for different revenue recognition policies"
+        },
+        {
+          "id": "fm_59_3",
+          "name": "Accrual vs Cash Confusion",
+          "description": "Confusing accrual accounting with cash reality",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["accrual_treated_as_cash", "cash_flow_ignored", "earnings_quality_not_analyzed"],
+          "prevention_strategies": ["Focus on cash flow", "Analyze earnings quality", "Reconcile accrual to cash"],
+          "example_scenario": "Trusting reported earnings when cash flow tells different story"
+        },
+        {
+          "id": "fm_59_4",
+          "name": "Balance Sheet Quality Blindness",
+          "description": "Not analyzing quality of balance sheet items",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["asset_quality_ignored", "receivables_not_analyzed", "inventory_issues_missed"],
+          "prevention_strategies": ["Analyze asset quality", "Receivables aging", "Inventory analysis"],
+          "example_scenario": "Trusting asset values without analyzing collectibility or obsolescence"
+        },
+        {
+          "id": "fm_59_5",
+          "name": "Accounting Manipulation Blindness",
+          "description": "Not detecting accounting manipulation",
+          "category": "data_bias",
+          "severity": "critical",
+          "detection_signals": ["manipulation_not_detected", "red_flags_ignored", "too_good_to_be_true"],
+          "prevention_strategies": ["Look for red flags", "Forensic accounting checks", "Skeptical analysis"],
+          "example_scenario": "Missing revenue manipulation through channel stuffing"
+        }
+      ]
+    },
+    {
+      "model_id": 60,
+      "model_name": "Utility",
+      "failures": [
+        {
+          "id": "fm_60_1",
+          "name": "Utility Function Misspecification",
+          "description": "Incorrectly specifying utility function",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["wrong_utility_drivers", "preferences_misunderstood", "utility_proxy_wrong"],
+          "prevention_strategies": ["Validate utility assumptions", "Revealed preference analysis", "Test utility hypotheses"],
+          "example_scenario": "Assuming customers maximize price when they actually maximize convenience"
+        },
+        {
+          "id": "fm_60_2",
+          "name": "Utility Heterogeneity Blindness",
+          "description": "Assuming homogeneous utility when it varies",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["one_utility_function_assumed", "segments_ignored", "heterogeneity_missed"],
+          "prevention_strategies": ["Segment by utility", "Recognize heterogeneity", "Multiple utility functions"],
+          "example_scenario": "Single product for market with diverse utility functions"
+        },
+        {
+          "id": "fm_60_3",
+          "name": "Utility Stability Assumption",
+          "description": "Assuming utility functions are stable when they change",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["static_preferences_assumed", "preference_shifts_missed", "utility_evolution_ignored"],
+          "prevention_strategies": ["Monitor preference changes", "Adaptive strategies", "Utility trend analysis"],
+          "example_scenario": "Assuming customer preferences are stable when they're shifting"
+        },
+        {
+          "id": "fm_60_4",
+          "name": "Stated vs Revealed Preference Gap",
+          "description": "Trusting stated preferences over revealed preferences",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["stated_preferences_trusted", "behavior_contradicts_statements", "survey_over_action"],
+          "prevention_strategies": ["Focus on revealed preferences", "Behavior over statements", "Action-based analysis"],
+          "example_scenario": "Trusting survey saying customers want feature they don't actually use"
+        },
+        {
+          "id": "fm_60_5",
+          "name": "Utility Maximization Assumption",
+          "description": "Assuming rational utility maximization when behavior is bounded",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["perfect_rationality_assumed", "bounded_rationality_ignored", "satisficing_missed"],
+          "prevention_strategies": ["Account for bounded rationality", "Satisficing behavior", "Realistic decision models"],
+          "example_scenario": "Modeling customer as perfect optimizer when they satisfice"
+        }
+      ]
+    },
+    {
+      "model_id": 61,
+      "model_name": "Diminishing Returns",
+      "failures": [
+        {
+          "id": "fm_61_1",
+          "name": "Diminishing Returns Timing",
+          "description": "Misjudging when diminishing returns set in",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["inflection_point_missed", "linear_extrapolation", "returns_curve_not_analyzed"],
+          "prevention_strategies": ["Analyze returns curve", "Identify inflection points", "Monitor marginal returns"],
+          "example_scenario": "Continuing to invest past point of diminishing returns"
+        },
+        {
+          "id": "fm_61_2",
+          "name": "Increasing Returns Confusion",
+          "description": "Confusing increasing returns phase with permanent condition",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["increasing_returns_assumed_permanent", "scale_benefits_extrapolated", "no_ceiling_assumed"],
+          "prevention_strategies": ["Recognize phase transitions", "Model returns curve", "Anticipate diminishing phase"],
+          "example_scenario": "Assuming growth rates will continue when approaching saturation"
+        },
+        {
+          "id": "fm_61_3",
+          "name": "Input-Specific Diminishing Returns",
+          "description": "Not recognizing which inputs face diminishing returns",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["all_inputs_treated_same", "specific_constraints_missed", "bottleneck_not_identified"],
+          "prevention_strategies": ["Analyze each input separately", "Identify binding constraints", "Bottleneck analysis"],
+          "example_scenario": "Adding more salespeople when marketing is the bottleneck"
+        },
+        {
+          "id": "fm_61_4",
+          "name": "Diminishing Returns vs Negative Returns",
+          "description": "Not recognizing when returns become negative",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["negative_returns_missed", "always_positive_assumed", "harm_not_recognized"],
+          "prevention_strategies": ["Monitor for negative returns", "Know when to stop", "Recognize harm potential"],
+          "example_scenario": "Adding features that actually reduce product value"
+        },
+        {
+          "id": "fm_61_5",
+          "name": "Diminishing Returns Across Dimensions",
+          "description": "Not considering diminishing returns across different dimensions",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["single_dimension_focus", "other_dimensions_ignored", "optimization_imbalance"],
+          "prevention_strategies": ["Multi-dimensional analysis", "Balance across dimensions", "Holistic optimization"],
+          "example_scenario": "Optimizing one metric past diminishing returns while others are neglected"
+        }
+      ]
+    },
+    {
+      "model_id": 62,
+      "model_name": "Bottlenecks",
+      "failures": [
+        {
+          "id": "fm_62_1",
+          "name": "Bottleneck Misidentification",
+          "description": "Identifying wrong bottleneck",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["wrong_constraint_identified", "symptoms_vs_cause", "visible_vs_actual_bottleneck"],
+          "prevention_strategies": ["Systematic bottleneck analysis", "Theory of constraints", "Verify bottleneck"],
+          "example_scenario": "Optimizing production when sales is the actual bottleneck"
+        },
+        {
+          "id": "fm_62_2",
+          "name": "Bottleneck Shifting",
+          "description": "Not anticipating bottleneck shift after fixing current one",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["next_bottleneck_not_anticipated", "whack_a_mole", "system_view_missing"],
+          "prevention_strategies": ["Anticipate bottleneck shifts", "System-wide view", "Plan for next constraint"],
+          "example_scenario": "Fixing production bottleneck only to hit distribution bottleneck"
+        },
+        {
+          "id": "fm_62_3",
+          "name": "Bottleneck Optimization Myopia",
+          "description": "Optimizing non-bottleneck while ignoring actual bottleneck",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["non_constraint_optimized", "bottleneck_ignored", "wasted_effort"],
+          "prevention_strategies": ["Focus on bottleneck", "Constraint-based prioritization", "Avoid non-bottleneck optimization"],
+          "example_scenario": "Improving efficient process while bottleneck process is ignored"
+        },
+        {
+          "id": "fm_62_4",
+          "name": "Hidden Bottleneck Blindness",
+          "description": "Not seeing hidden or soft bottlenecks",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["obvious_bottlenecks_only", "soft_constraints_missed", "hidden_limitations"],
+          "prevention_strategies": ["Look for hidden constraints", "Soft bottleneck analysis", "Comprehensive constraint mapping"],
+          "example_scenario": "Missing that management attention is the real bottleneck"
+        },
+        {
+          "id": "fm_62_5",
+          "name": "Bottleneck Exploitation Failure",
+          "description": "Not fully exploiting bottleneck before trying to expand it",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["bottleneck_not_fully_utilized", "expansion_before_exploitation", "waste_at_constraint"],
+          "prevention_strategies": ["Exploit before expand", "Maximize bottleneck utilization", "Eliminate waste at constraint"],
+          "example_scenario": "Adding capacity when existing bottleneck has downtime"
+        }
+      ]
+    },
+    {
+      "model_id": 63,
+      "model_name": "Prisoner's Dilemma",
+      "failures": [
+        {
+          "id": "fm_63_1",
+          "name": "Game Structure Misidentification",
+          "description": "Misidentifying situation as prisoner's dilemma when it's not",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["wrong_game_assumed", "payoff_structure_not_analyzed", "game_type_confusion"],
+          "prevention_strategies": ["Analyze payoff structure", "Verify game type", "Consider alternatives"],
+          "example_scenario": "Treating coordination game as prisoner's dilemma"
+        },
+        {
+          "id": "fm_63_2",
+          "name": "One-Shot vs Repeated Game Confusion",
+          "description": "Treating repeated game as one-shot or vice versa",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["game_duration_ignored", "reputation_effects_missed", "future_interactions_not_considered"],
+          "prevention_strategies": ["Analyze game duration", "Consider reputation", "Future interaction effects"],
+          "example_scenario": "Defecting in repeated game where cooperation would be sustained"
+        },
+        {
+          "id": "fm_63_3",
+          "name": "Payoff Estimation Error",
+          "description": "Incorrectly estimating payoffs in the game",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["payoffs_not_quantified", "wrong_payoff_estimates", "subjective_payoffs_ignored"],
+          "prevention_strategies": ["Quantify payoffs carefully", "Consider all payoff types", "Validate estimates"],
+          "example_scenario": "Underestimating reputational cost of defection"
+        },
+        {
+          "id": "fm_63_4",
+          "name": "Player Identification Failure",
+          "description": "Not identifying all relevant players in the game",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["players_missed", "stakeholders_ignored", "incomplete_game_model"],
+          "prevention_strategies": ["Identify all players", "Stakeholder mapping", "Complete game model"],
+          "example_scenario": "Modeling two-player game when third party affects outcomes"
+        },
+        {
+          "id": "fm_63_5",
+          "name": "Escape Route Blindness",
+          "description": "Not seeing ways to escape the dilemma",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["dilemma_accepted_as_given", "escape_routes_not_explored", "game_change_not_considered"],
+          "prevention_strategies": ["Look for escape routes", "Change the game", "Communication and commitment"],
+          "example_scenario": "Accepting price war as inevitable when coordination is possible"
+        }
+      ]
+    },
+    {
+      "model_id": 64,
+      "model_name": "Tragedy of the Commons",
+      "failures": [
+        {
+          "id": "fm_64_1",
+          "name": "Commons Identification Failure",
+          "description": "Not recognizing common resource dynamics",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["commons_not_identified", "shared_resource_ignored", "overuse_risk_missed"],
+          "prevention_strategies": ["Identify common resources", "Analyze shared resource dynamics", "Overuse risk assessment"],
+          "example_scenario": "Not recognizing that industry is depleting shared customer goodwill"
+        },
+        {
+          "id": "fm_64_2",
+          "name": "Tragedy Timing Misjudgment",
+          "description": "Misjudging when tragedy will occur",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["depletion_timing_wrong", "tipping_point_missed", "gradual_decline_ignored"],
+          "prevention_strategies": ["Monitor resource levels", "Identify tipping points", "Early warning systems"],
+          "example_scenario": "Assuming resource will last longer than it actually does"
+        },
+        {
+          "id": "fm_64_3",
+          "name": "Governance Solution Blindness",
+          "description": "Not seeing governance solutions to commons problems",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["tragedy_assumed_inevitable", "governance_not_considered", "Ostrom_solutions_ignored"],
+          "prevention_strategies": ["Consider governance solutions", "Study successful commons management", "Design institutions"],
+          "example_scenario": "Assuming overfishing is inevitable when quota systems could work"
+        },
+        {
+          "id": "fm_64_4",
+          "name": "Private vs Common Confusion",
+          "description": "Confusing private and common resources",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["resource_type_confused", "ownership_unclear", "externalities_missed"],
+          "prevention_strategies": ["Clarify resource ownership", "Analyze externalities", "Property rights analysis"],
+          "example_scenario": "Treating common resource as private, ignoring external effects"
+        },
+        {
+          "id": "fm_64_5",
+          "name": "Free Rider Underestimation",
+          "description": "Underestimating free rider problem in commons",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["free_riding_ignored", "cooperation_assumed", "enforcement_not_planned"],
+          "prevention_strategies": ["Plan for free riders", "Enforcement mechanisms", "Incentive alignment"],
+          "example_scenario": "Assuming all players will cooperate in conservation without enforcement"
+        }
+      ]
+    },
+    {
+      "model_id": 65,
+      "model_name": "Gresham's Law",
+      "failures": [
+        {
+          "id": "fm_65_1",
+          "name": "Bad Driving Out Good Blindness",
+          "description": "Not recognizing when bad is driving out good",
+          "category": "context_blindness",
+          "severity": "high",
+          "detection_signals": ["quality_decline_not_noticed", "race_to_bottom", "good_actors_leaving"],
+          "prevention_strategies": ["Monitor quality trends", "Watch for good actor exit", "Race to bottom indicators"],
+          "example_scenario": "Not noticing that low-quality competitors are driving out quality players"
+        },
+        {
+          "id": "fm_65_2",
+          "name": "Gresham Dynamics Timing",
+          "description": "Misjudging speed of Gresham's Law dynamics",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["speed_misjudged", "gradual_vs_sudden", "tipping_point_missed"],
+          "prevention_strategies": ["Monitor dynamics speed", "Identify acceleration points", "Early intervention"],
+          "example_scenario": "Assuming quality erosion will be gradual when it accelerates suddenly"
+        },
+        {
+          "id": "fm_65_3",
+          "name": "Information Asymmetry Role",
+          "description": "Not recognizing role of information asymmetry in Gresham dynamics",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["information_role_ignored", "quality_signals_weak", "adverse_selection"],
+          "prevention_strategies": ["Analyze information asymmetry", "Strengthen quality signals", "Reduce adverse selection"],
+          "example_scenario": "Quality products losing to inferior ones because customers can't tell difference"
+        },
+        {
+          "id": "fm_65_4",
+          "name": "Gresham Reversal Opportunity",
+          "description": "Missing opportunity to reverse Gresham dynamics",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["reversal_not_considered", "quality_differentiation_possible", "signaling_opportunity"],
+          "prevention_strategies": ["Look for reversal opportunities", "Quality signaling", "Market segmentation"],
+          "example_scenario": "Not creating premium segment to escape race to bottom"
+        },
+        {
+          "id": "fm_65_5",
+          "name": "Gresham in Non-Monetary Contexts",
+          "description": "Not applying Gresham's Law to non-monetary situations",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["monetary_focus_only", "broader_application_missed", "quality_dynamics_ignored"],
+          "prevention_strategies": ["Apply broadly", "Quality in all contexts", "Non-monetary Gresham analysis"],
+          "example_scenario": "Missing that bad behavior is driving out good in organizational culture"
+        }
+      ]
+    },
+    {
+      "model_id": 66,
+      "model_name": "Algorithms",
+      "failures": [
+        {
+          "id": "fm_66_1",
+          "name": "Algorithm Overconfidence",
+          "description": "Excessive confidence in algorithmic outputs",
+          "category": "overconfidence",
+          "severity": "high",
+          "detection_signals": ["algorithm_treated_as_truth", "human_judgment_dismissed", "black_box_trust"],
+          "prevention_strategies": ["Maintain skepticism", "Human oversight", "Algorithm limitations awareness"],
+          "example_scenario": "Trusting model output without understanding assumptions and limitations"
+        },
+        {
+          "id": "fm_66_2",
+          "name": "Algorithm Bias Blindness",
+          "description": "Not recognizing biases embedded in algorithms",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["bias_not_analyzed", "training_data_issues", "systematic_errors"],
+          "prevention_strategies": ["Bias auditing", "Diverse training data", "Regular bias checks"],
+          "example_scenario": "Using biased algorithm without recognizing systematic errors"
+        },
+        {
+          "id": "fm_66_3",
+          "name": "Algorithm Brittleness",
+          "description": "Not recognizing algorithm brittleness outside training distribution",
+          "category": "context_blindness",
+          "severity": "high",
+          "detection_signals": ["out_of_distribution_not_considered", "edge_cases_ignored", "robustness_not_tested"],
+          "prevention_strategies": ["Test edge cases", "Out-of-distribution analysis", "Robustness testing"],
+          "example_scenario": "Algorithm fails in new market conditions it wasn't trained on"
+        },
+        {
+          "id": "fm_66_4",
+          "name": "Algorithm Feedback Loop",
+          "description": "Not recognizing feedback loops created by algorithms",
+          "category": "feedback_loop",
+          "severity": "high",
+          "detection_signals": ["feedback_loop_not_identified", "self_fulfilling_prophecy", "amplification_effects"],
+          "prevention_strategies": ["Identify feedback loops", "Monitor for amplification", "Circuit breakers"],
+          "example_scenario": "Trading algorithm creating the patterns it's designed to exploit"
+        },
+        {
+          "id": "fm_66_5",
+          "name": "Algorithm vs Judgment Balance",
+          "description": "Wrong balance between algorithm and human judgment",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["balance_wrong", "over_or_under_reliance", "context_for_balance_ignored"],
+          "prevention_strategies": ["Context-appropriate balance", "Know when to override", "Complementary use"],
+          "example_scenario": "Following algorithm in situation requiring human judgment"
+        }
+      ]
+    },
+    {
+      "model_id": 67,
+      "model_name": "Compounding",
+      "failures": [
+        {
+          "id": "fm_67_1",
+          "name": "Compounding Underestimation",
+          "description": "Underestimating the power of compounding over time",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["linear_thinking", "compounding_not_calculated", "long_term_undervalued"],
+          "prevention_strategies": ["Calculate compound effects", "Visualize long-term growth", "Respect compounding power"],
+          "example_scenario": "Preferring 10% one-time gain over 2% annual compounding"
+        },
+        {
+          "id": "fm_67_2",
+          "name": "Negative Compounding Blindness",
+          "description": "Not recognizing negative compounding effects",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["negative_compounding_ignored", "erosion_not_tracked", "decay_underestimated"],
+          "prevention_strategies": ["Track negative compounding", "Monitor erosion", "Address decay early"],
+          "example_scenario": "Ignoring small annual market share losses that compound to major decline"
+        },
+        {
+          "id": "fm_67_3",
+          "name": "Compounding Interruption Risk",
+          "description": "Not protecting compounding from interruption",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["interruption_risk_ignored", "volatility_drag_missed", "sequence_risk"],
+          "prevention_strategies": ["Protect compounding", "Reduce volatility", "Avoid interruptions"],
+          "example_scenario": "Taking risks that could interrupt long-term compounding"
+        },
+        {
+          "id": "fm_67_4",
+          "name": "Compounding Rate Sensitivity",
+          "description": "Not recognizing sensitivity to compounding rate",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["rate_sensitivity_ignored", "small_differences_dismissed", "rate_impact_underestimated"],
+          "prevention_strategies": ["Analyze rate sensitivity", "Small differences matter", "Optimize rate"],
+          "example_scenario": "Dismissing 1% fee difference that compounds to huge difference over time"
+        },
+        {
+          "id": "fm_67_5",
+          "name": "Compounding Base Neglect",
+          "description": "Focusing on rate while neglecting base",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["base_ignored", "rate_only_focus", "starting_point_neglected"],
+          "prevention_strategies": ["Consider both base and rate", "Base matters for absolute outcomes", "Balanced view"],
+          "example_scenario": "Chasing high return rate on small base vs lower rate on large base"
+        }
+      ]
+    },
+    {
+      "model_id": 68,
+      "model_name": "Probability",
+      "failures": [
+        {
+          "id": "fm_68_1",
+          "name": "Base Rate Neglect",
+          "description": "Ignoring base rates in probability assessment",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["base_rate_ignored", "specific_information_overweighted", "prior_probability_missed"],
+          "prevention_strategies": ["Always start with base rates", "Bayesian updating", "Prior probability first"],
+          "example_scenario": "Estimating startup success probability without considering 90% failure base rate"
+        },
+        {
+          "id": "fm_68_2",
+          "name": "Conjunction Fallacy",
+          "description": "Judging conjunction of events as more likely than single event",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["specific_scenario_overweighted", "conjunction_more_likely", "detail_adds_probability"],
+          "prevention_strategies": ["Check probability logic", "Simpler more likely", "Conjunction rule"],
+          "example_scenario": "Believing detailed scenario more likely than simple outcome"
+        },
+        {
+          "id": "fm_68_3",
+          "name": "Independence Assumption Error",
+          "description": "Assuming independence when events are correlated",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["independence_assumed", "correlation_ignored", "joint_probability_wrong"],
+          "prevention_strategies": ["Analyze correlations", "Joint probability correctly", "Dependence structure"],
+          "example_scenario": "Assuming diversified portfolio when holdings are correlated"
+        },
+        {
+          "id": "fm_68_4",
+          "name": "Small Probability Misjudgment",
+          "description": "Misjudging small probabilities (over or underweighting)",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["small_probabilities_wrong", "tail_risk_misjudged", "rare_events_misweighted"],
+          "prevention_strategies": ["Careful with small probabilities", "Tail risk analysis", "Historical rare events"],
+          "example_scenario": "Ignoring 1% probability event that would be catastrophic"
+        },
+        {
+          "id": "fm_68_5",
+          "name": "Probability vs Frequency Confusion",
+          "description": "Confusing probability with frequency",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["probability_frequency_confused", "sample_size_issues", "law_of_large_numbers_misapplied"],
+          "prevention_strategies": ["Distinguish probability and frequency", "Sample size awareness", "Correct application"],
+          "example_scenario": "Expecting 50% probability to mean exactly half in small sample"
+        }
+      ]
+    },
+    {
+      "model_id": 69,
+      "model_name": "Permutations and Combinations",
+      "failures": [
+        {
+          "id": "fm_69_1",
+          "name": "Combinatorial Explosion Blindness",
+          "description": "Not recognizing combinatorial explosion",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["combinations_underestimated", "explosion_not_anticipated", "linear_thinking"],
+          "prevention_strategies": ["Calculate combinations", "Recognize exponential growth", "Combinatorial awareness"],
+          "example_scenario": "Underestimating number of possible scenarios to analyze"
+        },
+        {
+          "id": "fm_69_2",
+          "name": "Order Relevance Error",
+          "description": "Confusing when order matters vs doesn't",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["order_relevance_confused", "permutation_vs_combination_wrong", "counting_error"],
+          "prevention_strategies": ["Clarify if order matters", "Correct counting method", "Verify calculation"],
+          "example_scenario": "Using combinations when permutations needed or vice versa"
+        },
+        {
+          "id": "fm_69_3",
+          "name": "Sampling Without Replacement Error",
+          "description": "Confusing sampling with and without replacement",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["replacement_assumption_wrong", "probability_calculation_error", "sampling_method_confused"],
+          "prevention_strategies": ["Clarify sampling method", "Correct probability calculation", "Verify assumptions"],
+          "example_scenario": "Calculating probability assuming replacement when sampling without"
+        },
+        {
+          "id": "fm_69_4",
+          "name": "Subset Selection Bias",
+          "description": "Biased selection of subsets to analyze",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["subset_selection_biased", "cherry_picking_combinations", "representative_sample_missing"],
+          "prevention_strategies": ["Random or systematic selection", "Avoid cherry-picking", "Representative analysis"],
+          "example_scenario": "Analyzing only favorable combinations of factors"
+        },
+        {
+          "id": "fm_69_5",
+          "name": "Interaction Effect Blindness",
+          "description": "Not considering interaction effects in combinations",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["interactions_ignored", "additive_assumption", "synergies_missed"],
+          "prevention_strategies": ["Analyze interactions", "Non-additive effects", "Combination-specific analysis"],
+          "example_scenario": "Assuming factors combine additively when they interact"
+        }
+      ]
+    },
+    {
+      "model_id": 70,
+      "model_name": "Algebraic Equivalence",
+      "failures": [
+        {
+          "id": "fm_70_1",
+          "name": "False Equivalence",
+          "description": "Treating non-equivalent things as equivalent",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["false_equivalence_assumed", "differences_ignored", "inappropriate_comparison"],
+          "prevention_strategies": ["Verify equivalence", "Identify differences", "Appropriate comparisons"],
+          "example_scenario": "Treating two metrics as equivalent when they measure different things"
+        },
+        {
+          "id": "fm_70_2",
+          "name": "Hidden Variable Blindness",
+          "description": "Missing hidden variables that break equivalence",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["hidden_variables_missed", "confounders_ignored", "spurious_equivalence"],
+          "prevention_strategies": ["Look for hidden variables", "Confounder analysis", "Verify true equivalence"],
+          "example_scenario": "Assuming two strategies are equivalent without seeing hidden cost differences"
+        },
+        {
+          "id": "fm_70_3",
+          "name": "Transformation Error",
+          "description": "Errors in algebraic transformation",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["transformation_error", "algebra_mistake", "equivalence_broken"],
+          "prevention_strategies": ["Check transformations", "Verify algebra", "Multiple verification"],
+          "example_scenario": "Mathematical error in converting between equivalent forms"
+        },
+        {
+          "id": "fm_70_4",
+          "name": "Context-Dependent Equivalence",
+          "description": "Not recognizing equivalence depends on context",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["context_ignored", "equivalence_assumed_universal", "conditions_not_checked"],
+          "prevention_strategies": ["Check context conditions", "Conditional equivalence", "Verify in specific context"],
+          "example_scenario": "Assuming equivalence holds in new context without verification"
+        },
+        {
+          "id": "fm_70_5",
+          "name": "Practical vs Theoretical Equivalence",
+          "description": "Confusing theoretical and practical equivalence",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["theoretical_only", "practical_differences_ignored", "implementation_matters"],
+          "prevention_strategies": ["Consider practical differences", "Implementation analysis", "Real-world testing"],
+          "example_scenario": "Theoretically equivalent strategies with different practical outcomes"
+        }
+      ]
+    },
+    {
+      "model_id": 71,
+      "model_name": "Randomness",
+      "failures": [
+        {
+          "id": "fm_71_1",
+          "name": "Pattern in Randomness",
+          "description": "Seeing patterns in random data",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["pattern_claimed_in_noise", "apophenia", "overfitting_to_randomness"],
+          "prevention_strategies": ["Statistical significance testing", "Out-of-sample validation", "Skepticism of patterns"],
+          "example_scenario": "Finding 'predictive' pattern in random stock movements"
+        },
+        {
+          "id": "fm_71_2",
+          "name": "Randomness Denial",
+          "description": "Denying role of randomness in outcomes",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["luck_denied", "skill_overattributed", "randomness_dismissed"],
+          "prevention_strategies": ["Acknowledge randomness", "Separate skill from luck", "Probabilistic thinking"],
+          "example_scenario": "Attributing success entirely to skill when luck played major role"
+        },
+        {
+          "id": "fm_71_3",
+          "name": "Gambler's Fallacy",
+          "description": "Believing past random events affect future probabilities",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["due_for_change_thinking", "past_affects_future_assumed", "independence_violated"],
+          "prevention_strategies": ["Independence of events", "Fresh probability each time", "No memory in randomness"],
+          "example_scenario": "Believing stock is 'due' to go up after string of losses"
+        },
+        {
+          "id": "fm_71_4",
+          "name": "Hot Hand Fallacy",
+          "description": "Believing in streaks in random processes",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["streak_believed_real", "momentum_in_randomness", "hot_hand_assumed"],
+          "prevention_strategies": ["Test for true streaks", "Distinguish skill from luck streaks", "Statistical analysis"],
+          "example_scenario": "Believing trader is 'hot' when recent success is random"
+        },
+        {
+          "id": "fm_71_5",
+          "name": "Randomness Source Confusion",
+          "description": "Confusing different sources of randomness",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["randomness_sources_confused", "aleatory_vs_epistemic", "reducible_vs_irreducible"],
+          "prevention_strategies": ["Identify randomness source", "Reducible vs irreducible", "Appropriate response to each"],
+          "example_scenario": "Treating reducible uncertainty as irreducible randomness"
+        }
+      ]
+    },
+    {
+      "model_id": 72,
+      "model_name": "Stochastic Processes",
+      "failures": [
+        {
+          "id": "fm_72_1",
+          "name": "Process Misspecification",
+          "description": "Using wrong stochastic process model",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["wrong_process_assumed", "model_doesn't_fit_data", "distributional_assumptions_wrong"],
+          "prevention_strategies": ["Test process assumptions", "Model validation", "Multiple process comparison"],
+          "example_scenario": "Assuming normal distribution when fat tails exist"
+        },
+        {
+          "id": "fm_72_2",
+          "name": "Stationarity Assumption Error",
+          "description": "Assuming stationarity when process is non-stationary",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["stationarity_assumed", "regime_changes_ignored", "parameters_assumed_stable"],
+          "prevention_strategies": ["Test for stationarity", "Regime change analysis", "Non-stationary models"],
+          "example_scenario": "Using historical volatility when volatility regime has changed"
+        },
+        {
+          "id": "fm_72_3",
+          "name": "Path Dependency Blindness",
+          "description": "Not recognizing path dependency in process",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["path_dependency_ignored", "history_doesn't_matter_assumed", "markov_assumption_wrong"],
+          "prevention_strategies": ["Analyze path dependency", "History effects", "Appropriate process model"],
+          "example_scenario": "Ignoring that current state depends on path taken to get there"
+        },
+        {
+          "id": "fm_72_4",
+          "name": "Ergodicity Confusion",
+          "description": "Confusing ensemble and time averages",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["ergodicity_assumed", "ensemble_vs_time_confused", "non_ergodic_treated_as_ergodic"],
+          "prevention_strategies": ["Check ergodicity", "Time vs ensemble distinction", "Individual path analysis"],
+          "example_scenario": "Using average return when individual paths can go to zero"
+        },
+        {
+          "id": "fm_72_5",
+          "name": "Tail Event Underestimation",
+          "description": "Underestimating probability of tail events",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["tails_underweighted", "extreme_events_ignored", "normal_distribution_assumed"],
+          "prevention_strategies": ["Fat tail analysis", "Extreme value theory", "Stress testing"],
+          "example_scenario": "Risk model underestimating probability of market crash"
+        }
+      ]
     }
   ]
 }
