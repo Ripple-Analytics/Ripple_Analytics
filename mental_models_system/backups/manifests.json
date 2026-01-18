@@ -1,0 +1,22 @@
+{
+  "backup_20260118_005043": {
+    "backup_id": "backup_20260118_005043",
+    "backup_type": "full",
+    "created_at": "2026-01-18T00:50:43.381522",
+    "completed_at": "2026-01-18T00:50:43.381548",
+    "size_bytes": 434346,
+    "compressed_size_bytes": 105907,
+    "file_count": 19,
+    "checksum": "b1928600361892d0b76a0cda4d13e09a106659fbba182f39b40174271f570659",
+    "parent_backup_id": null,
+    "components": [
+      "models",
+      "failure_modes"
+    ],
+    "metadata": {
+      "description": "Test backup",
+      "compression": true,
+      "compression_ratio": 0.244
+    }
+  }
+}
