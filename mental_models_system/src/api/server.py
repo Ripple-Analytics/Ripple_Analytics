@@ -35,6 +35,7 @@ from src.analysis import (
     build_graph_from_analyses
 )
 from src.llm.local_llm import create_llm_client
+from src.api.failure_mode_routes import router as failure_mode_router
 
 
 # =============================================================================
@@ -398,6 +399,9 @@ def create_app(
             "models_loaded": len(app.state.model_loader.models),
             "llm_initialized": app.state.llm_client is not None
         }
+    
+    # Include failure mode routes
+    app.include_router(failure_mode_router)
     
     return app
 
