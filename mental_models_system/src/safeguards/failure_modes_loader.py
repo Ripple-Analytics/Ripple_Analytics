@@ -163,24 +163,67 @@ class FailureModesLoader:
     
     def __init__(self, data_path: Optional[Path] = None):
         if data_path is None:
-            data_path = Path(__file__).parent.parent.parent / "data" / "raw" / "failure_modes_deep.json"
+            data_path = Path(__file__).parent.parent.parent / "data" / "raw"
         
+        self.data_dir = data_path if data_path.is_dir() else data_path.parent
         self.data_path = data_path
         self._data: Dict[str, ModelFailureModes] = {}
-        self._load_data()
+        self._simple_data: Dict[str, List[Dict]] = {}  # For simple format files
+        self._load_all_data()
     
-    def _load_data(self):
-        """Load failure modes from JSON file."""
-        if not self.data_path.exists():
+    def _load_all_data(self):
+        """Load failure modes from all JSON files."""
+        # Load from deep format file
+        deep_file = self.data_dir / "failure_modes_deep.json"
+        if deep_file.exists():
+            self._load_data(deep_file)
+        
+        # Load from simple format files
+        simple_files = [
+            'failure_modes_economics.json',
+            'failure_modes_economics_2.json',
+            'failure_modes_moats.json',
+            'failure_modes_thinking.json'
+        ]
+        
+        for filename in simple_files:
+            filepath = self.data_dir / filename
+            if filepath.exists():
+                self._load_simple_format(filepath)
+    
+    def _load_data(self, filepath: Path = None):
+        """Load failure modes from deep format JSON file."""
+        if filepath is None:
+            filepath = self.data_path
+        
+        if not filepath.exists():
             return
         
-        with open(self.data_path) as f:
+        with open(filepath) as f:
             raw_data = json.load(f)
         
         failure_modes_data = raw_data.get("failure_modes", {})
         
         for model_id, model_data in failure_modes_data.items():
             self._data[model_id] = ModelFailureModes.from_dict(model_id, model_data)
+    
+    def _load_simple_format(self, filepath: Path):
+        """Load failure modes from simple format JSON files."""
+        try:
+            with open(filepath) as f:
+                data = json.load(f)
+            
+            if 'models' in data:
+                for model in data['models']:
+                    model_name = model.get('name', '')
+                    model_id = str(model.get('id', ''))
+                    if model_name and 'failure_modes' in model:
+                        self._simple_data[model_name] = model['failure_modes']
+                        # Also add by ID for lookup
+                        if model_id:
+                            self._simple_data[model_id] = model['failure_modes']
+        except Exception as e:
+            print(f"Warning: Could not load {filepath}: {e}")
     
     def get_failure_modes(self, model_id: int) -> Optional[ModelFailureModes]:
         """Get all failure modes for a specific mental model."""

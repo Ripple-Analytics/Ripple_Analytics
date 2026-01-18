@@ -1,0 +1,465 @@
+{
+  "category": "Economics & Business",
+  "models": [
+    {
+      "id": 53,
+      "name": "Supply and Demand",
+      "failure_modes": [
+        {
+          "mode": "Ignoring elasticity differences",
+          "description": "Assuming all goods respond equally to price changes",
+          "real_world_case": "Netflix 2011 price hike - raised prices 60%, lost 800,000 subscribers. Underestimated demand elasticity for streaming vs DVD.",
+          "warning_signs": ["Treating luxury goods like necessities", "Ignoring substitute availability", "Not testing price sensitivity"],
+          "safeguards": ["Run price elasticity analysis before changes", "A/B test price points", "Monitor competitor pricing"],
+          "quantitative_threshold": "Price elasticity > 1.5 indicates high sensitivity"
+        },
+        {
+          "mode": "Static analysis in dynamic markets",
+          "description": "Using point-in-time supply/demand without considering shifts",
+          "real_world_case": "Oil price collapse 2014-2016 - analysts focused on current supply, missed shale production ramp-up shifting supply curve permanently.",
+          "warning_signs": ["Ignoring technology changes", "Not tracking new entrants", "Assuming stable preferences"],
+          "safeguards": ["Model supply/demand curves over time", "Track capacity additions", "Monitor technology disruptions"],
+          "quantitative_threshold": "Update models quarterly minimum"
+        },
+        {
+          "mode": "Ignoring network effects on demand",
+          "description": "Traditional supply/demand assumes independent buyers",
+          "real_world_case": "Blackberry collapse - demand wasn't just about price/features, but network effects of app ecosystem. Traditional analysis missed this.",
+          "warning_signs": ["Platform businesses", "Social products", "Ecosystem dependencies"],
+          "safeguards": ["Model network effects separately", "Track ecosystem health metrics", "Monitor switching costs"],
+          "quantitative_threshold": "Network effect multiplier > 1.2x indicates significant impact"
+        },
+        {
+          "mode": "Confusing correlation with causation in price movements",
+          "description": "Assuming price changes caused demand changes when third factors involved",
+          "real_world_case": "Housing bubble 2008 - rising prices seemed to increase demand (wealth effect), but both were caused by loose credit.",
+          "warning_signs": ["Prices and demand moving together", "External factors changing", "Credit conditions shifting"],
+          "safeguards": ["Control for confounding variables", "Use instrumental variables", "Test multiple hypotheses"],
+          "quantitative_threshold": "R-squared > 0.7 without controls is suspicious"
+        },
+        {
+          "mode": "Ignoring supply constraints and bottlenecks",
+          "description": "Assuming supply can scale smoothly with demand",
+          "real_world_case": "Semiconductor shortage 2021 - auto industry assumed chips would scale with demand, missed 2-year fab construction time.",
+          "warning_signs": ["Long lead times", "Concentrated suppliers", "Capacity utilization > 85%"],
+          "safeguards": ["Map supply chain constraints", "Track supplier capacity", "Build inventory buffers"],
+          "quantitative_threshold": "Lead time > 6 months indicates constraint risk"
+        }
+      ]
+    },
+    {
+      "id": 54,
+      "name": "Comparative Advantage",
+      "failure_modes": [
+        {
+          "mode": "Static comparative advantage assumption",
+          "description": "Assuming advantages are permanent rather than dynamic",
+          "real_world_case": "US manufacturing decline - assumed service economy advantage was permanent, missed China's rapid capability building.",
+          "warning_signs": ["Complacency about current position", "Ignoring competitor investment", "Not tracking skill development"],
+          "safeguards": ["Monitor competitor capability building", "Invest in maintaining advantages", "Scenario plan for shifts"],
+          "quantitative_threshold": "Advantage eroding > 5% annually requires action"
+        },
+        {
+          "mode": "Ignoring transaction costs",
+          "description": "Theoretical advantage doesn't account for real-world frictions",
+          "real_world_case": "Offshoring failures - many companies found coordination costs, quality issues, and IP risks exceeded labor savings.",
+          "warning_signs": ["Large geographic distances", "Complex coordination needs", "IP sensitivity"],
+          "safeguards": ["Calculate total cost of ownership", "Include hidden costs", "Pilot before full commitment"],
+          "quantitative_threshold": "Transaction costs > 20% of savings negates advantage"
+        },
+        {
+          "mode": "Confusing absolute and comparative advantage",
+          "description": "Focusing on being best rather than relative efficiency",
+          "real_world_case": "Japan's rice farming - maintains rice production despite being worse at it than manufacturing, due to political rather than economic logic.",
+          "warning_signs": ["Protecting inefficient industries", "Ignoring opportunity costs", "Political interference"],
+          "safeguards": ["Calculate opportunity costs explicitly", "Compare relative productivities", "Separate political from economic analysis"],
+          "quantitative_threshold": "Opportunity cost ratio > 2:1 indicates misallocation"
+        },
+        {
+          "mode": "Ignoring strategic dependencies",
+          "description": "Optimizing for efficiency without considering security",
+          "real_world_case": "European energy dependence on Russia - comparative advantage said buy cheap Russian gas, ignored strategic vulnerability.",
+          "warning_signs": ["Single source dependencies", "Geopolitical tensions", "Critical inputs"],
+          "safeguards": ["Diversify critical supplies", "Maintain strategic reserves", "Price in geopolitical risk"],
+          "quantitative_threshold": "Single supplier > 40% of critical input is dangerous"
+        },
+        {
+          "mode": "Ignoring learning curves and scale effects",
+          "description": "Current comparative advantage may shift with scale",
+          "real_world_case": "Solar panel manufacturing - China had no initial advantage, but scale and learning curves created dominant position.",
+          "warning_signs": ["High learning curve industries", "Scale-sensitive costs", "Early-stage markets"],
+          "safeguards": ["Model future cost curves", "Consider strategic investment", "Track competitor scale"],
+          "quantitative_threshold": "Learning curve > 15% per doubling indicates dynamic advantage"
+        }
+      ]
+    },
+    {
+      "id": 55,
+      "name": "Opportunity Cost",
+      "failure_modes": [
+        {
+          "mode": "Narrow framing of alternatives",
+          "description": "Only comparing obvious alternatives, missing creative options",
+          "real_world_case": "Kodak's digital camera decision - compared digital vs film, missed opportunity to become imaging software company.",
+          "warning_signs": ["Binary choices", "Industry-conventional thinking", "Not exploring adjacent markets"],
+          "safeguards": ["Brainstorm 10+ alternatives", "Include non-obvious options", "Consult outsiders"],
+          "quantitative_threshold": "Consider minimum 5 alternatives for major decisions"
+        },
+        {
+          "mode": "Ignoring time value of opportunities",
+          "description": "Not accounting for when opportunities expire",
+          "real_world_case": "Yahoo's Google acquisition pass (2002) - $5B seemed expensive, didn't account for rapidly closing window.",
+          "warning_signs": ["Fast-moving markets", "Network effect businesses", "First-mover advantages"],
+          "safeguards": ["Value options with time decay", "Set decision deadlines", "Model competitive dynamics"],
+          "quantitative_threshold": "Opportunity half-life < 2 years requires urgent evaluation"
+        },
+        {
+          "mode": "Sunk cost contamination",
+          "description": "Past investments distorting opportunity cost calculations",
+          "real_world_case": "Concorde project - UK/France continued despite clear opportunity cost of capital, because of sunk costs.",
+          "warning_signs": ["Large prior investments", "Emotional attachment", "Public commitments"],
+          "safeguards": ["Calculate from today forward only", "Use independent evaluators", "Pre-commit to kill criteria"],
+          "quantitative_threshold": "If continuing NPV < 0, stop regardless of sunk costs"
+        },
+        {
+          "mode": "Ignoring option value",
+          "description": "Not valuing flexibility and future choices",
+          "real_world_case": "Amazon's AWS investment - seemed like opportunity cost vs retail, but created massive optionality.",
+          "warning_signs": ["Uncertain futures", "Platform potential", "Learning opportunities"],
+          "safeguards": ["Use real options valuation", "Value learning separately", "Consider strategic flexibility"],
+          "quantitative_threshold": "Option value can exceed 50% of NPV in uncertain environments"
+        },
+        {
+          "mode": "Personal opportunity cost blindness",
+          "description": "Not applying opportunity cost to own time and energy",
+          "real_world_case": "Founders doing $15/hour tasks - many startup founders do bookkeeping instead of fundraising or product work.",
+          "warning_signs": ["Doing low-value tasks", "Not delegating", "Busy but not productive"],
+          "safeguards": ["Calculate hourly value of time", "Delegate below threshold", "Track time allocation"],
+          "quantitative_threshold": "Tasks below 25% of hourly value should be delegated"
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "name": "Marginal Utility",
+      "failure_modes": [
+        {
+          "mode": "Assuming linear utility",
+          "description": "Not accounting for diminishing returns",
+          "real_world_case": "WeWork's expansion - assumed each new location added same value, missed diminishing returns in saturated markets.",
+          "warning_signs": ["Aggressive expansion plans", "Same strategy everywhere", "Ignoring market saturation"],
+          "safeguards": ["Model diminishing returns explicitly", "Test in new markets first", "Track per-unit metrics"],
+          "quantitative_threshold": "Marginal return < 50% of average indicates saturation"
+        },
+        {
+          "mode": "Ignoring reference dependence",
+          "description": "Utility depends on starting point, not absolute level",
+          "real_world_case": "Salary negotiations - $100K feels different going from $80K vs $120K, same absolute amount.",
+          "warning_signs": ["Anchoring effects", "Loss aversion situations", "Status quo bias"],
+          "safeguards": ["Consider reference points", "Frame gains vs losses carefully", "Understand counterparty's reference"],
+          "quantitative_threshold": "Losses weighted ~2x gains in most decisions"
+        },
+        {
+          "mode": "Confusing marginal and average",
+          "description": "Using average costs/benefits when marginal matters",
+          "real_world_case": "Airline pricing - average cost per seat is high, but marginal cost of filling empty seat is near zero.",
+          "warning_signs": ["High fixed costs", "Capacity decisions", "Pricing decisions"],
+          "safeguards": ["Always calculate marginal separately", "Distinguish fixed vs variable", "Price to marginal cost in competitive markets"],
+          "quantitative_threshold": "Marginal cost < 30% of average indicates high fixed cost business"
+        },
+        {
+          "mode": "Ignoring interdependencies",
+          "description": "Utility of one thing depends on others",
+          "real_world_case": "Smartphone without apps - hardware utility depends on software ecosystem, can't evaluate independently.",
+          "warning_signs": ["Platform businesses", "Complementary goods", "Ecosystem products"],
+          "safeguards": ["Map interdependencies", "Value bundles not components", "Consider ecosystem effects"],
+          "quantitative_threshold": "Complementarity multiplier can exceed 3x standalone value"
+        },
+        {
+          "mode": "Temporal utility blindness",
+          "description": "Not accounting for how utility changes over time",
+          "real_world_case": "Gym memberships - high utility imagined at signup, actual utility much lower due to adaptation.",
+          "warning_signs": ["Subscription models", "Future self decisions", "Habit-dependent value"],
+          "safeguards": ["Track actual usage over time", "Build in trial periods", "Model adaptation effects"],
+          "quantitative_threshold": "Projected vs actual utility diverges > 50% for most subscriptions"
+        }
+      ]
+    },
+    {
+      "id": 57,
+      "name": "Incentives",
+      "failure_modes": [
+        {
+          "mode": "Goodhart's Law - measure becomes target",
+          "description": "When a measure becomes a target, it ceases to be a good measure",
+          "real_world_case": "Wells Fargo fake accounts - incentivized account openings, employees created millions of fake accounts.",
+          "warning_signs": ["Single metric focus", "High-powered incentives", "Easy to game metrics"],
+          "safeguards": ["Use multiple metrics", "Include quality measures", "Audit for gaming"],
+          "quantitative_threshold": "Any metric weighted > 50% of compensation will be gamed"
+        },
+        {
+          "mode": "Ignoring intrinsic motivation crowding",
+          "description": "Extrinsic rewards can destroy intrinsic motivation",
+          "real_world_case": "Blood donation studies - paying for blood reduced donations as it crowded out altruistic motivation.",
+          "warning_signs": ["Previously volunteer activities", "Mission-driven workers", "Creative tasks"],
+          "safeguards": ["Preserve intrinsic motivators", "Use recognition over cash", "Align incentives with purpose"],
+          "quantitative_threshold": "Extrinsic rewards can reduce intrinsic motivation by 25-50%"
+        },
+        {
+          "mode": "Short-term incentive myopia",
+          "description": "Incentives focused on short-term at expense of long-term",
+          "real_world_case": "2008 financial crisis - mortgage brokers incentivized on volume, not loan quality.",
+          "warning_signs": ["Quarterly bonuses", "No clawback provisions", "Misaligned time horizons"],
+          "safeguards": ["Extend vesting periods", "Include clawbacks", "Balance short and long-term metrics"],
+          "quantitative_threshold": "Incentive horizon should match value creation horizon"
+        },
+        {
+          "mode": "Principal-agent misalignment",
+          "description": "Agent's incentives differ from principal's interests",
+          "real_world_case": "Real estate agents - incentivized to close quickly, not maximize price. Sell own homes for 3% more.",
+          "warning_signs": ["Information asymmetry", "Different time preferences", "Hidden actions"],
+          "safeguards": ["Align incentives with outcomes", "Increase transparency", "Use reputation mechanisms"],
+          "quantitative_threshold": "Agent incentive alignment < 80% indicates significant agency costs"
+        },
+        {
+          "mode": "Ignoring second-order effects",
+          "description": "Incentives create unintended behavioral changes",
+          "real_world_case": "Cobra effect in India - bounty on cobras led to cobra farming, making problem worse.",
+          "warning_signs": ["Complex systems", "Multiple actors", "Arbitrage opportunities"],
+          "safeguards": ["Model behavioral responses", "Pilot test incentives", "Monitor for unintended consequences"],
+          "quantitative_threshold": "Second-order effects can exceed first-order by 2-3x"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "name": "Economies of Scale",
+      "failure_modes": [
+        {
+          "mode": "Diseconomies of scale blindness",
+          "description": "Assuming scale always helps, missing when it hurts",
+          "real_world_case": "GM vs Toyota - GM's massive scale created bureaucracy and inflexibility that Toyota's leaner operation beat.",
+          "warning_signs": ["Coordination costs rising", "Decision speed slowing", "Innovation declining"],
+          "safeguards": ["Track per-unit costs at each scale", "Monitor coordination overhead", "Benchmark against smaller competitors"],
+          "quantitative_threshold": "Coordination costs > 15% of revenue indicates diseconomies"
+        },
+        {
+          "mode": "Confusing scale with scope",
+          "description": "Expanding into unrelated areas thinking scale benefits transfer",
+          "real_world_case": "GE's conglomerate strategy - assumed management scale economies, but diversification destroyed value.",
+          "warning_signs": ["Unrelated diversification", "Shared services assumptions", "Synergy promises"],
+          "safeguards": ["Test synergies rigorously", "Measure actual vs promised savings", "Focus on related scale"],
+          "quantitative_threshold": "Unrelated diversification destroys value 60%+ of time"
+        },
+        {
+          "mode": "Ignoring minimum efficient scale",
+          "description": "Not recognizing when scale benefits plateau",
+          "real_world_case": "Craft beer vs Budweiser - beyond certain scale, beer production costs flatten, allowing craft to compete.",
+          "warning_signs": ["Mature industries", "Commoditized products", "New entrant success"],
+          "safeguards": ["Map cost curves to scale", "Identify MES for industry", "Don't over-invest past MES"],
+          "quantitative_threshold": "Cost reduction < 5% per doubling indicates MES reached"
+        },
+        {
+          "mode": "Scale without learning",
+          "description": "Growing without improving processes",
+          "real_world_case": "Theranos - scaled operations without actually developing working technology.",
+          "warning_signs": ["Growth without process improvement", "Scaling before product-market fit", "Vanity metrics"],
+          "safeguards": ["Tie scale to capability milestones", "Measure unit economics", "Validate before scaling"],
+          "quantitative_threshold": "Unit economics must improve with scale, not just volume"
+        },
+        {
+          "mode": "Customer concentration risk at scale",
+          "description": "Scale achieved through few large customers creates fragility",
+          "real_world_case": "GT Advanced Technologies - scaled for Apple sapphire contract, bankruptcy when Apple cancelled.",
+          "warning_signs": ["Single customer > 20% revenue", "Customer-specific investments", "Switching cost asymmetry"],
+          "safeguards": ["Diversify customer base", "Limit customer concentration", "Negotiate protection clauses"],
+          "quantitative_threshold": "No single customer > 15% of revenue for stability"
+        }
+      ]
+    },
+    {
+      "id": 59,
+      "name": "Specialization",
+      "failure_modes": [
+        {
+          "mode": "Over-specialization fragility",
+          "description": "Too narrow focus creates vulnerability to change",
+          "real_world_case": "Kodak's film specialization - world-class at film chemistry, couldn't adapt to digital.",
+          "warning_signs": ["Single product/skill dependence", "Ignoring adjacent threats", "Resistance to diversification"],
+          "safeguards": ["Maintain adjacent capabilities", "Monitor disruption signals", "Invest in optionality"],
+          "quantitative_threshold": "Single product > 70% revenue indicates dangerous specialization"
+        },
+        {
+          "mode": "Specialization without systems thinking",
+          "description": "Optimizing parts without understanding whole",
+          "real_world_case": "Healthcare specialists - each optimizes for their specialty, patient outcomes suffer from lack of coordination.",
+          "warning_signs": ["Siloed organizations", "Handoff problems", "Sub-optimization"],
+          "safeguards": ["Maintain generalist oversight", "Design for interfaces", "Measure system outcomes"],
+          "quantitative_threshold": "Interface failures cause 30%+ of system failures"
+        },
+        {
+          "mode": "Knowledge hoarding in specialization",
+          "description": "Specialists become bottlenecks by not sharing knowledge",
+          "real_world_case": "Key person risk - many companies have single experts whose departure would cripple operations.",
+          "warning_signs": ["Single points of failure", "No documentation", "Resistance to cross-training"],
+          "safeguards": ["Require documentation", "Cross-train teams", "Limit single-person dependencies"],
+          "quantitative_threshold": "No single person should be sole expert on critical systems"
+        },
+        {
+          "mode": "Specialization status quo bias",
+          "description": "Specialists resist changes that threaten their expertise value",
+          "real_world_case": "Radiologists vs AI - some resist AI tools that could augment their work due to status threat.",
+          "warning_signs": ["Defensive behavior", "Dismissing new approaches", "Protecting turf"],
+          "safeguards": ["Incentivize adaptation", "Retrain specialists", "Celebrate learning"],
+          "quantitative_threshold": "Specialist resistance delays adoption by 2-5 years typically"
+        },
+        {
+          "mode": "Premature specialization",
+          "description": "Specializing before understanding the full problem space",
+          "real_world_case": "Early-stage startups - founders specialize in solution before understanding customer problem deeply.",
+          "warning_signs": ["Solution-first thinking", "Limited customer contact", "Narrow hypothesis testing"],
+          "safeguards": ["Generalize first, specialize later", "Validate problem before solution", "Maintain breadth early"],
+          "quantitative_threshold": "Specialize after 100+ customer conversations minimum"
+        }
+      ]
+    },
+    {
+      "id": 60,
+      "name": "Creative Destruction",
+      "failure_modes": [
+        {
+          "mode": "Incumbent denial",
+          "description": "Established players dismiss disruptive threats",
+          "real_world_case": "Blockbuster vs Netflix - dismissed streaming as niche, didn't recognize creative destruction underway.",
+          "warning_signs": ["Dismissing new entrants", "Focusing on current customers", "Protecting existing business"],
+          "safeguards": ["Monitor all new entrants", "Cannibalize yourself", "Separate innovation units"],
+          "quantitative_threshold": "Disruption typically takes 10-15 years from emergence to dominance"
+        },
+        {
+          "mode": "Romanticizing destruction",
+          "description": "Assuming all disruption is progress",
+          "real_world_case": "Theranos - celebrated as healthcare disruptor, was actually fraud. Not all destruction is creative.",
+          "warning_signs": ["Hype without substance", "Ignoring fundamentals", "Disruption for its own sake"],
+          "safeguards": ["Verify actual innovation", "Check unit economics", "Demand proof of value creation"],
+          "quantitative_threshold": "True disruption must show 10x improvement on key dimension"
+        },
+        {
+          "mode": "Timing misjudgment",
+          "description": "Creative destruction takes longer than expected",
+          "real_world_case": "Electric vehicles - predicted to dominate by 2010, took until 2020s to reach meaningful share.",
+          "warning_signs": ["Infrastructure dependencies", "Behavior change required", "Regulatory barriers"],
+          "safeguards": ["Model adoption curves realistically", "Account for ecosystem development", "Plan for longer timelines"],
+          "quantitative_threshold": "Add 50-100% to optimistic disruption timelines"
+        },
+        {
+          "mode": "Ignoring transition costs",
+          "description": "Focusing on end state without considering path",
+          "real_world_case": "Renewable energy transition - end state is clear, but transition costs and stranded assets are massive.",
+          "warning_signs": ["Large installed base", "Long asset lives", "Workforce transitions"],
+          "safeguards": ["Model transition explicitly", "Plan for stranded costs", "Manage stakeholder impacts"],
+          "quantitative_threshold": "Transition costs can equal 20-50% of new system cost"
+        },
+        {
+          "mode": "Winner-take-all assumption",
+          "description": "Assuming creative destruction means complete replacement",
+          "real_world_case": "Newspapers - digital disrupted but didn't eliminate, hybrid models emerged.",
+          "warning_signs": ["Niche value propositions", "Segment-specific needs", "Complementary use cases"],
+          "safeguards": ["Model market segmentation", "Identify defensible niches", "Consider hybrid outcomes"],
+          "quantitative_threshold": "Disrupted incumbents often retain 10-30% market share"
+        }
+      ]
+    },
+    {
+      "id": 61,
+      "name": "Tragedy of the Commons",
+      "failure_modes": [
+        {
+          "mode": "Assuming commons where property rights exist",
+          "description": "Misapplying commons logic to owned resources",
+          "real_world_case": "Overfishing in EEZs - exclusive economic zones have property rights, problem is enforcement not commons.",
+          "warning_signs": ["Unclear property rights", "Enforcement gaps", "Misdiagnosed problems"],
+          "safeguards": ["Map actual ownership", "Distinguish commons from enforcement", "Design appropriate solutions"],
+          "quantitative_threshold": "True commons have zero excludability"
+        },
+        {
+          "mode": "Ignoring Ostrom's solutions",
+          "description": "Assuming only privatization or regulation work",
+          "real_world_case": "Swiss alpine meadows - community management worked for centuries without privatization or government.",
+          "warning_signs": ["Binary thinking", "Ignoring community solutions", "Top-down bias"],
+          "safeguards": ["Consider community governance", "Study successful commons", "Design for local context"],
+          "quantitative_threshold": "Community solutions work when group < 150 and communication is easy"
+        },
+        {
+          "mode": "Free rider underestimation",
+          "description": "Assuming cooperation will emerge naturally",
+          "real_world_case": "Climate change - despite clear collective benefit, free riding on others' reductions persists.",
+          "warning_signs": ["Large groups", "Delayed benefits", "Diffuse costs"],
+          "safeguards": ["Design for free riding", "Create enforcement mechanisms", "Align individual and collective incentives"],
+          "quantitative_threshold": "Free riding increases with group size, critical above ~50 members"
+        },
+        {
+          "mode": "Privatization side effects",
+          "description": "Privatizing commons creates new problems",
+          "real_world_case": "Water privatization - solved overuse but created access inequality and monopoly pricing.",
+          "warning_signs": ["Essential resources", "Inequality concerns", "Natural monopolies"],
+          "safeguards": ["Consider equity impacts", "Regulate natural monopolies", "Maintain public access"],
+          "quantitative_threshold": "Essential resources require access guarantees regardless of ownership"
+        },
+        {
+          "mode": "Temporal commons blindness",
+          "description": "Not recognizing intergenerational commons",
+          "real_world_case": "Sovereign debt - current generation consumes, future generations pay. Commons across time.",
+          "warning_signs": ["Long-term impacts", "Future stakeholders unrepresented", "Discount rate debates"],
+          "safeguards": ["Represent future interests", "Use appropriate discount rates", "Create intergenerational contracts"],
+          "quantitative_threshold": "Discount rates > 5% effectively ignore impacts beyond 20 years"
+        }
+      ]
+    },
+    {
+      "id": 62,
+      "name": "Asymmetric Information",
+      "failure_modes": [
+        {
+          "mode": "Adverse selection blindness",
+          "description": "Not recognizing when information asymmetry selects for bad actors",
+          "real_world_case": "Health insurance without mandates - healthy people opt out, leaving sick pool, death spiral.",
+          "warning_signs": ["Voluntary participation", "Hidden quality differences", "Self-selection patterns"],
+          "safeguards": ["Design for adverse selection", "Use signaling mechanisms", "Consider mandates"],
+          "quantitative_threshold": "Adverse selection can cause 20-40% market shrinkage"
+        },
+        {
+          "mode": "Moral hazard creation",
+          "description": "Information asymmetry enables hidden actions",
+          "real_world_case": "2008 bailouts - banks knew they'd be rescued, took excessive risks.",
+          "warning_signs": ["Insurance situations", "Monitoring difficulties", "Rescue expectations"],
+          "safeguards": ["Design monitoring systems", "Align incentives", "Limit moral hazard through structure"],
+          "quantitative_threshold": "Moral hazard can increase risk-taking by 30-50%"
+        },
+        {
+          "mode": "Signaling cost ignorance",
+          "description": "Not accounting for resources spent on signaling",
+          "real_world_case": "College degree inflation - signaling value drives credential arms race, wasting resources.",
+          "warning_signs": ["Credential inflation", "Costly signals", "Diminishing signal value"],
+          "safeguards": ["Find efficient signals", "Question credential requirements", "Value demonstrated ability"],
+          "quantitative_threshold": "Signaling costs can consume 10-20% of transaction value"
+        },
+        {
+          "mode": "Information asymmetry reversal",
+          "description": "Not recognizing when asymmetry shifts",
+          "real_world_case": "Internet reviews - shifted information advantage from sellers to buyers in many markets.",
+          "warning_signs": ["New information sources", "Transparency tools", "Platform intermediaries"],
+          "safeguards": ["Monitor information flows", "Adapt to new transparency", "Build reputation systems"],
+          "quantitative_threshold": "Information advantages typically last 5-10 years before arbitraged"
+        },
+        {
+          "mode": "Assuming information solves everything",
+          "description": "More information doesn't always help",
+          "real_world_case": "Nutrition labels - information provided but behavior unchanged due to bounded rationality.",
+          "warning_signs": ["Information overload", "Complexity", "Bounded rationality"],
+          "safeguards": ["Design for actual decision-making", "Simplify information", "Use choice architecture"],
+          "quantitative_threshold": "Humans can process ~7 items; more information often hurts"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,465 @@
+{
+  "category": "Moats & Competitive Advantage",
+  "models": [
+    {
+      "id": 73,
+      "name": "Economic Moats",
+      "failure_modes": [
+        {
+          "mode": "Moat misidentification",
+          "description": "Believing you have a moat when you don't",
+          "real_world_case": "Groupon - thought they had network effects, actually had no moat. Competitors copied easily.",
+          "warning_signs": ["Easy replication", "No pricing power", "Customer churn"],
+          "safeguards": ["Test moat with pricing power", "Measure customer retention", "Assess competitor ability to copy"],
+          "quantitative_threshold": "True moat = ability to raise prices 10% without losing customers"
+        },
+        {
+          "mode": "Moat erosion blindness",
+          "description": "Not recognizing moat is weakening",
+          "real_world_case": "IBM mainframe moat - eroded over decades as computing shifted to PCs and cloud.",
+          "warning_signs": ["Margin compression", "Market share loss", "Technology shifts"],
+          "safeguards": ["Monitor moat metrics quarterly", "Track competitive dynamics", "Invest in moat maintenance"],
+          "quantitative_threshold": "Margin decline > 2% annually indicates moat erosion"
+        },
+        {
+          "mode": "Single moat dependence",
+          "description": "Relying on one moat source",
+          "real_world_case": "Nokia's brand moat - strong brand wasn't enough when smartphone disruption hit.",
+          "warning_signs": ["One competitive advantage", "No backup moats", "Concentrated value source"],
+          "safeguards": ["Build multiple moat sources", "Diversify competitive advantages", "Layer defenses"],
+          "quantitative_threshold": "Best businesses have 3+ moat sources"
+        },
+        {
+          "mode": "Moat vs growth tradeoff",
+          "description": "Sacrificing moat for growth",
+          "real_world_case": "Luxury brands licensing - short-term revenue but dilutes brand moat.",
+          "warning_signs": ["Growth at any cost", "Brand dilution", "Quality compromises"],
+          "safeguards": ["Protect moat in growth plans", "Measure moat health", "Reject moat-damaging growth"],
+          "quantitative_threshold": "Growth that reduces ROIC by > 5% is moat-destructive"
+        },
+        {
+          "mode": "Regulatory moat fragility",
+          "description": "Moats dependent on regulation can disappear",
+          "real_world_case": "Taxi medallion collapse - Uber showed regulatory moats can be disrupted.",
+          "warning_signs": ["Regulatory dependence", "Political vulnerability", "Consumer dissatisfaction"],
+          "safeguards": ["Build non-regulatory moats", "Monitor regulatory risk", "Diversify moat sources"],
+          "quantitative_threshold": "Regulatory moats have 20-year half-life on average"
+        }
+      ]
+    },
+    {
+      "id": 74,
+      "name": "Brand Moat",
+      "failure_modes": [
+        {
+          "mode": "Brand without substance",
+          "description": "Brand recognition without product quality",
+          "real_world_case": "Sears - strong brand couldn't save declining product and service quality.",
+          "warning_signs": ["NPS declining", "Quality complaints", "Brand-reality gap"],
+          "safeguards": ["Maintain product quality", "Monitor brand-experience alignment", "Invest in substance"],
+          "quantitative_threshold": "Brand premium sustainable only with top-quartile quality"
+        },
+        {
+          "mode": "Brand extension overreach",
+          "description": "Extending brand into incompatible categories",
+          "real_world_case": "Harley-Davidson perfume - brand extension that damaged core brand equity.",
+          "warning_signs": ["Distant categories", "Brand confusion", "Core customer alienation"],
+          "safeguards": ["Test brand fit", "Protect core associations", "Limit extensions"],
+          "quantitative_threshold": "Extensions > 2 categories from core risk brand dilution"
+        },
+        {
+          "mode": "Generational brand decay",
+          "description": "Brand doesn't resonate with new generations",
+          "real_world_case": "Golf brands - strong with boomers, struggling to attract millennials.",
+          "warning_signs": ["Aging customer base", "Youth disinterest", "Cultural irrelevance"],
+          "safeguards": ["Invest in youth relevance", "Evolve brand carefully", "Monitor generational shifts"],
+          "quantitative_threshold": "Brands need 20%+ customers under 35 for longevity"
+        },
+        {
+          "mode": "Social media brand risk",
+          "description": "Brand reputation destroyed by viral incidents",
+          "real_world_case": "United Airlines passenger dragging - viral video caused massive brand damage.",
+          "warning_signs": ["Customer-facing incidents", "Social media exposure", "Crisis unpreparedness"],
+          "safeguards": ["Crisis response plans", "Social media monitoring", "Employee training"],
+          "quantitative_threshold": "Viral negative events can reduce brand value 10-30% overnight"
+        },
+        {
+          "mode": "Commodity brand trap",
+          "description": "Brand in commoditizing category loses relevance",
+          "real_world_case": "PC brands - as PCs commoditized, brand premiums collapsed.",
+          "warning_signs": ["Category commoditization", "Feature parity", "Price competition"],
+          "safeguards": ["Differentiate on experience", "Move up value chain", "Create ecosystems"],
+          "quantitative_threshold": "Brand premium < 10% indicates commodity trap"
+        }
+      ]
+    },
+    {
+      "id": 75,
+      "name": "Switching Costs",
+      "failure_modes": [
+        {
+          "mode": "Overestimating switching costs",
+          "description": "Assuming customers are more locked in than they are",
+          "real_world_case": "Blackberry enterprise - thought switching costs were high, iPhone made switching worthwhile.",
+          "warning_signs": ["Competitor innovation", "Customer complaints", "Workarounds emerging"],
+          "safeguards": ["Measure actual switching behavior", "Monitor competitor value propositions", "Don't rely solely on lock-in"],
+          "quantitative_threshold": "Switching costs must exceed 20% of annual value to be effective"
+        },
+        {
+          "mode": "Switching cost resentment",
+          "description": "Customers resent lock-in and leave when possible",
+          "real_world_case": "Cable TV bundles - forced bundling created resentment, customers fled to streaming.",
+          "warning_signs": ["Customer complaints", "Negative sentiment", "Waiting for alternatives"],
+          "safeguards": ["Create value not just lock-in", "Make staying attractive", "Don't abuse lock-in"],
+          "quantitative_threshold": "NPS < 0 with high switching costs indicates resentment"
+        },
+        {
+          "mode": "Technology-enabled switching",
+          "description": "New technology reduces switching costs",
+          "real_world_case": "Bank account switching - fintech APIs made switching much easier.",
+          "warning_signs": ["API development", "Data portability", "Interoperability standards"],
+          "safeguards": ["Monitor technology trends", "Build value beyond data", "Prepare for lower switching costs"],
+          "quantitative_threshold": "APIs can reduce switching costs by 50-80%"
+        },
+        {
+          "mode": "Regulatory switching cost reduction",
+          "description": "Regulators mandate easier switching",
+          "real_world_case": "Number portability - telecom switching costs reduced by regulation.",
+          "warning_signs": ["Regulatory attention", "Consumer advocacy", "Antitrust scrutiny"],
+          "safeguards": ["Build non-regulatory switching costs", "Create genuine value", "Prepare for portability"],
+          "quantitative_threshold": "Portability mandates reduce switching costs 30-60%"
+        },
+        {
+          "mode": "Switching cost vs value confusion",
+          "description": "Confusing lock-in with customer value",
+          "real_world_case": "Enterprise software - high switching costs masked declining value, eventual mass exodus.",
+          "warning_signs": ["Flat usage", "Workarounds", "Shadow IT"],
+          "safeguards": ["Measure value delivered", "Track engagement", "Don't confuse retention with satisfaction"],
+          "quantitative_threshold": "Usage declining while retention stable = switching cost dependence"
+        }
+      ]
+    },
+    {
+      "id": 76,
+      "name": "Network Effect Moat",
+      "failure_modes": [
+        {
+          "mode": "Network effect leakage",
+          "description": "Value leaks to adjacent networks",
+          "real_world_case": "Craigslist - network effects leaked to specialized verticals (Indeed, Zillow, etc.).",
+          "warning_signs": ["Vertical specialists emerging", "Best users leaving", "Unbundling"],
+          "safeguards": ["Defend high-value verticals", "Improve core experience", "Acquire threats"],
+          "quantitative_threshold": "Vertical specialists can capture 30-50% of category value"
+        },
+        {
+          "mode": "Network quality degradation",
+          "description": "Growth reduces network quality",
+          "real_world_case": "Facebook news feed - growth brought spam, misinformation, reduced quality.",
+          "warning_signs": ["Spam increasing", "Quality users leaving", "Engagement declining"],
+          "safeguards": ["Invest in quality control", "Curate network", "Balance growth and quality"],
+          "quantitative_threshold": "Quality metrics must improve with scale, not just quantity"
+        },
+        {
+          "mode": "Winner-take-all assumption",
+          "description": "Assuming network effects mean monopoly",
+          "real_world_case": "Ride-sharing - despite network effects, Uber and Lyft coexist.",
+          "warning_signs": ["Multi-homing", "Local networks", "Differentiation possible"],
+          "safeguards": ["Don't assume monopoly", "Build other moats", "Compete on multiple dimensions"],
+          "quantitative_threshold": "Multi-homing > 20% prevents winner-take-all"
+        },
+        {
+          "mode": "Network effect timing",
+          "description": "Network effects take time to build",
+          "real_world_case": "Many social apps - ran out of money before reaching network effect scale.",
+          "warning_signs": ["Slow growth", "Capital intensive", "Long path to scale"],
+          "safeguards": ["Plan for long runway", "Find interim value", "Measure progress to critical mass"],
+          "quantitative_threshold": "Network effects typically require 3-5 years to become defensible"
+        },
+        {
+          "mode": "Negative network externalities",
+          "description": "More users create negative effects",
+          "real_world_case": "Twitter toxicity - more users brought more harassment, drove away others.",
+          "warning_signs": ["Harassment", "Spam", "Quality decline"],
+          "safeguards": ["Invest in moderation", "Design for positive interactions", "Manage growth"],
+          "quantitative_threshold": "Negative externalities can offset positive at scale > 100M users"
+        }
+      ]
+    },
+    {
+      "id": 77,
+      "name": "Cost Advantage Moat",
+      "failure_modes": [
+        {
+          "mode": "Cost advantage imitation",
+          "description": "Competitors copy cost structure",
+          "real_world_case": "Southwest Airlines - cost advantages copied by other low-cost carriers.",
+          "warning_signs": ["Competitor cost reduction", "Process copying", "Talent poaching"],
+          "safeguards": ["Continuously improve", "Build hard-to-copy advantages", "Protect proprietary processes"],
+          "quantitative_threshold": "Cost advantages erode 5-10% annually without reinvestment"
+        },
+        {
+          "mode": "Scale disadvantage emergence",
+          "description": "Getting too big creates cost disadvantages",
+          "real_world_case": "Walmart in small towns - scale advantages don't apply, local competitors win.",
+          "warning_signs": ["Diminishing returns", "Coordination costs", "Local competition"],
+          "safeguards": ["Know optimal scale", "Decentralize where needed", "Don't over-expand"],
+          "quantitative_threshold": "Diseconomies typically emerge above 30% market share"
+        },
+        {
+          "mode": "Technology cost disruption",
+          "description": "New technology eliminates cost advantage",
+          "real_world_case": "Kodak's film cost advantage - digital eliminated film entirely.",
+          "warning_signs": ["Technology shifts", "New entrant cost structures", "Declining relevance"],
+          "safeguards": ["Monitor technology trends", "Invest in new technologies", "Don't over-optimize old tech"],
+          "quantitative_threshold": "Technology disruption can eliminate 100% of cost advantage"
+        },
+        {
+          "mode": "Labor cost arbitrage erosion",
+          "description": "Wage differentials narrow over time",
+          "real_world_case": "China manufacturing - labor cost advantage eroding as wages rise.",
+          "warning_signs": ["Rising wages", "Labor shortages", "Automation alternatives"],
+          "safeguards": ["Automate", "Move up value chain", "Diversify locations"],
+          "quantitative_threshold": "Labor cost advantages halve every 10-15 years in developing markets"
+        },
+        {
+          "mode": "Quality sacrifice for cost",
+          "description": "Cost cutting damages product quality",
+          "real_world_case": "Boeing 737 MAX - cost pressure contributed to safety compromises.",
+          "warning_signs": ["Quality complaints", "Safety issues", "Customer defection"],
+          "safeguards": ["Protect quality minimums", "Measure quality with cost", "Don't cut critical areas"],
+          "quantitative_threshold": "Quality issues can destroy 10x the cost savings"
+        }
+      ]
+    },
+    {
+      "id": 78,
+      "name": "Intellectual Property Moat",
+      "failure_modes": [
+        {
+          "mode": "Patent expiration cliff",
+          "description": "IP protection expires, generics enter",
+          "real_world_case": "Pharmaceutical patent cliffs - blockbuster drugs lose 80%+ revenue at expiration.",
+          "warning_signs": ["Approaching expiration", "No pipeline", "Generic preparation"],
+          "safeguards": ["Build pipeline", "Extend through improvements", "Diversify IP"],
+          "quantitative_threshold": "Plan for 80% revenue loss at patent expiration"
+        },
+        {
+          "mode": "Patent workaround",
+          "description": "Competitors design around patents",
+          "real_world_case": "Smartphone patent wars - companies found workarounds for most patents.",
+          "warning_signs": ["Competitor R&D", "Alternative approaches", "Narrow claims"],
+          "safeguards": ["Broad patent portfolios", "Continuous innovation", "Trade secrets for processes"],
+          "quantitative_threshold": "50%+ of patents can be designed around within 5 years"
+        },
+        {
+          "mode": "Trade secret leakage",
+          "description": "Secrets leak through employees or espionage",
+          "real_world_case": "Waymo vs Uber - trade secrets allegedly stolen by departing employee.",
+          "warning_signs": ["Employee departures", "Competitor hiring", "Reverse engineering"],
+          "safeguards": ["Compartmentalize secrets", "Non-competes where legal", "Security measures"],
+          "quantitative_threshold": "Trade secrets leak within 5-7 years on average"
+        },
+        {
+          "mode": "IP without execution",
+          "description": "Patents don't matter without ability to execute",
+          "real_world_case": "Xerox PARC - invented GUI, mouse, ethernet but failed to commercialize.",
+          "warning_signs": ["Research without products", "Licensing focus", "Execution gaps"],
+          "safeguards": ["Integrate R&D with business", "Execute on IP", "Don't just collect patents"],
+          "quantitative_threshold": "90% of patents generate zero commercial value"
+        },
+        {
+          "mode": "Open source disruption",
+          "description": "Open source alternatives eliminate IP value",
+          "real_world_case": "Linux vs Unix - open source eliminated proprietary Unix value.",
+          "warning_signs": ["Open source alternatives", "Community development", "Commoditization"],
+          "safeguards": ["Add value beyond IP", "Consider open source strategy", "Build services moat"],
+          "quantitative_threshold": "Open source can commoditize IP within 10 years"
+        }
+      ]
+    },
+    {
+      "id": 79,
+      "name": "Regulatory Moat",
+      "failure_modes": [
+        {
+          "mode": "Regulatory capture reversal",
+          "description": "Political change removes regulatory protection",
+          "real_world_case": "Airline deregulation - regulatory moats eliminated overnight.",
+          "warning_signs": ["Political shifts", "Consumer advocacy", "Efficiency arguments"],
+          "safeguards": ["Build non-regulatory moats", "Diversify politically", "Prepare for deregulation"],
+          "quantitative_threshold": "Regulatory moats face major challenge every 15-20 years"
+        },
+        {
+          "mode": "Regulatory arbitrage",
+          "description": "Competitors find regulatory loopholes",
+          "real_world_case": "Fintech vs banks - lighter regulation enabled fintech competition.",
+          "warning_signs": ["New entrant structures", "Regulatory gaps", "Innovation at edges"],
+          "safeguards": ["Monitor regulatory arbitrage", "Advocate for level playing field", "Adapt business model"],
+          "quantitative_threshold": "Regulatory arbitrage can provide 20-30% cost advantage"
+        },
+        {
+          "mode": "International regulatory competition",
+          "description": "Other jurisdictions offer better terms",
+          "real_world_case": "Corporate inversions - companies moved to lower-regulation jurisdictions.",
+          "warning_signs": ["International competition", "Regulatory shopping", "Capital mobility"],
+          "safeguards": ["Monitor international trends", "Advocate for competitive regulation", "Consider multi-jurisdiction"],
+          "quantitative_threshold": "Regulatory differences > 10% of costs drive relocation"
+        },
+        {
+          "mode": "Regulatory compliance as barrier",
+          "description": "Compliance costs become competitive disadvantage",
+          "real_world_case": "Sarbanes-Oxley - compliance costs drove companies private or overseas.",
+          "warning_signs": ["Rising compliance costs", "Competitor advantages", "Regulatory burden"],
+          "safeguards": ["Efficient compliance", "Advocate for proportional regulation", "Automate compliance"],
+          "quantitative_threshold": "Compliance > 5% of revenue indicates regulatory burden"
+        },
+        {
+          "mode": "Regulatory moat complacency",
+          "description": "Relying on regulation instead of competing",
+          "real_world_case": "Taxi industry - relied on medallion system, didn't innovate, lost to Uber.",
+          "warning_signs": ["No innovation", "Customer complaints", "Regulatory dependence"],
+          "safeguards": ["Compete on merit", "Innovate despite protection", "Prepare for disruption"],
+          "quantitative_threshold": "Regulatory-dependent businesses underperform by 3-5% annually"
+        }
+      ]
+    },
+    {
+      "id": 80,
+      "name": "Distribution Moat",
+      "failure_modes": [
+        {
+          "mode": "Channel disintermediation",
+          "description": "Direct-to-consumer eliminates distribution advantage",
+          "real_world_case": "DTC brands vs retail - Warby Parker, Dollar Shave Club bypassed traditional distribution.",
+          "warning_signs": ["DTC competitors", "E-commerce growth", "Channel conflict"],
+          "safeguards": ["Build DTC capability", "Add value in distribution", "Omnichannel strategy"],
+          "quantitative_threshold": "DTC can capture 30-50% of category within 10 years"
+        },
+        {
+          "mode": "Platform dependence",
+          "description": "Distribution through platforms creates vulnerability",
+          "real_world_case": "Zynga on Facebook - platform changes devastated business.",
+          "warning_signs": ["Single platform dependence", "Platform policy changes", "Algorithm shifts"],
+          "safeguards": ["Diversify distribution", "Build owned channels", "Reduce platform dependence"],
+          "quantitative_threshold": "No single platform > 30% of distribution for safety"
+        },
+        {
+          "mode": "Distribution cost inflation",
+          "description": "Distribution costs rise faster than value",
+          "real_world_case": "Google/Facebook ad costs - customer acquisition costs rose faster than LTV.",
+          "warning_signs": ["Rising CAC", "Auction dynamics", "Competition for distribution"],
+          "safeguards": ["Diversify acquisition", "Build organic channels", "Improve unit economics"],
+          "quantitative_threshold": "CAC/LTV > 0.33 indicates distribution cost problem"
+        },
+        {
+          "mode": "Distribution exclusivity loss",
+          "description": "Exclusive distribution arrangements end",
+          "real_world_case": "Apple losing AT&T exclusivity - distribution moat eliminated when iPhone went multi-carrier.",
+          "warning_signs": ["Contract expirations", "Partner pressure", "Competitive offers"],
+          "safeguards": ["Build product moat", "Diversify distribution", "Prepare for exclusivity end"],
+          "quantitative_threshold": "Exclusivity typically lasts 2-5 years before competitive pressure"
+        },
+        {
+          "mode": "Last mile disruption",
+          "description": "New last-mile solutions eliminate advantage",
+          "real_world_case": "Amazon logistics - built own last mile, reducing UPS/FedEx moat.",
+          "warning_signs": ["Vertical integration", "New delivery models", "Technology changes"],
+          "safeguards": ["Innovate in last mile", "Build density advantages", "Diversify services"],
+          "quantitative_threshold": "Last mile is 50%+ of delivery cost, key battleground"
+        }
+      ]
+    },
+    {
+      "id": 81,
+      "name": "Data Moat",
+      "failure_modes": [
+        {
+          "mode": "Data commoditization",
+          "description": "Data becomes widely available",
+          "real_world_case": "Weather data - once proprietary, now commoditized through government and sensors.",
+          "warning_signs": ["Alternative data sources", "Open data initiatives", "Sensor proliferation"],
+          "safeguards": ["Build unique data", "Add proprietary processing", "Create data network effects"],
+          "quantitative_threshold": "Data advantages halve every 3-5 years without renewal"
+        },
+        {
+          "mode": "Data privacy regulation",
+          "description": "Privacy laws limit data collection and use",
+          "real_world_case": "GDPR impact - limited data collection and required consent.",
+          "warning_signs": ["Privacy legislation", "Consumer sentiment", "Regulatory scrutiny"],
+          "safeguards": ["Privacy-first design", "Consent-based collection", "Anonymization"],
+          "quantitative_threshold": "GDPR reduced available data by 30-50% for many companies"
+        },
+        {
+          "mode": "Data portability requirements",
+          "description": "Regulations require data sharing",
+          "real_world_case": "Open banking - banks required to share customer data with competitors.",
+          "warning_signs": ["Portability legislation", "API mandates", "Competition policy"],
+          "safeguards": ["Build value beyond data", "Improve data utilization", "Prepare for portability"],
+          "quantitative_threshold": "Data portability can eliminate 50%+ of data moat value"
+        },
+        {
+          "mode": "Data quality degradation",
+          "description": "Data becomes stale or inaccurate",
+          "real_world_case": "Contact databases - data decays 30% annually as people change jobs.",
+          "warning_signs": ["Declining accuracy", "User complaints", "Stale information"],
+          "safeguards": ["Continuous data refresh", "Quality monitoring", "User feedback loops"],
+          "quantitative_threshold": "B2B data decays 30% annually, consumer data 20%"
+        },
+        {
+          "mode": "Synthetic data disruption",
+          "description": "AI-generated data reduces real data advantage",
+          "real_world_case": "Autonomous vehicle training - synthetic data reducing need for real-world miles.",
+          "warning_signs": ["AI data generation", "Simulation advances", "Synthetic alternatives"],
+          "safeguards": ["Combine real and synthetic", "Focus on unique real data", "Build generation capability"],
+          "quantitative_threshold": "Synthetic data can replace 50-80% of training data needs"
+        }
+      ]
+    },
+    {
+      "id": 82,
+      "name": "Culture Moat",
+      "failure_modes": [
+        {
+          "mode": "Culture dilution through growth",
+          "description": "Rapid growth dilutes cultural advantage",
+          "real_world_case": "Uber culture problems - rapid growth brought culture that enabled misconduct.",
+          "warning_signs": ["Rapid hiring", "Culture complaints", "Values drift"],
+          "safeguards": ["Hire for culture fit", "Onboard thoroughly", "Measure culture health"],
+          "quantitative_threshold": "Growing > 50% annually risks culture dilution"
+        },
+        {
+          "mode": "Founder departure culture loss",
+          "description": "Culture depends on founder presence",
+          "real_world_case": "Apple post-Jobs (1985) - culture deteriorated without founder.",
+          "warning_signs": ["Founder-centric culture", "No succession planning", "Cult of personality"],
+          "safeguards": ["Institutionalize culture", "Develop cultural leaders", "Document values"],
+          "quantitative_threshold": "Culture typically degrades 20-30% within 5 years of founder departure"
+        },
+        {
+          "mode": "Culture-strategy misalignment",
+          "description": "Culture doesn't support strategic needs",
+          "real_world_case": "Microsoft under Ballmer - competitive culture hindered collaboration needed for cloud.",
+          "warning_signs": ["Strategy-culture tension", "Execution problems", "Internal conflict"],
+          "safeguards": ["Align culture with strategy", "Evolve culture deliberately", "Address misalignment"],
+          "quantitative_threshold": "Culture-strategy misalignment reduces execution by 30-50%"
+        },
+        {
+          "mode": "Culture as excuse for problems",
+          "description": "Culture used to justify bad behavior",
+          "real_world_case": "Theranos 'secrecy culture' - used to hide fraud.",
+          "warning_signs": ["Culture justifying ethics violations", "Secrecy", "Lack of accountability"],
+          "safeguards": ["Ethics override culture", "Transparency requirements", "External oversight"],
+          "quantitative_threshold": "Culture that enables misconduct will eventually cause catastrophic failure"
+        },
+        {
+          "mode": "Culture copying",
+          "description": "Competitors copy cultural practices",
+          "real_world_case": "Google's perks copied widely - free food, etc. became industry standard.",
+          "warning_signs": ["Visible practices", "Talent competition", "Industry benchmarking"],
+          "safeguards": ["Build deep culture not just perks", "Focus on hard-to-copy elements", "Continuous evolution"],
+          "quantitative_threshold": "Surface culture elements copied within 2-3 years"
+        }
+      ]
+    }
+  ]
+}

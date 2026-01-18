@@ -1,0 +1,373 @@
+{
+  "category": "Economics & Business (continued)",
+  "models": [
+    {
+      "id": 63,
+      "name": "Game Theory",
+      "failure_modes": [
+        {
+          "mode": "Assuming rationality",
+          "description": "Game theory assumes rational actors, reality is messier",
+          "real_world_case": "Brexit negotiations - game theory predicted rational compromise, nationalism and emotion dominated.",
+          "warning_signs": ["Emotional stakes", "Identity involvement", "Political actors"],
+          "safeguards": ["Model bounded rationality", "Include emotional factors", "Test with real behavior"],
+          "quantitative_threshold": "Rational actor models fail 30-40% of time in political contexts"
+        },
+        {
+          "mode": "Ignoring repeated game dynamics",
+          "description": "Analyzing as one-shot when relationship continues",
+          "real_world_case": "Supplier squeezing - Walmart's aggressive tactics worked short-term but damaged long-term supplier relationships.",
+          "warning_signs": ["Ongoing relationships", "Reputation effects", "Future interactions"],
+          "safeguards": ["Model as repeated game", "Value relationship maintenance", "Consider reputation"],
+          "quantitative_threshold": "Repeated games with > 10 interactions favor cooperation"
+        },
+        {
+          "mode": "Misidentifying the game",
+          "description": "Playing the wrong game entirely",
+          "real_world_case": "Kodak vs digital - played optimization game when disruption game was underway.",
+          "warning_signs": ["Changing rules", "New players", "Shifting payoffs"],
+          "safeguards": ["Regularly reassess game structure", "Watch for game changes", "Adapt strategy to actual game"],
+          "quantitative_threshold": "Game structure changes every 5-10 years in dynamic industries"
+        },
+        {
+          "mode": "Coordination failure",
+          "description": "Multiple equilibria exist but players can't coordinate",
+          "real_world_case": "VHS vs Betamax - both could have won, coordination failure led to wasteful format war.",
+          "warning_signs": ["Multiple equilibria", "No focal point", "Communication barriers"],
+          "safeguards": ["Create focal points", "Establish standards early", "Facilitate coordination"],
+          "quantitative_threshold": "Format wars waste 20-40% of industry value"
+        },
+        {
+          "mode": "Commitment problem",
+          "description": "Can't credibly commit to strategy",
+          "real_world_case": "Nuclear deterrence - credibility of retaliation threat is inherently questionable.",
+          "warning_signs": ["Time inconsistency", "Incentive to renege", "Cheap talk"],
+          "safeguards": ["Create binding commitments", "Burn bridges strategically", "Build reputation"],
+          "quantitative_threshold": "Uncommitted threats are discounted 50-80%"
+        }
+      ]
+    },
+    {
+      "id": 64,
+      "name": "Prisoner's Dilemma",
+      "failure_modes": [
+        {
+          "mode": "Applying to non-dilemma situations",
+          "description": "Seeing prisoner's dilemmas where they don't exist",
+          "real_world_case": "Climate negotiations framed as PD - actually has asymmetric payoffs and coalition possibilities.",
+          "warning_signs": ["Asymmetric players", "Coalition possibilities", "Different payoff structures"],
+          "safeguards": ["Verify payoff structure", "Check for asymmetries", "Consider coalitions"],
+          "quantitative_threshold": "True PD requires specific payoff ordering: T > R > P > S"
+        },
+        {
+          "mode": "Ignoring escape routes",
+          "description": "Assuming dilemma is inescapable",
+          "real_world_case": "OPEC - escaped PD through communication, monitoring, and punishment mechanisms.",
+          "warning_signs": ["Communication possible", "Monitoring feasible", "Punishment credible"],
+          "safeguards": ["Look for cooperation mechanisms", "Design monitoring systems", "Create punishment options"],
+          "quantitative_threshold": "Cooperation emerges when shadow of future > 0.5"
+        },
+        {
+          "mode": "One-shot thinking in repeated games",
+          "description": "Defecting when cooperation would build over time",
+          "real_world_case": "Business relationships - short-term extraction destroys long-term value creation.",
+          "warning_signs": ["Ongoing relationships", "Reputation markets", "Future interactions"],
+          "safeguards": ["Calculate long-term payoffs", "Value relationship capital", "Use tit-for-tat strategies"],
+          "quantitative_threshold": "Cooperation optimal when relationship expected to last > 5 interactions"
+        },
+        {
+          "mode": "Symmetric assumption",
+          "description": "Assuming equal power when asymmetry exists",
+          "real_world_case": "Small country vs large country negotiations - not symmetric, changes optimal strategy.",
+          "warning_signs": ["Size differences", "Power imbalances", "Different stakes"],
+          "safeguards": ["Map actual power dynamics", "Adjust for asymmetry", "Consider relative stakes"],
+          "quantitative_threshold": "10x size difference fundamentally changes game dynamics"
+        },
+        {
+          "mode": "Ignoring third parties",
+          "description": "Two-player framing misses broader ecosystem",
+          "real_world_case": "Uber vs Lyft - framed as duopoly PD, but regulators, drivers, and riders are players too.",
+          "warning_signs": ["Multiple stakeholders", "Regulatory involvement", "Platform ecosystems"],
+          "safeguards": ["Map all players", "Consider multi-party dynamics", "Include regulators"],
+          "quantitative_threshold": "Third parties influence outcome in 70%+ of business dilemmas"
+        }
+      ]
+    },
+    {
+      "id": 65,
+      "name": "Monopoly and Oligopoly",
+      "failure_modes": [
+        {
+          "mode": "Static market definition",
+          "description": "Defining market too narrowly or broadly",
+          "real_world_case": "Google antitrust - is it search monopoly or advertising market participant? Definition changes conclusion.",
+          "warning_signs": ["Substitutes available", "Adjacent competition", "Evolving boundaries"],
+          "safeguards": ["Use demand-side substitution test", "Consider supply-side entry", "Dynamic market definition"],
+          "quantitative_threshold": "SSNIP test: 5-10% price increase, measure substitution"
+        },
+        {
+          "mode": "Ignoring contestability",
+          "description": "Market share doesn't equal market power if entry is easy",
+          "real_world_case": "Airline routes - high concentration but contestable, limits pricing power.",
+          "warning_signs": ["Low entry barriers", "Mobile assets", "No sunk costs"],
+          "safeguards": ["Assess entry barriers", "Measure contestability", "Consider potential competition"],
+          "quantitative_threshold": "Entry within 2 years disciplines pricing regardless of share"
+        },
+        {
+          "mode": "Coordination assumption in oligopoly",
+          "description": "Assuming oligopolists will coordinate when they may compete",
+          "real_world_case": "Airline price wars - despite concentration, periodic intense competition erupts.",
+          "warning_signs": ["Capacity additions", "New entrants", "Demand shocks"],
+          "safeguards": ["Model competitive dynamics", "Watch for defection triggers", "Don't assume stable coordination"],
+          "quantitative_threshold": "Oligopoly coordination breaks down every 5-7 years on average"
+        },
+        {
+          "mode": "Regulatory capture blindness",
+          "description": "Monopolies use regulation to protect position",
+          "real_world_case": "Telecom regulation - incumbents shaped rules to raise entry barriers.",
+          "warning_signs": ["Incumbent lobbying", "Complex regulations", "Barriers favoring scale"],
+          "safeguards": ["Monitor regulatory process", "Support pro-competitive rules", "Watch for capture"],
+          "quantitative_threshold": "Regulatory capture adds 15-30% to entry costs typically"
+        },
+        {
+          "mode": "Innovation complacency",
+          "description": "Monopoly position breeds innovation slowdown",
+          "real_world_case": "Microsoft 2000s - monopoly in OS led to browser and mobile complacency.",
+          "warning_signs": ["Declining R&D intensity", "Talent exodus", "Startup competition"],
+          "safeguards": ["Maintain innovation incentives", "Watch adjacent markets", "Cannibalize yourself"],
+          "quantitative_threshold": "Monopoly R&D intensity typically 30-50% below competitive markets"
+        }
+      ]
+    },
+    {
+      "id": 66,
+      "name": "Price Discrimination",
+      "failure_modes": [
+        {
+          "mode": "Arbitrage vulnerability",
+          "description": "Price differences create resale opportunities",
+          "real_world_case": "Pharmaceutical reimportation - US/Canada price differences created gray market.",
+          "warning_signs": ["Large price gaps", "Transportable goods", "Weak controls"],
+          "safeguards": ["Limit arbitrage opportunities", "Control distribution", "Reduce price gaps"],
+          "quantitative_threshold": "Price gaps > 30% invite arbitrage"
+        },
+        {
+          "mode": "Customer resentment",
+          "description": "Perceived unfairness damages brand",
+          "real_world_case": "Amazon dynamic pricing backlash - customers felt cheated by personalized prices.",
+          "warning_signs": ["Visible price differences", "Social media exposure", "Fairness sensitivity"],
+          "safeguards": ["Frame as discounts not surcharges", "Maintain perceived fairness", "Be transparent"],
+          "quantitative_threshold": "Perceived unfair pricing reduces loyalty by 20-40%"
+        },
+        {
+          "mode": "Segment leakage",
+          "description": "High-value customers access low-price segments",
+          "real_world_case": "Student discounts - non-students obtaining student pricing through fraud.",
+          "warning_signs": ["Weak verification", "High incentive to cheat", "Easy credential access"],
+          "safeguards": ["Verify segment membership", "Make segments self-selecting", "Accept some leakage"],
+          "quantitative_threshold": "Segment leakage typically 5-15% of discounted volume"
+        },
+        {
+          "mode": "Regulatory risk",
+          "description": "Price discrimination may violate laws",
+          "real_world_case": "Robinson-Patman Act violations - B2B price discrimination can be illegal.",
+          "warning_signs": ["B2B contexts", "Competitor complaints", "Regulatory scrutiny"],
+          "safeguards": ["Legal review of pricing", "Document cost justifications", "Ensure compliance"],
+          "quantitative_threshold": "Robinson-Patman fines can reach 3x discriminatory profits"
+        },
+        {
+          "mode": "Complexity costs",
+          "description": "Managing multiple prices creates operational burden",
+          "real_world_case": "Airline pricing complexity - requires sophisticated revenue management systems.",
+          "warning_signs": ["Many segments", "Dynamic pricing", "Inventory constraints"],
+          "safeguards": ["Balance complexity vs benefit", "Invest in systems", "Simplify where possible"],
+          "quantitative_threshold": "Pricing complexity costs 2-5% of revenue in system/staff costs"
+        }
+      ]
+    },
+    {
+      "id": 67,
+      "name": "Auction Theory",
+      "failure_modes": [
+        {
+          "mode": "Winner's curse",
+          "description": "Winning means you overestimated value",
+          "real_world_case": "3G spectrum auctions - telecom companies massively overpaid, destroying shareholder value.",
+          "warning_signs": ["Common value auctions", "Uncertain valuations", "Competitive bidding"],
+          "safeguards": ["Shade bids down", "Account for winner's curse", "Set strict limits"],
+          "quantitative_threshold": "Reduce bids 10-20% below estimated value in common value auctions"
+        },
+        {
+          "mode": "Collusion vulnerability",
+          "description": "Bidders coordinate to suppress prices",
+          "real_world_case": "Construction bid rigging - contractors routinely colluded on government contracts.",
+          "warning_signs": ["Repeated auctions", "Same bidders", "Communication opportunities"],
+          "safeguards": ["Randomize auction timing", "Vary bidder pools", "Monitor for patterns"],
+          "quantitative_threshold": "Collusion can reduce auction revenue by 20-40%"
+        },
+        {
+          "mode": "Format mismatch",
+          "description": "Wrong auction format for the situation",
+          "real_world_case": "Early FCC spectrum auctions - sequential auctions created inefficient outcomes.",
+          "warning_signs": ["Complementary items", "Budget constraints", "Information asymmetries"],
+          "safeguards": ["Match format to situation", "Consider combinatorial auctions", "Test formats"],
+          "quantitative_threshold": "Wrong format can reduce efficiency by 15-30%"
+        },
+        {
+          "mode": "Shill bidding",
+          "description": "Fake bids artificially raise prices",
+          "real_world_case": "eBay shill bidding - sellers using fake accounts to bid up their own items.",
+          "warning_signs": ["Online auctions", "Anonymous bidding", "Seller incentives"],
+          "safeguards": ["Verify bidder identity", "Monitor bidding patterns", "Penalize shill bidding"],
+          "quantitative_threshold": "Shill bidding estimated in 5-10% of online auctions"
+        },
+        {
+          "mode": "Entry deterrence",
+          "description": "Auction design discourages participation",
+          "real_world_case": "Government procurement - complex requirements deter small business participation.",
+          "warning_signs": ["Low participation", "Same winners", "Complex requirements"],
+          "safeguards": ["Simplify participation", "Reduce entry costs", "Encourage new bidders"],
+          "quantitative_threshold": "Auctions with < 3 bidders lose 20%+ of competitive value"
+        }
+      ]
+    },
+    {
+      "id": 68,
+      "name": "Moral Hazard",
+      "failure_modes": [
+        {
+          "mode": "Insurance design failure",
+          "description": "Insurance creates incentive for risky behavior",
+          "real_world_case": "Deposit insurance and S&L crisis - guaranteed deposits enabled risky lending.",
+          "warning_signs": ["Full insurance coverage", "No skin in game", "Hidden actions"],
+          "safeguards": ["Require deductibles", "Risk-based pricing", "Monitor behavior"],
+          "quantitative_threshold": "Full insurance increases risk-taking by 30-50%"
+        },
+        {
+          "mode": "Too big to fail",
+          "description": "Implicit guarantees create systemic moral hazard",
+          "real_world_case": "2008 bank bailouts - expectation of rescue encouraged excessive risk.",
+          "warning_signs": ["Systemic importance", "Implicit guarantees", "Concentrated risk"],
+          "safeguards": ["Credible no-bailout commitment", "Resolution mechanisms", "Size limits"],
+          "quantitative_threshold": "TBTF subsidy estimated at 0.5-0.8% funding cost advantage"
+        },
+        {
+          "mode": "Agent moral hazard",
+          "description": "Agents take risks with others' money",
+          "real_world_case": "Hedge fund 2-and-20 - asymmetric payoff encourages excessive risk-taking.",
+          "warning_signs": ["Asymmetric compensation", "Limited downside", "Principal-agent separation"],
+          "safeguards": ["Align incentives", "Require co-investment", "Clawback provisions"],
+          "quantitative_threshold": "Manager co-investment > 10% significantly reduces moral hazard"
+        },
+        {
+          "mode": "Ex-post moral hazard",
+          "description": "Behavior changes after contract signed",
+          "real_world_case": "Health insurance - people with insurance may take fewer precautions.",
+          "warning_signs": ["Unobservable actions", "Changed incentives", "Monitoring difficulty"],
+          "safeguards": ["Design for ex-post incentives", "Monitor outcomes", "Adjust coverage"],
+          "quantitative_threshold": "Healthcare utilization increases 30-40% with full coverage"
+        },
+        {
+          "mode": "Moral hazard vs adverse selection confusion",
+          "description": "Misdiagnosing which problem you have",
+          "real_world_case": "Credit markets - high default rates could be adverse selection or moral hazard, different solutions.",
+          "warning_signs": ["High loss rates", "Unclear causation", "Mixed signals"],
+          "safeguards": ["Distinguish selection from behavior", "Test both hypotheses", "Design for both"],
+          "quantitative_threshold": "Correct diagnosis changes optimal policy by 50%+"
+        }
+      ]
+    },
+    {
+      "id": 69,
+      "name": "Signaling",
+      "failure_modes": [
+        {
+          "mode": "Signal inflation",
+          "description": "Signals lose value as everyone adopts them",
+          "real_world_case": "College degree inflation - bachelor's now signals what high school did, master's for bachelor's.",
+          "warning_signs": ["Increasing adoption", "Credential creep", "Diminishing differentiation"],
+          "safeguards": ["Find new signals", "Focus on costly signals", "Value demonstrated ability"],
+          "quantitative_threshold": "Signals lose 50% value when adoption exceeds 50%"
+        },
+        {
+          "mode": "Costly signaling waste",
+          "description": "Resources spent on signaling not value creation",
+          "real_world_case": "Luxury goods - massive spending on signaling status rather than utility.",
+          "warning_signs": ["High signaling costs", "Arms race dynamics", "Positional goods"],
+          "safeguards": ["Find efficient signals", "Reduce signaling costs", "Focus on substance"],
+          "quantitative_threshold": "Signaling can consume 20-40% of resources in status competitions"
+        },
+        {
+          "mode": "False signal acceptance",
+          "description": "Accepting signals without verification",
+          "real_world_case": "Resume fraud - unverified credentials widely accepted.",
+          "warning_signs": ["Low verification", "High incentive to fake", "Cheap signals"],
+          "safeguards": ["Verify signals", "Use costly-to-fake signals", "Check references"],
+          "quantitative_threshold": "30-40% of resumes contain material misrepresentations"
+        },
+        {
+          "mode": "Signal misinterpretation",
+          "description": "Receivers interpret signals differently than intended",
+          "real_world_case": "Startup fundraising - raising too much can signal desperation, not success.",
+          "warning_signs": ["Ambiguous signals", "Context dependence", "Multiple interpretations"],
+          "safeguards": ["Clarify signal meaning", "Consider receiver perspective", "Test interpretations"],
+          "quantitative_threshold": "Signal misinterpretation occurs in 20-30% of cases"
+        },
+        {
+          "mode": "Countersignaling failure",
+          "description": "High-quality actors don't signal, mistaken for low-quality",
+          "real_world_case": "Quiet competence - highly skilled people who don't self-promote get overlooked.",
+          "warning_signs": ["Modest high-performers", "Loud low-performers", "Signal-heavy environments"],
+          "safeguards": ["Look beyond signals", "Verify actual quality", "Create safe signaling spaces"],
+          "quantitative_threshold": "Top 10% often undersignal, bottom 10% oversignal"
+        }
+      ]
+    },
+    {
+      "id": 70,
+      "name": "Network Effects",
+      "failure_modes": [
+        {
+          "mode": "Assuming network effects exist",
+          "description": "Claiming network effects without evidence",
+          "real_world_case": "Many 'social' apps - claimed network effects but users didn't actually benefit from others joining.",
+          "warning_signs": ["No clear user benefit from growth", "Weak engagement metrics", "Easy switching"],
+          "safeguards": ["Measure actual network value", "Track engagement with network size", "Verify user benefit"],
+          "quantitative_threshold": "True network effects show engagement increasing with user count"
+        },
+        {
+          "mode": "Negative network effects",
+          "description": "More users actually decrease value",
+          "real_world_case": "Exclusive clubs - value comes from exclusivity, more members reduces value.",
+          "warning_signs": ["Congestion", "Quality dilution", "Status goods"],
+          "safeguards": ["Monitor quality with scale", "Consider exclusivity value", "Manage growth rate"],
+          "quantitative_threshold": "Negative effects emerge when congestion > capacity * 0.8"
+        },
+        {
+          "mode": "Local vs global network confusion",
+          "description": "Network effects may be local, not global",
+          "real_world_case": "Uber - network effects are city-level, not global. Each city is separate battle.",
+          "warning_signs": ["Geographic markets", "Segment-specific networks", "Limited cross-network value"],
+          "safeguards": ["Map network boundaries", "Identify network scope", "Compete market by market"],
+          "quantitative_threshold": "Local network effects require 30%+ share per market"
+        },
+        {
+          "mode": "Chicken-and-egg paralysis",
+          "description": "Can't get either side without the other",
+          "real_world_case": "Many failed marketplaces - couldn't solve cold start problem.",
+          "warning_signs": ["Two-sided markets", "No initial value", "Coordination problem"],
+          "safeguards": ["Subsidize one side", "Create single-player value", "Seed with content"],
+          "quantitative_threshold": "Need critical mass of ~1000 active users per side typically"
+        },
+        {
+          "mode": "Multi-homing erosion",
+          "description": "Users on multiple networks reduce lock-in",
+          "real_world_case": "Drivers on Uber and Lyft - multi-homing reduces network effect moat.",
+          "warning_signs": ["Low switching costs", "Compatible networks", "No exclusive content"],
+          "safeguards": ["Increase switching costs", "Create exclusive value", "Reward loyalty"],
+          "quantitative_threshold": "Multi-homing > 30% significantly weakens network effects"
+        }
+      ]
+    }
+  ]
+}
