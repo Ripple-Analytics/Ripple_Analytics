@@ -998,3 +998,79 @@
         (is (= 1 (get-in stats [:by-connector :github])))
         (is (= 1 (get-in stats [:by-connector :slack])))
         (is (= 150 (:avg-latency-ms stats)))))))
+
+;; ============================================
+;; Timeout Configuration Tests
+;; ============================================
+
+(deftest test-timeout-config-atom
+  (testing "Timeout config atom is initialized with defaults"
+    (is (instance? clojure.lang.Atom conn/timeout-config))
+    (is (map? @conn/timeout-config))
+    (is (contains? @conn/timeout-config :github))
+    (is (contains? @conn/timeout-config :slack))
+    (is (contains? @conn/timeout-config :huggingface))
+    (is (contains? @conn/timeout-config :lm-studio))
+    (is (contains? @conn/timeout-config :web-scraper))
+    (is (contains? @conn/timeout-config :default))))
+
+(deftest test-timeout-config-values
+  (testing "Timeout config has correct default values"
+    ;; GitHub: 30s socket, 10s connection
+    (is (= 30000 (get-in @conn/timeout-config [:github :socket-timeout])))
+    (is (= 10000 (get-in @conn/timeout-config [:github :connection-timeout])))
+    
+    ;; Huggingface: 60s socket, 15s connection
+    (is (= 60000 (get-in @conn/timeout-config [:huggingface :socket-timeout])))
+    (is (= 15000 (get-in @conn/timeout-config [:huggingface :connection-timeout])))
+    
+    ;; LM Studio: 120s socket, 10s connection
+    (is (= 120000 (get-in @conn/timeout-config [:lm-studio :socket-timeout])))
+    (is (= 10000 (get-in @conn/timeout-config [:lm-studio :connection-timeout])))
+    
+    ;; Web scraper: 45s socket, 15s connection
+    (is (= 45000 (get-in @conn/timeout-config [:web-scraper :socket-timeout])))
+    (is (= 15000 (get-in @conn/timeout-config [:web-scraper :connection-timeout])))))
+
+(deftest test-get-timeout-config
+  (testing "Get timeout config returns correct values"
+    (let [github-config (conn/get-timeout-config :github)]
+      (is (map? github-config))
+      (is (= 30000 (:socket-timeout github-config)))
+      (is (= 10000 (:connection-timeout github-config))))
+    
+    ;; Unknown connector type should return default
+    (let [unknown-config (conn/get-timeout-config :unknown)]
+      (is (map? unknown-config))
+      (is (= 30000 (:socket-timeout unknown-config)))
+      (is (= 10000 (:connection-timeout unknown-config))))))
+
+(deftest test-set-timeout-config
+  (testing "Set timeout config updates values"
+    ;; Save original value
+    (let [original (get @conn/timeout-config :github)]
+      ;; Set new values
+      (conn/set-timeout-config :github 60000 20000)
+      (let [updated (conn/get-timeout-config :github)]
+        (is (= 60000 (:socket-timeout updated)))
+        (is (= 20000 (:connection-timeout updated))))
+      
+      ;; Restore original
+      (conn/set-timeout-config :github (:socket-timeout original) (:connection-timeout original)))))
+
+(deftest test-set-timeout-config-new-connector
+  (testing "Set timeout config for new connector type"
+    (conn/set-timeout-config :custom-connector 90000 30000)
+    (let [config (conn/get-timeout-config :custom-connector)]
+      (is (= 90000 (:socket-timeout config)))
+      (is (= 30000 (:connection-timeout config))))
+    ;; Clean up
+    (swap! conn/timeout-config dissoc :custom-connector)))
+
+(deftest test-get-http-opts-for-connector
+  (testing "Get HTTP opts includes connector-specific timeouts"
+    (let [opts (conn/get-http-opts-for-connector :github)]
+      (is (map? opts))
+      (is (= 30000 (:socket-timeout opts)))
+      (is (= 10000 (:connection-timeout opts)))
+      (is (false? (:throw-exceptions opts))))))
