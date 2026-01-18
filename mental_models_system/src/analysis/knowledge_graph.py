@@ -644,8 +644,30 @@ class KnowledgeGraph:
         self._document_nodes[doc_id] = node
         return node
     
-    def add_model(self, model_id: int, name: str, category: str) -> Node:
-        """Add a model node to the graph."""
+    def add_model(self, model_id_or_obj, name: str = None, category: str = None) -> Node:
+        """
+        Add a model node to the graph.
+        
+        Args:
+            model_id_or_obj: Either an integer model ID or a MentalModel object
+            name: Model name (required if model_id_or_obj is int)
+            category: Model category (required if model_id_or_obj is int)
+        
+        Returns:
+            Node object
+        """
+        # Handle both signatures: add_model(model_obj) and add_model(id, name, category)
+        if isinstance(model_id_or_obj, int):
+            model_id = model_id_or_obj
+            if name is None or category is None:
+                raise ValueError("name and category are required when model_id_or_obj is an integer")
+        else:
+            # It's a model object
+            model = model_id_or_obj
+            model_id = int(model.id) if hasattr(model, 'id') else hash(model.name)
+            name = model.name if hasattr(model, 'name') else str(model)
+            category = model.category if hasattr(model, 'category') else "Unknown"
+        
         node_id = f"model_{model_id}"
         node = Node(
             id=node_id,

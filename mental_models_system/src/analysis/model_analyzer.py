@@ -567,9 +567,29 @@ class MentalModelAnalyzer:
         response = await self._call_llm(prompt)
         return self._parse_json_response(response) or {}
     
-    async def analyze_text(self, text: str, document_name: str = "Unknown") -> DocumentAnalysis:
+    def analyze_text(self, text: str, document_name: str = "Unknown") -> DocumentAnalysis:
         """
-        Perform complete mental model analysis on text.
+        Perform complete mental model analysis on text (synchronous wrapper).
+        
+        Args:
+            text: The text to analyze
+            document_name: Name for identification
+        
+        Returns:
+            DocumentAnalysis with all findings
+        """
+        # Run async version in event loop
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+        
+        return loop.run_until_complete(self.analyze_text_async(text, document_name))
+    
+    async def analyze_text_async(self, text: str, document_name: str = "Unknown") -> DocumentAnalysis:
+        """
+        Perform complete mental model analysis on text (async implementation).
         
         Args:
             text: The text to analyze

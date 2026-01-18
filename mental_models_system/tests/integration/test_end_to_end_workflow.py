@@ -19,7 +19,7 @@ from typing import List, Dict, Any
 class TestEndToEndWorkflows:
     """Test complete workflows through the system."""
     
-    def test_signal_to_lollapalooza_workflow(self):
+    def test_signal_to_lollapalooza_workflow(self, mock_llm_client):
         """
         Test the complete workflow:
         1. Detect mental model signals in text
@@ -30,6 +30,7 @@ class TestEndToEndWorkflows:
         from src.analysis.model_analyzer import MentalModelAnalyzer
         from src.analysis.lollapalooza import LollapaloozaDetector
         from src.safeguards.failure_modes_loader import FailureModesLoader
+        import json
         
         # Sample text with multiple interacting mental models
         text = """
@@ -44,9 +45,17 @@ class TestEndToEndWorkflows:
         These models reinforce each other, creating an almost unassailable competitive position.
         """
         
+        # Mock LLM responses
+        mock_llm_client.generate.return_value = json.dumps([
+            {"model_id": "1", "model_name": "Network Effects", "relevance_score": 0.9, "confidence": 0.85, "evidence": "More sellers attract more buyers", "insights": ["Strong network effects"]},
+            {"model_id": "2", "model_name": "Economies of Scale", "relevance_score": 0.85, "confidence": 0.8, "evidence": "Massive volume allows lower prices", "insights": ["Scale advantages"]},
+            {"model_id": "3", "model_name": "Switching Costs", "relevance_score": 0.8, "confidence": 0.75, "evidence": "Prime membership lock-in", "insights": ["High switching costs"]}
+        ])
+        
         # Step 1: Detect signals
-        analyzer = MentalModelAnalyzer()
-        signals = analyzer.analyze_text(text)
+        analyzer = MentalModelAnalyzer(mock_llm_client)
+        analysis = analyzer.analyze_text(text)
+        signals = analysis.model_matches
         
         assert len(signals) >= 3, "Should detect multiple mental model signals"
         assert any("Network Effects" in s.model_name for s in signals), "Should detect Network Effects"
@@ -196,7 +205,7 @@ class TestEndToEndWorkflows:
         central_models = graph.get_most_central_models(top_n=10)
         assert len(central_models) > 0, "Should identify central models"
     
-    def test_failure_mode_detection_workflow(self):
+    def test_failure_mode_detection_workflow(self, mock_llm_client):
         """
         Test failure mode detection workflow:
         1. Analyze decision/situation
@@ -217,8 +226,9 @@ class TestEndToEndWorkflows:
         """
         
         # Step 1: Detect mental models
-        analyzer = MentalModelAnalyzer()
-        signals = analyzer.analyze_text(situation)
+        analyzer = MentalModelAnalyzer(mock_llm_client)
+        analysis = analyzer.analyze_text(situation)
+        signals = analysis.model_matches
         
         # Step 2: Load failure modes
         loader = FailureModesLoader()
@@ -324,18 +334,20 @@ class TestEndToEndWorkflows:
 class TestErrorHandlingWorkflows:
     """Test error handling in workflows."""
     
-    def test_invalid_input_handling(self):
+    def test_invalid_input_handling(self, mock_llm_client):
         """Test that invalid inputs are handled gracefully."""
         from src.analysis.model_analyzer import MentalModelAnalyzer
         
-        analyzer = MentalModelAnalyzer()
+        analyzer = MentalModelAnalyzer(mock_llm_client)
         
         # Empty text
-        signals = analyzer.analyze_text("")
+        analysis = analyzer.analyze_text("")
+        signals = analysis.model_matches if hasattr(analysis, 'model_matches') else []
         assert signals == [], "Empty text should return empty list"
         
         # Very short text
-        signals = analyzer.analyze_text("Hi")
+        analysis = analyzer.analyze_text("Hi")
+        signals = analysis.model_matches if hasattr(analysis, 'model_matches') else []
         assert isinstance(signals, list), "Should return list even for short text"
     
     def test_missing_data_handling(self):
@@ -382,29 +394,30 @@ class TestErrorHandlingWorkflows:
 class TestPerformanceWorkflows:
     """Test performance of workflows."""
     
-    def test_large_text_analysis_performance(self):
+    def test_large_text_analysis_performance(self, mock_llm_client):
         """Test that large text analysis completes in reasonable time."""
         from src.analysis.model_analyzer import MentalModelAnalyzer
         import time
         
-        analyzer = MentalModelAnalyzer()
+        analyzer = MentalModelAnalyzer(mock_llm_client)
         
         # Generate large text (10,000 words)
         large_text = " ".join(["This is a test of network effects and economies of scale."] * 1000)
         
         start_time = time.time()
-        signals = analyzer.analyze_text(large_text)
+        analysis = analyzer.analyze_text(large_text)
+        signals = analysis.model_matches if hasattr(analysis, 'model_matches') else []
         elapsed_time = time.time() - start_time
         
         assert elapsed_time < 10.0, f"Large text analysis should complete in < 10s, took {elapsed_time:.2f}s"
         assert len(signals) > 0, "Should detect signals in large text"
     
-    def test_batch_analysis_performance(self):
+    def test_batch_analysis_performance(self, mock_llm_client):
         """Test batch analysis performance."""
         from src.analysis.model_analyzer import MentalModelAnalyzer
         import time
         
-        analyzer = MentalModelAnalyzer()
+        analyzer = MentalModelAnalyzer(mock_llm_client)
         
         texts = [
             "Network effects create moats.",

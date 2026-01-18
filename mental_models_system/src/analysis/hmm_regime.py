@@ -140,6 +140,19 @@ class HMMRegimeDetector:
         
         return features, df
     
+    def fit(self, features: np.ndarray, n_iter: int = 100) -> 'HMMRegimeDetector':
+        """
+        Fit HMM on feature data (alias for train).
+        
+        Args:
+            features: Feature matrix (n_samples, n_features)
+            n_iter: Number of EM iterations
+            
+        Returns:
+            Self for method chaining
+        """
+        return self.train(features, n_iter)
+    
     def train(self, features: np.ndarray, n_iter: int = 100) -> 'HMMRegimeDetector':
         """
         Train HMM on feature data.
