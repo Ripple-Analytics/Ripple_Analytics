@@ -191,6 +191,30 @@
       ],
       "enabled": true,
       "usage_count": 0
+    },
+    {
+      "key_hash": "fcebd3e20586c956a8c74a26e2571bc94a1cf782e6626773d4ce117a5872e33c",
+      "name": "test_key",
+      "created_at": "2026-01-18T03:10:58.482996",
+      "expires_at": null,
+      "rate_limit_multiplier": 1.0,
+      "scopes": [
+        "read"
+      ],
+      "enabled": true,
+      "usage_count": 0
+    },
+    {
+      "key_hash": "e357b27c81581b6f2f3b62bdd8917d7e1ddb96a23e23ead1900807f6f50dce09",
+      "name": "test_key",
+      "created_at": "2026-01-18T03:15:09.757797",
+      "expires_at": null,
+      "rate_limit_multiplier": 1.0,
+      "scopes": [
+        "read"
+      ],
+      "enabled": true,
+      "usage_count": 0
     }
   ]
 }

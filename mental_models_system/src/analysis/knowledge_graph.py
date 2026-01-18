@@ -644,36 +644,44 @@ class KnowledgeGraph:
         self._document_nodes[doc_id] = node
         return node
     
-    def add_model(self, model_id_or_obj, name: str = None, category: str = None) -> Node:
+    def add_model(self, model_id_or_obj=None, name: str = None, category: str = None, model_id: int = None) -> Node:
         """
         Add a model node to the graph.
         
         Args:
-            model_id_or_obj: Either an integer model ID or a MentalModel object
-            name: Model name (required if model_id_or_obj is int)
-            category: Model category (required if model_id_or_obj is int)
+            model_id_or_obj: Either an integer model ID or a MentalModel object (positional)
+            model_id: Model ID (keyword argument, for backward compatibility)
+            name: Model name (required if using model_id keyword)
+            category: Model category (required if using model_id keyword)
         
         Returns:
             Node object
         """
+        # Handle keyword argument model_id for backward compatibility
+        if model_id is not None:
+            model_id_or_obj = model_id
+        
+        if model_id_or_obj is None:
+            raise ValueError("Either model_id_or_obj or model_id must be provided")
+        
         # Handle both signatures: add_model(model_obj) and add_model(id, name, category)
         if isinstance(model_id_or_obj, int):
-            model_id = model_id_or_obj
+            model_id_value = model_id_or_obj
             if name is None or category is None:
                 raise ValueError("name and category are required when model_id_or_obj is an integer")
         else:
             # It's a model object
             model = model_id_or_obj
-            model_id = int(model.id) if hasattr(model, 'id') else hash(model.name)
+            model_id_value = int(model.id) if hasattr(model, 'id') else hash(model.name)
             name = model.name if hasattr(model, 'name') else str(model)
             category = model.category if hasattr(model, 'category') else "Unknown"
         
-        node_id = f"model_{model_id}"
+        node_id = f"model_{model_id_value}"
         node = Node(
             id=node_id,
             type="model",
             name=name,
-            properties={"model_id": model_id, "category": category}
+            properties={"model_id": model_id_value, "category": category}
         )
         self.nodes[node_id] = node
         self._model_nodes[node_id] = node
@@ -837,6 +845,146 @@ class KnowledgeGraph:
             category = model_node.properties.get("category", "Unknown")
             dist[category] += 1
         return dict(dist)
+    
+    # =========================================================================
+    # GRAPH TRAVERSAL METHODS
+    # =========================================================================
+    
+    def find_related_models(self, model_name: str, max_distance: int = 2) -> List[Dict]:
+        """
+        Find models related to a given model through document co-occurrence.
+        
+        Args:
+            model_name: Name of the model to find relations for
+            max_distance: Maximum distance in the graph (1 = direct, 2 = through one hop)
+        
+        Returns:
+            List of related models with relationship strength
+        """
+        # Find the model node
+        model_id = self._generate_id("model", model_name)
+        if model_id not in self._model_nodes:
+            return []
+        
+        # Find documents that use this model
+        docs_with_model = self._model_docs.get(model_id, set())
+        
+        # Find other models that appear in the same documents
+        related_models = defaultdict(int)
+        for doc_id in docs_with_model:
+            other_models = self._doc_models.get(doc_id, set())
+            for other_model_id in other_models:
+                if other_model_id != model_id:
+                    related_models[other_model_id] += 1
+        
+        # If max_distance > 1, also find models related to related models
+        if max_distance > 1:
+            second_degree = defaultdict(int)
+            for related_model_id in related_models.keys():
+                related_docs = self._model_docs.get(related_model_id, set())
+                for doc_id in related_docs:
+                    other_models = self._doc_models.get(doc_id, set())
+                    for other_model_id in other_models:
+                        if other_model_id != model_id and other_model_id not in related_models:
+                            second_degree[other_model_id] += 1
+            
+            # Add second-degree relations with lower weight
+            for model_id_2, count in second_degree.items():
+                related_models[model_id_2] = count * 0.5
+        
+        # Convert to result format
+        results = []
+        for related_model_id, strength in related_models.items():
+            model_node = self._model_nodes.get(related_model_id)
+            if model_node:
+                results.append({
+                    "model_id": model_node.properties.get("model_id"),
+                    "name": model_node.name,
+                    "category": model_node.properties.get("category", ""),
+                    "relationship_strength": strength,
+                    "shared_documents": int(strength) if strength >= 1 else 1
+                })
+        
+        return sorted(results, key=lambda x: x["relationship_strength"], reverse=True)
+    
+    def find_shortest_path(self, model_name_1: str, model_name_2: str) -> Optional[List[str]]:
+        """
+        Find the shortest path between two models through documents.
+        
+        Args:
+            model_name_1: First model name
+            model_name_2: Second model name
+        
+        Returns:
+            List of model names representing the path, or None if no path exists
+        """
+        from collections import deque
+        
+        model_id_1 = self._generate_id("model", model_name_1)
+        model_id_2 = self._generate_id("model", model_name_2)
+        
+        if model_id_1 not in self._model_nodes or model_id_2 not in self._model_nodes:
+            return None
+        
+        if model_id_1 == model_id_2:
+            return [model_name_1]
+        
+        # BFS to find shortest path
+        queue = deque([(model_id_1, [model_id_1])])
+        visited = {model_id_1}
+        
+        while queue:
+            current_id, path = queue.popleft()
+            
+            # Find documents that use this model
+            docs = self._model_docs.get(current_id, set())
+            
+            # Find other models in those documents
+            for doc_id in docs:
+                other_models = self._doc_models.get(doc_id, set())
+                for other_model_id in other_models:
+                    if other_model_id == model_id_2:
+                        # Found the target
+                        final_path = path + [other_model_id]
+                        return [self._model_nodes[mid].name for mid in final_path]
+                    
+                    if other_model_id not in visited:
+                        visited.add(other_model_id)
+                        queue.append((other_model_id, path + [other_model_id]))
+        
+        return None
+    
+    def get_most_central_models(self, top_n: int = 10) -> List[Dict]:
+        """
+        Get the most central models in the graph based on document connections.
+        
+        Args:
+            top_n: Number of top models to return
+        
+        Returns:
+            List of models with centrality scores
+        """
+        # Calculate degree centrality (number of documents)
+        centrality = []
+        for model_id, model_node in self._model_nodes.items():
+            doc_count = len(self._model_docs.get(model_id, set()))
+            
+            # Also count connections to other models
+            connected_models = set()
+            for doc_id in self._model_docs.get(model_id, set()):
+                other_models = self._doc_models.get(doc_id, set())
+                connected_models.update(other_models - {model_id})
+            
+            centrality.append({
+                "model_id": model_node.properties.get("model_id"),
+                "name": model_node.name,
+                "category": model_node.properties.get("category", ""),
+                "document_count": doc_count,
+                "connected_models": len(connected_models),
+                "centrality_score": doc_count + len(connected_models) * 0.5
+            })
+        
+        return sorted(centrality, key=lambda x: x["centrality_score"], reverse=True)[:top_n]
 
 
 # =============================================================================
@@ -1037,3 +1185,5 @@ if __name__ == "__main__":
         elif args.export == "neo4j":
             graph.export_neo4j_cypher(args.output)
         print(f"Exported to {args.output}")
+
+    # =========================================================================
