@@ -1282,3 +1282,124 @@
       (is (map? result))
       (is (= :error (:status result)))
       (is (not (contains? @conn/active-connectors "test-github"))))))
+
+;; ============================================
+;; Middleware System Tests
+;; ============================================
+
+(deftest test-middleware-registry-atom
+  (testing "Middleware registry atom is initialized"
+    (is (instance? clojure.lang.Atom conn/middleware-registry))
+    (is (map? @conn/middleware-registry))
+    (is (contains? @conn/middleware-registry :request))
+    (is (contains? @conn/middleware-registry :response))))
+
+(deftest test-register-middleware
+  (testing "Register middleware adds to registry"
+    (conn/clear-middleware)
+    (let [middleware-fn (fn [req] (assoc req :test true))
+          middleware-id (conn/register-middleware :request middleware-fn :name "test-middleware")]
+      (is (uuid? middleware-id))
+      (is (= 1 (count (conn/list-middleware :request))))
+      (let [registered (first (conn/list-middleware :request))]
+        (is (= middleware-id (:id registered)))
+        (is (= "test-middleware" (:name registered)))))
+    ;; Clean up
+    (conn/clear-middleware)))
+
+(deftest test-register-middleware-priority
+  (testing "Middleware is sorted by priority"
+    (conn/clear-middleware)
+    (conn/register-middleware :request (fn [r] r) :name "high" :priority 100)
+    (conn/register-middleware :request (fn [r] r) :name "low" :priority 10)
+    (conn/register-middleware :request (fn [r] r) :name "medium" :priority 50)
+    
+    (let [middlewares (conn/list-middleware :request)]
+      (is (= 3 (count middlewares)))
+      (is (= "low" (:name (first middlewares))))
+      (is (= "medium" (:name (second middlewares))))
+      (is (= "high" (:name (nth middlewares 2)))))
+    ;; Clean up
+    (conn/clear-middleware)))
+
+(deftest test-unregister-middleware
+  (testing "Unregister middleware removes from registry"
+    (conn/clear-middleware)
+    (let [middleware-id (conn/register-middleware :request (fn [r] r))]
+      (is (= 1 (count (conn/list-middleware :request))))
+      (conn/unregister-middleware :request middleware-id)
+      (is (= 0 (count (conn/list-middleware :request)))))))
+
+(deftest test-clear-middleware
+  (testing "Clear middleware removes all middleware"
+    (conn/register-middleware :request (fn [r] r))
+    (conn/register-middleware :response (fn [r] r))
+    
+    ;; Clear specific type
+    (conn/clear-middleware :request)
+    (is (= 0 (count (conn/list-middleware :request))))
+    (is (= 1 (count (conn/list-middleware :response))))
+    
+    ;; Clear all
+    (conn/clear-middleware)
+    (is (= 0 (count (conn/list-middleware :response))))))
+
+(deftest test-apply-request-middleware
+  (testing "Apply request middleware transforms request"
+    (conn/clear-middleware)
+    (conn/register-middleware :request (fn [req] (assoc req :step1 true)))
+    (conn/register-middleware :request (fn [req] (assoc req :step2 true)))
+    
+    (let [result (conn/apply-request-middleware {:original true})]
+      (is (true? (:original result)))
+      (is (true? (:step1 result)))
+      (is (true? (:step2 result))))
+    ;; Clean up
+    (conn/clear-middleware)))
+
+(deftest test-apply-response-middleware
+  (testing "Apply response middleware transforms response"
+    (conn/clear-middleware)
+    (conn/register-middleware :response (fn [resp] (assoc resp :processed true)))
+    (conn/register-middleware :response (fn [resp] (update resp :count (fnil inc 0))))
+    
+    (let [result (conn/apply-response-middleware {:status 200})]
+      (is (= 200 (:status result)))
+      (is (true? (:processed result)))
+      (is (= 1 (:count result))))
+    ;; Clean up
+    (conn/clear-middleware)))
+
+(deftest test-middleware-error-handling
+  (testing "Middleware errors don't break the chain"
+    (conn/clear-middleware)
+    (conn/register-middleware :request (fn [_] (throw (Exception. "Middleware error"))) :priority 10)
+    (conn/register-middleware :request (fn [req] (assoc req :after-error true)) :priority 20)
+    
+    (let [result (conn/apply-request-middleware {:original true})]
+      ;; Original request should be preserved despite error
+      (is (true? (:original result)))
+      ;; Second middleware should still run
+      (is (true? (:after-error result))))
+    ;; Clean up
+    (conn/clear-middleware)))
+
+(deftest test-create-timing-middleware
+  (testing "Timing middleware adds timestamp"
+    (let [middleware-fn (conn/create-timing-middleware)
+          result (middleware-fn {:status 200})]
+      (is (contains? result :middleware-processed-at))
+      (is (instance? java.time.Instant (:middleware-processed-at result))))))
+
+(deftest test-create-error-transform-middleware
+  (testing "Error transform middleware standardizes errors"
+    (let [middleware-fn (conn/create-error-transform-middleware)]
+      ;; Test with error response
+      (let [result (middleware-fn {:status 500 :error "Server error"})]
+        (is (contains? result :standardized-error))
+        (is (= "Server error" (get-in result [:standardized-error :message])))
+        (is (true? (get-in result [:standardized-error :recoverable]))))
+      
+      ;; Test with success response (should not add standardized-error)
+      (let [result (middleware-fn {:status 200 :body "OK"})]
+        (is (not (contains? result :standardized-error)))))))
