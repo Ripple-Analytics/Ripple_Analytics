@@ -318,6 +318,18 @@
                         <p class="text-sm text-gray-600">Automate workflows with Zapier webhooks for triggers and actions.</p>
                         <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
                     </div>
+                    
+                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500" onclick="openConnectorModal('huggingface')">
+                        <div class="flex items-center mb-3">
+                            <i data-lucide="brain" class="w-8 h-8 text-yellow-500 mr-3"></i>
+                            <div>
+                                <h4 class="font-semibold">Huggingface</h4>
+                                <span id="huggingface-status" class="text-xs text-gray-500">Not configured</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600">Access embeddings, classification, and summarization models from Huggingface Hub.</p>
+                        <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -723,6 +735,15 @@
                     { name: 'webhook_document', label: 'New Document Webhook', type: 'text', placeholder: 'https://hooks.zapier.com/hooks/catch/...' },
                     { name: 'webhook_slack', label: 'Slack Notification Webhook', type: 'text', placeholder: 'https://hooks.zapier.com/hooks/catch/...' },
                     { name: 'webhook_github', label: 'GitHub Issue Webhook', type: 'text', placeholder: 'https://hooks.zapier.com/hooks/catch/...' }
+                ]
+            },
+            huggingface: {
+                title: 'Huggingface Connector',
+                fields: [
+                    { name: 'api_token', label: 'API Token (optional)', type: 'password', placeholder: 'hf_...' },
+                    { name: 'embedding_model', label: 'Embedding Model', type: 'text', placeholder: 'sentence-transformers/all-MiniLM-L6-v2' },
+                    { name: 'classification_model', label: 'Classification Model', type: 'text', placeholder: 'facebook/bart-large-mnli' },
+                    { name: 'summarization_model', label: 'Summarization Model', type: 'text', placeholder: 'facebook/bart-large-cnn' }
                 ]
             }
         };

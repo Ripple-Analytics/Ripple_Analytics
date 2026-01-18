@@ -60,6 +60,7 @@ from .data import RSSConnector, SECConnector, YahooFinanceConnector
 from .storage import LocalConnector, S3Connector, GDriveConnector
 from .llm import OllamaConnector, OpenAIConnector, LlamaCppConnector
 from .zapier_connector import ZapierConnector, create_zapier_connector
+from .huggingface_connector import HuggingfaceConnector, create_huggingface_connector
 
 __all__ = [
     # Base
@@ -99,5 +100,9 @@ __all__ = [
     
     # Automation
     "ZapierConnector",
-    "create_zapier_connector"
+    "create_zapier_connector",
+    
+    # Huggingface
+    "HuggingfaceConnector",
+    "create_huggingface_connector"
 ]
