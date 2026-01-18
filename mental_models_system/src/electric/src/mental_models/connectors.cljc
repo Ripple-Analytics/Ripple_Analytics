@@ -1568,6 +1568,262 @@
                                       (>= (- now (:timestamp (val %))) ttl))
                                 cache))})))
 
+;; ============================================
+;; Request Batching
+;; ============================================
+
+(def batch-queue
+  "Queue for batching requests by connector type."
+  (atom {}))
+
+(def batch-config
+  "Configuration for request batching."
+  (atom {:enabled true
+         :max-batch-size 10
+         :max-wait-ms 100
+         :flush-interval-ms 50}))
+
+#?(:clj
+   (defn get-batch-config
+     "Get current batch configuration."
+     []
+     @batch-config))
+
+#?(:clj
+   (defn set-batch-config
+     "Update batch configuration."
+     [config]
+     (swap! batch-config merge config)))
+
+#?(:clj
+   (defn add-to-batch
+     "Add a request to the batch queue.
+      Returns a promise that will be delivered when the batch is processed."
+     [connector-type operation params request-fn]
+     (let [result-promise (promise)
+           batch-key (str connector-type ":" operation)
+           entry {:params params
+                  :request-fn request-fn
+                  :promise result-promise
+                  :timestamp (System/currentTimeMillis)}]
+       (swap! batch-queue update batch-key (fnil conj []) entry)
+       result-promise)))
+
+#?(:clj
+   (defn process-batch
+     "Process a batch of requests.
+      Executes all requests and delivers results to their promises."
+     [batch-key entries]
+     (doseq [{:keys [request-fn promise]} entries]
+       (try
+         (let [result (request-fn)]
+           (deliver promise {:success true :result result}))
+         (catch Exception e
+           (deliver promise {:success false :error (.getMessage e)}))))))
+
+#?(:clj
+   (defn flush-batch
+     "Flush a specific batch, processing all pending requests."
+     [batch-key]
+     (let [entries (get @batch-queue batch-key)]
+       (when (seq entries)
+         (swap! batch-queue dissoc batch-key)
+         (process-batch batch-key entries)))))
+
+#?(:clj
+   (defn flush-all-batches
+     "Flush all pending batches."
+     []
+     (doseq [batch-key (keys @batch-queue)]
+       (flush-batch batch-key))))
+
+#?(:clj
+   (defn should-flush-batch?
+     "Check if a batch should be flushed based on size or time."
+     [batch-key]
+     (let [entries (get @batch-queue batch-key [])
+           config @batch-config]
+       (or (>= (count entries) (:max-batch-size config))
+           (and (seq entries)
+                (let [oldest (apply min (map :timestamp entries))]
+                  (>= (- (System/currentTimeMillis) oldest) (:max-wait-ms config))))))))
+
+#?(:clj
+   (defn with-batching
+     "Execute a request with batching support.
+      Requests are queued and processed in batches for efficiency."
+     [connector-type operation params request-fn]
+     (if-not (:enabled @batch-config)
+       (request-fn)
+       (let [batch-key (str connector-type ":" operation)
+             result-promise (add-to-batch connector-type operation params request-fn)]
+         ;; Check if batch should be flushed
+         (when (should-flush-batch? batch-key)
+           (flush-batch batch-key))
+         ;; Wait for result with timeout
+         (let [result (deref result-promise (:max-wait-ms @batch-config) {:timeout true})]
+           (if (:timeout result)
+             ;; Timeout - flush and wait again
+             (do
+               (flush-batch batch-key)
+               (let [final-result (deref result-promise 5000 {:error "Batch timeout"})]
+                 (if (:success final-result)
+                   (:result final-result)
+                   {:error (:error final-result)})))
+             ;; Got result
+             (if (:success result)
+               (:result result)
+               {:error (:error result)})))))))
+
+#?(:clj
+   (defn get-batch-stats
+     "Get statistics about pending batches."
+     []
+     (let [queue @batch-queue]
+       {:total-batches (count queue)
+        :total-pending (reduce + (map count (vals queue)))
+        :batches (into {}
+                       (map (fn [[k v]]
+                              [k {:count (count v)
+                                  :oldest-ms (when (seq v)
+                                               (- (System/currentTimeMillis)
+                                                  (apply min (map :timestamp v))))}])
+                            queue))})))
+
+#?(:clj
+   (defn clear-batch-queue
+     "Clear all pending batches without processing them."
+     []
+     (let [queue @batch-queue]
+       ;; Deliver errors to all pending promises
+       (doseq [[_ entries] queue]
+         (doseq [{:keys [promise]} entries]
+           (deliver promise {:success false :error "Batch cleared"})))
+       (reset! batch-queue {}))))
+
+;; ============================================
+;; Adaptive Retry Strategy
+;; ============================================
+
+(def retry-history
+  "History of retry attempts for adaptive strategy."
+  (atom {}))
+
+(def adaptive-retry-config
+  "Configuration for adaptive retry strategy."
+  (atom {:enabled true
+         :history-window-ms 300000
+         :min-delay-ms 100
+         :max-delay-ms 30000
+         :success-threshold 0.8
+         :failure-threshold 0.2}))
+
+#?(:clj
+   (defn get-adaptive-retry-config
+     "Get current adaptive retry configuration."
+     []
+     @adaptive-retry-config))
+
+#?(:clj
+   (defn set-adaptive-retry-config
+     "Update adaptive retry configuration."
+     [config]
+     (swap! adaptive-retry-config merge config)))
+
+#?(:clj
+   (defn record-retry-result
+     "Record the result of a retry attempt for adaptive learning."
+     [connector-type success? delay-ms]
+     (let [now (System/currentTimeMillis)
+           entry {:timestamp now
+                  :success success?
+                  :delay-ms delay-ms}]
+       (swap! retry-history update connector-type (fnil conj []) entry))))
+
+#?(:clj
+   (defn cleanup-retry-history
+     "Remove old entries from retry history."
+     []
+     (let [window (:history-window-ms @adaptive-retry-config)
+           cutoff (- (System/currentTimeMillis) window)]
+       (swap! retry-history
+              (fn [history]
+                (into {}
+                      (map (fn [[k v]]
+                             [k (vec (filter #(> (:timestamp %) cutoff) v))])
+                           history)))))))
+
+#?(:clj
+   (defn calculate-success-rate
+     "Calculate the success rate for a connector type."
+     [connector-type]
+     (let [entries (get @retry-history connector-type [])
+           total (count entries)]
+       (if (zero? total)
+         1.0
+         (/ (count (filter :success entries)) total)))))
+
+#?(:clj
+   (defn calculate-adaptive-delay
+     "Calculate the adaptive delay based on recent success/failure rates."
+     [connector-type base-delay-ms]
+     (let [config @adaptive-retry-config
+           success-rate (calculate-success-rate connector-type)]
+       (cond
+         ;; High success rate - use shorter delays
+         (>= success-rate (:success-threshold config))
+         (max (:min-delay-ms config) (/ base-delay-ms 2))
+         
+         ;; Low success rate - use longer delays
+         (<= success-rate (:failure-threshold config))
+         (min (:max-delay-ms config) (* base-delay-ms 2))
+         
+         ;; Normal - use base delay
+         :else
+         base-delay-ms))))
+
+#?(:clj
+   (defn with-adaptive-retry
+     "Execute a function with adaptive retry strategy.
+      Adjusts retry delays based on historical success/failure rates."
+     [connector-type f & {:keys [max-retries base-delay-ms]
+                          :or {max-retries 3 base-delay-ms 1000}}]
+     (if-not (:enabled @adaptive-retry-config)
+       (f)
+       (loop [attempt 0]
+         (let [result (try
+                        {:success true :value (f)}
+                        (catch Exception e
+                          {:success false :error e}))]
+           (if (:success result)
+             (do
+               (record-retry-result connector-type true 0)
+               (:value result))
+             (if (>= attempt max-retries)
+               (do
+                 (record-retry-result connector-type false 0)
+                 (throw (:error result)))
+               (let [delay-ms (calculate-adaptive-delay connector-type base-delay-ms)]
+                 (record-retry-result connector-type false delay-ms)
+                 (Thread/sleep delay-ms)
+                 (recur (inc attempt))))))))))
+
+#?(:clj
+   (defn get-retry-stats
+     "Get statistics about retry history."
+     []
+     (cleanup-retry-history)
+     (let [history @retry-history]
+       {:connector-stats
+        (into {}
+              (map (fn [[k v]]
+                     [k {:total-attempts (count v)
+                         :success-rate (calculate-success-rate k)
+                         :avg-delay-ms (if (seq v)
+                                         (/ (reduce + (map :delay-ms v)) (count v))
+                                         0)}])
+                   history))})))
+
 ;; Register built-in connector types
 #?(:clj
    (do
