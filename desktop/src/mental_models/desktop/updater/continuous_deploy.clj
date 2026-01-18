@@ -356,6 +356,84 @@
   (log/info "Pipeline configuration updated:" config-map))
 
 ;; =============================================================================
+;; Hotfix Application (Slack-triggered)
+;; =============================================================================
+
+(defn apply-hotfix!
+  "Apply a specific commit as a hotfix - triggered by Slack command.
+   Pulls the specific commit, extracts changed files, and hot-reloads them."
+  [commit-sha]
+  (log/info "Applying hotfix from commit:" commit-sha)
+  (swap! pipeline-state assoc :status :deploying)
+  
+  (try
+    ;; Fetch the specific commit
+    (let [fetch-result (github/fetch-commit commit-sha)]
+      (if-not (:success fetch-result)
+        {:success false :error (str "Failed to fetch commit: " (:error fetch-result))}
+        
+        ;; Get the diff to see what files changed
+        (let [diff (github/get-commit-diff nil commit-sha)
+              changed-files (map :filename (:files diff))
+              clj-files (filter #(re-matches #".*\.clj[cs]?$" %) changed-files)]
+          
+          (log/info "Changed files in hotfix:" (count changed-files))
+          (log/info "Clojure files to reload:" (count clj-files))
+          
+          ;; Download and apply the changed files
+          (doseq [file clj-files]
+            (let [content (github/get-file-content commit-sha file)]
+              (when content
+                (spit (str (System/getProperty "user.dir") "/" file) content))))
+          
+          ;; Hot reload the changed namespaces
+          (let [namespaces (hot/files->namespaces clj-files)
+                reload-result (hot/reload-namespaces! namespaces)]
+            
+            (swap! pipeline-state assoc 
+                   :status :idle
+                   :last-deploy (str (java.time.Instant/now)))
+            
+            (log/info "Hotfix applied successfully")
+            {:success true
+             :commit commit-sha
+             :files-changed (count changed-files)
+             :namespaces-reloaded (count namespaces)}))))
+    
+    (catch Exception e
+      (log/error "Hotfix failed:" (.getMessage e))
+      (swap! pipeline-state assoc :status :error :last-error (.getMessage e))
+      {:success false :error (.getMessage e)})))
+
+(defn check-and-update!
+  "Check for updates and apply if available - returns result map"
+  []
+  (let [update-info (github/check-for-updates)]
+    (if (:update-available update-info)
+      (handle-update-available! {:type :update-available
+                                  :current (:current update-info)
+                                  :latest (:latest update-info)})
+      {:updated false :reason "Already on latest version"})))
+
+(defn restart-application!
+  "Gracefully restart the application"
+  []
+  (log/info "Initiating application restart...")
+  
+  ;; Stop the pipeline
+  (stop-pipeline!)
+  
+  ;; Wait for jobs to complete
+  (handoff/wait-for-completion! 30000)
+  
+  ;; Trigger JVM restart via wrapper script
+  ;; The batch file will detect the restart flag and relaunch
+  (spit (str (System/getProperty "user.dir") "/.restart-flag") "restart")
+  
+  ;; Exit with special code that batch file recognizes
+  (System/exit 42))
+
+;; =============================================================================
 ;; CLI Commands
 ;; =============================================================================
 

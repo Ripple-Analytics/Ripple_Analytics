@@ -44,7 +44,9 @@
    :scan #"(?i)@?mental.?models?\s+scan\s+(.+)"
    :status #"(?i)@?mental.?models?\s+status"
    :stop #"(?i)@?mental.?models?\s+stop"
-   :restart #"(?i)@?mental.?models?\s+restart"})
+   :restart #"(?i)@?mental.?models?\s+restart"
+   :fix-ready #"(?i)@?mental.?models?\s+fix-ready\s+([a-f0-9]+)"
+   :hotfix #"(?i)@?mental.?models?\s+hotfix\s+([a-f0-9]+)"})
 
 (defn parse-command [text]
   "Parse a Slack message for commands"
@@ -104,6 +106,32 @@
   (post-message webhook-url "🔄 Restarting application...")
   ;; In a real implementation, this would trigger a graceful restart
   (deploy/restart-application!))
+
+(defmethod handle-command :fix-ready [{:keys [args webhook-url]}]
+  (let [commit-sha (first args)]
+    (app/add-log! :info (str "Received FIX-READY command for commit: " commit-sha))
+    (post-message webhook-url (str "🔧 Applying fix from commit " commit-sha "..."))
+    
+    ;; Pull the specific commit and hot-reload
+    (try
+      (let [result (deploy/apply-hotfix! commit-sha)]
+        (if (:success result)
+          (do
+            (app/add-log! :success (str "Fix applied: " commit-sha))
+            (post-message webhook-url (str "✅ Fix applied successfully!\n"
+                                           "Commit: `" commit-sha "`\n"
+                                           "Files changed: " (:files-changed result) "\n"
+                                           "Hot-reloaded: " (:namespaces-reloaded result) " namespaces")))
+          (do
+            (app/add-log! :error (str "Fix failed: " (:error result)))
+            (post-message webhook-url (str "❌ Fix failed: " (:error result))))))
+      (catch Exception e
+        (app/add-log! :error (str "Fix exception: " (.getMessage e)))
+        (post-message webhook-url (str "❌ Fix exception: " (.getMessage e)))))))
+
+(defmethod handle-command :hotfix [{:keys [args webhook-url]}]
+  ;; Alias for fix-ready
+  (handle-command {:command :fix-ready :args args :webhook-url webhook-url}))
 
 (defmethod handle-command :default [_]
   nil)

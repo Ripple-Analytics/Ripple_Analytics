@@ -3,7 +3,8 @@
   (:require [cljfx.api :as fx]
             [clojure.core.async :as async :refer [go go-loop <! >! chan]]
             [clojure.java.io :as io]
-            [clojure.string :as str])
+            [clojure.string :as str]
+            [mental-models.desktop.error-handler :as errors])
   (:import [javafx.stage Stage FileChooser DirectoryChooser]
            [javafx.scene.control Alert Alert$AlertType]
            [javafx.application Platform]
