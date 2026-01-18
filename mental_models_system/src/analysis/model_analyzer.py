@@ -213,7 +213,17 @@ class MentalModelLoader:
         with open(self.models_path, 'r') as f:
             data = json.load(f)
         
+        # Build category lookup from categories list
+        category_lookup = {}
+        for cat in data.get("categories", []):
+            category_lookup[cat.get("id")] = cat.get("name", "")
+        
         for model_data in data.get("mental_models", []):
+            # Map category_id to category name
+            category_id = model_data.get("category_id")
+            category_name = category_lookup.get(category_id, "Uncategorized")
+            model_data["category"] = category_name
+            
             model = MentalModel.from_dict(model_data)
             self.models[model.id] = model
             
