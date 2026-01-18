@@ -383,6 +383,118 @@ async def cmd_serve(args):
     await server.serve()
 
 
+async def cmd_failure_search(args):
+    """Search failure modes."""
+    from src.safeguards.failure_search import FailureModeSearchEngine
+    
+    engine = FailureModeSearchEngine()
+    
+    print(f"\nSearching failure modes for: '{args.query}'")
+    print("=" * 60)
+    
+    results = engine.search(args.query, limit=args.limit)
+    
+    if not results:
+        print("No failure modes found")
+        return
+    
+    for r in results:
+        print(f"\n[{r.relevance_score:.2f}] {r.model_name}: {r.mode_name}")
+        print(f"   {r.description[:150]}...")
+        if args.verbose:
+            print(f"   Case: {r.real_world_case[:100]}...")
+            print(f"   Warning signs: {', '.join(r.warning_signs[:3])}")
+            print(f"   Safeguards: {', '.join(r.safeguards[:3])}")
+
+
+async def cmd_assess_risk(args):
+    """Assess risk for a decision or situation."""
+    from src.safeguards.failure_search import FailureModeSearchEngine
+    
+    engine = FailureModeSearchEngine()
+    
+    # Parse models if provided
+    models = args.models.split(',') if args.models else None
+    
+    print(f"\n🎯 Risk Assessment")
+    print("=" * 60)
+    print(f"Context: {args.context[:200]}..." if len(args.context) > 200 else f"Context: {args.context}")
+    if models:
+        print(f"Models: {', '.join(models)}")
+    
+    assessment = engine.assess_risk(args.context, models)
+    
+    print(f"\n📊 Overall Risk Score: {assessment.overall_risk_score:.2f}")
+    
+    # Risk level indicator
+    if assessment.overall_risk_score >= 0.7:
+        print("   ⚠️  HIGH RISK - Proceed with extreme caution")
+    elif assessment.overall_risk_score >= 0.4:
+        print("   ⚡ MODERATE RISK - Review safeguards")
+    else:
+        print("   ✅ LOW RISK - Standard precautions")
+    
+    print(f"\n📈 Risk by Category:")
+    for cat, score in sorted(assessment.risk_by_category.items(), key=lambda x: x[1], reverse=True):
+        bar = '█' * int(score * 10) + '░' * (10 - int(score * 10))
+        print(f"   {cat}: {bar} {score:.2f}")
+    
+    print(f"\n⚠️  Top Warning Signs:")
+    for sign in assessment.warning_signs_to_watch[:5]:
+        print(f"   • {sign}")
+    
+    print(f"\n🛡️  Recommended Safeguards:")
+    for safeguard in assessment.recommended_safeguards[:5]:
+        print(f"   • {safeguard}")
+    
+    print(f"\n🔍 Top Failure Modes to Watch:")
+    for fm in assessment.top_failure_modes[:5]:
+        print(f"   [{fm.relevance_score:.2f}] {fm.model_name}: {fm.mode_name}")
+
+
+async def cmd_failure_stats(args):
+    """Show failure modes database statistics."""
+    from src.safeguards.failure_search import FailureModeSearchEngine
+    
+    engine = FailureModeSearchEngine()
+    stats = engine.get_statistics()
+    
+    print(f"\n📊 Failure Modes Database Statistics")
+    print("=" * 60)
+    print(f"Total models: {stats['total_models']}")
+    print(f"Total failure modes: {stats['total_failure_modes']}")
+    print(f"Average modes per model: {stats['average_modes_per_model']:.1f}")
+    print(f"Unique words indexed: {stats['unique_words_indexed']}")
+    
+    print(f"\n📈 Modes by Category:")
+    for cat, count in sorted(stats['modes_by_category'].items(), key=lambda x: x[1], reverse=True):
+        bar = '█' * (count // 10) + '░' * max(0, 10 - count // 10)
+        print(f"   {cat}: {bar} {count}")
+
+
+async def cmd_similar_cases(args):
+    """Find similar historical cases."""
+    from src.safeguards.failure_search import FailureModeSearchEngine
+    
+    engine = FailureModeSearchEngine()
+    
+    print(f"\n🔍 Finding similar cases for: '{args.situation}'")
+    print("=" * 60)
+    
+    cases = engine.find_similar_cases(args.situation, limit=args.limit)
+    
+    if not cases:
+        print("No similar cases found")
+        return
+    
+    for i, case in enumerate(cases, 1):
+        print(f"\n{i}. [{case['relevance']:.2f}] {case['model']}: {case['failure_mode']}")
+        print(f"   Case: {case['case'][:200]}..." if len(case['case']) > 200 else f"   Case: {case['case']}")
+        if args.verbose:
+            print(f"   Warning signs: {', '.join(case['warning_signs'][:3])}")
+            print(f"   Safeguards: {', '.join(case['safeguards'][:3])}")
+
+
 async def cmd_list_models(args):
     """List all available mental models."""
     from src.analysis import MentalModelLoader
@@ -494,6 +606,26 @@ Examples:
     list_parser.add_argument("--category", help="Filter by category")
     list_parser.add_argument("--verbose", "-v", action="store_true", help="Show descriptions")
     
+    # failure-search command
+    fm_search_parser = subparsers.add_parser("failure-search", help="Search failure modes")
+    fm_search_parser.add_argument("query", help="Search query")
+    fm_search_parser.add_argument("--limit", type=int, default=10, help="Maximum results")
+    fm_search_parser.add_argument("--verbose", "-v", action="store_true", help="Show details")
+    
+    # assess-risk command
+    risk_parser = subparsers.add_parser("assess-risk", help="Assess risk for a decision")
+    risk_parser.add_argument("context", help="Description of the decision/situation")
+    risk_parser.add_argument("--models", help="Mental models being applied (comma-separated)")
+    
+    # failure-stats command
+    fm_stats_parser = subparsers.add_parser("failure-stats", help="Show failure modes statistics")
+    
+    # similar-cases command
+    cases_parser = subparsers.add_parser("similar-cases", help="Find similar historical cases")
+    cases_parser.add_argument("situation", help="Description of current situation")
+    cases_parser.add_argument("--limit", type=int, default=5, help="Maximum cases")
+    cases_parser.add_argument("--verbose", "-v", action="store_true", help="Show details")
+    
     args = parser.parse_args()
     
     if not args.command:
@@ -517,6 +649,14 @@ Examples:
         asyncio.run(cmd_serve(args))
     elif args.command == "list-models":
         asyncio.run(cmd_list_models(args))
+    elif args.command == "failure-search":
+        asyncio.run(cmd_failure_search(args))
+    elif args.command == "assess-risk":
+        asyncio.run(cmd_assess_risk(args))
+    elif args.command == "failure-stats":
+        asyncio.run(cmd_failure_stats(args))
+    elif args.command == "similar-cases":
+        asyncio.run(cmd_similar_cases(args))
 
 
 if __name__ == "__main__":
