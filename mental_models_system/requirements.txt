@@ -7,11 +7,15 @@ python-multipart>=0.0.6
 # Database
 psycopg2-binary>=2.9.0
 sqlalchemy>=2.0.0
+asyncpg>=0.28.0
+aiomysql>=0.2.0
+aiosqlite>=0.19.0
 
 # HTTP & Async
 aiohttp>=3.8.0
 httpx>=0.24.0
 requests>=2.31.0
+aiofiles>=23.0.0
 
 # Data Processing
 pandas>=2.0.0
@@ -31,6 +35,12 @@ plotly>=5.14.0
 # Document Processing
 PyPDF2>=3.0.0
 python-docx>=0.8.11
+
+# Web Scraping (Open Source Firecrawl Alternatives)
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+scrapy>=2.11.0
+selenium>=4.15.0
 
 # Utilities
 python-dotenv>=1.0.0
