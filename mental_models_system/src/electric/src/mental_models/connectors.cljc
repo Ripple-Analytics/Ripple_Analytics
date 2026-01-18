@@ -49,6 +49,42 @@
       :throw-exceptions false}))
 
 ;; ============================================
+;; Configurable Timeout Settings
+;; ============================================
+
+(def timeout-config
+  "Configurable timeout settings per connector type (milliseconds)."
+  (atom {:github {:socket-timeout 30000 :connection-timeout 10000}
+         :slack {:socket-timeout 30000 :connection-timeout 10000}
+         :huggingface {:socket-timeout 60000 :connection-timeout 15000}
+         :lm-studio {:socket-timeout 120000 :connection-timeout 10000}
+         :web-scraper {:socket-timeout 45000 :connection-timeout 15000}
+         :zapier {:socket-timeout 30000 :connection-timeout 10000}
+         :file {:socket-timeout 5000 :connection-timeout 1000}
+         :default {:socket-timeout 30000 :connection-timeout 10000}}))
+
+#?(:clj
+   (defn get-timeout-config
+     "Get timeout configuration for a connector type."
+     [connector-type]
+     (get @timeout-config connector-type (get @timeout-config :default))))
+
+#?(:clj
+   (defn set-timeout-config
+     "Set timeout configuration for a connector type."
+     [connector-type socket-timeout connection-timeout]
+     (swap! timeout-config assoc connector-type
+            {:socket-timeout socket-timeout
+             :connection-timeout connection-timeout})))
+
+#?(:clj
+   (defn get-http-opts-for-connector
+     "Get HTTP options with connector-specific timeouts."
+     [connector-type]
+     (let [timeouts (get-timeout-config connector-type)]
+       (merge default-http-opts timeouts))))
+
+;; ============================================
 ;; Retry Logic with Exponential Backoff
 ;; ============================================
 
