@@ -3775,6 +3775,351 @@
    :total-keys (reduce + (map count (vals @signing-keys)))
    :config @signing-config})
 
+;; ============================================
+;; Request Throttling
+;; ============================================
+
+(def throttle-config
+  "Configuration for request throttling."
+  (atom {:enabled true
+         :default-max-concurrent 10
+         :default-requests-per-second 100
+         :burst-allowance 1.5}))
+
+(def throttle-state
+  "State for request throttling per connector."
+  (atom {}))
+
+(defn get-throttle-config
+  "Get current throttle configuration."
+  []
+  @throttle-config)
+
+(defn set-throttle-config
+  "Update throttle configuration."
+  [config]
+  (swap! throttle-config merge config))
+
+(defn set-connector-throttle
+  "Set throttle limits for a specific connector."
+  [connector-type & {:keys [max-concurrent requests-per-second]}]
+  (swap! throttle-state assoc connector-type
+         {:max-concurrent (or max-concurrent (:default-max-concurrent @throttle-config))
+          :requests-per-second (or requests-per-second (:default-requests-per-second @throttle-config))
+          :current-concurrent (atom 0)
+          :last-request-time (atom 0)
+          :request-count (atom 0)}))
+
+(defn get-connector-throttle
+  "Get throttle state for a connector."
+  [connector-type]
+  (get @throttle-state connector-type))
+
+(defn can-make-request?
+  "Check if a request can be made within throttle limits."
+  [connector-type]
+  (if-not (:enabled @throttle-config)
+    true
+    (if-let [state (get-connector-throttle connector-type)]
+      (let [current @(:current-concurrent state)
+            max-concurrent (:max-concurrent state)]
+        (< current max-concurrent))
+      true)))
+
+(defn acquire-throttle
+  "Acquire a throttle slot for a request."
+  [connector-type]
+  (when-let [state (get-connector-throttle connector-type)]
+    (swap! (:current-concurrent state) inc)
+    (reset! (:last-request-time state) (System/currentTimeMillis))
+    (swap! (:request-count state) inc)))
+
+(defn release-throttle
+  "Release a throttle slot after request completion."
+  [connector-type]
+  (when-let [state (get-connector-throttle connector-type)]
+    (swap! (:current-concurrent state) dec)))
+
+(defn with-throttling
+  "Execute a function with throttling."
+  [connector-type f]
+  (if-not (:enabled @throttle-config)
+    (f)
+    (if (can-make-request? connector-type)
+      (do
+        (acquire-throttle connector-type)
+        (try
+          (f)
+          (finally
+            (release-throttle connector-type))))
+      {:error "Throttle limit exceeded"
+       :connector connector-type})))
+
+(defn get-throttle-stats
+  "Get throttling statistics."
+  []
+  {:config @throttle-config
+   :connectors (into {}
+                     (map (fn [[k v]]
+                            [k {:max-concurrent (:max-concurrent v)
+                                :current-concurrent @(:current-concurrent v)
+                                :total-requests @(:request-count v)}])
+                          @throttle-state))})
+
+;; ============================================
+;; Connector Aliasing
+;; ============================================
+
+(def connector-aliases
+  "Registry of connector aliases."
+  (atom {}))
+
+(def alias-config
+  "Configuration for connector aliasing."
+  (atom {:enabled true
+         :allow-chaining true
+         :max-chain-depth 5}))
+
+(defn get-alias-config
+  "Get current alias configuration."
+  []
+  @alias-config)
+
+(defn set-alias-config
+  "Update alias configuration."
+  [config]
+  (swap! alias-config merge config))
+
+(defn register-alias
+  "Register an alias for a connector."
+  [alias-name target-connector & {:keys [config-overrides description]}]
+  (swap! connector-aliases assoc alias-name
+         {:target target-connector
+          :config-overrides (or config-overrides {})
+          :description description
+          :created-at (System/currentTimeMillis)}))
+
+(defn unregister-alias
+  "Remove a connector alias."
+  [alias-name]
+  (swap! connector-aliases dissoc alias-name))
+
+(defn resolve-alias
+  "Resolve an alias to its target connector, following chains if allowed."
+  [alias-name & {:keys [depth] :or {depth 0}}]
+  (let [config @alias-config]
+    (if (> depth (:max-chain-depth config))
+      {:error "Max alias chain depth exceeded"}
+      (if-let [alias-info (get @connector-aliases alias-name)]
+        (let [target (:target alias-info)]
+          (if (and (:allow-chaining config) (contains? @connector-aliases target))
+            (resolve-alias target :depth (inc depth))
+            {:connector target
+             :config-overrides (:config-overrides alias-info)}))
+        {:connector alias-name
+         :config-overrides {}}))))
+
+(defn list-aliases
+  "List all registered aliases."
+  []
+  (mapv (fn [[k v]]
+          {:alias k
+           :target (:target v)
+           :description (:description v)})
+        @connector-aliases))
+
+(defn get-alias-stats
+  "Get statistics about connector aliases."
+  []
+  {:total-aliases (count @connector-aliases)
+   :config @alias-config
+   :aliases (keys @connector-aliases)})
+
+;; ============================================
+;; Request Replay
+;; ============================================
+
+(def replay-buffer
+  "Buffer for storing requests for replay."
+  (atom []))
+
+(def replay-config
+  "Configuration for request replay."
+  (atom {:enabled true
+         :max-buffer-size 1000
+         :retention-ms 3600000
+         :capture-responses true}))
+
+(defn get-replay-config
+  "Get current replay configuration."
+  []
+  @replay-config)
+
+(defn set-replay-config
+  "Update replay configuration."
+  [config]
+  (swap! replay-config merge config))
+
+(defn capture-request
+  "Capture a request for potential replay."
+  [connector-type operation params & {:keys [response]}]
+  (when (:enabled @replay-config)
+    (let [entry {:id (str (random-uuid))
+                 :connector-type connector-type
+                 :operation operation
+                 :params params
+                 :response (when (:capture-responses @replay-config) response)
+                 :captured-at (System/currentTimeMillis)}]
+      (swap! replay-buffer
+             (fn [buf]
+               (let [new-buf (conj buf entry)]
+                 (if (> (count new-buf) (:max-buffer-size @replay-config))
+                   (vec (rest new-buf))
+                   new-buf))))
+      (:id entry))))
+
+(defn get-captured-requests
+  "Get captured requests, optionally filtered."
+  [& {:keys [connector-type operation limit]}]
+  (let [requests @replay-buffer
+        filtered (cond->> requests
+                   connector-type (filter #(= (:connector-type %) connector-type))
+                   operation (filter #(= (:operation %) operation))
+                   limit (take limit))]
+    (vec filtered)))
+
+(defn get-request-by-id
+  "Get a specific captured request by ID."
+  [request-id]
+  (first (filter #(= (:id %) request-id) @replay-buffer)))
+
+(defn replay-request
+  "Replay a captured request."
+  [request-id request-fn]
+  (if-let [request (get-request-by-id request-id)]
+    (let [result (request-fn (:connector-type request) (:operation request) (:params request))]
+      {:replayed true
+       :original-id request-id
+       :result result
+       :replayed-at (System/currentTimeMillis)})
+    {:error "Request not found" :request-id request-id}))
+
+(defn clear-replay-buffer
+  "Clear the replay buffer."
+  []
+  (reset! replay-buffer []))
+
+(defn cleanup-old-requests
+  "Remove requests older than retention period."
+  []
+  (let [cutoff (- (System/currentTimeMillis) (:retention-ms @replay-config))]
+    (swap! replay-buffer
+           (fn [buf]
+             (vec (filter #(> (:captured-at %) cutoff) buf))))))
+
+(defn get-replay-stats
+  "Get statistics about request replay."
+  []
+  {:buffer-size (count @replay-buffer)
+   :config @replay-config
+   :oldest-request (when (seq @replay-buffer)
+                     (:captured-at (first @replay-buffer)))
+   :newest-request (when (seq @replay-buffer)
+                     (:captured-at (last @replay-buffer)))})
+
+;; ============================================
+;; Connector Metrics Export
+;; ============================================
+
+(def metrics-export-config
+  "Configuration for metrics export."
+  (atom {:enabled true
+         :format :prometheus
+         :include-labels true
+         :prefix "connector_"}))
+
+(defn get-metrics-export-config
+  "Get current metrics export configuration."
+  []
+  @metrics-export-config)
+
+(defn set-metrics-export-config
+  "Update metrics export configuration."
+  [config]
+  (swap! metrics-export-config merge config))
+
+(defn format-prometheus-metric
+  "Format a metric in Prometheus format."
+  [name value & {:keys [labels help type]}]
+  (let [config @metrics-export-config
+        prefix (:prefix config)
+        label-str (when (and (:include-labels config) labels)
+                    (str "{"
+                         (clojure.string/join ","
+                                              (map (fn [[k v]] (str (name k) "=\"" v "\"")) labels))
+                         "}"))]
+    (str (when help (str "# HELP " prefix name " " help "\n"))
+         (when type (str "# TYPE " prefix name " " type "\n"))
+         prefix name (or label-str "") " " value)))
+
+(defn export-metrics-prometheus
+  "Export all connector metrics in Prometheus format."
+  []
+  (let [metrics-data @metrics
+        lines (atom [])]
+    ;; Request counts
+    (doseq [[connector data] metrics-data]
+      (swap! lines conj
+             (format-prometheus-metric "requests_total"
+                                       (:total-requests data 0)
+                                       :labels {:connector (name connector)}
+                                       :type "counter")))
+    ;; Error counts
+    (doseq [[connector data] metrics-data]
+      (swap! lines conj
+             (format-prometheus-metric "errors_total"
+                                       (:total-errors data 0)
+                                       :labels {:connector (name connector)}
+                                       :type "counter")))
+    ;; Latency
+    (doseq [[connector data] metrics-data]
+      (swap! lines conj
+             (format-prometheus-metric "latency_ms"
+                                       (:avg-latency-ms data 0)
+                                       :labels {:connector (name connector)}
+                                       :type "gauge")))
+    (clojure.string/join "\n" @lines)))
+
+(defn export-metrics-json
+  "Export all connector metrics in JSON format."
+  []
+  {:timestamp (System/currentTimeMillis)
+   :metrics @metrics
+   :health-scores @health-scores
+   :circuit-states (into {}
+                         (map (fn [[k v]] [k {:state (:state v) :failures (:failures v)}])
+                              @circuit-breakers))
+   :throttle-stats (get-throttle-stats)
+   :cache-stats {:size (count @response-cache)}})
+
+(defn export-metrics
+  "Export metrics in the configured format."
+  []
+  (let [config @metrics-export-config]
+    (if-not (:enabled config)
+      {:error "Metrics export disabled"}
+      (case (:format config)
+        :prometheus (export-metrics-prometheus)
+        :json (export-metrics-json)
+        (export-metrics-json)))))
+
+(defn get-metrics-export-stats
+  "Get statistics about metrics export."
+  []
+  {:config @metrics-export-config
+   :available-formats [:prometheus :json]
+   :metrics-count (count @metrics)})
+
 (def connector-registry
   "Registry of all available connectors."
   {:zapier {:create create-zapier-connector
