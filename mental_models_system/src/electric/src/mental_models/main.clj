@@ -188,6 +188,8 @@
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
     <title>Mental Models System - Electric Clojure</title>
     <script src=\"https://cdn.tailwindcss.com\"></script>
+    <link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\" />
+    <script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script>
     <style>
         /* Value Line-style density */
         body { font-size: 11px; line-height: 1.3; }
@@ -195,6 +197,10 @@
         .metric-card { text-align: center; padding: 8px; }
         .metric-value { font-size: 18px; font-weight: bold; color: #2563eb; }
         .metric-label { font-size: 10px; color: #6b7280; }
+        #world-map { height: 400px; width: 100%; }
+        .model-popup { max-width: 300px; }
+        .model-popup h4 { font-weight: bold; margin-bottom: 4px; }
+        .model-popup .category { color: #6b7280; font-size: 10px; }
     </style>
 </head>
 <body class=\"bg-gray-50\">
@@ -212,6 +218,8 @@
             <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('analysis')\">Analysis</button>
             <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('statistics')\">Statistics</button>
             <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('data')\">Data</button>
+            <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('map')\">World Map</button>
+            <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('llm')\">LLM</button>
         </div>
         
         <!-- Dashboard -->
@@ -366,6 +374,64 @@
                         <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded\" onclick=\"classifyText()\">Classify by Models</button>
                     </div>
                     <div id=\"data-result\" class=\"mt-4\"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- World Map Tab -->
+        <div id=\"map\" class=\"p-4 hidden\">
+            <div class=\"grid grid-cols-3 gap-4\">
+                <div class=\"col-span-2 bg-white border rounded shadow-sm\">
+                    <div class=\"bg-gray-100 px-3 py-2 font-semibold text-xs border-b\">Mental Models World Map</div>
+                    <div class=\"p-2\">
+                        <div id=\"world-map\"></div>
+                    </div>
+                </div>
+                <div class=\"bg-white border rounded shadow-sm\">
+                    <div class=\"bg-gray-100 px-3 py-2 font-semibold text-xs border-b\">Case Studies by Location</div>
+                    <div class=\"p-3 max-h-96 overflow-y-auto\" id=\"map-case-studies\">
+                        <p class=\"text-gray-500 text-xs\">Click a marker to see case studies</p>
+                    </div>
+                </div>
+            </div>
+            <div class=\"mt-4 bg-white border rounded shadow-sm\">
+                <div class=\"bg-gray-100 px-3 py-2 font-semibold text-xs border-b\">Add Case Study</div>
+                <div class=\"p-3\">
+                    <div class=\"grid grid-cols-4 gap-4\">
+                        <input type=\"text\" id=\"case-title\" class=\"border rounded px-2 py-1 text-xs\" placeholder=\"Title\">
+                        <input type=\"text\" id=\"case-lat\" class=\"border rounded px-2 py-1 text-xs\" placeholder=\"Latitude\">
+                        <input type=\"text\" id=\"case-lng\" class=\"border rounded px-2 py-1 text-xs\" placeholder=\"Longitude\">
+                        <select id=\"case-model\" class=\"border rounded px-2 py-1 text-xs\"></select>
+                    </div>
+                    <textarea id=\"case-description\" class=\"w-full border rounded px-2 py-1 text-xs mt-2 h-16\" placeholder=\"Description...\"></textarea>
+                    <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded mt-2\" onclick=\"addCaseStudy()\">Add to Map</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- LLM Tab -->
+        <div id=\"llm\" class=\"p-4 hidden\">
+            <div class=\"grid grid-cols-2 gap-4\">
+                <div class=\"bg-white border rounded shadow-sm\">
+                    <div class=\"bg-gray-100 px-3 py-2 font-semibold text-xs border-b\">LM Studio Analysis</div>
+                    <div class=\"p-3\">
+                        <div class=\"mb-2\">
+                            <span class=\"text-xs\">Status: </span>
+                            <span id=\"llm-status\" class=\"text-xs bg-gray-200 px-2 py-0.5 rounded\">Checking...</span>
+                        </div>
+                        <textarea id=\"llm-input\" class=\"w-full border rounded px-2 py-1 text-xs h-32\" placeholder=\"Enter situation for LLM-powered analysis...\"></textarea>
+                        <div class=\"flex gap-2 mt-2\">
+                            <button class=\"bg-purple-600 text-white px-3 py-1 text-xs rounded\" onclick=\"runLLMAnalysis()\">Analyze with LLM</button>
+                            <button class=\"bg-purple-600 text-white px-3 py-1 text-xs rounded\" onclick=\"runLLMBiases()\">Detect Biases</button>
+                            <button class=\"bg-purple-600 text-white px-3 py-1 text-xs rounded\" onclick=\"runLLMChecklist()\">Generate Checklist</button>
+                        </div>
+                    </div>
+                </div>
+                <div class=\"bg-white border rounded shadow-sm\">
+                    <div class=\"bg-gray-100 px-3 py-2 font-semibold text-xs border-b\">LLM Results</div>
+                    <div class=\"p-3 max-h-96 overflow-y-auto\" id=\"llm-result\">
+                        <p class=\"text-gray-500 text-xs\">Run an LLM analysis to see results</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -546,8 +612,251 @@
             `;
         }
         
+        // World Map functionality
+        let worldMap = null;
+        let caseStudies = [];
+        const modelMarkers = [];
+        
+        // Sample case studies with mental models
+        const sampleCaseStudies = [
+            { lat: 40.7128, lng: -74.0060, title: 'Wall Street - Market Psychology', model: 'mr-market', description: 'Benjamin Graham\\'s Mr. Market concept originated here, teaching investors to view market fluctuations as opportunities rather than threats.' },
+            { lat: 37.7749, lng: -122.4194, title: 'Silicon Valley - Network Effects', model: 'network-effects', description: 'Tech companies here leverage network effects to build moats - each new user makes the product more valuable for all users.' },
+            { lat: 51.5074, lng: -0.1278, title: 'London - Compound Interest', model: 'compound-interest', description: 'The City of London has been a center of finance for centuries, demonstrating the power of compound interest over time.' },
+            { lat: 35.6762, lng: 139.6503, title: 'Tokyo - Kaizen/Continuous Improvement', model: 'deliberate-practice', description: 'Japanese manufacturing excellence through continuous small improvements and deliberate practice.' },
+            { lat: 52.5200, lng: 13.4050, title: 'Berlin - Creative Destruction', model: 'creative-destruction', description: 'The fall of the Berlin Wall exemplifies Schumpeter\\'s creative destruction - old systems replaced by new.' },
+            { lat: 1.3521, lng: 103.8198, title: 'Singapore - Incentives', model: 'incentives', description: 'Singapore\\'s success demonstrates how proper incentive structures can transform a nation.' },
+            { lat: -33.8688, lng: 151.2093, title: 'Sydney - Antifragility', model: 'antifragility', description: 'Australia\\'s economy shows antifragility - gaining from volatility through diversification.' },
+            { lat: 55.7558, lng: 37.6173, title: 'Moscow - Game Theory', model: 'game-theory', description: 'Cold War strategies exemplify game theory - Nash equilibrium and mutually assured destruction.' }
+        ];
+        
+        function initMap() {
+            if (worldMap) return;
+            
+            worldMap = L.map('world-map').setView([20, 0], 2);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(worldMap);
+            
+            // Add sample case studies
+            sampleCaseStudies.forEach(cs => addMarkerToMap(cs));
+            
+            // Populate model dropdown
+            loadData().then(() => {
+                const select = document.getElementById('case-model');
+                select.innerHTML = '<option value=\"\">Select Model...</option>';
+                for (const [name, model] of Object.entries(window.modelsData || {})) {
+                    const option = document.createElement('option');
+                    option.value = model.name;
+                    option.textContent = model.name + ' (' + model.category + ')';
+                    select.appendChild(option);
+                }
+            });
+        }
+        
+        function addMarkerToMap(caseStudy) {
+            const marker = L.marker([caseStudy.lat, caseStudy.lng]).addTo(worldMap);
+            marker.bindPopup(`
+                <div class=\"model-popup\">
+                    <h4>${caseStudy.title}</h4>
+                    <div class=\"category\">Model: ${caseStudy.model}</div>
+                    <p style=\"font-size: 11px; margin-top: 4px;\">${caseStudy.description}</p>
+                </div>
+            `);
+            marker.on('click', () => showCaseStudyDetail(caseStudy));
+            modelMarkers.push(marker);
+            caseStudies.push(caseStudy);
+        }
+        
+        function showCaseStudyDetail(cs) {
+            document.getElementById('map-case-studies').innerHTML = `
+                <h4 class=\"font-bold text-sm\">${cs.title}</h4>
+                <p class=\"text-xs text-gray-600\">Model: ${cs.model}</p>
+                <p class=\"text-xs mt-2\">${cs.description}</p>
+                <p class=\"text-xs mt-2 text-gray-500\">Location: ${cs.lat.toFixed(4)}, ${cs.lng.toFixed(4)}</p>
+            `;
+        }
+        
+        function addCaseStudy() {
+            const title = document.getElementById('case-title').value;
+            const lat = parseFloat(document.getElementById('case-lat').value);
+            const lng = parseFloat(document.getElementById('case-lng').value);
+            const model = document.getElementById('case-model').value;
+            const description = document.getElementById('case-description').value;
+            
+            if (!title || isNaN(lat) || isNaN(lng)) {
+                alert('Please fill in title, latitude, and longitude');
+                return;
+            }
+            
+            addMarkerToMap({ lat, lng, title, model, description });
+            
+            // Clear form
+            document.getElementById('case-title').value = '';
+            document.getElementById('case-lat').value = '';
+            document.getElementById('case-lng').value = '';
+            document.getElementById('case-description').value = '';
+        }
+        
+        // LLM functionality
+        async function checkLLMStatus() {
+            try {
+                const response = await fetch('/api/llm/status');
+                const data = await response.json();
+                const statusEl = document.getElementById('llm-status');
+                if (data.status === 'connected') {
+                    statusEl.textContent = 'Connected';
+                    statusEl.className = 'text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded';
+                } else {
+                    statusEl.textContent = 'Disconnected';
+                    statusEl.className = 'text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded';
+                }
+            } catch (e) {
+                document.getElementById('llm-status').textContent = 'Error';
+            }
+        }
+        
+        async function runLLMAnalysis() {
+            const input = document.getElementById('llm-input').value;
+            document.getElementById('llm-result').innerHTML = '<p class=\"text-gray-500 text-xs\">Analyzing with LLM...</p>';
+            
+            const response = await fetch('/api/llm/analyze', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({situation: input, models: []})
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                document.getElementById('llm-result').innerHTML = `
+                    <div class=\"bg-purple-50 p-2 rounded\">
+                        <p class=\"text-xs font-semibold\">LLM-Powered Analysis</p>
+                        <pre class=\"text-xs mt-2 whitespace-pre-wrap\">${data.analysis}</pre>
+                        <p class=\"text-xs mt-2 text-gray-500\">Models used: ${data.models_used?.join(', ') || 'N/A'}</p>
+                    </div>
+                `;
+            } else {
+                document.getElementById('llm-result').innerHTML = `
+                    <div class=\"bg-yellow-50 p-2 rounded\">
+                        <p class=\"text-xs text-yellow-800\">${data.error}</p>
+                        <p class=\"text-xs mt-2\">Fallback analysis:</p>
+                        <pre class=\"text-xs mt-1\">${JSON.stringify(data.fallback, null, 2)}</pre>
+                    </div>
+                `;
+            }
+        }
+        
+        async function runLLMBiases() {
+            const input = document.getElementById('llm-input').value;
+            document.getElementById('llm-result').innerHTML = '<p class=\"text-gray-500 text-xs\">Detecting biases with LLM...</p>';
+            
+            const response = await fetch('/api/llm/biases', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({text: input})
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                document.getElementById('llm-result').innerHTML = `
+                    <div class=\"bg-purple-50 p-2 rounded\">
+                        <p class=\"text-xs font-semibold\">LLM Bias Detection</p>
+                        <pre class=\"text-xs mt-2 whitespace-pre-wrap\">${data.analysis}</pre>
+                    </div>
+                `;
+            } else {
+                document.getElementById('llm-result').innerHTML = `
+                    <div class=\"bg-yellow-50 p-2 rounded\">
+                        <p class=\"text-xs text-yellow-800\">${data.error}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        async function runLLMChecklist() {
+            const input = document.getElementById('llm-input').value;
+            document.getElementById('llm-result').innerHTML = '<p class=\"text-gray-500 text-xs\">Generating checklist with LLM...</p>';
+            
+            const response = await fetch('/api/llm/checklist', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({context: input})
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                document.getElementById('llm-result').innerHTML = `
+                    <div class=\"bg-purple-50 p-2 rounded\">
+                        <p class=\"text-xs font-semibold\">Decision Checklist</p>
+                        <pre class=\"text-xs mt-2 whitespace-pre-wrap\">${data.checklist}</pre>
+                    </div>
+                `;
+            } else {
+                document.getElementById('llm-result').innerHTML = `
+                    <div class=\"bg-yellow-50 p-2 rounded\">
+                        <p class=\"text-xs text-yellow-800\">${data.error}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Modified tab switching to initialize map when needed
+        function showTab(tabId) {
+            document.querySelectorAll('#app > div:not(:first-child):not(:nth-child(2))').forEach(el => el.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            if (tabId === 'map') {
+                setTimeout(initMap, 100);
+            }
+            if (tabId === 'llm') {
+                checkLLMStatus();
+            }
+        }
+        
+        // Store models data globally for map dropdown
+        window.modelsData = {};
+        
+        // Modified loadData to store models
+        async function loadDataAndStore() {
+            const response = await fetch('/api/models');
+            const data = await response.json();
+            window.modelsData = data.models;
+            
+            document.getElementById('total-models').textContent = data.total_models;
+            document.getElementById('total-failures').textContent = data.total_failure_modes;
+            document.getElementById('total-categories').textContent = Object.keys(data.categories).length;
+            
+            // Populate categories table
+            const categoriesTable = document.getElementById('categories-table');
+            categoriesTable.innerHTML = '';
+            for (const [cat, models] of Object.entries(data.categories)) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${cat}</td>
+                    <td>${models.length}</td>
+                    <td><div class=\"bg-gray-200 h-2 rounded\"><div class=\"bg-blue-600 h-2 rounded\" style=\"width: ${Math.min(100, models.length * 10)}%\"></div></div></td>
+                `;
+                categoriesTable.appendChild(row);
+            }
+            
+            // Populate models table
+            const modelsTable = document.getElementById('models-table');
+            modelsTable.innerHTML = '';
+            for (const [name, model] of Object.entries(data.models)) {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-blue-50 cursor-pointer';
+                row.onclick = () => showModelDetail(model);
+                row.innerHTML = `
+                    <td>${model.name}</td>
+                    <td>${model.category}</td>
+                    <td>${model.originator || '-'}</td>
+                    <td><span class=\"bg-red-100 text-red-800 px-1 rounded\">${model.failure_modes?.length || 0}</span></td>
+                `;
+                modelsTable.appendChild(row);
+            }
+        }
+        
         // Load data on page load
-        loadData();
+        loadDataAndStore();
     </script>
 </body>
 </html>")
