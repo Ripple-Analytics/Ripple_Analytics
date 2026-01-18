@@ -113,6 +113,20 @@ clj -M:dev
 ### Data
 - `POST /api/data/analyze` - Document analysis
 
+### LLM (LM Studio Integration)
+- `GET /api/llm/status` - Check LM Studio connection status
+- `POST /api/llm/analyze` - Analyze situation with LLM + mental models
+- `POST /api/llm/biases` - Detect biases using LLM
+- `POST /api/llm/checklist` - Generate decision checklist with LLM
+- `POST /api/llm/classify` - Classify document by mental models with LLM
+
+**LM Studio Configuration:**
+```bash
+# Set environment variables (optional, defaults shown)
+export LM_STUDIO_URL=http://localhost:1234
+export LM_STUDIO_MODEL=local-model
+```
+
 ## Mental Models Included
 
 The system includes **91 mental models** with **455 failure modes** across 22 categories:

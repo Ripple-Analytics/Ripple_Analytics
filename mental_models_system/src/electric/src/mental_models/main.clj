@@ -2,15 +2,179 @@
   "Mental Models System - Electric Clojure Server
    
    Main entry point for the Electric Clojure application.
-   Starts the server and serves the reactive UI."
+   Starts the server and serves the reactive UI.
+   
+   Includes LM Studio integration for local LLM inference."
   (:require [ring.adapter.jetty :as jetty]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [ring.util.response :as response]
             [mental-models.models :as models]
             [mental-models.analysis :as analysis]
             [mental-models.statistics :as stats]
-            [mental-models.data-processing :as data])
+            [mental-models.data-processing :as data]
+            [clojure.java.io :as io]
+            [clojure.string :as str])
+  (:import [java.net HttpURLConnection URL]
+           [java.io BufferedReader InputStreamReader OutputStreamWriter])
   (:gen-class))
+
+;; ============================================
+;; LM Studio Integration
+;; ============================================
+
+(def lm-studio-config
+  "Configuration for LM Studio connection."
+  {:base-url (or (System/getenv "LM_STUDIO_URL") "http://localhost:1234")
+   :model (or (System/getenv "LM_STUDIO_MODEL") "local-model")
+   :timeout 60000})
+
+(defn call-lm-studio
+  "Call LM Studio's OpenAI-compatible API.
+   Returns the response text or nil on error."
+  [prompt & {:keys [system-prompt max-tokens temperature]
+             :or {system-prompt "You are a helpful assistant that analyzes situations using mental models."
+                  max-tokens 1000
+                  temperature 0.7}}]
+  (try
+    (let [url (URL. (str (:base-url lm-studio-config) "/v1/chat/completions"))
+          conn (doto (.openConnection url)
+                 (.setRequestMethod "POST")
+                 (.setRequestProperty "Content-Type" "application/json")
+                 (.setDoOutput true)
+                 (.setConnectTimeout (:timeout lm-studio-config))
+                 (.setReadTimeout (:timeout lm-studio-config)))
+          request-body (cheshire.core/generate-string
+                        {:model (:model lm-studio-config)
+                         :messages [{:role "system" :content system-prompt}
+                                    {:role "user" :content prompt}]
+                         :max_tokens max-tokens
+                         :temperature temperature})]
+      (with-open [writer (OutputStreamWriter. (.getOutputStream conn))]
+        (.write writer request-body)
+        (.flush writer))
+      (if (= 200 (.getResponseCode conn))
+        (with-open [reader (BufferedReader. (InputStreamReader. (.getInputStream conn)))]
+          (let [response (cheshire.core/parse-string (slurp reader) true)]
+            (get-in response [:choices 0 :message :content])))
+        (do
+          (println "LM Studio error:" (.getResponseCode conn))
+          nil)))
+    (catch Exception e
+      (println "LM Studio connection error:" (.getMessage e))
+      nil)))
+
+(defn analyze-with-llm
+  "Analyze a situation using LM Studio and mental models."
+  [situation model-names]
+  (let [models-context (if (empty? model-names)
+                         (take 10 (models/get-all-models))
+                         (map models/get-model model-names))
+        models-str (str/join "\n\n" 
+                            (map (fn [m]
+                                   (str "**" (:name m) "** (" (:category m) ")\n"
+                                        "Description: " (:description m) "\n"
+                                        "Key Insight: " (:key-insight m) "\n"
+                                        "Application: " (:application m)))
+                                 models-context))
+        prompt (str "Analyze the following situation using these mental models:\n\n"
+                   "MENTAL MODELS:\n" models-str "\n\n"
+                   "SITUATION:\n" situation "\n\n"
+                   "Provide a comprehensive analysis that:\n"
+                   "1. Identifies which mental models are most relevant\n"
+                   "2. Explains how each relevant model applies\n"
+                   "3. Identifies potential failure modes to watch for\n"
+                   "4. Provides actionable recommendations\n"
+                   "5. Notes any lollapalooza effects (multiple models reinforcing each other)")]
+    (if-let [response (call-lm-studio prompt)]
+      {:success true
+       :analysis response
+       :models-used (map :name models-context)
+       :llm-powered true}
+      {:success false
+       :error "Could not connect to LM Studio. Make sure it's running on localhost:1234"
+       :fallback (analysis/latticework-analyze model-names situation)
+       :llm-powered false})))
+
+(defn detect-biases-with-llm
+  "Detect cognitive biases in text using LM Studio."
+  [text]
+  (let [bias-models ["confirmation-bias" "hindsight-bias" "availability-heuristic" 
+                     "loss-aversion" "social-proof" "anchoring-negotiation"
+                     "dunning-kruger" "status-quo-bias" "narrative-fallacy"]
+        prompt (str "Analyze the following text for cognitive biases:\n\n"
+                   "TEXT:\n" text "\n\n"
+                   "Look for these specific biases:\n"
+                   "- Confirmation bias: seeking confirming evidence\n"
+                   "- Hindsight bias: believing past was predictable\n"
+                   "- Availability heuristic: overweighting recent/vivid events\n"
+                   "- Loss aversion: overweighting losses vs gains\n"
+                   "- Social proof: following the crowd\n"
+                   "- Anchoring: being influenced by first numbers\n"
+                   "- Dunning-Kruger: overconfidence without competence\n"
+                   "- Status quo bias: preferring current state\n"
+                   "- Narrative fallacy: creating stories for random events\n\n"
+                   "For each bias detected, explain:\n"
+                   "1. What specific phrases or patterns indicate the bias\n"
+                   "2. How severe the bias appears (low/medium/high)\n"
+                   "3. Recommendations to counteract the bias")]
+    (if-let [response (call-lm-studio prompt)]
+      {:success true
+       :analysis response
+       :llm-powered true}
+      {:success false
+       :error "Could not connect to LM Studio"
+       :fallback (analysis/detect-biases text)
+       :llm-powered false})))
+
+(defn generate-decision-checklist-with-llm
+  "Generate a decision checklist using LM Studio."
+  [decision-context]
+  (let [prompt (str "Create a comprehensive decision checklist for the following situation:\n\n"
+                   "DECISION CONTEXT:\n" decision-context "\n\n"
+                   "Generate a checklist that includes:\n"
+                   "1. Key questions to answer before deciding\n"
+                   "2. Information gaps to fill\n"
+                   "3. Stakeholders to consult\n"
+                   "4. Potential failure modes to consider\n"
+                   "5. Second-order effects to anticipate\n"
+                   "6. Reversibility assessment\n"
+                   "7. Opportunity cost analysis\n"
+                   "8. Pre-mortem: what could go wrong?\n"
+                   "9. Kill criteria: when to abandon this path\n"
+                   "10. Success metrics: how will you know it worked?")]
+    (if-let [response (call-lm-studio prompt)]
+      {:success true
+       :checklist response
+       :llm-powered true}
+      {:success false
+       :error "Could not connect to LM Studio"
+       :fallback (analysis/decision-checklist decision-context)
+       :llm-powered false})))
+
+(defn classify-document-with-llm
+  "Classify a document by relevant mental models using LM Studio."
+  [text]
+  (let [categories (models/get-all-categories)
+        prompt (str "Classify the following document by which mental models are most relevant:\n\n"
+                   "DOCUMENT:\n" text "\n\n"
+                   "Available categories: " (str/join ", " categories) "\n\n"
+                   "For each relevant mental model:\n"
+                   "1. Name the model and category\n"
+                   "2. Explain why it's relevant to this document\n"
+                   "3. Rate relevance (1-10)\n"
+                   "4. Identify specific passages that relate to the model\n\n"
+                   "Also identify:\n"
+                   "- The primary theme/topic of the document\n"
+                   "- Key decisions or situations described\n"
+                   "- Potential biases in the author's perspective")]
+    (if-let [response (call-lm-studio prompt)]
+      {:success true
+       :classification response
+       :llm-powered true}
+      {:success false
+       :error "Could not connect to LM Studio"
+       :fallback (data/classify-by-mental-models text)
+       :llm-powered false})))
 
 ;; ============================================
 ;; HTML Template
@@ -437,6 +601,33 @@
         text (get body :text "")]
     (json-response (data/analyze-document text))))
 
+;; LLM-powered handlers
+(defn handle-llm-analyze [request]
+  (let [body (cheshire.core/parse-string (slurp (:body request)) true)
+        situation (get body :situation "")
+        model-names (get body :models [])]
+    (json-response (analyze-with-llm situation model-names))))
+
+(defn handle-llm-biases [request]
+  (let [body (cheshire.core/parse-string (slurp (:body request)) true)
+        text (get body :text "")]
+    (json-response (detect-biases-with-llm text))))
+
+(defn handle-llm-checklist [request]
+  (let [body (cheshire.core/parse-string (slurp (:body request)) true)
+        context (get body :context "")]
+    (json-response (generate-decision-checklist-with-llm context))))
+
+(defn handle-llm-classify [request]
+  (let [body (cheshire.core/parse-string (slurp (:body request)) true)
+        text (get body :text "")]
+    (json-response (classify-document-with-llm text))))
+
+(defn handle-llm-status [request]
+  (json-response {:lm_studio_url (:base-url lm-studio-config)
+                  :model (:model lm-studio-config)
+                  :status (if (call-lm-studio "test" :max-tokens 5) "connected" "disconnected")}))
+
 ;; ============================================
 ;; Routes
 ;; ============================================
@@ -481,6 +672,22 @@
       ;; Data API
       (and (= method :post) (= uri "/api/data/analyze"))
       (handle-document-analysis request)
+      
+      ;; LLM API (LM Studio integration)
+      (and (= method :get) (= uri "/api/llm/status"))
+      (handle-llm-status request)
+      
+      (and (= method :post) (= uri "/api/llm/analyze"))
+      (handle-llm-analyze request)
+      
+      (and (= method :post) (= uri "/api/llm/biases"))
+      (handle-llm-biases request)
+      
+      (and (= method :post) (= uri "/api/llm/checklist"))
+      (handle-llm-checklist request)
+      
+      (and (= method :post) (= uri "/api/llm/classify"))
+      (handle-llm-classify request)
       
       ;; 404
       :else
