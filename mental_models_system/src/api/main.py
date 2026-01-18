@@ -1223,6 +1223,137 @@ async def get_failure_mode_stats():
         }
 
 
+class HuggingfaceEmbeddingsRequest(BaseModel):
+    texts: List[str]
+    model: Optional[str] = None
+
+
+class HuggingfaceClassifyRequest(BaseModel):
+    text: str
+    labels: List[str]
+    multi_label: bool = False
+
+
+class HuggingfaceSummarizeRequest(BaseModel):
+    text: str
+    max_length: int = 150
+    min_length: int = 30
+
+
+@app.post("/huggingface/embeddings")
+async def get_huggingface_embeddings(request: HuggingfaceEmbeddingsRequest):
+    """Generate embeddings using Huggingface models."""
+    try:
+        from src.connectors.huggingface_connector import create_huggingface_connector
+        
+        connector = create_huggingface_connector()
+        await connector.connect()
+        
+        result = await connector.get_embeddings(request.texts, request.model)
+        
+        await connector.disconnect()
+        return result
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/huggingface/classify")
+async def classify_with_huggingface(request: HuggingfaceClassifyRequest):
+    """Classify text using Huggingface zero-shot classification."""
+    try:
+        from src.connectors.huggingface_connector import create_huggingface_connector
+        
+        connector = create_huggingface_connector()
+        await connector.connect()
+        
+        result = await connector.classify_text(
+            request.text, 
+            request.labels, 
+            multi_label=request.multi_label
+        )
+        
+        await connector.disconnect()
+        return result
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/huggingface/summarize")
+async def summarize_with_huggingface(request: HuggingfaceSummarizeRequest):
+    """Summarize text using Huggingface models."""
+    try:
+        from src.connectors.huggingface_connector import create_huggingface_connector
+        
+        connector = create_huggingface_connector()
+        await connector.connect()
+        
+        result = await connector.summarize_text(
+            request.text,
+            max_length=request.max_length,
+            min_length=request.min_length
+        )
+        
+        await connector.disconnect()
+        return result
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/huggingface/classify-mental-models")
+async def classify_by_mental_models_hf(request: AnalyzeContentRequest):
+    """Classify text by mental model categories using Huggingface."""
+    try:
+        from src.connectors.huggingface_connector import create_huggingface_connector
+        
+        connector = create_huggingface_connector()
+        await connector.connect()
+        
+        result = await connector.classify_by_mental_models(request.content)
+        
+        await connector.disconnect()
+        return result
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/huggingface/detect-biases")
+async def detect_biases_hf(request: AnalyzeContentRequest):
+    """Detect cognitive biases in text using Huggingface."""
+    try:
+        from src.connectors.huggingface_connector import create_huggingface_connector
+        
+        connector = create_huggingface_connector()
+        await connector.connect()
+        
+        result = await connector.detect_cognitive_biases(request.content)
+        
+        await connector.disconnect()
+        return result
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/huggingface/search-models")
+async def search_huggingface_models(
+    query: Optional[str] = None,
+    task: Optional[str] = None,
+    limit: int = 10
+):
+    """Search for models on Huggingface Hub."""
+    try:
+        from src.connectors.huggingface_connector import create_huggingface_connector
+        
+        connector = create_huggingface_connector()
+        await connector.connect()
+        
+        result = await connector.search_models(query=query, task=task, limit=limit)
+        
+        await connector.disconnect()
+        return result
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
 TEMPLATES_DIR = Path(__file__).parent / "templates"
 
 
