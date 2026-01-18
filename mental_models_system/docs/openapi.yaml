@@ -1,0 +1,1101 @@
+openapi: 3.0.3
+info:
+  title: Mental Models System API
+  description: |
+    A comprehensive API for analyzing documents using Charlie Munger's 129 mental models,
+    detecting Lollapalooza effects, tracking decisions, and generating improvement suggestions.
+    
+    ## Features
+    - **Mental Model Analysis**: Analyze text against 129 mental models
+    - **Failure Mode Detection**: Identify potential failure modes and safeguards
+    - **Lollapalooza Detection**: Detect when multiple models converge
+    - **Decision Tracking**: Track decisions and outcomes
+    - **Knowledge Graph**: Build and query knowledge graphs
+    - **Signal Harvesting**: Harvest signals from web sources
+    - **Improvement Suggestions**: Generate system improvement suggestions
+    
+    ## Authentication
+    API keys are required for most endpoints. Include the key in the `X-API-Key` header.
+    
+    ## Rate Limiting
+    - Default: 100 requests per minute
+    - Authenticated: 1000 requests per minute
+    - Burst: 10 requests per second
+  version: 1.0.0
+  contact:
+    name: Ripple Analytics
+    url: https://github.com/Ripple-Analytics/Ripple_Analytics
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8000
+    description: Local development server
+  - url: https://api.ripple-analytics.com
+    description: Production server
+
+tags:
+  - name: Models
+    description: Mental model operations
+  - name: Analysis
+    description: Document analysis endpoints
+  - name: Failure Modes
+    description: Failure mode detection and safeguards
+  - name: Decisions
+    description: Decision tracking and outcomes
+  - name: Knowledge Graph
+    description: Knowledge graph operations
+  - name: Signals
+    description: Signal harvesting
+  - name: Improvements
+    description: Improvement suggestions
+  - name: Scheduler
+    description: Job scheduling
+  - name: Webhooks
+    description: Webhook management
+  - name: Security
+    description: API key and security management
+  - name: Health
+    description: System health and metrics
+
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      summary: Health check
+      description: Check if the API is running
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  version:
+                    type: string
+                    example: 1.0.0
+
+  /metrics:
+    get:
+      tags:
+        - Health
+      summary: Prometheus metrics
+      description: Get Prometheus-formatted metrics
+      responses:
+        '200':
+          description: Metrics in Prometheus format
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /models:
+    get:
+      tags:
+        - Models
+      summary: List all mental models
+      description: Get a list of all 129 mental models
+      parameters:
+        - name: category
+          in: query
+          description: Filter by category
+          schema:
+            type: string
+            enum:
+              - Psychology
+              - Thinking Tools
+              - Economics
+              - Moats
+              - Math
+              - Physics
+              - Biology
+              - Organizational
+        - name: limit
+          in: query
+          description: Maximum number of models to return
+          schema:
+            type: integer
+            default: 100
+        - name: offset
+          in: query
+          description: Number of models to skip
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of mental models
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  models:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MentalModel'
+                  total:
+                    type: integer
+                  categories:
+                    type: object
+                    additionalProperties:
+                      type: integer
+
+  /models/{model_id}:
+    get:
+      tags:
+        - Models
+      summary: Get a specific mental model
+      parameters:
+        - name: model_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Mental model details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentalModel'
+        '404':
+          description: Model not found
+
+  /analyze:
+    post:
+      tags:
+        - Analysis
+      summary: Analyze text with mental models
+      description: Analyze text to identify applicable mental models and detect Lollapalooza effects
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+                  description: Text to analyze
+                  minLength: 10
+                  maxLength: 100000
+                models:
+                  type: array
+                  items:
+                    type: string
+                  description: Specific models to check (optional, defaults to all)
+                include_failure_modes:
+                  type: boolean
+                  default: true
+                  description: Include failure mode analysis
+                include_safeguards:
+                  type: boolean
+                  default: true
+                  description: Include safeguard recommendations
+      responses:
+        '200':
+          description: Analysis results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalysisResult'
+        '400':
+          description: Invalid request
+        '429':
+          description: Rate limit exceeded
+
+  /analyze/file:
+    post:
+      tags:
+        - Analysis
+      summary: Analyze uploaded file
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: File to analyze (PDF, TXT, MD, DOCX)
+      responses:
+        '200':
+          description: Analysis results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalysisResult'
+
+  /failure-modes/stats:
+    get:
+      tags:
+        - Failure Modes
+      summary: Get failure mode statistics
+      responses:
+        '200':
+          description: Failure mode statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_models:
+                    type: integer
+                  total_failure_modes:
+                    type: integer
+                  indexed_words:
+                    type: integer
+                  categories:
+                    type: object
+
+  /failure-modes/search:
+    get:
+      tags:
+        - Failure Modes
+      summary: Search failure modes
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Search query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FailureMode'
+
+  /failure-modes/assess-risk:
+    post:
+      tags:
+        - Failure Modes
+      summary: Assess risk for a decision
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - context
+              properties:
+                context:
+                  type: string
+                  description: Decision context
+                models:
+                  type: array
+                  items:
+                    type: string
+                  description: Models being applied
+      responses:
+        '200':
+          description: Risk assessment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RiskAssessment'
+
+  /decisions:
+    get:
+      tags:
+        - Decisions
+      summary: List decisions
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: domain
+          in: query
+          schema:
+            type: string
+        - name: outcome
+          in: query
+          schema:
+            type: string
+            enum: [pending, success, failure, partial]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: List of decisions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Decision'
+    post:
+      tags:
+        - Decisions
+      summary: Create a new decision
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionCreate'
+      responses:
+        '201':
+          description: Decision created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Decision'
+
+  /decisions/{decision_id}:
+    get:
+      tags:
+        - Decisions
+      summary: Get a specific decision
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: decision_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Decision details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Decision'
+
+  /decisions/{decision_id}/outcome:
+    post:
+      tags:
+        - Decisions
+      summary: Record decision outcome
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: decision_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - outcome
+              properties:
+                outcome:
+                  type: string
+                  enum: [success, failure, partial]
+                notes:
+                  type: string
+                actual_result:
+                  type: string
+      responses:
+        '200':
+          description: Outcome recorded
+
+  /knowledge-graph:
+    get:
+      tags:
+        - Knowledge Graph
+      summary: Get knowledge graph statistics
+      responses:
+        '200':
+          description: Graph statistics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  nodes:
+                    type: integer
+                  edges:
+                    type: integer
+                  node_types:
+                    type: object
+
+  /knowledge-graph/search:
+    get:
+      tags:
+        - Knowledge Graph
+      summary: Search the knowledge graph
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: node_type
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /signals:
+    get:
+      tags:
+        - Signals
+      summary: List harvested signals
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: source
+          in: query
+          schema:
+            type: string
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: [low, medium, high, critical]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: List of signals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Signal'
+
+  /signals/harvest:
+    post:
+      tags:
+        - Signals
+      summary: Trigger signal harvesting
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sources:
+                  type: array
+                  items:
+                    type: string
+                query:
+                  type: string
+      responses:
+        '202':
+          description: Harvesting started
+
+  /improvements:
+    get:
+      tags:
+        - Improvements
+      summary: Get improvement suggestions
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, in_progress, completed, rejected]
+        - name: priority
+          in: query
+          schema:
+            type: string
+            enum: [low, medium, high, critical]
+      responses:
+        '200':
+          description: List of improvements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Improvement'
+
+  /improvements/generate:
+    post:
+      tags:
+        - Improvements
+      summary: Generate new improvement suggestions
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: Generated improvements
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Improvement'
+
+  /scheduler/jobs:
+    get:
+      tags:
+        - Scheduler
+      summary: List scheduled jobs
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: List of jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Job'
+    post:
+      tags:
+        - Scheduler
+      summary: Create a new job
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobCreate'
+      responses:
+        '201':
+          description: Job created
+
+  /scheduler/jobs/{job_id}:
+    delete:
+      tags:
+        - Scheduler
+      summary: Delete a job
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Job deleted
+
+  /webhooks:
+    get:
+      tags:
+        - Webhooks
+      summary: List webhooks
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: List of webhooks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Webhook'
+    post:
+      tags:
+        - Webhooks
+      summary: Create a webhook
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookCreate'
+      responses:
+        '201':
+          description: Webhook created
+
+  /api-keys:
+    get:
+      tags:
+        - Security
+      summary: List API keys
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: List of API keys
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/APIKeyInfo'
+    post:
+      tags:
+        - Security
+      summary: Create a new API key
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                scopes:
+                  type: array
+                  items:
+                    type: string
+                expires_in_days:
+                  type: integer
+      responses:
+        '201':
+          description: API key created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  key:
+                    type: string
+                    description: The API key (only shown once)
+                  key_info:
+                    $ref: '#/components/schemas/APIKeyInfo'
+
+  /api-keys/{key_id}:
+    delete:
+      tags:
+        - Security
+      summary: Revoke an API key
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - name: key_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: API key revoked
+
+  /export:
+    post:
+      tags:
+        - Data
+      summary: Export system data
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                include:
+                  type: array
+                  items:
+                    type: string
+                    enum: [models, failure_modes, decisions, knowledge_graph, settings]
+                format:
+                  type: string
+                  enum: [json, csv, zip]
+                  default: json
+      responses:
+        '200':
+          description: Exported data
+          content:
+            application/json:
+              schema:
+                type: object
+            application/zip:
+              schema:
+                type: string
+                format: binary
+
+  /import:
+    post:
+      tags:
+        - Data
+      summary: Import system data
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                merge_strategy:
+                  type: string
+                  enum: [replace, merge, skip_existing]
+                  default: merge
+      responses:
+        '200':
+          description: Import results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  imported:
+                    type: integer
+                  skipped:
+                    type: integer
+                  errors:
+                    type: array
+                    items:
+                      type: string
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+
+  schemas:
+    MentalModel:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          type: string
+        description:
+          type: string
+        source:
+          type: string
+        applicability:
+          type: array
+          items:
+            type: string
+        examples:
+          type: array
+          items:
+            type: string
+
+    AnalysisResult:
+      type: object
+      properties:
+        text_length:
+          type: integer
+        models_detected:
+          type: array
+          items:
+            type: object
+            properties:
+              model:
+                $ref: '#/components/schemas/MentalModel'
+              relevance_score:
+                type: number
+              evidence:
+                type: string
+        lollapalooza_score:
+          type: number
+          description: Score 0-1 indicating model convergence
+        lollapalooza_detected:
+          type: boolean
+        failure_modes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailureMode'
+        safeguards:
+          type: array
+          items:
+            type: string
+        risk_assessment:
+          $ref: '#/components/schemas/RiskAssessment'
+
+    FailureMode:
+      type: object
+      properties:
+        model:
+          type: string
+        failure_mode:
+          type: string
+        description:
+          type: string
+        warning_signs:
+          type: array
+          items:
+            type: string
+        safeguards:
+          type: array
+          items:
+            type: string
+        real_world_example:
+          type: string
+        severity:
+          type: string
+          enum: [low, medium, high, critical]
+
+    RiskAssessment:
+      type: object
+      properties:
+        overall_risk:
+          type: number
+        risk_level:
+          type: string
+          enum: [low, medium, high, critical]
+        risk_by_category:
+          type: object
+          additionalProperties:
+            type: number
+        top_risks:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailureMode'
+        recommendations:
+          type: array
+          items:
+            type: string
+
+    Decision:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        context:
+          type: string
+        domain:
+          type: string
+        models_applied:
+          type: array
+          items:
+            type: string
+        expected_outcome:
+          type: string
+        actual_outcome:
+          type: string
+        outcome:
+          type: string
+          enum: [pending, success, failure, partial]
+        created_at:
+          type: string
+          format: date-time
+        outcome_recorded_at:
+          type: string
+          format: date-time
+
+    DecisionCreate:
+      type: object
+      required:
+        - title
+        - context
+      properties:
+        title:
+          type: string
+        context:
+          type: string
+        domain:
+          type: string
+        models_applied:
+          type: array
+          items:
+            type: string
+        expected_outcome:
+          type: string
+
+    Signal:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        source:
+          type: string
+        url:
+          type: string
+        summary:
+          type: string
+        models_detected:
+          type: array
+          items:
+            type: string
+        lollapalooza_score:
+          type: number
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+        harvested_at:
+          type: string
+          format: date-time
+
+    Improvement:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        priority:
+          type: string
+          enum: [low, medium, high, critical]
+        estimated_impact:
+          type: number
+        status:
+          type: string
+          enum: [pending, in_progress, completed, rejected]
+        created_at:
+          type: string
+          format: date-time
+
+    Job:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        job_type:
+          type: string
+        schedule:
+          type: string
+        enabled:
+          type: boolean
+        last_run:
+          type: string
+          format: date-time
+        next_run:
+          type: string
+          format: date-time
+
+    JobCreate:
+      type: object
+      required:
+        - name
+        - job_type
+        - schedule
+      properties:
+        name:
+          type: string
+        job_type:
+          type: string
+          enum: [harvest_signals, generate_improvements, analyze_documents, backup]
+        schedule:
+          type: string
+          description: Cron expression
+        config:
+          type: object
+
+    Webhook:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+        events:
+          type: array
+          items:
+            type: string
+        enabled:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    WebhookCreate:
+      type: object
+      required:
+        - url
+        - events
+      properties:
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+            enum:
+              - analysis.completed
+              - lollapalooza.detected
+              - decision.created
+              - decision.outcome
+              - signal.harvested
+              - improvement.generated
+        secret:
+          type: string
+          description: Secret for webhook signature verification
+
+    APIKeyInfo:
+      type: object
+      properties:
+        key_hash:
+          type: string
+        name:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        created_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        last_used:
+          type: string
+          format: date-time
+        usage_count:
+          type: integer
+        enabled:
+          type: boolean
