@@ -335,18 +335,19 @@ You can also mention @MentalModels in any message to get analysis."""
             
             try:
                 context = {"content": text_to_check, "source": "slack"}
-                detection_result = failure_detector.detect_failure_modes(context)
+                detected_results = failure_detector.detect_failures(context)
                 
                 response_parts = [f"*Failure Mode Check:* {text_to_check[:100]}...\n"]
                 
-                if detection_result.get("detected_failures"):
+                if detected_results:
                     response_parts.append("\n*Potential Failure Modes Detected:*")
-                    for failure in detection_result["detected_failures"][:5]:
-                        response_parts.append(f"- *{failure.get('name', 'Unknown')}* ({failure.get('severity', 'medium')})")
-                        if failure.get('detection_signals'):
-                            response_parts.append(f"  Signals: {', '.join(failure['detection_signals'][:2])}")
-                        if failure.get('prevention_strategies'):
-                            response_parts.append(f"  Prevention: {failure['prevention_strategies'][0][:80]}")
+                    for result in detected_results[:5]:
+                        fm = result.failure_mode
+                        response_parts.append(f"- *{fm.name}* ({fm.severity.value}) - {result.confidence:.0%} confidence")
+                        if result.signals_found:
+                            response_parts.append(f"  Signals: {', '.join(result.signals_found[:2])}")
+                        if result.recommendations:
+                            response_parts.append(f"  Prevention: {result.recommendations[0][:80]}")
                 else:
                     response_parts.append("\nNo obvious failure modes detected. Consider:")
                     response_parts.append("- Confirmation bias: Are you only seeing what you want to see?")
