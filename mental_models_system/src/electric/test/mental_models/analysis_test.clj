@@ -52,7 +52,7 @@
 
 (deftest test-decision-checklist
   (testing "Decision checklist generation"
-    (let [result (analysis/decision-checklist "Should I hire this executive?")]
+    (let [result (analysis/decision-checklist "Should I hire this executive?" "Hiring decision for VP of Engineering")]
       (is (map? result) "Should return a map")
       (is (contains? result :checklist) "Should have checklist")
       (is (vector? (:checklist result)) "checklist should be vector")
@@ -64,5 +64,5 @@
                   ["circle-of-competence" "margin-of-safety"]
                   "Should I invest $1M in this AI startup?")]
       (is (map? result) "Should return a map")
-      (is (contains? result :latticework) "Should have latticework")
+      (is (contains? result :latticework-analysis) "Should have latticework-analysis")
       (is (contains? result :lollapalooza-detection) "Should have lollapalooza-detection"))))
