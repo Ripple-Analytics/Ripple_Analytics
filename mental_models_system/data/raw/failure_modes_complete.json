@@ -1,0 +1,1425 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "description": "Comprehensive failure modes for all 129 mental models - 5 failure modes per model",
+    "total_models": 129,
+    "failure_modes_per_model": 5,
+    "total_failure_modes": 645,
+    "last_updated": "2026-01-18",
+    "categories": [
+      "data_bias",
+      "reasoning_error",
+      "incomplete_analysis",
+      "overconfidence",
+      "context_blindness",
+      "temporal_error",
+      "scale_mismatch",
+      "feedback_loop",
+      "edge_case",
+      "integration_failure"
+    ],
+    "severities": ["low", "medium", "high", "critical"]
+  },
+  "failure_modes": [
+    {
+      "model_id": 1,
+      "model_name": "Reward and Punishment Superresponse Tendency",
+      "failures": [
+        {
+          "id": "fm_1_1",
+          "name": "Incentive Blindness",
+          "description": "Failing to identify hidden or non-obvious incentives that drive behavior",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["single_source_of_incentive_data", "no_stakeholder_mapping", "missing_second_order_effects"],
+          "prevention_strategies": ["Map all stakeholders and their incentives", "Look for hidden compensation structures", "Consider non-monetary incentives (status, power, autonomy)"],
+          "example_scenario": "Analyst concludes executives are aligned with shareholders based only on stock options, missing that vesting schedules encourage short-term manipulation"
+        },
+        {
+          "id": "fm_1_2",
+          "name": "Incentive Oversimplification",
+          "description": "Reducing complex multi-incentive situations to a single dominant incentive",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["single_incentive_explanation", "no_conflicting_incentives_identified", "linear_incentive_model"],
+          "prevention_strategies": ["Always identify at least 3 incentives per actor", "Map incentive conflicts explicitly", "Consider incentive interactions"],
+          "example_scenario": "Assuming salespeople only respond to commission, missing that peer recognition and job security also drive behavior"
+        },
+        {
+          "id": "fm_1_3",
+          "name": "Incentive Timing Mismatch",
+          "description": "Ignoring the temporal dimension of incentives - when rewards/punishments are delivered matters",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["no_temporal_analysis", "immediate_vs_delayed_not_considered", "missing_discount_rate_analysis"],
+          "prevention_strategies": ["Map incentive timing explicitly", "Consider hyperbolic discounting effects", "Analyze vesting and payout schedules"],
+          "example_scenario": "Designing a bonus structure with annual payouts when quarterly behavior changes are needed"
+        },
+        {
+          "id": "fm_1_4",
+          "name": "Perverse Incentive Creation",
+          "description": "Proposed solutions inadvertently create incentives for undesired behavior",
+          "category": "feedback_loop",
+          "severity": "critical",
+          "detection_signals": ["no_gaming_analysis", "no_cobra_effect_check", "missing_unintended_consequences_review"],
+          "prevention_strategies": ["Apply inversion - how could this be gamed?", "Review historical examples of similar incentives", "Pilot test with adversarial thinking"],
+          "example_scenario": "Paying bounties for dead cobras leads to cobra farming (the original Cobra Effect)"
+        },
+        {
+          "id": "fm_1_5",
+          "name": "Incentive Magnitude Miscalibration",
+          "description": "Incentives too weak to change behavior or so strong they cause dysfunction",
+          "category": "scale_mismatch",
+          "severity": "medium",
+          "detection_signals": ["no_threshold_analysis", "no_comparison_to_alternatives", "missing_elasticity_consideration"],
+          "prevention_strategies": ["Benchmark against competing incentives", "Test incentive elasticity", "Consider diminishing returns"],
+          "example_scenario": "Offering a 1% bonus for safety improvements when workers can earn 20% more by cutting corners"
+        }
+      ]
+    },
+    {
+      "model_id": 2,
+      "model_name": "Liking/Loving Tendency",
+      "failures": [
+        {
+          "id": "fm_2_1",
+          "name": "Affinity Bias Blindspot",
+          "description": "Failing to recognize when liking someone distorts objective analysis",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["positive_relationship_with_subject", "no_devil_advocate_review", "unanimous_positive_assessment"],
+          "prevention_strategies": ["Require independent review by someone without relationship", "Use structured evaluation criteria", "Explicitly list negatives before positives"],
+          "example_scenario": "Investment committee approves deal because they like the founder, ignoring red flags in financials"
+        },
+        {
+          "id": "fm_2_2",
+          "name": "Halo Effect Propagation",
+          "description": "Positive feelings in one domain incorrectly spread to unrelated domains",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["cross_domain_positive_attribution", "no_domain_separation", "single_positive_trait_dominates"],
+          "prevention_strategies": ["Evaluate each domain independently", "Use domain-specific criteria", "Require evidence for each positive claim"],
+          "example_scenario": "Assuming a successful entrepreneur will also be a good board member without evidence of governance skills"
+        },
+        {
+          "id": "fm_2_3",
+          "name": "Reciprocity Contamination",
+          "description": "Liking someone because they did something nice, then distorting analysis to favor them",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["recent_favor_received", "no_disclosure_of_relationship", "asymmetric_treatment"],
+          "prevention_strategies": ["Disclose all relationships and favors", "Recuse from decisions involving benefactors", "Use blind evaluation where possible"],
+          "example_scenario": "Analyst gives favorable rating to company whose CEO invited them to exclusive event"
+        },
+        {
+          "id": "fm_2_4",
+          "name": "In-Group Favoritism",
+          "description": "Preferring analysis that favors people similar to oneself",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["demographic_similarity", "shared_background", "no_diversity_in_review"],
+          "prevention_strategies": ["Ensure diverse review panels", "Use structured criteria", "Blind evaluation where possible"],
+          "example_scenario": "Venture capitalists consistently funding founders from their own alma mater"
+        },
+        {
+          "id": "fm_2_5",
+          "name": "Criticism Avoidance",
+          "description": "Softening or omitting negative findings to preserve relationships",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["no_negative_findings", "hedged_language", "missing_risk_section"],
+          "prevention_strategies": ["Require explicit risk/negative sections", "Anonymous feedback mechanisms", "Separate relationship from analysis"],
+          "example_scenario": "Auditor fails to flag issues because they want to maintain client relationship"
+        }
+      ]
+    },
+    {
+      "model_id": 3,
+      "model_name": "Disliking/Hating Tendency",
+      "failures": [
+        {
+          "id": "fm_3_1",
+          "name": "Negative Halo Effect",
+          "description": "Dislike in one area spreads to unfairly negative assessment in unrelated areas",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["negative_relationship_with_subject", "cross_domain_negative_attribution", "no_positive_findings"],
+          "prevention_strategies": ["Evaluate each domain independently", "Require evidence for negative claims", "Use structured criteria"],
+          "example_scenario": "Dismissing a competitor's valid innovation because of personal dislike for their CEO"
+        },
+        {
+          "id": "fm_3_2",
+          "name": "Guilt by Association",
+          "description": "Negative judgment based on association rather than direct evidence",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["association_based_judgment", "no_direct_evidence", "third_party_negative_connection"],
+          "prevention_strategies": ["Require direct evidence", "Evaluate entity independently", "Separate association from analysis"],
+          "example_scenario": "Rejecting a vendor because they also serve a competitor you dislike"
+        },
+        {
+          "id": "fm_3_3",
+          "name": "Confirmation of Negative Priors",
+          "description": "Seeking only information that confirms pre-existing negative views",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["only_negative_sources_cited", "no_disconfirming_evidence_sought", "pre_existing_negative_opinion"],
+          "prevention_strategies": ["Actively seek positive evidence", "Require balanced source review", "Devil's advocate for positive case"],
+          "example_scenario": "Research report on competitor only cites negative reviews, ignoring positive customer feedback"
+        },
+        {
+          "id": "fm_3_4",
+          "name": "Proportionality Distortion",
+          "description": "Minor flaws magnified due to dislike, major positives minimized",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["asymmetric_weighting", "minor_issues_emphasized", "major_positives_dismissed"],
+          "prevention_strategies": ["Use standardized weighting criteria", "Quantify impact of each factor", "Independent review"],
+          "example_scenario": "Rejecting acquisition target for minor accounting issues while ignoring strong market position"
+        },
+        {
+          "id": "fm_3_5",
+          "name": "Motivated Reasoning Against",
+          "description": "Constructing elaborate justifications for negative conclusions driven by emotion",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["complex_negative_narrative", "emotional_language", "conclusion_precedes_analysis"],
+          "prevention_strategies": ["Write conclusion last", "Require structured analysis before conclusion", "Peer review for emotional content"],
+          "example_scenario": "Building complex bear case for stock after losing money on previous investment in same sector"
+        }
+      ]
+    },
+    {
+      "model_id": 4,
+      "model_name": "Doubt-Avoidance Tendency",
+      "failures": [
+        {
+          "id": "fm_4_1",
+          "name": "Premature Closure",
+          "description": "Reaching conclusions too quickly to eliminate uncomfortable uncertainty",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["rapid_conclusion", "limited_alternatives_considered", "stress_or_time_pressure"],
+          "prevention_strategies": ["Mandate minimum analysis time", "Require multiple hypotheses", "Cooling off period before decisions"],
+          "example_scenario": "CEO makes acquisition decision in one meeting to 'stop the uncertainty' without due diligence"
+        },
+        {
+          "id": "fm_4_2",
+          "name": "False Certainty",
+          "description": "Expressing high confidence to avoid acknowledging genuine uncertainty",
+          "category": "overconfidence",
+          "severity": "high",
+          "detection_signals": ["high_confidence_low_evidence", "no_uncertainty_ranges", "definitive_language"],
+          "prevention_strategies": ["Require confidence intervals", "Mandate uncertainty acknowledgment", "Track prediction accuracy"],
+          "example_scenario": "Analyst gives precise price target without acknowledging wide range of possible outcomes"
+        },
+        {
+          "id": "fm_4_3",
+          "name": "Binary Thinking",
+          "description": "Reducing complex situations to yes/no when reality is probabilistic",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["binary_framing", "no_probability_ranges", "either_or_language"],
+          "prevention_strategies": ["Express outcomes as probabilities", "Consider multiple scenarios", "Avoid binary language"],
+          "example_scenario": "Framing market outlook as 'bull or bear' instead of probability distribution of outcomes"
+        },
+        {
+          "id": "fm_4_4",
+          "name": "Anchoring on First Answer",
+          "description": "Accepting first plausible explanation to resolve doubt quickly",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["single_hypothesis_tested", "first_explanation_accepted", "no_alternative_hypotheses"],
+          "prevention_strategies": ["Generate multiple hypotheses before testing", "Require at least 3 explanations", "Test alternatives equally"],
+          "example_scenario": "Attributing sales decline to economy without considering product issues or competition"
+        },
+        {
+          "id": "fm_4_5",
+          "name": "Stress-Induced Snap Judgment",
+          "description": "Making quick decisions under stress to eliminate anxiety of uncertainty",
+          "category": "context_blindness",
+          "severity": "critical",
+          "detection_signals": ["high_stress_environment", "time_pressure", "emotional_decision_making"],
+          "prevention_strategies": ["Recognize stress state", "Delay major decisions when stressed", "Use pre-committed decision rules"],
+          "example_scenario": "Panic selling during market crash to eliminate anxiety of watching losses"
+        }
+      ]
+    },
+    {
+      "model_id": 5,
+      "model_name": "Inconsistency-Avoidance Tendency",
+      "failures": [
+        {
+          "id": "fm_5_1",
+          "name": "Sunk Cost Persistence",
+          "description": "Continuing failed course of action to remain consistent with past decisions",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["prior_commitment_exists", "new_evidence_ignored", "escalating_commitment"],
+          "prevention_strategies": ["Evaluate decisions fresh ignoring sunk costs", "Kill criteria defined upfront", "Independent review of continuation decisions"],
+          "example_scenario": "Continuing to fund failing project because 'we've already invested so much'"
+        },
+        {
+          "id": "fm_5_2",
+          "name": "Belief Perseverance",
+          "description": "Maintaining beliefs despite contradictory evidence to avoid inconsistency",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["contradictory_evidence_dismissed", "original_thesis_unchanged", "rationalization_of_new_data"],
+          "prevention_strategies": ["Pre-commit to belief update triggers", "Track and review contradictory evidence", "Require thesis revision on new data"],
+          "example_scenario": "Maintaining bullish thesis on stock despite multiple earnings misses"
+        },
+        {
+          "id": "fm_5_3",
+          "name": "Identity-Protective Cognition",
+          "description": "Rejecting information that threatens self-concept or group identity",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["identity_relevant_topic", "emotional_response_to_evidence", "tribal_alignment"],
+          "prevention_strategies": ["Separate identity from analysis", "Anonymous evaluation", "Focus on process not conclusions"],
+          "example_scenario": "Value investor dismissing growth investing evidence because 'that's not who we are'"
+        },
+        {
+          "id": "fm_5_4",
+          "name": "Commitment Escalation",
+          "description": "Increasing commitment to justify past decisions rather than cutting losses",
+          "category": "feedback_loop",
+          "severity": "critical",
+          "detection_signals": ["increasing_resource_allocation", "declining_returns", "defensive_justification"],
+          "prevention_strategies": ["Pre-set stop-loss criteria", "Independent review of escalation decisions", "Fresh eyes evaluation"],
+          "example_scenario": "Doubling down on losing position to 'prove the original thesis right'"
+        },
+        {
+          "id": "fm_5_5",
+          "name": "Cognitive Dissonance Resolution via Distortion",
+          "description": "Distorting new information to fit existing beliefs rather than updating beliefs",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["reinterpretation_of_evidence", "special_pleading", "moving_goalposts"],
+          "prevention_strategies": ["Document predictions before outcomes", "Track prediction accuracy", "Require explicit belief updates"],
+          "example_scenario": "Reinterpreting missed earnings as 'actually positive because expectations were too high'"
+        }
+      ]
+    },
+    {
+      "model_id": 6,
+      "model_name": "Curiosity Tendency",
+      "failures": [
+        {
+          "id": "fm_6_1",
+          "name": "Analysis Paralysis from Over-Curiosity",
+          "description": "Endless information gathering without reaching actionable conclusions",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["extended_research_phase", "no_decision_timeline", "always_one_more_question"],
+          "prevention_strategies": ["Set research deadlines", "Define minimum viable analysis", "Time-box curiosity"],
+          "example_scenario": "Research team delays recommendation indefinitely because 'we need more data'"
+        },
+        {
+          "id": "fm_6_2",
+          "name": "Curiosity Misdirection",
+          "description": "Pursuing interesting but irrelevant tangents instead of core questions",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["tangential_research", "core_questions_unanswered", "interesting_but_irrelevant_findings"],
+          "prevention_strategies": ["Define key questions upfront", "Regularly check alignment", "Prioritize core over interesting"],
+          "example_scenario": "Deep dive into company history when the key question is about future competitive position"
+        },
+        {
+          "id": "fm_6_3",
+          "name": "Curiosity Deficit",
+          "description": "Insufficient curiosity leading to surface-level analysis",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["shallow_analysis", "no_follow_up_questions", "accepted_at_face_value"],
+          "prevention_strategies": ["Require minimum depth of analysis", "Ask 'why' five times", "Challenge assumptions"],
+          "example_scenario": "Accepting management guidance without questioning underlying assumptions"
+        },
+        {
+          "id": "fm_6_4",
+          "name": "Selective Curiosity",
+          "description": "Being curious only about confirming information, not disconfirming",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["asymmetric_research_depth", "confirming_sources_emphasized", "disconfirming_areas_unexplored"],
+          "prevention_strategies": ["Equal research into bull and bear cases", "Require disconfirming evidence search", "Track research balance"],
+          "example_scenario": "Deep research into growth drivers but superficial look at competitive threats"
+        },
+        {
+          "id": "fm_6_5",
+          "name": "Curiosity Without Synthesis",
+          "description": "Gathering information without integrating it into coherent understanding",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["data_dump_without_insight", "no_connecting_narrative", "facts_without_framework"],
+          "prevention_strategies": ["Require synthesis sections", "Build mental models from data", "Connect facts to thesis"],
+          "example_scenario": "Report full of facts but no clear investment thesis or recommendation"
+        }
+      ]
+    },
+    {
+      "model_id": 7,
+      "model_name": "Kantian Fairness Tendency",
+      "failures": [
+        {
+          "id": "fm_7_1",
+          "name": "Fairness Projection",
+          "description": "Assuming others share your fairness standards when they don't",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["assumed_reciprocity", "no_counterparty_analysis", "naive_trust"],
+          "prevention_strategies": ["Analyze counterparty incentives", "Consider adversarial scenarios", "Don't assume shared values"],
+          "example_scenario": "Assuming competitor will maintain pricing discipline because 'it's the rational thing to do'"
+        },
+        {
+          "id": "fm_7_2",
+          "name": "Fairness-Based Overreaction",
+          "description": "Disproportionate response to perceived unfairness damaging own interests",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["emotional_response_to_unfairness", "punitive_action_considered", "self_damaging_retaliation"],
+          "prevention_strategies": ["Calculate cost of retaliation", "Separate emotion from strategy", "Consider long-term consequences"],
+          "example_scenario": "Rejecting profitable deal because terms feel 'unfair' even though they're market standard"
+        },
+        {
+          "id": "fm_7_3",
+          "name": "Fairness Definition Mismatch",
+          "description": "Different parties have different definitions of fair, leading to conflict",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["unstated_fairness_assumptions", "cultural_differences", "no_explicit_criteria"],
+          "prevention_strategies": ["Explicitly define fairness criteria", "Understand counterparty's fairness frame", "Negotiate criteria before outcomes"],
+          "example_scenario": "Merger negotiation fails because parties have different views on 'fair' valuation methodology"
+        },
+        {
+          "id": "fm_7_4",
+          "name": "Fairness Blindness to Power Dynamics",
+          "description": "Expecting fair treatment when power imbalance makes it unlikely",
+          "category": "context_blindness",
+          "severity": "high",
+          "detection_signals": ["power_imbalance_present", "assumed_fair_treatment", "no_leverage_analysis"],
+          "prevention_strategies": ["Map power dynamics explicitly", "Build leverage before negotiating", "Expect power to be used"],
+          "example_scenario": "Small supplier expecting fair treatment from dominant customer without contractual protections"
+        },
+        {
+          "id": "fm_7_5",
+          "name": "Procedural vs. Outcome Fairness Confusion",
+          "description": "Confusing fair process with fair outcome or vice versa",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["process_outcome_conflation", "unfair_outcome_from_fair_process", "fair_outcome_unfair_process"],
+          "prevention_strategies": ["Distinguish process from outcome fairness", "Evaluate both separately", "Accept that fair process can yield unfair outcomes"],
+          "example_scenario": "Assuming auction process guarantees fair price when bidders may collude"
+        }
+      ]
+    },
+    {
+      "model_id": 8,
+      "model_name": "Envy/Jealousy Tendency",
+      "failures": [
+        {
+          "id": "fm_8_1",
+          "name": "Envy-Driven Analysis Distortion",
+          "description": "Negative analysis of successful competitors driven by envy rather than facts",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["successful_competitor_subject", "disproportionate_criticism", "emotional_language"],
+          "prevention_strategies": ["Acknowledge envy explicitly", "Use structured evaluation", "Independent review"],
+          "example_scenario": "Dismissing competitor's success as 'luck' or 'unsustainable' without evidence"
+        },
+        {
+          "id": "fm_8_2",
+          "name": "Keeping Up with Joneses",
+          "description": "Making decisions based on what others are doing rather than own situation",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["peer_comparison_driving_decision", "no_independent_analysis", "fomo_indicators"],
+          "prevention_strategies": ["Focus on own situation and goals", "Ignore peer actions in analysis", "Evaluate on absolute merit"],
+          "example_scenario": "Entering market because competitor did, without independent assessment of fit"
+        },
+        {
+          "id": "fm_8_3",
+          "name": "Envy Blindness",
+          "description": "Failing to recognize envy as a factor in own or others' behavior",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["envy_not_considered", "irrational_opposition", "unexplained_negativity"],
+          "prevention_strategies": ["Consider envy as explanation for behavior", "Recognize own envy triggers", "Factor envy into stakeholder analysis"],
+          "example_scenario": "Not understanding why board member opposes CEO's plan (envy of CEO's success)"
+        },
+        {
+          "id": "fm_8_4",
+          "name": "Relative vs. Absolute Performance Confusion",
+          "description": "Focusing on relative performance vs. peers instead of absolute returns",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["peer_comparison_emphasis", "absolute_performance_ignored", "benchmark_obsession"],
+          "prevention_strategies": ["Focus on absolute goals", "Evaluate against own targets", "Reduce peer comparison"],
+          "example_scenario": "Feeling bad about 15% return because peers made 20%, ignoring that 15% meets goals"
+        },
+        {
+          "id": "fm_8_5",
+          "name": "Schadenfreude-Driven Misjudgment",
+          "description": "Pleasure in others' failures leading to underestimation of their recovery",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["competitor_failure_celebrated", "recovery_potential_dismissed", "emotional_satisfaction_in_failure"],
+          "prevention_strategies": ["Analyze recovery potential objectively", "Assume competent response", "Don't underestimate wounded competitors"],
+          "example_scenario": "Assuming struggling competitor will fail completely, missing their successful turnaround"
+        }
+      ]
+    },
+    {
+      "model_id": 9,
+      "model_name": "Reciprocation Tendency",
+      "failures": [
+        {
+          "id": "fm_9_1",
+          "name": "Reciprocity Manipulation Blindness",
+          "description": "Failing to recognize when favors are given to manipulate future decisions",
+          "category": "context_blindness",
+          "severity": "high",
+          "detection_signals": ["unsolicited_favor_received", "favor_precedes_request", "disproportionate_generosity"],
+          "prevention_strategies": ["Be suspicious of unsolicited favors", "Separate favors from decisions", "Disclose gifts and favors"],
+          "example_scenario": "Vendor provides expensive gifts before contract renewal negotiation"
+        },
+        {
+          "id": "fm_9_2",
+          "name": "Disproportionate Reciprocation",
+          "description": "Returning favors far exceeding the original favor's value",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["small_favor_large_return", "asymmetric_exchange", "obligation_feeling"],
+          "prevention_strategies": ["Calibrate response to favor size", "Recognize manipulation tactics", "Set reciprocation limits"],
+          "example_scenario": "Approving large contract because vendor bought lunch"
+        },
+        {
+          "id": "fm_9_3",
+          "name": "Negative Reciprocity Escalation",
+          "description": "Tit-for-tat retaliation spiraling into destructive conflict",
+          "category": "feedback_loop",
+          "severity": "critical",
+          "detection_signals": ["retaliation_cycle", "escalating_responses", "relationship_deterioration"],
+          "prevention_strategies": ["Break retaliation cycles", "Respond proportionally", "Consider long-term relationship"],
+          "example_scenario": "Price war escalating because each side retaliates against the other's cuts"
+        },
+        {
+          "id": "fm_9_4",
+          "name": "Reciprocity Expectation Mismatch",
+          "description": "Expecting reciprocation that others don't feel obligated to provide",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["unreciprocated_favors", "assumed_obligation", "cultural_mismatch"],
+          "prevention_strategies": ["Don't assume reciprocation", "Make expectations explicit", "Understand cultural differences"],
+          "example_scenario": "Expecting referrals after providing free consulting, but client doesn't feel obligated"
+        },
+        {
+          "id": "fm_9_5",
+          "name": "Concession Reciprocity Exploitation",
+          "description": "Being manipulated by door-in-the-face technique (large request then smaller one)",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["initial_large_request_rejected", "subsequent_smaller_request", "feeling_of_obligation_to_concede"],
+          "prevention_strategies": ["Evaluate each request independently", "Recognize negotiation tactics", "Don't feel obligated by others' concessions"],
+          "example_scenario": "Agreeing to unfavorable terms because they're 'better' than initial outrageous ask"
+        }
+      ]
+    },
+    {
+      "model_id": 10,
+      "model_name": "Influence-from-Mere-Association Tendency",
+      "failures": [
+        {
+          "id": "fm_10_1",
+          "name": "Messenger-Message Conflation",
+          "description": "Judging information quality by who delivers it rather than content",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["source_based_judgment", "content_not_evaluated", "prestigious_source_accepted"],
+          "prevention_strategies": ["Evaluate content independently", "Blind review where possible", "Focus on evidence not source"],
+          "example_scenario": "Accepting investment thesis because it comes from famous investor without independent analysis"
+        },
+        {
+          "id": "fm_10_2",
+          "name": "Past Success Association",
+          "description": "Assuming future success because of association with past success",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["past_success_cited", "no_causal_analysis", "track_record_overweighted"],
+          "prevention_strategies": ["Analyze current situation independently", "Understand what drove past success", "Consider changed circumstances"],
+          "example_scenario": "Investing in new fund because manager's previous fund succeeded, without analyzing why"
+        },
+        {
+          "id": "fm_10_3",
+          "name": "Negative Association Contamination",
+          "description": "Rejecting good ideas because associated with disliked source",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["disliked_source", "idea_dismissed_without_evaluation", "ad_hominem_reasoning"],
+          "prevention_strategies": ["Evaluate ideas independently of source", "Blind review", "Focus on merit"],
+          "example_scenario": "Rejecting valid criticism because it comes from a competitor"
+        },
+        {
+          "id": "fm_10_4",
+          "name": "Brand/Prestige Halo",
+          "description": "Overvaluing things associated with prestigious brands or institutions",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["prestigious_association", "premium_valuation_without_justification", "brand_over_substance"],
+          "prevention_strategies": ["Evaluate substance not brand", "Compare to non-prestigious alternatives", "Quantify brand premium"],
+          "example_scenario": "Paying premium for McKinsey advice without evaluating if it's better than alternatives"
+        },
+        {
+          "id": "fm_10_5",
+          "name": "Temporal Association Error",
+          "description": "Assuming causation from temporal association (post hoc ergo propter hoc)",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["temporal_sequence_cited", "no_causal_mechanism", "correlation_as_causation"],
+          "prevention_strategies": ["Require causal mechanism", "Look for confounding variables", "Test with controlled comparison"],
+          "example_scenario": "Attributing stock rise to new CEO when it was driven by market-wide rally"
+        }
+      ]
+    },
+    {
+      "model_id": 11,
+      "model_name": "Simple, Pain-Avoiding Psychological Denial",
+      "failures": [
+        {
+          "id": "fm_11_1",
+          "name": "Reality Denial Detection Failure",
+          "description": "Failing to recognize when analysis is avoiding painful truths",
+          "category": "data_bias",
+          "severity": "critical",
+          "detection_signals": ["painful_implications_avoided", "optimistic_despite_evidence", "uncomfortable_topics_skipped"],
+          "prevention_strategies": ["Explicitly address worst case", "Require painful scenario analysis", "Independent review for denial"],
+          "example_scenario": "Analysis avoids discussing possibility that core business is in terminal decline"
+        },
+        {
+          "id": "fm_11_2",
+          "name": "Gradual Decline Denial",
+          "description": "Denying slow deterioration because each step is small",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["slow_decline_pattern", "each_step_rationalized", "boiling_frog_syndrome"],
+          "prevention_strategies": ["Track metrics over long periods", "Compare to baseline", "Set absolute thresholds"],
+          "example_scenario": "Not recognizing market share erosion because each quarter's loss is 'small'"
+        },
+        {
+          "id": "fm_11_3",
+          "name": "Sunk Cost Denial",
+          "description": "Denying that past investments are lost to avoid pain of admitting failure",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["sunk_costs_cited", "throwing_good_money_after_bad", "failure_not_acknowledged"],
+          "prevention_strategies": ["Evaluate forward-looking only", "Acknowledge sunk costs explicitly", "Fresh eyes review"],
+          "example_scenario": "Continuing failed project because admitting failure is too painful"
+        },
+        {
+          "id": "fm_11_4",
+          "name": "Mortality/Failure Denial",
+          "description": "Denying that companies/investments can fail completely",
+          "category": "overconfidence",
+          "severity": "high",
+          "detection_signals": ["failure_not_considered", "too_big_to_fail_assumption", "survival_assumed"],
+          "prevention_strategies": ["Explicitly model failure scenarios", "Study historical failures", "Require survival analysis"],
+          "example_scenario": "Not considering bankruptcy scenario for leveraged company"
+        },
+        {
+          "id": "fm_11_5",
+          "name": "Responsibility Denial",
+          "description": "Denying own role in failures to avoid psychological pain",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["external_attribution", "no_self_criticism", "blame_shifting"],
+          "prevention_strategies": ["Require self-assessment", "Track own decisions and outcomes", "Accountability mechanisms"],
+          "example_scenario": "Blaming market conditions for poor investment when analysis was flawed"
+        }
+      ]
+    },
+    {
+      "model_id": 12,
+      "model_name": "Excessive Self-Regard Tendency",
+      "failures": [
+        {
+          "id": "fm_12_1",
+          "name": "Overconfidence in Own Analysis",
+          "description": "Excessive confidence in own conclusions without adequate uncertainty",
+          "category": "overconfidence",
+          "severity": "high",
+          "detection_signals": ["high_confidence_expressed", "no_uncertainty_ranges", "dismissal_of_alternatives"],
+          "prevention_strategies": ["Require confidence intervals", "Track prediction accuracy", "Seek disconfirming views"],
+          "example_scenario": "Analyst certain of price target without acknowledging wide range of outcomes"
+        },
+        {
+          "id": "fm_12_2",
+          "name": "Endowment Effect in Ideas",
+          "description": "Overvaluing own ideas simply because they are yours",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["own_idea_defended_strongly", "resistance_to_criticism", "not_invented_here_reversed"],
+          "prevention_strategies": ["Blind evaluation of ideas", "Seek criticism actively", "Value ideas by merit not origin"],
+          "example_scenario": "Defending flawed investment thesis because you developed it"
+        },
+        {
+          "id": "fm_12_3",
+          "name": "Above-Average Effect",
+          "description": "Believing own skills are above average when statistically unlikely",
+          "category": "overconfidence",
+          "severity": "medium",
+          "detection_signals": ["self_assessed_as_above_average", "no_objective_comparison", "skill_overestimation"],
+          "prevention_strategies": ["Objective skill measurement", "Compare to base rates", "Track actual performance"],
+          "example_scenario": "Believing you can beat the market when most professionals can't"
+        },
+        {
+          "id": "fm_12_4",
+          "name": "Self-Serving Attribution",
+          "description": "Attributing success to skill and failure to luck/circumstances",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["success_attributed_to_skill", "failure_attributed_externally", "asymmetric_attribution"],
+          "prevention_strategies": ["Analyze luck vs. skill in successes", "Own failures fully", "Track attribution patterns"],
+          "example_scenario": "Taking credit for bull market gains while blaming bear market losses on 'unprecedented events'"
+        },
+        {
+          "id": "fm_12_5",
+          "name": "Blind Spot Blindness",
+          "description": "Believing you are less biased than others",
+          "category": "overconfidence",
+          "severity": "high",
+          "detection_signals": ["bias_in_others_identified", "own_bias_denied", "objectivity_claimed"],
+          "prevention_strategies": ["Assume you are biased", "Seek external bias checks", "Use structured processes"],
+          "example_scenario": "Believing your analysis is objective while others' are biased"
+        }
+      ]
+    },
+    {
+      "model_id": 13,
+      "model_name": "Overoptimism Tendency",
+      "failures": [
+        {
+          "id": "fm_13_1",
+          "name": "Planning Fallacy",
+          "description": "Underestimating time, cost, and risk while overestimating benefits",
+          "category": "overconfidence",
+          "severity": "critical",
+          "detection_signals": ["optimistic_projections", "no_reference_class", "best_case_as_base_case"],
+          "prevention_strategies": ["Use reference class forecasting", "Add contingency buffers", "Track forecast accuracy"],
+          "example_scenario": "Project budget and timeline based on best-case scenario"
+        },
+        {
+          "id": "fm_13_2",
+          "name": "Upside Overweighting",
+          "description": "Focusing on potential gains while underweighting potential losses",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["upside_emphasized", "downside_minimized", "asymmetric_scenario_analysis"],
+          "prevention_strategies": ["Equal weight to upside and downside", "Require bear case", "Inversion analysis"],
+          "example_scenario": "Investment memo focuses on growth potential with one paragraph on risks"
+        },
+        {
+          "id": "fm_13_3",
+          "name": "Success Rate Overestimation",
+          "description": "Overestimating probability of success vs. base rates",
+          "category": "overconfidence",
+          "severity": "high",
+          "detection_signals": ["high_success_probability", "no_base_rate_comparison", "this_time_is_different"],
+          "prevention_strategies": ["Compare to base rates", "Study failure rates", "Adjust for overconfidence"],
+          "example_scenario": "Assuming 80% chance of successful product launch when base rate is 20%"
+        },
+        {
+          "id": "fm_13_4",
+          "name": "Optimism Contagion",
+          "description": "Group optimism reinforcing individual optimism",
+          "category": "feedback_loop",
+          "severity": "high",
+          "detection_signals": ["group_consensus_optimistic", "no_dissent", "echo_chamber"],
+          "prevention_strategies": ["Require devil's advocate", "Seek outside perspectives", "Anonymous input"],
+          "example_scenario": "Investment committee all bullish, reinforcing each other's optimism"
+        },
+        {
+          "id": "fm_13_5",
+          "name": "Survivorship Bias in Optimism",
+          "description": "Optimism based on visible successes while failures are invisible",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["success_examples_cited", "failures_not_studied", "selection_bias"],
+          "prevention_strategies": ["Study failures explicitly", "Seek complete data sets", "Account for survivorship"],
+          "example_scenario": "Optimistic about startup investing based on unicorn examples, ignoring 90% failure rate"
+        }
+      ]
+    },
+    {
+      "model_id": 14,
+      "model_name": "Deprival-Superreaction Tendency",
+      "failures": [
+        {
+          "id": "fm_14_1",
+          "name": "Loss Aversion Overreaction",
+          "description": "Disproportionate response to losses leading to poor decisions",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["loss_situation", "emotional_response", "disproportionate_action"],
+          "prevention_strategies": ["Pre-commit to loss response", "Cooling off period", "Evaluate gains and losses symmetrically"],
+          "example_scenario": "Panic selling at market bottom to 'stop the pain'"
+        },
+        {
+          "id": "fm_14_2",
+          "name": "Near-Miss Overvaluation",
+          "description": "Overvaluing things almost obtained, leading to irrational pursuit",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["near_miss_situation", "escalating_commitment", "sunk_cost_reasoning"],
+          "prevention_strategies": ["Evaluate opportunity fresh", "Ignore near-miss status", "Set walk-away criteria"],
+          "example_scenario": "Overpaying for acquisition because you 'almost had it' in previous attempt"
+        },
+        {
+          "id": "fm_14_3",
+          "name": "Status Quo Bias from Loss Framing",
+          "description": "Preferring status quo because change is framed as loss",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["change_framed_as_loss", "status_quo_preferred", "opportunity_cost_ignored"],
+          "prevention_strategies": ["Frame as gains vs. gains", "Consider opportunity cost", "Evaluate from neutral position"],
+          "example_scenario": "Not selling underperforming asset because selling 'locks in the loss'"
+        },
+        {
+          "id": "fm_14_4",
+          "name": "Territorial Defense Overreaction",
+          "description": "Excessive defense of existing position/market against threats",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["defensive_posture", "threat_to_existing_position", "disproportionate_response"],
+          "prevention_strategies": ["Evaluate defense cost vs. benefit", "Consider strategic retreat", "Fresh eyes on territory value"],
+          "example_scenario": "Destroying profitability to defend market share against new entrant"
+        },
+        {
+          "id": "fm_14_5",
+          "name": "Reference Point Manipulation Blindness",
+          "description": "Failing to recognize when reference points are being manipulated",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["reference_point_shifted", "loss_framing_by_counterparty", "anchoring_manipulation"],
+          "prevention_strategies": ["Set own reference points", "Recognize framing tactics", "Evaluate on absolute terms"],
+          "example_scenario": "Accepting bad deal because it's framed as 'better than' artificially bad alternative"
+        }
+      ]
+    },
+    {
+      "model_id": 15,
+      "model_name": "Social-Proof Tendency",
+      "failures": [
+        {
+          "id": "fm_15_1",
+          "name": "Herd Following",
+          "description": "Following crowd without independent analysis",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["crowd_behavior_cited", "no_independent_analysis", "fomo_present"],
+          "prevention_strategies": ["Require independent analysis", "Be suspicious of consensus", "Contrarian review"],
+          "example_scenario": "Buying stock because 'everyone is buying it' without own analysis"
+        },
+        {
+          "id": "fm_15_2",
+          "name": "Expert Consensus Overweighting",
+          "description": "Overweighting expert consensus without examining underlying reasoning",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["expert_consensus_cited", "reasoning_not_examined", "appeal_to_authority"],
+          "prevention_strategies": ["Examine expert reasoning", "Look for dissenting experts", "Evaluate evidence directly"],
+          "example_scenario": "Accepting analyst consensus price target without understanding assumptions"
+        },
+        {
+          "id": "fm_15_3",
+          "name": "Uncertainty-Driven Social Proof",
+          "description": "Relying more on social proof when uncertain, amplifying errors",
+          "category": "feedback_loop",
+          "severity": "high",
+          "detection_signals": ["high_uncertainty", "increased_social_proof_reliance", "cascade_potential"],
+          "prevention_strategies": ["Recognize uncertainty as trigger", "Increase independent analysis when uncertain", "Seek diverse views"],
+          "example_scenario": "In novel situation, following what others do without questioning if they know better"
+        },
+        {
+          "id": "fm_15_4",
+          "name": "Similarity-Based Social Proof",
+          "description": "Following people similar to you without evaluating their competence",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["similar_others_followed", "competence_not_evaluated", "in_group_bias"],
+          "prevention_strategies": ["Evaluate competence not similarity", "Seek diverse perspectives", "Focus on track record"],
+          "example_scenario": "Following investment strategy of peers without checking their actual returns"
+        },
+        {
+          "id": "fm_15_5",
+          "name": "Cascade Amplification",
+          "description": "Contributing to information cascade by adding to social proof",
+          "category": "feedback_loop",
+          "severity": "high",
+          "detection_signals": ["joining_existing_trend", "adding_to_consensus", "not_questioning_cascade"],
+          "prevention_strategies": ["Question existing consensus", "Consider being wrong with crowd", "Independent analysis before joining"],
+          "example_scenario": "Adding bullish view because others are bullish, amplifying potential bubble"
+        }
+      ]
+    },
+    {
+      "model_id": 16,
+      "model_name": "Contrast-Misreaction Tendency",
+      "failures": [
+        {
+          "id": "fm_16_1",
+          "name": "Anchoring to Wrong Comparison",
+          "description": "Judging value by contrast to irrelevant anchor",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["comparison_anchor_present", "absolute_value_ignored", "relative_judgment"],
+          "prevention_strategies": ["Evaluate on absolute terms", "Question comparison anchor", "Use multiple reference points"],
+          "example_scenario": "Stock seems cheap at $50 because it was $100, ignoring that fair value is $30"
+        },
+        {
+          "id": "fm_16_2",
+          "name": "Gradual Change Blindness",
+          "description": "Missing significant changes because each step is small relative to previous",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["gradual_change", "each_step_small", "cumulative_effect_missed"],
+          "prevention_strategies": ["Compare to original baseline", "Track cumulative changes", "Set absolute thresholds"],
+          "example_scenario": "Not noticing margin erosion because each quarter's decline is small"
+        },
+        {
+          "id": "fm_16_3",
+          "name": "Decoy Effect Manipulation",
+          "description": "Being manipulated by strategically placed inferior option",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["three_options_presented", "one_clearly_inferior", "choice_influenced_by_decoy"],
+          "prevention_strategies": ["Evaluate options independently", "Remove decoys mentally", "Focus on absolute value"],
+          "example_scenario": "Choosing expensive option because medium option is strategically priced as decoy"
+        },
+        {
+          "id": "fm_16_4",
+          "name": "Contrast-Based Complacency",
+          "description": "Accepting bad situation because it's better than worse alternative",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["bad_situation_accepted", "worse_alternative_cited", "absolute_standard_ignored"],
+          "prevention_strategies": ["Evaluate against absolute standards", "Don't accept bad because not worst", "Seek better alternatives"],
+          "example_scenario": "Accepting poor returns because 'at least we didn't lose money'"
+        },
+        {
+          "id": "fm_16_5",
+          "name": "Salesman's Contrast Trick",
+          "description": "Being manipulated by showing expensive option first to make target seem reasonable",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["expensive_shown_first", "target_seems_reasonable_by_contrast", "sequence_manipulation"],
+          "prevention_strategies": ["Evaluate target independently", "Ignore sequence", "Set budget before seeing options"],
+          "example_scenario": "Buying expensive car because it's cheaper than first one shown"
+        }
+      ]
+    },
+    {
+      "model_id": 17,
+      "model_name": "Stress-Influence Tendency",
+      "failures": [
+        {
+          "id": "fm_17_1",
+          "name": "Stress-Induced Tunnel Vision",
+          "description": "Stress narrows focus, missing important peripheral information",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["high_stress_situation", "narrow_focus", "peripheral_issues_missed"],
+          "prevention_strategies": ["Recognize stress state", "Broaden analysis deliberately", "Checklist for completeness"],
+          "example_scenario": "During crisis, focusing only on immediate problem while missing related issues"
+        },
+        {
+          "id": "fm_17_2",
+          "name": "Stress-Induced Rigidity",
+          "description": "Stress causes reversion to familiar patterns even when inappropriate",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["high_stress", "familiar_response_applied", "situation_novelty_ignored"],
+          "prevention_strategies": ["Recognize stress-induced rigidity", "Force consideration of alternatives", "Pre-plan stress responses"],
+          "example_scenario": "Applying old playbook to new crisis because stress prevents creative thinking"
+        },
+        {
+          "id": "fm_17_3",
+          "name": "Stress Contagion",
+          "description": "Stress spreading through team, amplifying poor decision-making",
+          "category": "feedback_loop",
+          "severity": "high",
+          "detection_signals": ["team_stress_elevated", "stress_spreading", "collective_poor_decisions"],
+          "prevention_strategies": ["Isolate stressed individuals", "Calm leadership", "Structured decision processes"],
+          "example_scenario": "Panic spreading through trading floor leading to collective poor decisions"
+        },
+        {
+          "id": "fm_17_4",
+          "name": "Stress-Performance Curve Misjudgment",
+          "description": "Not recognizing when stress has crossed from enhancing to impairing performance",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["high_stress_level", "performance_declining", "stress_not_recognized"],
+          "prevention_strategies": ["Monitor stress levels", "Know personal stress threshold", "Take breaks when needed"],
+          "example_scenario": "Continuing to work through extreme stress when performance has degraded"
+        },
+        {
+          "id": "fm_17_5",
+          "name": "Post-Stress Overconfidence",
+          "description": "Overconfidence after surviving stressful situation",
+          "category": "overconfidence",
+          "severity": "medium",
+          "detection_signals": ["recent_stress_survived", "increased_confidence", "risk_taking_increased"],
+          "prevention_strategies": ["Analyze luck vs. skill in survival", "Maintain humility", "Don't extrapolate from survival"],
+          "example_scenario": "Taking more risk after surviving market crash, believing you can handle anything"
+        }
+      ]
+    },
+    {
+      "model_id": 18,
+      "model_name": "Availability-Misweighing Tendency",
+      "failures": [
+        {
+          "id": "fm_18_1",
+          "name": "Recency Bias",
+          "description": "Overweighting recent events because they are more available in memory",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["recent_events_emphasized", "historical_context_missing", "short_memory"],
+          "prevention_strategies": ["Explicitly include historical data", "Weight time periods equally", "Study long-term patterns"],
+          "example_scenario": "Projecting recent growth rates forward without considering historical cycles"
+        },
+        {
+          "id": "fm_18_2",
+          "name": "Vivid Example Overweighting",
+          "description": "Overweighting dramatic or vivid examples vs. statistical base rates",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["vivid_example_cited", "base_rates_ignored", "anecdote_over_data"],
+          "prevention_strategies": ["Require statistical evidence", "Discount vivid examples", "Focus on base rates"],
+          "example_scenario": "Overestimating fraud risk because of memorable fraud case, ignoring low base rate"
+        },
+        {
+          "id": "fm_18_3",
+          "name": "Media Availability Bias",
+          "description": "Overweighting risks/opportunities that receive media coverage",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["media_coverage_influences_assessment", "unreported_risks_missed", "headline_driven"],
+          "prevention_strategies": ["Seek unreported information", "Discount media-driven concerns", "Independent risk assessment"],
+          "example_scenario": "Overweighting terrorism risk vs. car accidents because of media coverage"
+        },
+        {
+          "id": "fm_18_4",
+          "name": "Personal Experience Overweighting",
+          "description": "Overweighting own experience vs. broader data",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["personal_experience_cited", "broader_data_ignored", "sample_of_one"],
+          "prevention_strategies": ["Seek statistical data", "Recognize personal experience limits", "Broaden sample"],
+          "example_scenario": "Judging industry based on one company you worked at"
+        },
+        {
+          "id": "fm_18_5",
+          "name": "Ease of Recall Bias",
+          "description": "Judging frequency/probability by how easily examples come to mind",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["ease_of_recall_used", "actual_frequency_not_checked", "memorable_events_overweighted"],
+          "prevention_strategies": ["Check actual frequencies", "Don't trust ease of recall", "Use data not memory"],
+          "example_scenario": "Overestimating probability of plane crash because crashes are memorable"
+        }
+      ]
+    },
+    {
+      "model_id": 19,
+      "model_name": "Use-It-or-Lose-It Tendency",
+      "failures": [
+        {
+          "id": "fm_19_1",
+          "name": "Skill Decay Blindness",
+          "description": "Not recognizing that unused skills have deteriorated",
+          "category": "overconfidence",
+          "severity": "medium",
+          "detection_signals": ["skill_not_recently_used", "confidence_unchanged", "no_skill_refresh"],
+          "prevention_strategies": ["Regular skill assessment", "Practice unused skills", "Acknowledge decay"],
+          "example_scenario": "Assuming you can still do complex analysis you haven't done in years"
+        },
+        {
+          "id": "fm_19_2",
+          "name": "Knowledge Obsolescence",
+          "description": "Relying on outdated knowledge without updating",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["old_knowledge_applied", "no_recent_learning", "field_has_evolved"],
+          "prevention_strategies": ["Continuous learning", "Check if knowledge is current", "Seek recent sources"],
+          "example_scenario": "Applying investment framework from 20 years ago without updating for changed markets"
+        },
+        {
+          "id": "fm_19_3",
+          "name": "Overreliance on Documented Knowledge",
+          "description": "Relying on written procedures when tacit knowledge has been lost",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["procedure_followed_mechanically", "tacit_knowledge_missing", "context_lost"],
+          "prevention_strategies": ["Maintain tacit knowledge through practice", "Document context not just procedure", "Regular knowledge transfer"],
+          "example_scenario": "Following investment checklist without understanding why each item matters"
+        },
+        {
+          "id": "fm_19_4",
+          "name": "Institutional Memory Loss",
+          "description": "Organization losing knowledge as experienced people leave",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["experienced_people_left", "knowledge_not_transferred", "mistakes_repeated"],
+          "prevention_strategies": ["Knowledge management systems", "Overlap during transitions", "Document lessons learned"],
+          "example_scenario": "Repeating past mistakes because people who learned from them have left"
+        },
+        {
+          "id": "fm_19_5",
+          "name": "Atrophied Critical Thinking",
+          "description": "Critical thinking skills decay from disuse in conformist environment",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["conformist_environment", "no_challenge_to_thinking", "critical_skills_unused"],
+          "prevention_strategies": ["Seek intellectual challenge", "Practice critical thinking", "Encourage dissent"],
+          "example_scenario": "Analyst in yes-man culture loses ability to think critically"
+        }
+      ]
+    },
+    {
+      "model_id": 20,
+      "model_name": "Drug-Misinfluence Tendency",
+      "failures": [
+        {
+          "id": "fm_20_1",
+          "name": "Impairment Non-Recognition",
+          "description": "Not recognizing when substances are impairing judgment",
+          "category": "context_blindness",
+          "severity": "critical",
+          "detection_signals": ["substance_use_present", "judgment_impaired", "impairment_denied"],
+          "prevention_strategies": ["No decisions under influence", "Recognize impairment signs", "Delay important decisions"],
+          "example_scenario": "Making investment decisions after drinking at dinner meeting"
+        },
+        {
+          "id": "fm_20_2",
+          "name": "Caffeine/Stimulant Overconfidence",
+          "description": "Stimulants creating false sense of clarity and confidence",
+          "category": "overconfidence",
+          "severity": "medium",
+          "detection_signals": ["stimulant_use", "elevated_confidence", "rapid_decisions"],
+          "prevention_strategies": ["Recognize stimulant effects", "Verify decisions when not stimulated", "Slow down"],
+          "example_scenario": "Making bold decisions on excessive caffeine that seem less wise later"
+        },
+        {
+          "id": "fm_20_3",
+          "name": "Sleep Deprivation Effects",
+          "description": "Sleep deprivation impairing judgment similar to intoxication",
+          "category": "context_blindness",
+          "severity": "high",
+          "detection_signals": ["sleep_deprived", "judgment_impaired", "impairment_not_recognized"],
+          "prevention_strategies": ["Adequate sleep before decisions", "Recognize sleep deprivation effects", "Delay decisions when tired"],
+          "example_scenario": "Making major decisions after all-night work session"
+        },
+        {
+          "id": "fm_20_4",
+          "name": "Medication Side Effects",
+          "description": "Prescription medications affecting cognitive function unrecognized",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["medication_use", "cognitive_side_effects", "effects_not_considered"],
+          "prevention_strategies": ["Know medication effects", "Consider cognitive impact", "Adjust for medication effects"],
+          "example_scenario": "Antihistamine causing drowsiness affecting analysis quality"
+        },
+        {
+          "id": "fm_20_5",
+          "name": "Withdrawal Effects",
+          "description": "Withdrawal from substances affecting judgment",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["substance_withdrawal", "irritability_or_impairment", "judgment_affected"],
+          "prevention_strategies": ["Recognize withdrawal effects", "Delay decisions during withdrawal", "Manage dependencies"],
+          "example_scenario": "Irritable decision-making during caffeine withdrawal"
+        }
+      ]
+    },
+    {
+      "model_id": 21,
+      "model_name": "Senescence-Misinfluence Tendency",
+      "failures": [
+        {
+          "id": "fm_21_1",
+          "name": "Cognitive Decline Non-Recognition",
+          "description": "Not recognizing age-related cognitive decline in self or others",
+          "category": "context_blindness",
+          "severity": "high",
+          "detection_signals": ["advanced_age", "cognitive_changes", "decline_not_acknowledged"],
+          "prevention_strategies": ["Regular cognitive assessment", "Seek feedback on performance", "Plan for succession"],
+          "example_scenario": "Elderly CEO making poor decisions while board doesn't address decline"
+        },
+        {
+          "id": "fm_21_2",
+          "name": "Experience Overweighting vs. Adaptation",
+          "description": "Overvaluing experience when environment has changed",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["experience_cited", "environment_changed", "old_patterns_applied"],
+          "prevention_strategies": ["Evaluate relevance of experience", "Adapt to new environment", "Combine experience with fresh perspectives"],
+          "example_scenario": "Applying pre-internet business wisdom to digital-first company"
+        },
+        {
+          "id": "fm_21_3",
+          "name": "Nostalgia Bias",
+          "description": "Romanticizing past and applying outdated approaches",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["past_idealized", "current_dismissed", "old_ways_preferred"],
+          "prevention_strategies": ["Evaluate past objectively", "Recognize survivorship bias in memories", "Focus on current reality"],
+          "example_scenario": "Preferring old investment style because 'it worked in the good old days'"
+        },
+        {
+          "id": "fm_21_4",
+          "name": "Succession Planning Failure",
+          "description": "Not planning for cognitive decline or transition",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["no_succession_plan", "key_person_dependency", "transition_not_considered"],
+          "prevention_strategies": ["Develop succession plans", "Transfer knowledge early", "Build redundancy"],
+          "example_scenario": "Founder-dependent company with no plan for founder's eventual decline"
+        },
+        {
+          "id": "fm_21_5",
+          "name": "Generational Blind Spots",
+          "description": "Missing trends or changes due to generational perspective",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["generational_gap", "trends_dismissed", "youth_perspective_missing"],
+          "prevention_strategies": ["Seek diverse age perspectives", "Study generational differences", "Stay curious about new trends"],
+          "example_scenario": "Dismissing social media importance because 'it's just for kids'"
+        }
+      ]
+    },
+    {
+      "model_id": 22,
+      "model_name": "Authority-Misinfluence Tendency",
+      "failures": [
+        {
+          "id": "fm_22_1",
+          "name": "Blind Deference to Authority",
+          "description": "Accepting authority's view without independent evaluation",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["authority_figure_cited", "no_independent_analysis", "deference_without_question"],
+          "prevention_strategies": ["Evaluate authority's reasoning", "Seek contrary views", "Independent analysis required"],
+          "example_scenario": "Accepting CEO's strategy without questioning because of their position"
+        },
+        {
+          "id": "fm_22_2",
+          "name": "False Authority Acceptance",
+          "description": "Accepting authority in one domain as authority in another",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["authority_outside_domain", "expertise_assumed", "domain_mismatch"],
+          "prevention_strategies": ["Verify domain expertise", "Evaluate credentials for specific topic", "Seek domain experts"],
+          "example_scenario": "Following famous investor's views on unrelated industry they don't know"
+        },
+        {
+          "id": "fm_22_3",
+          "name": "Authority Symbols Over Substance",
+          "description": "Responding to symbols of authority (titles, credentials) over actual competence",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["credentials_emphasized", "competence_not_verified", "symbols_over_substance"],
+          "prevention_strategies": ["Evaluate actual competence", "Look past credentials", "Focus on track record"],
+          "example_scenario": "Trusting advice from PhD without checking if their research is relevant"
+        },
+        {
+          "id": "fm_22_4",
+          "name": "Hierarchical Information Filtering",
+          "description": "Information distorted as it moves through hierarchy",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["hierarchical_reporting", "information_filtered", "bad_news_suppressed"],
+          "prevention_strategies": ["Direct information access", "Skip-level communication", "Anonymous feedback channels"],
+          "example_scenario": "CEO getting filtered positive information while problems fester below"
+        },
+        {
+          "id": "fm_22_5",
+          "name": "Authority-Induced Groupthink",
+          "description": "Group conforming to authority's view, suppressing dissent",
+          "category": "feedback_loop",
+          "severity": "high",
+          "detection_signals": ["authority_expressed_view_first", "group_conformity", "dissent_suppressed"],
+          "prevention_strategies": ["Authority speaks last", "Anonymous input first", "Encourage dissent explicitly"],
+          "example_scenario": "Board agreeing with CEO's proposal because CEO spoke first and forcefully"
+        }
+      ]
+    },
+    {
+      "model_id": 23,
+      "model_name": "Twaddle Tendency",
+      "failures": [
+        {
+          "id": "fm_23_1",
+          "name": "Trivial Pursuit",
+          "description": "Spending time on trivial matters while important issues neglected",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["trivial_focus", "important_issues_neglected", "time_misallocation"],
+          "prevention_strategies": ["Prioritize by importance", "Time-box trivial matters", "Focus on material issues"],
+          "example_scenario": "Spending hours on minor expense while major strategic issue unaddressed"
+        },
+        {
+          "id": "fm_23_2",
+          "name": "Complexity Theater",
+          "description": "Creating appearance of sophistication through unnecessary complexity",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["unnecessary_complexity", "simple_answer_available", "sophistication_signaling"],
+          "prevention_strategies": ["Prefer simple explanations", "Question complexity", "Occam's razor"],
+          "example_scenario": "Building complex model when simple analysis would suffice"
+        },
+        {
+          "id": "fm_23_3",
+          "name": "Meeting Proliferation",
+          "description": "Excessive meetings substituting for actual work",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["many_meetings", "little_output", "discussion_without_decision"],
+          "prevention_strategies": ["Limit meetings", "Require decisions from meetings", "Protect deep work time"],
+          "example_scenario": "Endless strategy meetings without actual strategic progress"
+        },
+        {
+          "id": "fm_23_4",
+          "name": "Bikeshedding",
+          "description": "Disproportionate time on trivial issues because they're understandable",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["trivial_issue_debated_extensively", "complex_issue_glossed_over", "competence_mismatch"],
+          "prevention_strategies": ["Allocate time by importance", "Recognize bikeshedding", "Expert delegation"],
+          "example_scenario": "Board spending hour on office renovation, minutes on acquisition"
+        },
+        {
+          "id": "fm_23_5",
+          "name": "Activity vs. Progress Confusion",
+          "description": "Confusing being busy with making progress",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["high_activity", "low_progress", "busyness_valued"],
+          "prevention_strategies": ["Measure outcomes not activity", "Focus on results", "Eliminate busy work"],
+          "example_scenario": "Analyst producing many reports but no actionable insights"
+        }
+      ]
+    },
+    {
+      "model_id": 24,
+      "model_name": "Reason-Respecting Tendency",
+      "failures": [
+        {
+          "id": "fm_24_1",
+          "name": "Accepting Poor Reasons",
+          "description": "Accepting action because a reason is given, even if reason is poor",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["reason_given", "reason_quality_not_evaluated", "compliance_without_scrutiny"],
+          "prevention_strategies": ["Evaluate reason quality", "Require good reasons", "Question weak justifications"],
+          "example_scenario": "Accepting strategy change 'because the market is changing' without specifics"
+        },
+        {
+          "id": "fm_24_2",
+          "name": "Reason Fabrication",
+          "description": "Constructing reasons after the fact to justify decisions",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["post_hoc_reasoning", "reasons_constructed_after_decision", "rationalization"],
+          "prevention_strategies": ["Document reasons before decisions", "Track decision rationale", "Honest post-mortems"],
+          "example_scenario": "Constructing elaborate justification for intuitive decision after the fact"
+        },
+        {
+          "id": "fm_24_3",
+          "name": "Reason Inflation",
+          "description": "Inflating importance of reasons to match desired conclusion",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["reasons_inflated", "conclusion_predetermined", "motivated_reasoning"],
+          "prevention_strategies": ["Evaluate reasons independently", "Seek contrary reasons", "Blind evaluation"],
+          "example_scenario": "Inflating minor positive factors to justify wanted investment"
+        },
+        {
+          "id": "fm_24_4",
+          "name": "Single Reason Sufficiency",
+          "description": "Accepting single reason as sufficient when multiple should be required",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["single_reason_cited", "no_supporting_reasons", "insufficient_justification"],
+          "prevention_strategies": ["Require multiple reasons", "Triangulate justifications", "Stress test single reasons"],
+          "example_scenario": "Approving investment based solely on 'great management' without other factors"
+        },
+        {
+          "id": "fm_24_5",
+          "name": "Circular Reasoning Acceptance",
+          "description": "Accepting circular reasoning because it sounds like a reason",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["circular_logic", "tautological_reasoning", "no_new_information"],
+          "prevention_strategies": ["Check for circularity", "Require independent evidence", "Question tautologies"],
+          "example_scenario": "Accepting 'the stock will go up because it's undervalued' without independent valuation"
+        }
+      ]
+    },
+    {
+      "model_id": 25,
+      "model_name": "Lollapalooza Effect",
+      "failures": [
+        {
+          "id": "fm_25_1",
+          "name": "Lollapalooza Blindness",
+          "description": "Failing to recognize when multiple biases are combining",
+          "category": "incomplete_analysis",
+          "severity": "critical",
+          "detection_signals": ["multiple_biases_present", "interaction_not_recognized", "extreme_outcome_unexplained"],
+          "prevention_strategies": ["Explicitly check for bias combinations", "Map interacting factors", "Be suspicious of extreme outcomes"],
+          "example_scenario": "Not recognizing bubble as combination of social proof, overoptimism, and incentives"
+        },
+        {
+          "id": "fm_25_2",
+          "name": "Underestimating Combination Effects",
+          "description": "Underestimating how biases multiply rather than add",
+          "category": "scale_mismatch",
+          "severity": "high",
+          "detection_signals": ["multiple_factors_identified", "linear_combination_assumed", "multiplicative_effect_missed"],
+          "prevention_strategies": ["Model interactions explicitly", "Consider multiplicative effects", "Study historical lollapaloozas"],
+          "example_scenario": "Underestimating fraud risk when incentives, opportunity, and rationalization all present"
+        },
+        {
+          "id": "fm_25_3",
+          "name": "Positive Lollapalooza Overconfidence",
+          "description": "Overconfidence when multiple positive factors align",
+          "category": "overconfidence",
+          "severity": "high",
+          "detection_signals": ["multiple_positives_aligned", "extreme_confidence", "downside_dismissed"],
+          "prevention_strategies": ["Question alignment of positives", "Look for hidden negatives", "Maintain skepticism"],
+          "example_scenario": "Extreme confidence in investment because everything looks perfect"
+        },
+        {
+          "id": "fm_25_4",
+          "name": "Cascade Trigger Failure",
+          "description": "Not recognizing conditions that could trigger cascading failures",
+          "category": "edge_case",
+          "severity": "critical",
+          "detection_signals": ["multiple_vulnerabilities", "cascade_potential", "trigger_not_identified"],
+          "prevention_strategies": ["Map cascade paths", "Identify trigger conditions", "Build circuit breakers"],
+          "example_scenario": "Not seeing how small trigger could cause cascading failures across interconnected system"
+        },
+        {
+          "id": "fm_25_5",
+          "name": "Historical Lollapalooza Amnesia",
+          "description": "Not learning from historical examples of extreme outcomes",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["historical_parallels_ignored", "this_time_is_different", "pattern_not_recognized"],
+          "prevention_strategies": ["Study historical lollapaloozas", "Look for pattern matches", "Assume history rhymes"],
+          "example_scenario": "Not recognizing bubble pattern because 'this time the technology is real'"
+        }
+      ]
+    }
+  ]
+}
