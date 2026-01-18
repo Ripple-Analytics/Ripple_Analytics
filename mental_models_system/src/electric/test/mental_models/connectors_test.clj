@@ -252,3 +252,189 @@
     (is (boolean? (integration-test-available? :github)))
     (is (boolean? (integration-test-available? :slack)))
     (is (boolean? (integration-test-available? :huggingface)))))
+
+;; ============================================
+;; Retry Configuration Tests
+;; ============================================
+
+(deftest test-retry-config
+  (testing "Retry configuration is defined"
+    (is (map? conn/retry-config))
+    (is (= 3 (:max-retries conn/retry-config)))
+    (is (= 1000 (:initial-delay-ms conn/retry-config)))
+    (is (= 30000 (:max-delay-ms conn/retry-config)))
+    (is (= 2.0 (:backoff-multiplier conn/retry-config)))
+    (is (set? (:retryable-status-codes conn/retry-config)))
+    (is (contains? (:retryable-status-codes conn/retry-config) 429))
+    (is (contains? (:retryable-status-codes conn/retry-config) 503))))
+
+(deftest test-calculate-backoff-delay
+  (testing "Backoff delay calculation"
+    (let [config {:initial-delay-ms 1000 :max-delay-ms 30000 :backoff-multiplier 2.0}]
+      ;; First attempt (attempt 0) should be around initial-delay-ms
+      (let [delay (conn/calculate-backoff-delay 0 config)]
+        (is (>= delay 1000))
+        (is (<= delay 1300))) ;; With 30% jitter
+      
+      ;; Second attempt should be around 2x initial
+      (let [delay (conn/calculate-backoff-delay 1 config)]
+        (is (>= delay 2000))
+        (is (<= delay 2600)))
+      
+      ;; Third attempt should be around 4x initial
+      (let [delay (conn/calculate-backoff-delay 2 config)]
+        (is (>= delay 4000))
+        (is (<= delay 5200)))
+      
+      ;; Should cap at max-delay-ms
+      (let [delay (conn/calculate-backoff-delay 10 config)]
+        (is (<= delay 30000))))))
+
+(deftest test-retryable-error-detection
+  (testing "Retryable error detection"
+    (let [config conn/retry-config]
+      ;; Timeout exceptions should be retryable
+      (is (true? (conn/retryable-error? (Exception. "Connection timeout") config)))
+      (is (true? (conn/retryable-error? (Exception. "connection reset") config)))
+      
+      ;; Non-retryable exceptions
+      (is (false? (conn/retryable-error? (Exception. "Invalid API key") config)))
+      (is (false? (conn/retryable-error? (Exception. "Not found") config)))
+      
+      ;; Retryable status codes
+      (is (true? (conn/retryable-error? {:status 429} config)))
+      (is (true? (conn/retryable-error? {:status 503} config)))
+      (is (true? (conn/retryable-error? {:status 500} config)))
+      
+      ;; Non-retryable status codes
+      (is (false? (conn/retryable-error? {:status 200} config)))
+      (is (false? (conn/retryable-error? {:status 404} config)))
+      (is (false? (conn/retryable-error? {:status 401} config))))))
+
+(deftest test-with-retry-success
+  (testing "with-retry returns result on success"
+    (let [call-count (atom 0)
+          result (conn/with-retry #(do (swap! call-count inc) "success"))]
+      (is (= "success" result))
+      (is (= 1 @call-count)))))
+
+(deftest test-with-retry-eventual-success
+  (testing "with-retry retries on transient failure then succeeds"
+    (let [call-count (atom 0)
+          result (conn/with-retry 
+                   #(do 
+                      (swap! call-count inc)
+                      (if (< @call-count 2)
+                        (throw (Exception. "Connection timeout"))
+                        "success"))
+                   {:max-retries 3 :initial-delay-ms 10 :max-delay-ms 100 :backoff-multiplier 2.0
+                    :retryable-status-codes #{}})]
+      (is (= "success" result))
+      (is (= 2 @call-count)))))
+
+;; ============================================
+;; Rate Limiting Tests
+;; ============================================
+
+(deftest test-rate-limit-config
+  (testing "Rate limit configuration is defined"
+    (is (map? conn/rate-limit-config))
+    (is (= 60 (:github conn/rate-limit-config)))
+    (is (= 60 (:slack conn/rate-limit-config)))
+    (is (= 30 (:huggingface conn/rate-limit-config)))
+    (is (= 100 (:zapier conn/rate-limit-config)))
+    (is (= 10 (:web-scraper conn/rate-limit-config)))))
+
+(deftest test-check-rate-limit
+  (testing "Rate limit checking"
+    ;; Reset rate limiters for clean test
+    (reset! conn/rate-limiters {})
+    
+    ;; First request should always be allowed
+    (is (true? (conn/check-rate-limit :github)))
+    
+    ;; Multiple requests within limit should be allowed
+    (dotimes [_ 10]
+      (is (true? (conn/check-rate-limit :github))))))
+
+(deftest test-rate-limiters-atom
+  (testing "Rate limiters atom is initialized"
+    (is (instance? clojure.lang.Atom conn/rate-limiters))
+    (is (map? @conn/rate-limiters))))
+
+;; ============================================
+;; Response Caching Tests
+;; ============================================
+
+(deftest test-cache-config
+  (testing "Cache configuration is defined"
+    (is (map? conn/cache-config))
+    (is (= 300000 (:github conn/cache-config)))
+    (is (= 60000 (:huggingface conn/cache-config)))
+    (is (= 600000 (:web-scraper conn/cache-config)))
+    (is (= 0 (:lm-studio conn/cache-config)))))
+
+(deftest test-response-cache-atom
+  (testing "Response cache atom is initialized"
+    (is (instance? clojure.lang.Atom conn/response-cache))
+    (is (map? @conn/response-cache))))
+
+(deftest test-cache-key-generation
+  (testing "Cache key generation"
+    (let [key1 (conn/cache-key :github "owner" "repo")
+          key2 (conn/cache-key :github "owner" "repo")
+          key3 (conn/cache-key :github "other" "repo")]
+      (is (string? key1))
+      (is (= key1 key2))
+      (is (not= key1 key3))
+      (is (clojure.string/starts-with? key1 "github-")))))
+
+(deftest test-set-and-get-cached
+  (testing "Cache set and get operations"
+    ;; Clear cache first
+    (conn/clear-cache)
+    
+    ;; Set a cached value
+    (conn/set-cached :github {:data "test"} "owner" "repo")
+    
+    ;; Get the cached value
+    (let [cached (conn/get-cached :github "owner" "repo")]
+      (is (= {:data "test"} cached)))
+    
+    ;; Different params should return nil
+    (is (nil? (conn/get-cached :github "other" "repo")))
+    
+    ;; LM Studio should not cache (TTL = 0)
+    (conn/set-cached :lm-studio {:data "test"} "prompt")
+    (is (nil? (conn/get-cached :lm-studio "prompt")))))
+
+(deftest test-clear-cache
+  (testing "Cache clearing"
+    ;; Set some cached values
+    (conn/set-cached :github {:data "github"} "test1")
+    (conn/set-cached :huggingface {:data "hf"} "test2")
+    
+    ;; Clear specific connector cache
+    (conn/clear-cache :github)
+    (is (nil? (conn/get-cached :github "test1")))
+    (is (some? (conn/get-cached :huggingface "test2")))
+    
+    ;; Clear all cache
+    (conn/clear-cache)
+    (is (nil? (conn/get-cached :huggingface "test2")))))
+
+;; ============================================
+;; Connection Manager Tests
+;; ============================================
+
+(deftest test-connection-manager-defined
+  (testing "Connection manager is defined"
+    (is (delay? conn/connection-manager))))
+
+(deftest test-default-http-opts-defined
+  (testing "Default HTTP options are defined"
+    (is (map? conn/default-http-opts))
+    (is (contains? conn/default-http-opts :socket-timeout))
+    (is (contains? conn/default-http-opts :connection-timeout))
+    (is (= 30000 (:socket-timeout conn/default-http-opts)))
+    (is (= 10000 (:connection-timeout conn/default-http-opts)))))
