@@ -16,7 +16,8 @@
    - Web scraping"
   (:require [clojure.string :as str]
             #?(:clj [clojure.java.io :as io])
-            #?(:clj [clojure.data.json :as json])))
+            #?(:clj [clj-http.client :as http])
+            #?(:clj [cheshire.core :as json])))
 
 ;; ============================================
 ;; Base Connector Protocol
@@ -51,20 +52,25 @@
   [connector payload]
   #?(:clj
      (try
-       ;; In production, this would make HTTP request
-       {:success true
-        :connector-type :zapier
-        :payload payload
-        :timestamp (java.time.Instant/now)
-        :message "Webhook triggered (simulated in Clojure)"}
+       (let [response (http/post (:webhook-url connector)
+                                 {:body (json/generate-string payload)
+                                  :content-type :json
+                                  :accept :json
+                                  :socket-timeout 30000
+                                  :connection-timeout 10000})]
+         {:success (< (:status response) 400)
+          :connector-type :zapier
+          :payload payload
+          :timestamp (java.time.Instant/now)
+          :status-code (:status response)
+          :response-body (:body response)})
        (catch Exception e
          {:success false
-          :error (.getMessage e)}))
+          :error (.getMessage e)
+          :timestamp (java.time.Instant/now)}))
      :cljs
-     {:success true
-      :connector-type :zapier
-      :payload payload
-      :message "Webhook triggered (client-side)"}))
+     {:success false
+      :error "Zapier webhooks must be triggered from server"}))
 
 ;; ============================================
 ;; Huggingface Connector
@@ -88,19 +94,68 @@
 (defn huggingface-inference
   "Run inference on a Huggingface model."
   [connector model-id input]
-  {:model model-id
-   :input input
-   :output (str "Inference result for: " (subs input 0 (min 50 (count input))) "...")
-   :status :success
-   :note "Full inference requires API key and HTTP client"})
+  #?(:clj
+     (try
+       (let [url (str (:base-url huggingface-config) "/models/" model-id)
+             response (http/post url
+                                 {:body (json/generate-string {:inputs input})
+                                  :headers {"Authorization" (str "Bearer " (:api-key connector))}
+                                  :content-type :json
+                                  :accept :json
+                                  :socket-timeout 60000
+                                  :connection-timeout 10000
+                                  :as :json})]
+         {:model model-id
+          :input input
+          :output (:body response)
+          :status :success
+          :timestamp (java.time.Instant/now)})
+       (catch Exception e
+         {:model model-id
+          :input input
+          :output "NA"
+          :status :error
+          :error (.getMessage e)
+          :timestamp (java.time.Instant/now)}))
+     :cljs
+     {:model model-id
+      :input input
+      :output "NA"
+      :status :error
+      :error "Huggingface inference must be called from server"}))
 
 (defn huggingface-embed
   "Generate embeddings using Huggingface."
   [connector text]
-  {:text text
-   :embedding (vec (repeatedly 384 #(- (rand) 0.5)))
-   :model "sentence-transformers/all-MiniLM-L6-v2"
-   :dimensions 384})
+  #?(:clj
+     (try
+       (let [url (str (:base-url huggingface-config) "/models/sentence-transformers/all-MiniLM-L6-v2")
+             response (http/post url
+                                 {:body (json/generate-string {:inputs text})
+                                  :headers {"Authorization" (str "Bearer " (:api-key connector))}
+                                  :content-type :json
+                                  :accept :json
+                                  :socket-timeout 60000
+                                  :connection-timeout 10000
+                                  :as :json})]
+         {:text text
+          :embedding (:body response)
+          :model "sentence-transformers/all-MiniLM-L6-v2"
+          :dimensions 384
+          :status :success
+          :timestamp (java.time.Instant/now)})
+       (catch Exception e
+         {:text text
+          :embedding nil
+          :model "sentence-transformers/all-MiniLM-L6-v2"
+          :status :error
+          :error (.getMessage e)
+          :timestamp (java.time.Instant/now)}))
+     :cljs
+     {:text text
+      :embedding nil
+      :status :error
+      :error "Huggingface embeddings must be called from server"}))
 
 ;; ============================================
 ;; GitHub Connector
@@ -121,39 +176,139 @@
 (defn github-get-repo
   "Get repository information."
   [connector owner repo]
-  {:owner owner
-   :repo repo
-   :full-name (str owner "/" repo)
-   :status :success
-   :note "Full API access requires token"})
+  #?(:clj
+     (try
+       (let [url (str (:base-url github-config) "/repos/" owner "/" repo)
+             response (http/get url
+                                {:headers {"Authorization" (str "Bearer " (:token connector))
+                                           "Accept" "application/vnd.github+json"
+                                           "X-GitHub-Api-Version" (:api-version github-config)}
+                                 :socket-timeout 30000
+                                 :connection-timeout 10000
+                                 :as :json})]
+         {:owner owner
+          :repo repo
+          :full-name (str owner "/" repo)
+          :data (:body response)
+          :status :success
+          :timestamp (java.time.Instant/now)})
+       (catch Exception e
+         {:owner owner
+          :repo repo
+          :full-name (str owner "/" repo)
+          :data nil
+          :status :error
+          :error (.getMessage e)
+          :timestamp (java.time.Instant/now)}))
+     :cljs
+     {:owner owner
+      :repo repo
+      :status :error
+      :error "GitHub API must be called from server"}))
 
 (defn github-list-issues
   "List issues for a repository."
   [connector owner repo & {:keys [state] :or {state "open"}}]
-  {:owner owner
-   :repo repo
-   :state state
-   :issues []
-   :total-count 0
-   :note "Full API access requires token"})
+  #?(:clj
+     (try
+       (let [url (str (:base-url github-config) "/repos/" owner "/" repo "/issues")
+             response (http/get url
+                                {:headers {"Authorization" (str "Bearer " (:token connector))
+                                           "Accept" "application/vnd.github+json"
+                                           "X-GitHub-Api-Version" (:api-version github-config)}
+                                 :query-params {:state state}
+                                 :socket-timeout 30000
+                                 :connection-timeout 10000
+                                 :as :json})]
+         {:owner owner
+          :repo repo
+          :state state
+          :issues (:body response)
+          :total-count (count (:body response))
+          :status :success
+          :timestamp (java.time.Instant/now)})
+       (catch Exception e
+         {:owner owner
+          :repo repo
+          :state state
+          :issues []
+          :total-count 0
+          :status :error
+          :error (.getMessage e)
+          :timestamp (java.time.Instant/now)}))
+     :cljs
+     {:owner owner
+      :repo repo
+      :issues []
+      :status :error
+      :error "GitHub API must be called from server"}))
 
 (defn github-create-issue
   "Create a new issue."
   [connector owner repo title body]
-  {:owner owner
-   :repo repo
-   :title title
-   :body body
-   :status :created
-   :note "Full API access requires token"})
+  #?(:clj
+     (try
+       (let [url (str (:base-url github-config) "/repos/" owner "/" repo "/issues")
+             response (http/post url
+                                 {:body (json/generate-string {:title title :body body})
+                                  :headers {"Authorization" (str "Bearer " (:token connector))
+                                            "Accept" "application/vnd.github+json"
+                                            "X-GitHub-Api-Version" (:api-version github-config)}
+                                  :content-type :json
+                                  :socket-timeout 30000
+                                  :connection-timeout 10000
+                                  :as :json})]
+         {:owner owner
+          :repo repo
+          :title title
+          :body body
+          :issue (:body response)
+          :status :created
+          :timestamp (java.time.Instant/now)})
+       (catch Exception e
+         {:owner owner
+          :repo repo
+          :title title
+          :status :error
+          :error (.getMessage e)
+          :timestamp (java.time.Instant/now)}))
+     :cljs
+     {:owner owner
+      :repo repo
+      :status :error
+      :error "GitHub API must be called from server"}))
 
 (defn github-search-code
   "Search code in repositories."
   [connector query]
-  {:query query
-   :results []
-   :total-count 0
-   :note "Full API access requires token"})
+  #?(:clj
+     (try
+       (let [url (str (:base-url github-config) "/search/code")
+             response (http/get url
+                                {:headers {"Authorization" (str "Bearer " (:token connector))
+                                           "Accept" "application/vnd.github+json"
+                                           "X-GitHub-Api-Version" (:api-version github-config)}
+                                 :query-params {:q query}
+                                 :socket-timeout 30000
+                                 :connection-timeout 10000
+                                 :as :json})]
+         {:query query
+          :results (get-in response [:body :items])
+          :total-count (get-in response [:body :total_count])
+          :status :success
+          :timestamp (java.time.Instant/now)})
+       (catch Exception e
+         {:query query
+          :results []
+          :total-count 0
+          :status :error
+          :error (.getMessage e)
+          :timestamp (java.time.Instant/now)}))
+     :cljs
+     {:query query
+      :results []
+      :status :error
+      :error "GitHub API must be called from server"}))
 
 ;; ============================================
 ;; Slack Connector
@@ -174,27 +329,94 @@
 (defn slack-post-message
   "Post a message to a Slack channel."
   [connector channel text & {:keys [blocks attachments]}]
-  {:channel channel
-   :text text
-   :blocks blocks
-   :attachments attachments
-   :status :sent
-   :timestamp (str (System/currentTimeMillis))
-   :note "Full API access requires bot token"})
+  #?(:clj
+     (try
+       (let [url (str (:base-url slack-config) "/chat.postMessage")
+             payload (cond-> {:channel channel :text text}
+                       blocks (assoc :blocks blocks)
+                       attachments (assoc :attachments attachments))
+             response (http/post url
+                                 {:body (json/generate-string payload)
+                                  :headers {"Authorization" (str "Bearer " (:bot-token connector))}
+                                  :content-type :json
+                                  :accept :json
+                                  :socket-timeout 30000
+                                  :connection-timeout 10000
+                                  :as :json})]
+         {:channel channel
+          :text text
+          :blocks blocks
+          :attachments attachments
+          :status (if (get-in response [:body :ok]) :sent :error)
+          :message-ts (get-in response [:body :ts])
+          :timestamp (java.time.Instant/now)})
+       (catch Exception e
+         {:channel channel
+          :text text
+          :status :error
+          :error (.getMessage e)
+          :timestamp (java.time.Instant/now)}))
+     :cljs
+     {:channel channel
+      :text text
+      :status :error
+      :error "Slack API must be called from server"}))
 
 (defn slack-list-channels
   "List available Slack channels."
   [connector]
-  {:channels []
-   :total-count 0
-   :note "Full API access requires bot token"})
+  #?(:clj
+     (try
+       (let [url (str (:base-url slack-config) "/conversations.list")
+             response (http/get url
+                                {:headers {"Authorization" (str "Bearer " (:bot-token connector))}
+                                 :accept :json
+                                 :socket-timeout 30000
+                                 :connection-timeout 10000
+                                 :as :json})]
+         {:channels (get-in response [:body :channels])
+          :total-count (count (get-in response [:body :channels]))
+          :status (if (get-in response [:body :ok]) :success :error)
+          :timestamp (java.time.Instant/now)})
+       (catch Exception e
+         {:channels []
+          :total-count 0
+          :status :error
+          :error (.getMessage e)
+          :timestamp (java.time.Instant/now)}))
+     :cljs
+     {:channels []
+      :total-count 0
+      :status :error
+      :error "Slack API must be called from server"}))
 
 (defn slack-get-user
   "Get user information."
   [connector user-id]
-  {:user-id user-id
-   :status :success
-   :note "Full API access requires bot token"})
+  #?(:clj
+     (try
+       (let [url (str (:base-url slack-config) "/users.info")
+             response (http/get url
+                                {:headers {"Authorization" (str "Bearer " (:bot-token connector))}
+                                 :query-params {:user user-id}
+                                 :accept :json
+                                 :socket-timeout 30000
+                                 :connection-timeout 10000
+                                 :as :json})]
+         {:user-id user-id
+          :user (get-in response [:body :user])
+          :status (if (get-in response [:body :ok]) :success :error)
+          :timestamp (java.time.Instant/now)})
+       (catch Exception e
+         {:user-id user-id
+          :user nil
+          :status :error
+          :error (.getMessage e)
+          :timestamp (java.time.Instant/now)}))
+     :cljs
+     {:user-id user-id
+      :status :error
+      :error "Slack API must be called from server"}))
 
 ;; ============================================
 ;; Google Drive Connector
@@ -257,31 +479,108 @@
 
 (defn lm-studio-chat
   "Send a chat completion request to LM Studio."
-  [connector messages & {:keys [temperature max-tokens]
+  [connector messages & {:keys [temperature max-tokens model]
                          :or {temperature 0.7 max-tokens 1000}}]
-  {:messages messages
-   :temperature temperature
-   :max-tokens max-tokens
-   :response {:role "assistant"
-              :content "LM Studio response (requires local server running)"}
-   :usage {:prompt-tokens 0 :completion-tokens 0 :total-tokens 0}
-   :note "Requires LM Studio server running locally"})
+  #?(:clj
+     (try
+       (let [url (str (:base-url connector) "/chat/completions")
+             payload (cond-> {:messages messages
+                              :temperature temperature
+                              :max_tokens max-tokens}
+                       model (assoc :model model))
+             response (http/post url
+                                 {:body (json/generate-string payload)
+                                  :content-type :json
+                                  :accept :json
+                                  :socket-timeout 120000
+                                  :connection-timeout 10000
+                                  :as :json})]
+         {:messages messages
+          :temperature temperature
+          :max-tokens max-tokens
+          :response (get-in response [:body :choices 0 :message])
+          :usage (get-in response [:body :usage])
+          :model (get-in response [:body :model])
+          :status :success
+          :timestamp (java.time.Instant/now)})
+       (catch Exception e
+         {:messages messages
+          :temperature temperature
+          :max-tokens max-tokens
+          :response {:role "assistant" :content "NA"}
+          :usage {:prompt-tokens 0 :completion-tokens 0 :total-tokens 0}
+          :status :error
+          :error (.getMessage e)
+          :timestamp (java.time.Instant/now)}))
+     :cljs
+     {:messages messages
+      :response {:role "assistant" :content "NA"}
+      :status :error
+      :error "LM Studio must be called from server"}))
 
 (defn lm-studio-complete
   "Send a completion request to LM Studio."
-  [connector prompt & {:keys [temperature max-tokens]
+  [connector prompt & {:keys [temperature max-tokens model]
                        :or {temperature 0.7 max-tokens 500}}]
-  {:prompt prompt
-   :temperature temperature
-   :max-tokens max-tokens
-   :completion "LM Studio completion (requires local server running)"
-   :note "Requires LM Studio server running locally"})
+  #?(:clj
+     (try
+       (let [url (str (:base-url connector) "/completions")
+             payload (cond-> {:prompt prompt
+                              :temperature temperature
+                              :max_tokens max-tokens}
+                       model (assoc :model model))
+             response (http/post url
+                                 {:body (json/generate-string payload)
+                                  :content-type :json
+                                  :accept :json
+                                  :socket-timeout 120000
+                                  :connection-timeout 10000
+                                  :as :json})]
+         {:prompt prompt
+          :temperature temperature
+          :max-tokens max-tokens
+          :completion (get-in response [:body :choices 0 :text])
+          :usage (get-in response [:body :usage])
+          :model (get-in response [:body :model])
+          :status :success
+          :timestamp (java.time.Instant/now)})
+       (catch Exception e
+         {:prompt prompt
+          :temperature temperature
+          :max-tokens max-tokens
+          :completion "NA"
+          :status :error
+          :error (.getMessage e)
+          :timestamp (java.time.Instant/now)}))
+     :cljs
+     {:prompt prompt
+      :completion "NA"
+      :status :error
+      :error "LM Studio must be called from server"}))
 
 (defn lm-studio-list-models
   "List available models in LM Studio."
   [connector]
-  {:models []
-   :note "Requires LM Studio server running locally"})
+  #?(:clj
+     (try
+       (let [url (str (:base-url connector) "/models")
+             response (http/get url
+                                {:accept :json
+                                 :socket-timeout 30000
+                                 :connection-timeout 10000
+                                 :as :json})]
+         {:models (get-in response [:body :data])
+          :status :success
+          :timestamp (java.time.Instant/now)})
+       (catch Exception e
+         {:models []
+          :status :error
+          :error (.getMessage e)
+          :timestamp (java.time.Instant/now)}))
+     :cljs
+     {:models []
+      :status :error
+      :error "LM Studio must be called from server"}))
 
 ;; ============================================
 ;; Database Connector
@@ -382,23 +681,66 @@
    :rate-limit {:requests-per-second 1}})
 
 (defn scrape-url
-  "Scrape content from a URL."
+  "Scrape content from a URL (headless, text-only)."
   [connector url]
-  {:url url
-   :status :success
-   :content nil
-   :title nil
-   :links []
-   :note "Full scraping requires HTTP client and HTML parser"})
+  #?(:clj
+     (try
+       (let [response (http/get url
+                                {:headers {"User-Agent" (:user-agent connector)}
+                                 :socket-timeout 30000
+                                 :connection-timeout 10000
+                                 :as :string})]
+         {:url url
+          :status :success
+          :content (:body response)
+          :status-code (:status response)
+          :content-type (get-in response [:headers "Content-Type"])
+          :timestamp (java.time.Instant/now)})
+       (catch Exception e
+         {:url url
+          :status :error
+          :content nil
+          :error (.getMessage e)
+          :timestamp (java.time.Instant/now)}))
+     :cljs
+     {:url url
+      :status :error
+      :content nil
+      :error "Web scraping must be done from server"}))
 
 (defn scrape-search-results
-  "Scrape search engine results."
-  [connector query & {:keys [engine] :or {engine :google}}]
-  {:query query
-   :engine engine
-   :results []
-   :total-count 0
-   :note "Full scraping requires HTTP client"})
+  "Scrape search engine results (headless, requires API or direct access)."
+  [connector query & {:keys [engine] :or {engine :duckduckgo}}]
+  #?(:clj
+     (try
+       (let [url (case engine
+                   :duckduckgo (str "https://html.duckduckgo.com/html/?q=" (java.net.URLEncoder/encode query "UTF-8"))
+                   (str "https://html.duckduckgo.com/html/?q=" (java.net.URLEncoder/encode query "UTF-8")))
+             response (http/get url
+                                {:headers {"User-Agent" (:user-agent connector)}
+                                 :socket-timeout 30000
+                                 :connection-timeout 10000
+                                 :as :string})]
+         {:query query
+          :engine engine
+          :raw-html (:body response)
+          :status :success
+          :timestamp (java.time.Instant/now)
+          :note "Parse HTML to extract results"})
+       (catch Exception e
+         {:query query
+          :engine engine
+          :results []
+          :total-count 0
+          :status :error
+          :error (.getMessage e)
+          :timestamp (java.time.Instant/now)}))
+     :cljs
+     {:query query
+      :engine engine
+      :results []
+      :status :error
+      :error "Web scraping must be done from server"}))
 
 ;; ============================================
 ;; Connector Registry
