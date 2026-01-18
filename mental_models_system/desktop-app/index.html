@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
+    <title>Mental Models System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --bg-primary: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-card: #0f3460;
+            --text-primary: #eaeaea;
+            --text-secondary: #a0a0a0;
+            --accent: #e94560;
+            --accent-hover: #ff6b6b;
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --error: #ef4444;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            background: var(--bg-secondary);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .version {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        /* Navigation */
+        .nav {
+            background: var(--bg-secondary);
+            display: flex;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .nav-item {
+            padding: 10px 20px;
+            font-size: 13px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .nav-item.active {
+            border-bottom-color: var(--accent);
+            color: var(--accent);
+        }
+        
+        /* Main Content */
+        .main {
+            padding: 20px;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: var(--bg-card);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--accent);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: var(--text-primary);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: black;
+        }
+        
+        .btn-danger {
+            background: var(--error);
+            color: white;
+        }
+        
+        /* Status Indicator */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .status-dot.running {
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+        
+        .status-dot.stopped {
+            background: var(--error);
+        }
+        
+        .status-dot.warning {
+            background: var(--warning);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        /* Lists */
+        .list {
+            list-style: none;
+        }
+        
+        .list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        
+        .list-item:hover {
+            background: rgba(255,255,255,0.08);
+        }
+        
+        /* Inputs */
+        .input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .input {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.05);
+            color: var(--text-primary);
+            font-size: 13px;
+        }
+        
+        .input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        /* Update Banner */
+        .update-banner {
+            background: var(--bg-card);
+            padding: 12px 20px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .update-banner.visible {
+            display: flex;
+        }
+        
+        .update-progress {
+            width: 200px;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .update-progress-bar {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        /* Log */
+        .log {
+            background: rgba(0,0,0,0.3);
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            margin-bottom: 4px;
+            color: var(--text-secondary);
+        }
+        
+        .log-entry.info { color: var(--text-primary); }
+        .log-entry.success { color: var(--success); }
+        .log-entry.warning { color: var(--warning); }
+        .log-entry.error { color: var(--error); }
+        
+        /* Settings */
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .setting-label {
+            font-size: 13px;
+        }
+        
+        .setting-description {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        
+        /* Toggle Switch */
+        .toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+        
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 24px;
+            transition: 0.3s;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+        
+        .toggle input:checked + .toggle-slider {
+            background: var(--accent);
+        }
+        
+        .toggle input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Update Banner -->
+    <div class="update-banner" id="updateBanner">
+        <span id="updateMessage">Checking for updates...</span>
+        <div class="update-progress">
+            <div class="update-progress-bar" id="updateProgress"></div>
+        </div>
+        <button class="btn btn-primary btn-sm" id="updateAction" style="display:none;">Restart</button>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>Mental Models System</h1>
+        <div class="header-actions">
+            <div class="status-indicator">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Disconnected</span>
+            </div>
+            <span class="version" id="version">v0.0.0</span>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav">
+        <div class="nav-item active" data-page="dashboard">Dashboard</div>
+        <div class="nav-item" data-page="harvester">Data Harvester</div>
+        <div class="nav-item" data-page="analysis">Analysis</div>
+        <div class="nav-item" data-page="settings">Settings</div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+        <!-- Dashboard Page -->
+        <div class="page active" id="page-dashboard">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-files">0</div>
+                    <div class="stat-label">Files Processed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-bytes">0 MB</div>
+                    <div class="stat-label">Data Processed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-urls">0</div>
+                    <div class="stat-label">URLs Scraped</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-synced">0</div>
+                    <div class="stat-label">Items Synced</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-queue">0</div>
+                    <div class="stat-label">Pending Queue</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-errors">0</div>
+                    <div class="stat-label">Errors</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Harvester Control</span>
+                    <div>
+                        <button class="btn btn-success" id="btnStart">Start Harvesting</button>
+                        <button class="btn btn-danger" id="btnStop" style="display:none;">Stop Harvesting</button>
+                    </div>
+                </div>
+                <p style="font-size: 13px; color: var(--text-secondary);">
+                    The data harvester continuously monitors directories and scrapes URLs, 
+                    piping all data through to the Mental Models API for analysis.
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Activity Log</span>
+                    <button class="btn btn-secondary" id="btnClearLog">Clear</button>
+                </div>
+                <div class="log" id="activityLog">
+                    <div class="log-entry info">Ready to start harvesting...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Harvester Page -->
+        <div class="page" id="page-harvester">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Watch Directories</span>
+                </div>
+                <div class="input-group">
+                    <input type="text" class="input" id="inputDir" placeholder="Enter directory path or click Browse...">
+                    <button class="btn btn-secondary" id="btnBrowseDir">Browse</button>
+                    <button class="btn btn-primary" id="btnAddDir">Add</button>
+                </div>
+                <ul class="list" id="dirList"></ul>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Scrape URLs</span>
+                </div>
+                <div class="input-group">
+                    <input type="text" class="input" id="inputUrl" placeholder="Enter URL to scrape...">
+                    <button class="btn btn-primary" id="btnAddUrl">Add</button>
+                </div>
+                <ul class="list" id="urlList"></ul>
+            </div>
+        </div>
+
+        <!-- Analysis Page -->
+        <div class="page" id="page-analysis">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Quick Analysis</span>
+                </div>
+                <textarea class="input" id="analysisInput" rows="5" placeholder="Enter text to analyze with mental models..."></textarea>
+                <div style="margin-top: 12px;">
+                    <button class="btn btn-primary" id="btnAnalyze">Analyze</button>
+                </div>
+                <div id="analysisResult" style="margin-top: 16px;"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Cluster Status</span>
+                    <button class="btn btn-secondary" id="btnRefreshCluster">Refresh</button>
+                </div>
+                <div id="clusterStatus">
+                    <p style="color: var(--text-secondary); font-size: 13px;">Click refresh to check cluster status...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div class="page" id="page-settings">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Connection</span>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">API URL</div>
+                        <div class="setting-description">URL of the Mental Models API server</div>
+                    </div>
+                    <input type="text" class="input" id="settingApiUrl" style="width: 300px;">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Application</span>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Minimize to Tray</div>
+                        <div class="setting-description">Keep running in system tray when closed</div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="settingMinimizeToTray">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div class="setting-label">Check for Updates on Start</div>
+                        <div class="setting-description">Automatically check for updates when app starts</div>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="settingCheckUpdates">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-title">Updates</span>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-primary" id="btnCheckUpdates">Check for Updates</button>
+                    <span id="updateStatus" style="font-size: 13px; color: var(--text-secondary); align-self: center;"></span>
+                </div>
+            </div>
+
+            <div style="margin-top: 16px;">
+                <button class="btn btn-primary" id="btnSaveSettings">Save Settings</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let harvesterRunning = false;
+        let watchedDirs = [];
+        let scrapeUrls = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Get version
+            const version = await window.electronAPI.getVersion();
+            document.getElementById('version').textContent = `v${version}`;
+
+            // Load settings
+            const settings = await window.electronAPI.getSettings();
+            document.getElementById('settingApiUrl').value = settings.apiUrl;
+            document.getElementById('settingMinimizeToTray').checked = settings.minimizeToTray;
+            document.getElementById('settingCheckUpdates').checked = settings.checkUpdatesOnStart;
+
+            // Setup navigation
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                    item.classList.add('active');
+                    document.getElementById(`page-${item.dataset.page}`).classList.add('active');
+                });
+            });
+
+            // Setup buttons
+            document.getElementById('btnStart').addEventListener('click', startHarvester);
+            document.getElementById('btnStop').addEventListener('click', stopHarvester);
+            document.getElementById('btnClearLog').addEventListener('click', clearLog);
+            document.getElementById('btnAddDir').addEventListener('click', addDirectory);
+            document.getElementById('btnBrowseDir').addEventListener('click', browseDirectory);
+            document.getElementById('btnAddUrl').addEventListener('click', addUrl);
+            document.getElementById('btnAnalyze').addEventListener('click', runAnalysis);
+            document.getElementById('btnRefreshCluster').addEventListener('click', refreshCluster);
+            document.getElementById('btnCheckUpdates').addEventListener('click', checkUpdates);
+            document.getElementById('btnSaveSettings').addEventListener('click', saveSettings);
+
+            // Listen for harvester updates
+            window.electronAPI.onHarvesterUpdate(updateHarvesterStatus);
+
+            // Listen for update status
+            window.electronAPI.onUpdateStatus(handleUpdateStatus);
+
+            // Initial status check
+            refreshStatus();
+            setInterval(refreshStatus, 5000);
+        });
+
+        // Harvester Control
+        async function startHarvester() {
+            const result = await window.electronAPI.startHarvester({
+                apiUrl: document.getElementById('settingApiUrl').value
+            });
+            if (result.success) {
+                harvesterRunning = true;
+                updateUI();
+                addLog('Harvester started', 'success');
+            } else {
+                addLog(`Failed to start: ${result.error}`, 'error');
+            }
+        }
+
+        async function stopHarvester() {
+            const result = await window.electronAPI.stopHarvester();
+            if (result.success) {
+                harvesterRunning = false;
+                updateUI();
+                addLog('Harvester stopped', 'warning');
+            }
+        }
+
+        function updateHarvesterStatus(status) {
+            harvesterRunning = status.running;
+            watchedDirs = status.watchedDirs || [];
+            scrapeUrls = status.scrapeUrls || [];
+
+            // Update stats
+            document.getElementById('stat-files').textContent = status.stats?.filesProcessed || 0;
+            document.getElementById('stat-bytes').textContent = formatBytes(status.stats?.bytesProcessed || 0);
+            document.getElementById('stat-urls').textContent = status.stats?.urlsScraped || 0;
+            document.getElementById('stat-synced').textContent = status.stats?.itemsSynced || 0;
+            document.getElementById('stat-queue').textContent = status.pendingQueue || 0;
+            document.getElementById('stat-errors').textContent = status.stats?.errors || 0;
+
+            // Update lists
+            renderDirList();
+            renderUrlList();
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('btnStart').style.display = harvesterRunning ? 'none' : 'inline-block';
+            document.getElementById('btnStop').style.display = harvesterRunning ? 'inline-block' : 'none';
+            
+            const statusDot = document.getElementById('statusDot');
+            const statusText = document.getElementById('statusText');
+            
+            if (harvesterRunning) {
+                statusDot.className = 'status-dot running';
+                statusText.textContent = 'Harvesting';
+            } else {
+                statusDot.className = 'status-dot stopped';
+                statusText.textContent = 'Stopped';
+            }
+        }
+
+        // Directory Management
+        async function browseDirectory() {
+            const result = await window.electronAPI.selectDirectory();
+            if (result) {
+                document.getElementById('inputDir').value = result;
+            }
+        }
+
+        async function addDirectory() {
+            const dir = document.getElementById('inputDir').value.trim();
+            if (!dir) return;
+
+            const result = await window.electronAPI.addWatchDirectory(dir);
+            if (result.success) {
+                document.getElementById('inputDir').value = '';
+                addLog(`Added directory: ${dir}`, 'info');
+            } else {
+                addLog(`Failed to add directory: ${result.error}`, 'error');
+            }
+        }
+
+        async function removeDirectory(dir) {
+            await window.electronAPI.removeWatchDirectory(dir);
+            addLog(`Removed directory: ${dir}`, 'info');
+        }
+
+        function renderDirList() {
+            const list = document.getElementById('dirList');
+            list.innerHTML = watchedDirs.map(dir => `
+                <li class="list-item">
+                    <span>${dir}</span>
+                    <button class="btn btn-secondary" onclick="removeDirectory('${dir}')">Remove</button>
+                </li>
+            `).join('');
+        }
+
+        // URL Management
+        async function addUrl() {
+            const url = document.getElementById('inputUrl').value.trim();
+            if (!url) return;
+
+            const result = await window.electronAPI.addScrapeUrl(url);
+            if (result.success) {
+                document.getElementById('inputUrl').value = '';
+                addLog(`Added URL: ${url}`, 'info');
+            } else {
+                addLog(`Failed to add URL: ${result.error}`, 'error');
+            }
+        }
+
+        async function removeUrl(url) {
+            await window.electronAPI.removeScrapeUrl(url);
+            addLog(`Removed URL: ${url}`, 'info');
+        }
+
+        function renderUrlList() {
+            const list = document.getElementById('urlList');
+            list.innerHTML = scrapeUrls.map(url => `
+                <li class="list-item">
+                    <span>${url}</span>
+                    <button class="btn btn-secondary" onclick="removeUrl('${url}')">Remove</button>
+                </li>
+            `).join('');
+        }
+
+        // Analysis
+        async function runAnalysis() {
+            const text = document.getElementById('analysisInput').value.trim();
+            if (!text) return;
+
+            document.getElementById('analysisResult').innerHTML = '<p style="color: var(--text-secondary);">Analyzing...</p>';
+
+            const result = await window.electronAPI.submitWork('analyze', { text }, 'high');
+            if (result.success) {
+                document.getElementById('analysisResult').innerHTML = `
+                    <div style="background: rgba(255,255,255,0.05); padding: 12px; border-radius: 6px;">
+                        <p style="font-size: 13px;">Work submitted successfully. Task ID: ${result.data?.task_id || 'N/A'}</p>
+                    </div>
+                `;
+                addLog('Analysis submitted', 'success');
+            } else {
+                document.getElementById('analysisResult').innerHTML = `
+                    <div style="background: rgba(239,68,68,0.1); padding: 12px; border-radius: 6px;">
+                        <p style="font-size: 13px; color: var(--error);">Error: ${result.error}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function refreshCluster() {
+            const result = await window.electronAPI.getClusterStatus();
+            const container = document.getElementById('clusterStatus');
+
+            if (result.success) {
+                const data = result.data;
+                container.innerHTML = `
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; font-size: 13px;">
+                        <div><strong>Active Nodes:</strong> ${data.active_nodes || 0}</div>
+                        <div><strong>Total Workers:</strong> ${data.total_workers || 0}</div>
+                        <div><strong>Queue Depth:</strong> ${data.queue_depth || 0}</div>
+                        <div><strong>Tasks Completed:</strong> ${data.tasks_completed || 0}</div>
+                        <div><strong>Tasks Failed:</strong> ${data.tasks_failed || 0}</div>
+                        <div><strong>Throughput:</strong> ${data.throughput || 0}/s</div>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `<p style="color: var(--error); font-size: 13px;">Error: ${result.error}</p>`;
+            }
+        }
+
+        async function refreshStatus() {
+            const status = await window.electronAPI.getHarvesterStatus();
+            if (status) {
+                updateHarvesterStatus(status);
+            }
+        }
+
+        // Settings
+        async function saveSettings() {
+            const settings = {
+                apiUrl: document.getElementById('settingApiUrl').value,
+                minimizeToTray: document.getElementById('settingMinimizeToTray').checked,
+                checkUpdatesOnStart: document.getElementById('settingCheckUpdates').checked
+            };
+
+            await window.electronAPI.saveSettings(settings);
+            addLog('Settings saved', 'success');
+        }
+
+        // Updates
+        async function checkUpdates() {
+            document.getElementById('updateStatus').textContent = 'Checking...';
+            await window.electronAPI.checkForUpdates();
+        }
+
+        function handleUpdateStatus({ status, data }) {
+            const banner = document.getElementById('updateBanner');
+            const message = document.getElementById('updateMessage');
+            const progress = document.getElementById('updateProgress');
+            const action = document.getElementById('updateAction');
+            const statusEl = document.getElementById('updateStatus');
+
+            switch (status) {
+                case 'checking-for-update':
+                    statusEl.textContent = 'Checking for updates...';
+                    break;
+                case 'update-available':
+                    banner.classList.add('visible');
+                    message.textContent = `Update available: v${data.version}`;
+                    statusEl.textContent = `Update available: v${data.version}`;
+                    break;
+                case 'update-not-available':
+                    statusEl.textContent = 'You have the latest version';
+                    break;
+                case 'download-progress':
+                    banner.classList.add('visible');
+                    message.textContent = `Downloading: ${data.percent.toFixed(1)}%`;
+                    progress.style.width = `${data.percent}%`;
+                    break;
+                case 'update-downloaded':
+                    message.textContent = `Update ready: v${data.version}`;
+                    action.style.display = 'inline-block';
+                    statusEl.textContent = 'Update downloaded, restart to apply';
+                    break;
+                case 'update-error':
+                    statusEl.textContent = `Update error: ${data}`;
+                    break;
+            }
+        }
+
+        // Logging
+        function addLog(message, type = 'info') {
+            const log = document.getElementById('activityLog');
+            const time = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${time}] ${message}`;
+            log.appendChild(entry);
+            log.scrollTop = log.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('activityLog').innerHTML = '';
+        }
+
+        // Utilities
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>

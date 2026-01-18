@@ -3,6 +3,30 @@ import WatchKit
 import HealthKit
 import WatchConnectivity
 
+// MARK: - Watch Design System (M&S + Costco: Monochrome + Red)
+struct WatchDesign {
+    // Monochrome palette
+    static let black = Color.black
+    static let white = Color.white
+    static let gray900 = Color(white: 0.1)
+    static let gray700 = Color(white: 0.2)
+    static let gray600 = Color(white: 0.3)
+    static let gray500 = Color(white: 0.4)
+    static let gray400 = Color(white: 0.5)
+    static let gray200 = Color(white: 0.8)
+    
+    // Strategic red accent - ONLY color allowed
+    static let accent = Color(red: 0.8, green: 0.1, blue: 0.1)
+    
+    // Typography for Watch
+    static let titleFont = Font.system(size: 16, weight: .semibold)
+    static let bodyFont = Font.system(size: 14, weight: .regular)
+    static let captionFont = Font.system(size: 12, weight: .regular)
+    static let metricFont = Font.system(size: 28, weight: .bold, design: .monospaced)
+    static let smallMetricFont = Font.system(size: 20, weight: .bold, design: .monospaced)
+    static let microFont = Font.system(size: 10, weight: .medium)
+}
+
 @main
 struct MentalModelsWatchApp: App {
     @StateObject private var watchState = WatchAppState()
@@ -145,35 +169,40 @@ struct DashboardView: View {
         ScrollView {
             VStack(spacing: 12) {
                 HStack {
-                    Image(systemName: "brain.head.profile")
-                        .font(.title2)
-                        .foregroundColor(.blue)
+                    Text("MENTAL MODELS")
+                        .font(WatchDesign.microFont)
+                        .foregroundColor(WatchDesign.gray500)
                     
-                    Text("Mental Models")
-                        .font(.headline)
+                    Spacer()
+                    
+                    Circle()
+                        .fill(learningEngine.isLearning ? WatchDesign.accent : WatchDesign.gray500)
+                        .frame(width: 6, height: 6)
                 }
                 
-                Divider()
+                Rectangle()
+                    .fill(WatchDesign.gray200)
+                    .frame(height: 1)
                 
                 HStack {
-                    VStack(alignment: .leading) {
+                    VStack(alignment: .leading, spacing: 2) {
                         Text("\(learningEngine.dataPointsCollected)")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                        Text("Data Points")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
+                            .font(WatchDesign.smallMetricFont)
+                            .foregroundColor(WatchDesign.gray900)
+                        Text("DATA PTS")
+                            .font(WatchDesign.microFont)
+                            .foregroundColor(WatchDesign.gray500)
                     }
                     
                     Spacer()
                     
-                    VStack(alignment: .trailing) {
+                    VStack(alignment: .trailing, spacing: 2) {
                         Text("\(learningEngine.patternsDetected)")
-                            .font(.title2)
-                            .fontWeight(.bold)
-                        Text("Patterns")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
+                            .font(WatchDesign.smallMetricFont)
+                            .foregroundColor(WatchDesign.accent)
+                        Text("PATTERNS")
+                            .font(WatchDesign.microFont)
+                            .foregroundColor(WatchDesign.gray500)
                     }
                 }
                 
@@ -190,16 +219,16 @@ struct LearningStatusView: View {
     var body: some View {
         HStack {
             Circle()
-                .fill(isActive ? Color.green : Color.gray)
-                .frame(width: 8, height: 8)
+                .fill(isActive ? WatchDesign.accent : WatchDesign.gray500)
+                .frame(width: 6, height: 6)
             
-            Text(isActive ? "Learning Active" : "Paused")
-                .font(.caption)
-                .foregroundColor(isActive ? .green : .secondary)
+            Text(isActive ? "LEARNING" : "PAUSED")
+                .font(WatchDesign.microFont)
+                .foregroundColor(isActive ? WatchDesign.accent : WatchDesign.gray500)
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 12)
-        .background(Color(.darkGray).opacity(0.3))
+        .padding(.vertical, 6)
+        .padding(.horizontal, 10)
+        .background(WatchDesign.gray200.opacity(0.3))
         .clipShape(Capsule())
     }
 }
@@ -209,29 +238,31 @@ struct HealthView: View {
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 16) {
-                Text("Health Data")
-                    .font(.headline)
+            VStack(spacing: 12) {
+                Text("HEALTH DATA")
+                    .font(WatchDesign.microFont)
+                    .foregroundColor(WatchDesign.gray500)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 
                 HealthMetricView(
                     icon: "heart.fill",
                     value: String(format: "%.0f", healthManager.heartRate),
                     unit: "BPM",
-                    color: .red
+                    isHighlighted: true
                 )
                 
                 HealthMetricView(
                     icon: "figure.walk",
                     value: "\(healthManager.steps)",
-                    unit: "Steps",
-                    color: .green
+                    unit: "STEPS",
+                    isHighlighted: false
                 )
                 
                 HealthMetricView(
                     icon: "flame.fill",
                     value: String(format: "%.0f", healthManager.activeCalories),
-                    unit: "Cal",
-                    color: .orange
+                    unit: "CAL",
+                    isHighlighted: false
                 )
             }
             .padding()
@@ -243,62 +274,69 @@ struct HealthMetricView: View {
     let icon: String
     let value: String
     let unit: String
-    let color: Color
+    let isHighlighted: Bool
     
     var body: some View {
         HStack {
             Image(systemName: icon)
-                .font(.title3)
-                .foregroundColor(color)
+                .font(.system(size: 14))
+                .foregroundColor(isHighlighted ? WatchDesign.accent : WatchDesign.gray600)
             
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(value)
-                    .font(.title3)
-                    .fontWeight(.bold)
+                    .font(WatchDesign.smallMetricFont)
+                    .foregroundColor(isHighlighted ? WatchDesign.accent : WatchDesign.gray900)
                 Text(unit)
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+                    .font(WatchDesign.microFont)
+                    .foregroundColor(WatchDesign.gray500)
             }
             
             Spacer()
         }
-        .padding(12)
-        .background(Color(.darkGray).opacity(0.3))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .padding(10)
+        .background(WatchDesign.gray200.opacity(0.3))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
 struct ModelsView: View {
     let quickModels = [
-        ("Circle of Competence", "brain"),
-        ("Inversion", "arrow.uturn.backward"),
-        ("First Principles", "cube"),
-        ("Margin of Safety", "shield")
+        ("Circle of Competence", "list.bullet", 5),
+        ("Inversion", "arrow.uturn.backward", 5),
+        ("First Principles", "cube", 5),
+        ("Margin of Safety", "shield", 5)
     ]
     
     var body: some View {
         ScrollView {
             VStack(spacing: 8) {
-                Text("Quick Models")
-                    .font(.headline)
+                HStack {
+                    Text("129 MODELS")
+                        .font(WatchDesign.microFont)
+                        .foregroundColor(WatchDesign.gray500)
+                    Spacer()
+                }
                 
                 ForEach(quickModels, id: \.0) { model in
                     HStack {
-                        Image(systemName: model.1)
-                            .font(.caption)
-                            .foregroundColor(.blue)
-                        
-                        Text(model.0)
-                            .font(.caption)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(model.0)
+                                .font(WatchDesign.captionFont)
+                                .foregroundColor(WatchDesign.gray900)
+                            
+                            Text("\(model.2) failures")
+                                .font(WatchDesign.microFont)
+                                .foregroundColor(WatchDesign.accent)
+                        }
                         
                         Spacer()
                         
                         Image(systemName: "chevron.right")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
+                            .font(.system(size: 10))
+                            .foregroundColor(WatchDesign.gray400)
                     }
                     .padding(10)
-                    .background(Color(.darkGray).opacity(0.3))
+                    .background(WatchDesign.gray200.opacity(0.3))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                 }
             }
@@ -314,13 +352,32 @@ struct SettingsView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
-                Text("Settings")
-                    .font(.headline)
-                
-                Toggle(isOn: $watchState.learningActive) {
-                    Label("Learning", systemImage: "brain")
-                        .font(.caption)
+                HStack {
+                    Text("SETTINGS")
+                        .font(WatchDesign.microFont)
+                        .foregroundColor(WatchDesign.gray500)
+                    Spacer()
                 }
+                
+                // Learning Toggle
+                HStack {
+                    Circle()
+                        .fill(watchState.learningActive ? WatchDesign.accent : WatchDesign.gray500)
+                        .frame(width: 6, height: 6)
+                    
+                    Text("LEARNING")
+                        .font(WatchDesign.captionFont)
+                        .foregroundColor(WatchDesign.gray900)
+                    
+                    Spacer()
+                    
+                    Toggle("", isOn: $watchState.learningActive)
+                        .labelsHidden()
+                        .tint(WatchDesign.accent)
+                }
+                .padding(10)
+                .background(WatchDesign.gray200.opacity(0.3))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
                 .onChange(of: watchState.learningActive) { newValue in
                     if newValue {
                         learningEngine.startContinuousLearning()
@@ -329,18 +386,35 @@ struct SettingsView: View {
                     }
                 }
                 
+                // Connection Status
                 HStack {
                     Image(systemName: watchState.isConnectedToPhone ? "iphone" : "iphone.slash")
-                        .foregroundColor(watchState.isConnectedToPhone ? .green : .red)
+                        .font(.system(size: 14))
+                        .foregroundColor(watchState.isConnectedToPhone ? WatchDesign.gray600 : WatchDesign.accent)
                     
-                    Text(watchState.isConnectedToPhone ? "Connected" : "Disconnected")
-                        .font(.caption)
+                    Text(watchState.isConnectedToPhone ? "CONNECTED" : "DISCONNECTED")
+                        .font(WatchDesign.captionFont)
+                        .foregroundColor(watchState.isConnectedToPhone ? WatchDesign.gray600 : WatchDesign.accent)
                     
                     Spacer()
                 }
                 .padding(10)
-                .background(Color(.darkGray).opacity(0.3))
+                .background(WatchDesign.gray200.opacity(0.3))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
+                
+                // Version
+                HStack {
+                    Text("VERSION")
+                        .font(WatchDesign.microFont)
+                        .foregroundColor(WatchDesign.gray500)
+                    
+                    Spacer()
+                    
+                    Text("1.0.0")
+                        .font(WatchDesign.captionFont)
+                        .foregroundColor(WatchDesign.gray600)
+                }
+                .padding(10)
             }
             .padding()
         }

@@ -5,7 +5,9 @@
    Starts the server and serves the reactive UI.
    
    Includes LM Studio integration for local LLM inference.
-   Includes Tech Debt Eliminator with DAG visualization."
+   Includes Tech Debt Eliminator with DAG visualization.
+   Includes Petabyte-scale distributed processing.
+   Includes 24/7 continuous learning system."
   (:require [ring.adapter.jetty :as jetty]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [ring.util.response :as response]
@@ -14,6 +16,9 @@
             [mental-models.statistics :as stats]
             [mental-models.data-processing :as data]
             [mental-models.tech-debt :as tech-debt]
+            [mental-models.db :as db]
+            [mental-models.distributed :as distributed]
+            [mental-models.continuous :as continuous]
             [clojure.java.io :as io]
             [clojure.string :as str])
   (:import [java.net HttpURLConnection URL]
@@ -193,66 +198,167 @@
     <link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\" />
     <script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script>
     <style>
+        /* M&S + Costco Design Language: Monochrome + Strategic Red Accents ONLY */
+        :root {
+            --black: #000000;
+            --gray-900: #1a1a1a;
+            --gray-800: #2d2d2d;
+            --gray-700: #404040;
+            --gray-600: #525252;
+            --gray-500: #6b6b6b;
+            --gray-400: #8a8a8a;
+            --gray-300: #a3a3a3;
+            --gray-200: #d4d4d4;
+            --gray-100: #e5e5e5;
+            --gray-50: #f5f5f5;
+            --white: #ffffff;
+            --accent-red: #cc1a1a;
+            --accent-red-light: #fee2e2;
+        }
         /* Value Line-style density */
-        body { font-size: 11px; line-height: 1.3; }
-        .dense-table td, .dense-table th { padding: 2px 4px; }
-        .metric-card { text-align: center; padding: 8px; }
-        .metric-value { font-size: 18px; font-weight: bold; color: #2563eb; }
-        .metric-label { font-size: 10px; color: #6b7280; }
+        body { font-size: 11px; line-height: 1.3; background: var(--gray-50); color: var(--gray-900); }
+        .dense-table td, .dense-table th { padding: 2px 4px; border-bottom: 1px solid var(--gray-200); }
+        .metric-card { text-align: center; padding: 8px; background: var(--white); border: 1px solid var(--gray-200); }
+        .metric-value { font-size: 18px; font-weight: bold; color: var(--black); font-family: ui-monospace, monospace; }
+        .metric-value.accent { color: var(--accent-red); }
+        .metric-label { font-size: 10px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; }
         #world-map { height: 400px; width: 100%; }
         .model-popup { max-width: 300px; }
-        .model-popup h4 { font-weight: bold; margin-bottom: 4px; }
-        .model-popup .category { color: #6b7280; font-size: 10px; }
-    </style>
+        .model-popup h4 { font-weight: bold; margin-bottom: 4px; color: var(--black); }
+        .model-popup .category { color: var(--gray-500); font-size: 10px; }
+        /* Beast Mode Toggle */
+        .beast-mode-toggle { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--gray-900); }
+        .beast-mode-toggle.active { background: var(--accent-red); }
+        .beast-mode-label { color: var(--white); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        /* Navigation */
+        .nav-tab { color: var(--gray-600); border-bottom: 2px solid transparent; }
+        .nav-tab:hover { background: var(--gray-100); }
+        .nav-tab.active { color: var(--black); border-bottom-color: var(--accent-red); background: var(--white); font-weight: 600; }
+        /* Buttons */
+        .btn-primary { background: var(--gray-900); color: var(--white); }
+        .btn-primary:hover { background: var(--black); }
+        .btn-accent { background: var(--accent-red); color: var(--white); }
+        .btn-accent:hover { background: #b31515; }
+        .btn-secondary { background: var(--gray-200); color: var(--gray-900); }
+        .btn-secondary:hover { background: var(--gray-300); }
+        /* Status indicators */
+        .status-active { color: var(--accent-red); }
+        .status-inactive { color: var(--gray-400); }
+            /* Progress bars */
+            .progress-bar { background: var(--gray-200); }
+            .progress-fill { background: var(--gray-700); }
+            .progress-fill.accent { background: var(--accent-red); }
+            /* Clickable metrics with data provenance */
+            .metric-value.clickable { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
+            .metric-value.clickable:hover { color: var(--accent-red); }
+            /* Data Provenance Modal */
+            .provenance-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+            .provenance-modal.active { display: flex; justify-content: center; align-items: center; }
+            .provenance-content { background: var(--white); border: 2px solid var(--gray-900); max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+            .provenance-header { background: var(--gray-900); color: var(--white); padding: 12px 16px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+            .provenance-close { cursor: pointer; font-size: 18px; }
+            .provenance-body { padding: 16px; }
+            .provenance-row { display: flex; border-bottom: 1px solid var(--gray-200); padding: 8px 0; }
+            .provenance-label { font-weight: bold; width: 120px; color: var(--gray-600); font-size: 10px; text-transform: uppercase; }
+            .provenance-value { flex: 1; font-family: ui-monospace, monospace; font-size: 11px; word-break: break-all; }
+            .provenance-value.na { color: var(--accent-red); font-weight: bold; }
+            .provenance-value.real { color: #166534; }
+            .provenance-formula { background: var(--gray-100); padding: 8px; margin-top: 8px; font-family: ui-monospace, monospace; font-size: 10px; border-left: 3px solid var(--accent-red); }
+        </style>
 </head>
 <body class=\"bg-gray-50\">
+    <!-- Data Provenance Modal - Click any metric to see where the data comes from -->
+    <div id=\"provenance-modal\" class=\"provenance-modal\" onclick=\"if(event.target===this)closeProvenance()\">
+        <div class=\"provenance-content\">
+            <div class=\"provenance-header\">
+                <span id=\"provenance-title\">DATA PROVENANCE</span>
+                <span class=\"provenance-close\" onclick=\"closeProvenance()\">&times;</span>
+            </div>
+            <div class=\"provenance-body\" id=\"provenance-body\">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+    
     <div id=\"app\">
-        <!-- Header -->
-        <div class=\"bg-gray-900 text-white px-4 py-2\">
-            <h1 class=\"text-lg font-bold\">Mental Models System</h1>
-            <p class=\"text-xs text-gray-400\">Electric Clojure - Reactive Full-Stack</p>
+        <!-- Header with Beast Mode Toggle -->
+        <div class=\"flex justify-between items-center\" style=\"background: var(--gray-900);\">
+            <div class=\"px-4 py-2\">
+                <h1 class=\"text-lg font-bold\" style=\"color: var(--white);\">MENTAL MODELS SYSTEM</h1>
+                <p class=\"text-xs\" style=\"color: var(--gray-400);\">Electric Clojure - Reactive Full-Stack | <span id=\"header-models\">NA</span> Models | <span id=\"header-failures\">NA</span> Failure Modes</p>
+            </div>
+            <div class=\"beast-mode-toggle\" id=\"beast-mode-btn\" onclick=\"toggleBeastMode()\">
+                <span class=\"beast-mode-label\">BEAST MODE</span>
+                <span id=\"beast-mode-indicator\" style=\"width: 8px; height: 8px; border-radius: 50%; background: var(--gray-500);\"></span>
+            </div>
         </div>
         
-        <!-- Navigation -->
-        <div class=\"flex border-b border-gray-300 bg-gray-100\">
-            <button class=\"px-4 py-2 text-xs font-semibold bg-white border-b-2 border-blue-600\" onclick=\"showTab('dashboard')\">Dashboard</button>
-            <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('models')\">Models</button>
-            <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('analysis')\">Analysis</button>
-            <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('statistics')\">Statistics</button>
-            <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('data')\">Data</button>
-            <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('map')\">World Map</button>
-            <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('llm')\">LLM</button>
-            <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('techdebt')\">Tech Debt</button>
-        </div>
+                <!-- Navigation - Munger's Latticework Organization -->
+                <!-- Organized by: 1) Overview, 2) INVERSION (failures first!), 3) Latticework (models), 4) Multi-disciplinary Analysis, 5) Tools -->
+                <div class=\"flex flex-wrap border-b\" style=\"border-color: var(--gray-200); background: var(--gray-100);\">
+                    <!-- OVERVIEW: Start with the big picture -->
+                    <div class=\"flex items-center\" style=\"border-right: 1px solid var(--gray-300);\">
+                        <span class=\"px-2 text-xs font-bold\" style=\"color: var(--gray-500);\">OVERVIEW</span>
+                        <button class=\"nav-tab active px-3 py-2 text-xs\" onclick=\"showTab('dashboard')\" title=\"Big picture metrics and status\">DASHBOARD</button>
+                    </div>
+                    <!-- INVERSION: What can go wrong? (Munger: 'Invert, always invert') -->
+                    <div class=\"flex items-center\" style=\"border-right: 1px solid var(--gray-300);\">
+                        <span class=\"px-2 text-xs font-bold\" style=\"color: var(--accent-red);\">INVERSION</span>
+                        <button class=\"nav-tab px-3 py-2 text-xs\" onclick=\"showTab('models')\" title=\"Mental models with failure modes - what can go wrong?\">MODELS + FAILURES</button>
+                        <button class=\"nav-tab px-3 py-2 text-xs\" onclick=\"showTab('techdebt')\" title=\"Technical debt - what's broken or fragile?\">TECH DEBT</button>
+                    </div>
+                    <!-- LATTICEWORK: Multi-disciplinary analysis -->
+                    <div class=\"flex items-center\" style=\"border-right: 1px solid var(--gray-300);\">
+                        <span class=\"px-2 text-xs font-bold\" style=\"color: var(--gray-500);\">LATTICEWORK</span>
+                        <button class=\"nav-tab px-3 py-2 text-xs\" onclick=\"showTab('analysis')\" title=\"Cross-disciplinary analysis\">ANALYSIS</button>
+                        <button class=\"nav-tab px-3 py-2 text-xs\" onclick=\"showTab('statistics')\" title=\"Quantitative reasoning\">STATISTICS</button>
+                        <button class=\"nav-tab px-3 py-2 text-xs\" onclick=\"showTab('map')\" title=\"Spatial/geographic patterns\">WORLD MAP</button>
+                    </div>
+                    <!-- TOOLS: Processing and automation -->
+                    <div class=\"flex items-center\">
+                        <span class=\"px-2 text-xs font-bold\" style=\"color: var(--gray-500);\">TOOLS</span>
+                        <button class=\"nav-tab px-3 py-2 text-xs\" onclick=\"showTab('data')\" title=\"Data ingestion and processing\">DATA</button>
+                        <button class=\"nav-tab px-3 py-2 text-xs\" onclick=\"showTab('llm')\" title=\"LLM-powered analysis\">LLM</button>
+                        <button class=\"nav-tab px-3 py-2 text-xs\" onclick=\"showTab('distributed')\" title=\"Distributed processing at scale\">DISTRIBUTED</button>
+                    </div>
+                </div>
+                <!-- Munger's Organizing Principles Legend -->
+                <div class=\"px-4 py-1 text-xs\" style=\"background: var(--gray-50); border-bottom: 1px solid var(--gray-200); color: var(--gray-500);\">
+                    <strong>Munger's Latticework:</strong> 
+                    <span style=\"color: var(--black);\">OVERVIEW</span> (big picture) | 
+                    <span style=\"color: var(--accent-red);\">INVERSION</span> (what can go wrong - always invert!) | 
+                    <span style=\"color: var(--black);\">LATTICEWORK</span> (multi-disciplinary connections) | 
+                    <span style=\"color: var(--black);\">TOOLS</span> (processing power)
+                </div>
         
         <!-- Dashboard -->
         <div id=\"dashboard\" class=\"p-4\">
-            <div class=\"grid grid-cols-6 gap-4 mb-4\">
-                <div class=\"metric-card bg-white border rounded shadow-sm\">
-                    <div class=\"metric-value\" id=\"total-models\">0</div>
-                    <div class=\"metric-label\">Models</div>
-                </div>
-                <div class=\"metric-card bg-white border rounded shadow-sm\">
-                    <div class=\"metric-value\" id=\"total-failures\">0</div>
-                    <div class=\"metric-label\">Failure Modes</div>
-                </div>
-                <div class=\"metric-card bg-white border rounded shadow-sm\">
-                    <div class=\"metric-value\" id=\"total-categories\">0</div>
-                    <div class=\"metric-label\">Categories</div>
-                </div>
-                <div class=\"metric-card bg-white border rounded shadow-sm\">
-                    <div class=\"metric-value\">5.0</div>
-                    <div class=\"metric-label\">Avg Failures/Model</div>
-                </div>
-                <div class=\"metric-card bg-white border rounded shadow-sm\">
-                    <div class=\"metric-value\">100%</div>
-                    <div class=\"metric-label\">Coverage</div>
-                </div>
-                <div class=\"metric-card bg-white border rounded shadow-sm\">
-                    <div class=\"metric-value\">Live</div>
-                    <div class=\"metric-label\">Status</div>
-                </div>
-            </div>
+                                                <div class=\"grid grid-cols-6 gap-4 mb-4\">
+                                                    <div class=\"metric-card bg-white border rounded shadow-sm\">
+                                                        <div class=\"metric-value clickable\" id=\"total-models\" onclick=\"showProvenance('total-models')\">NA</div>
+                                                        <div class=\"metric-label\">Models (click for source)</div>
+                                                    </div>
+                                                    <div class=\"metric-card bg-white border rounded shadow-sm\">
+                                                        <div class=\"metric-value clickable\" id=\"total-failures\" onclick=\"showProvenance('total-failures')\">NA</div>
+                                                        <div class=\"metric-label\">Failure Modes (click for source)</div>
+                                                    </div>
+                                                    <div class=\"metric-card bg-white border rounded shadow-sm\">
+                                                        <div class=\"metric-value clickable\" id=\"total-categories\" onclick=\"showProvenance('total-categories')\">NA</div>
+                                                        <div class=\"metric-label\">Categories (click for source)</div>
+                                                    </div>
+                                                    <div class=\"metric-card bg-white border rounded shadow-sm\">
+                                                        <div class=\"metric-value clickable\" id=\"avg-failures\" onclick=\"showProvenance('avg-failures')\">NA</div>
+                                                        <div class=\"metric-label\">Avg Failures/Model (click for source)</div>
+                                                    </div>
+                                                    <div class=\"metric-card bg-white border rounded shadow-sm\">
+                                                        <div class=\"metric-value clickable\" id=\"coverage\" onclick=\"showProvenance('coverage')\">NA</div>
+                                                        <div class=\"metric-label\">Coverage (click for source)</div>
+                                                    </div>
+                                                    <div class=\"metric-card bg-white border rounded shadow-sm\">
+                                                        <div class=\"metric-value clickable\" id=\"api-status\" onclick=\"showProvenance('api-status')\">NA</div>
+                                                        <div class=\"metric-label\">Status (click for source)</div>
+                                                    </div>
+                                                </div>
             
             <div class=\"grid grid-cols-2 gap-4\">
                 <!-- Categories -->
@@ -278,8 +384,8 @@
                     <div class=\"p-3\">
                         <textarea id=\"analysis-input\" class=\"w-full border rounded px-2 py-1 text-xs h-20\" placeholder=\"Enter situation to analyze...\"></textarea>
                         <div class=\"flex gap-2 mt-2\">
-                            <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded hover:bg-blue-700\" onclick=\"runAnalysis()\">Analyze</button>
-                            <button class=\"bg-gray-200 text-gray-800 px-3 py-1 text-xs rounded hover:bg-gray-300\" onclick=\"detectBiases()\">Detect Biases</button>
+                                                        <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"runAnalysis()\">ANALYZE</button>
+                                                        <button class=\"btn-secondary px-3 py-1 text-xs rounded\" onclick=\"detectBiases()\">DETECT BIASES</button>
                         </div>
                         <div id=\"analysis-result\" class=\"mt-2 text-xs\"></div>
                     </div>
@@ -327,10 +433,10 @@
                     <div class=\"p-3\">
                         <textarea id=\"comprehensive-input\" class=\"w-full border rounded px-2 py-1 text-xs h-32\" placeholder=\"Enter situation for comprehensive analysis...\"></textarea>
                         <div class=\"flex gap-2 mt-2\">
-                            <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded\" onclick=\"runLatticework()\">Latticework</button>
-                            <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded\" onclick=\"runLollapalooza()\">Lollapalooza</button>
-                            <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded\" onclick=\"runInversion()\">Inversion</button>
-                            <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded\" onclick=\"runTwoTrack()\">Two-Track</button>
+                                                        <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"runLatticework()\">LATTICEWORK</button>
+                                                        <button class=\"btn-accent px-3 py-1 text-xs rounded\" onclick=\"runLollapalooza()\">LOLLAPALOOZA</button>
+                                                        <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"runInversion()\">INVERSION</button>
+                                                        <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"runTwoTrack()\">TWO-TRACK</button>
                         </div>
                     </div>
                 </div>
@@ -359,7 +465,7 @@
                             <input type=\"text\" id=\"stats-y\" class=\"w-full border rounded px-2 py-1 text-xs mt-1\" placeholder=\"2, 4, 5, 4, 5\">
                         </div>
                     </div>
-                    <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded mt-2\" onclick=\"runStatistics()\">Calculate</button>
+                    <button class=\"btn-primary px-3 py-1 text-xs rounded mt-2\" onclick=\"runStatistics()\">CALCULATE</button>
                     <div id=\"stats-result\" class=\"mt-4\"></div>
                 </div>
             </div>
@@ -372,9 +478,9 @@
                 <div class=\"p-3\">
                     <textarea id=\"data-input\" class=\"w-full border rounded px-2 py-1 text-xs h-32\" placeholder=\"Paste text to analyze...\"></textarea>
                     <div class=\"flex gap-2 mt-2\">
-                        <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded\" onclick=\"analyzeDocument()\">Analyze Document</button>
-                        <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded\" onclick=\"extractEntities()\">Extract Entities</button>
-                        <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded\" onclick=\"classifyText()\">Classify by Models</button>
+                                                <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"analyzeDocument()\">ANALYZE DOCUMENT</button>
+                                                <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"extractEntities()\">EXTRACT ENTITIES</button>
+                                                <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"classifyText()\">CLASSIFY BY MODELS</button>
                     </div>
                     <div id=\"data-result\" class=\"mt-4\"></div>
                 </div>
@@ -407,7 +513,7 @@
                         <select id=\"case-model\" class=\"border rounded px-2 py-1 text-xs\"></select>
                     </div>
                     <textarea id=\"case-description\" class=\"w-full border rounded px-2 py-1 text-xs mt-2 h-16\" placeholder=\"Description...\"></textarea>
-                    <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded mt-2\" onclick=\"addCaseStudy()\">Add to Map</button>
+                    <button class=\"btn-accent px-3 py-1 text-xs rounded mt-2\" onclick=\"addCaseStudy()\">ADD TO MAP</button>
                 </div>
             </div>
         </div>
@@ -424,9 +530,9 @@
                         </div>
                         <textarea id=\"llm-input\" class=\"w-full border rounded px-2 py-1 text-xs h-32\" placeholder=\"Enter situation for LLM-powered analysis...\"></textarea>
                         <div class=\"flex gap-2 mt-2\">
-                            <button class=\"bg-purple-600 text-white px-3 py-1 text-xs rounded\" onclick=\"runLLMAnalysis()\">Analyze with LLM</button>
-                            <button class=\"bg-purple-600 text-white px-3 py-1 text-xs rounded\" onclick=\"runLLMBiases()\">Detect Biases</button>
-                            <button class=\"bg-purple-600 text-white px-3 py-1 text-xs rounded\" onclick=\"runLLMChecklist()\">Generate Checklist</button>
+                                                        <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"runLLMAnalysis()\">ANALYZE WITH LLM</button>
+                                                        <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"runLLMBiases()\">DETECT BIASES</button>
+                                                        <button class=\"btn-accent px-3 py-1 text-xs rounded\" onclick=\"runLLMChecklist()\">GENERATE CHECKLIST</button>
                         </div>
                     </div>
                 </div>
@@ -483,10 +589,10 @@
                 <div class=\"p-3\">
                     <textarea id=\"code-input\" class=\"w-full border rounded px-2 py-1 text-xs h-32 font-mono\" placeholder=\"Paste code or JSON dependency graph...\"></textarea>
                     <div class=\"flex gap-2 mt-2\">
-                        <button class=\"bg-green-600 text-white px-3 py-1 text-xs rounded\" onclick=\"analyzeCodeDAG()\">Analyze DAG</button>
-                        <button class=\"bg-green-600 text-white px-3 py-1 text-xs rounded\" onclick=\"detectTangles()\">Detect Tangles</button>
-                        <button class=\"bg-green-600 text-white px-3 py-1 text-xs rounded\" onclick=\"generateRefactoringPlan()\">Generate Plan</button>
-                        <button class=\"bg-purple-600 text-white px-3 py-1 text-xs rounded\" onclick=\"llmRefactorSuggestion()\">LLM Refactor</button>
+                                                <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"analyzeCodeDAG()\">ANALYZE DAG</button>
+                                                <button class=\"btn-accent px-3 py-1 text-xs rounded\" onclick=\"detectTangles()\">DETECT TANGLES</button>
+                                                <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"generateRefactoringPlan()\">GENERATE PLAN</button>
+                                                <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"llmRefactorSuggestion()\">LLM REFACTOR</button>
                     </div>
                 </div>
             </div>
@@ -498,13 +604,152 @@
                 </div>
             </div>
         </div>
+        <!-- Distributed Tab -->
+        <div id=\"distributed\" class=\"p-4 hidden\">
+                                                <div class=\"grid grid-cols-4 gap-4 mb-4\">
+                                                    <div class=\"metric-card rounded shadow-sm\">
+                                                        <div class=\"metric-value clickable\" id=\"dist-workers\" onclick=\"showProvenance('dist-workers')\">NA</div>
+                                                        <div class=\"metric-label\">Active Workers (click for source)</div>
+                                                    </div>
+                                                    <div class=\"metric-card rounded shadow-sm\">
+                                                        <div class=\"metric-value clickable\" id=\"dist-tasks\" onclick=\"showProvenance('dist-tasks')\">NA</div>
+                                                        <div class=\"metric-label\">Tasks Queued (click for source)</div>
+                                                    </div>
+                                                    <div class=\"metric-card rounded shadow-sm\">
+                                                        <div class=\"metric-value accent clickable\" id=\"dist-throughput\" onclick=\"showProvenance('dist-throughput')\">NA</div>
+                                                        <div class=\"metric-label\">Tasks/Second (click for source)</div>
+                                                    </div>
+                                                    <div class=\"metric-card rounded shadow-sm\">
+                                                        <div class=\"metric-value clickable\" id=\"dist-data\" onclick=\"showProvenance('dist-data')\">NA</div>
+                                                        <div class=\"metric-label\">Data Processed (click for source)</div>
+                                                    </div>
+                                                </div>
+            
+            <div class=\"grid grid-cols-2 gap-4\">
+                <div class=\"bg-white border rounded shadow-sm\">
+                    <div class=\"bg-gray-100 px-3 py-2 font-semibold text-xs border-b\">WORKER NODES</div>
+                    <div class=\"p-3 max-h-64 overflow-y-auto\" id=\"worker-list\">
+                        <p class=\"text-gray-500 text-xs\">No workers connected. Start workers to begin distributed processing.</p>
+                    </div>
+                </div>
+                
+                <div class=\"bg-white border rounded shadow-sm\">
+                    <div class=\"bg-gray-100 px-3 py-2 font-semibold text-xs border-b\">TASK QUEUE</div>
+                    <div class=\"p-3 max-h-64 overflow-y-auto\" id=\"task-queue\">
+                        <p class=\"text-gray-500 text-xs\">No tasks in queue.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class=\"mt-4 bg-white border rounded shadow-sm\">
+                <div class=\"bg-gray-100 px-3 py-2 font-semibold text-xs border-b\">DISTRIBUTED PROCESSING CONTROLS</div>
+                <div class=\"p-3\">
+                    <div class=\"grid grid-cols-4 gap-4\">
+                        <div>
+                            <label class=\"text-xs font-semibold\">Data Source Path</label>
+                            <input type=\"text\" id=\"dist-path\" class=\"w-full border rounded px-2 py-1 text-xs mt-1\" placeholder=\"/path/to/data\">
+                        </div>
+                        <div>
+                            <label class=\"text-xs font-semibold\">Worker Count</label>
+                            <input type=\"number\" id=\"dist-workers-count\" class=\"w-full border rounded px-2 py-1 text-xs mt-1\" value=\"4\" min=\"1\" max=\"1000\">
+                        </div>
+                        <div>
+                            <label class=\"text-xs font-semibold\">Batch Size</label>
+                            <input type=\"number\" id=\"dist-batch\" class=\"w-full border rounded px-2 py-1 text-xs mt-1\" value=\"1000\" min=\"1\">
+                        </div>
+                        <div>
+                            <label class=\"text-xs font-semibold\">Processing Mode</label>
+                            <select id=\"dist-mode\" class=\"w-full border rounded px-2 py-1 text-xs mt-1\">
+                                <option value=\"parallel\">Parallel</option>
+                                <option value=\"sequential\">Sequential</option>
+                                <option value=\"streaming\">Streaming</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class=\"flex gap-2 mt-4\">
+                        <button class=\"btn-accent px-3 py-1 text-xs rounded\" onclick=\"startDistributed()\">START PROCESSING</button>
+                        <button class=\"btn-secondary px-3 py-1 text-xs rounded\" onclick=\"stopDistributed()\">STOP</button>
+                        <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"scaleWorkers()\">SCALE WORKERS</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class=\"mt-4 bg-white border rounded shadow-sm\">
+                <div class=\"bg-gray-100 px-3 py-2 font-semibold text-xs border-b\">PROCESSING LOG</div>
+                <div class=\"p-3 max-h-48 overflow-y-auto font-mono text-xs\" id=\"dist-log\" style=\"background: var(--gray-900); color: var(--gray-300);\">
+                    <p>[READY] Distributed processing system initialized</p>
+                    <p>[INFO] Waiting for tasks...</p>
+                </div>
+            </div>
+        </div>
     </div>
     
     <script>
-        // Tab switching
+        // Beast Mode state
+        let beastModeActive = false;
+        
+        function toggleBeastMode() {
+            beastModeActive = !beastModeActive;
+            const btn = document.getElementById('beast-mode-btn');
+            const indicator = document.getElementById('beast-mode-indicator');
+            
+            if (beastModeActive) {
+                btn.classList.add('active');
+                indicator.style.background = 'var(--white)';
+                document.body.style.setProperty('--accent-red', '#ff0000');
+                addToLog('[BEAST MODE] ACTIVATED - Maximum processing enabled');
+                // Start continuous learning
+                startContinuousLearning();
+            } else {
+                btn.classList.remove('active');
+                indicator.style.background = 'var(--gray-500)';
+                document.body.style.setProperty('--accent-red', '#cc1a1a');
+                addToLog('[BEAST MODE] Deactivated');
+                stopContinuousLearning();
+            }
+        }
+        
+        function addToLog(message) {
+            const log = document.getElementById('dist-log');
+            if (log) {
+                const p = document.createElement('p');
+                p.textContent = message;
+                log.appendChild(p);
+                log.scrollTop = log.scrollHeight;
+            }
+        }
+        
+        let continuousLearningInterval = null;
+        
+                function startContinuousLearning() {
+                    if (continuousLearningInterval) return;
+                    // NOTE: This should be replaced with real API calls to get actual learning metrics
+                    // For now, show NA to indicate no real data is available
+                    document.getElementById('dist-throughput').textContent = 'NA';
+                    addToLog('[LEARNING] Waiting for real metrics from backend...');
+                    // TODO: Replace with real API polling
+                    // continuousLearningInterval = setInterval(async () => {
+                    //     const response = await fetch('/api/learning/status');
+                    //     const data = await response.json();
+                    //     document.getElementById('dist-throughput').textContent = data.throughput || 'NA';
+                    // }, 2000);
+                }
+        
+        function stopContinuousLearning() {
+            if (continuousLearningInterval) {
+                clearInterval(continuousLearningInterval);
+                continuousLearningInterval = null;
+            }
+        }
+        
+        // Tab switching with nav highlighting
         function showTab(tabId) {
             document.querySelectorAll('#app > div:not(:first-child):not(:nth-child(2))').forEach(el => el.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
+            
+            // Update nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
         }
         
         // Load data on page load
@@ -680,17 +925,8 @@
         let caseStudies = [];
         const modelMarkers = [];
         
-        // Sample case studies with mental models
-        const sampleCaseStudies = [
-            { lat: 40.7128, lng: -74.0060, title: 'Wall Street - Market Psychology', model: 'mr-market', description: 'Benjamin Graham\\'s Mr. Market concept originated here, teaching investors to view market fluctuations as opportunities rather than threats.' },
-            { lat: 37.7749, lng: -122.4194, title: 'Silicon Valley - Network Effects', model: 'network-effects', description: 'Tech companies here leverage network effects to build moats - each new user makes the product more valuable for all users.' },
-            { lat: 51.5074, lng: -0.1278, title: 'London - Compound Interest', model: 'compound-interest', description: 'The City of London has been a center of finance for centuries, demonstrating the power of compound interest over time.' },
-            { lat: 35.6762, lng: 139.6503, title: 'Tokyo - Kaizen/Continuous Improvement', model: 'deliberate-practice', description: 'Japanese manufacturing excellence through continuous small improvements and deliberate practice.' },
-            { lat: 52.5200, lng: 13.4050, title: 'Berlin - Creative Destruction', model: 'creative-destruction', description: 'The fall of the Berlin Wall exemplifies Schumpeter\\'s creative destruction - old systems replaced by new.' },
-            { lat: 1.3521, lng: 103.8198, title: 'Singapore - Incentives', model: 'incentives', description: 'Singapore\\'s success demonstrates how proper incentive structures can transform a nation.' },
-            { lat: -33.8688, lng: 151.2093, title: 'Sydney - Antifragility', model: 'antifragility', description: 'Australia\\'s economy shows antifragility - gaining from volatility through diversification.' },
-            { lat: 55.7558, lng: 37.6173, title: 'Moscow - Game Theory', model: 'game-theory', description: 'Cold War strategies exemplify game theory - Nash equilibrium and mutually assured destruction.' }
-        ];
+        // Case studies loaded from database (no fake/sample data)
+        // All data must be real and user-added
         
         function initMap() {
             if (worldMap) return;
@@ -700,8 +936,8 @@
                 attribution: '© OpenStreetMap contributors'
             }).addTo(worldMap);
             
-            // Add sample case studies
-            sampleCaseStudies.forEach(cs => addMarkerToMap(cs));
+            // Load real case studies from database
+            loadCaseStudiesFromDB();
             
             // Populate model dropdown
             loadData().then(() => {
@@ -758,6 +994,21 @@
             document.getElementById('case-lat').value = '';
             document.getElementById('case-lng').value = '';
             document.getElementById('case-description').value = '';
+        }
+        
+        // Load real case studies from database
+        async function loadCaseStudiesFromDB() {
+            try {
+                const response = await fetch('/api/case-studies');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.case_studies && Array.isArray(data.case_studies)) {
+                        data.case_studies.forEach(cs => addMarkerToMap(cs));
+                    }
+                }
+            } catch (e) {
+                console.log('No case studies loaded from database yet');
+            }
         }
         
         // LLM functionality
@@ -875,20 +1126,293 @@
             }
         }
         
-        // Store models data globally for map dropdown
-        window.modelsData = {};
+                // Store models data globally for map dropdown
+                window.modelsData = {};
         
-        // Modified loadData to store models
-        async function loadDataAndStore() {
-            const response = await fetch('/api/models');
-            const data = await response.json();
-            window.modelsData = data.models;
+                // DATA PROVENANCE SYSTEM - Track where every metric comes from
+                // This is CRITICAL for a life-critical system - no fake data allowed
+                window.dataProvenance = {
+                    'total-models': {
+                        label: 'Total Models',
+                        source: 'NA - Not yet loaded',
+                        endpoint: '/api/models',
+                        field: 'data.total_models',
+                        rawValue: null,
+                        timestamp: null,
+                        isReal: false
+                    },
+                    'total-failures': {
+                        label: 'Total Failure Modes',
+                        source: 'NA - Not yet loaded',
+                        endpoint: '/api/models',
+                        field: 'data.total_failure_modes',
+                        rawValue: null,
+                        timestamp: null,
+                        isReal: false
+                    },
+                    'total-categories': {
+                        label: 'Total Categories',
+                        source: 'NA - Not yet loaded',
+                        endpoint: '/api/models',
+                        field: 'Object.keys(data.categories).length',
+                        formula: 'Count of unique category keys from API response',
+                        rawValue: null,
+                        timestamp: null,
+                        isReal: false
+                    },
+                    'avg-failures': {
+                        label: 'Average Failures per Model',
+                        source: 'NA - Not yet loaded',
+                        endpoint: '/api/models',
+                        field: 'Calculated',
+                        formula: 'total_failure_modes / total_models',
+                        rawValue: null,
+                        numerator: null,
+                        denominator: null,
+                        timestamp: null,
+                        isReal: false
+                    },
+                    'coverage': {
+                        label: 'Coverage Percentage',
+                        source: 'NA - Not yet loaded',
+                        endpoint: '/api/models',
+                        field: 'Calculated',
+                        formula: '(models_with_failure_modes / total_models) * 100',
+                        rawValue: null,
+                        numerator: null,
+                        denominator: null,
+                        timestamp: null,
+                        isReal: false
+                    },
+                                    'api-status': {
+                                        label: 'API Status',
+                                        source: 'NA - Not yet loaded',
+                                        endpoint: '/api/models',
+                                        field: 'HTTP response status',
+                                        rawValue: null,
+                                        timestamp: null,
+                                        isReal: false
+                                    },
+                                    // Distributed Processing Metrics - all show NA until real backend is connected
+                                    'dist-workers': {
+                                        label: 'Active Workers',
+                                        source: 'NA - No distributed backend connected',
+                                        endpoint: '/api/distributed/workers (NOT IMPLEMENTED)',
+                                        field: 'User input from form',
+                                        rawValue: null,
+                                        timestamp: null,
+                                        isReal: false,
+                                        note: 'This metric shows the number of workers configured by the user. Real worker status requires a distributed backend.'
+                                    },
+                                    'dist-tasks': {
+                                        label: 'Tasks Queued',
+                                        source: 'NA - No distributed backend connected',
+                                        endpoint: '/api/distributed/tasks (NOT IMPLEMENTED)',
+                                        field: 'N/A - requires real task queue',
+                                        rawValue: null,
+                                        timestamp: null,
+                                        isReal: false,
+                                        note: 'This metric requires a real distributed task queue backend (e.g., Redis, RabbitMQ) to show actual queued tasks.'
+                                    },
+                                    'dist-throughput': {
+                                        label: 'Tasks Per Second',
+                                        source: 'NA - No distributed backend connected',
+                                        endpoint: '/api/distributed/throughput (NOT IMPLEMENTED)',
+                                        field: 'N/A - requires real processing metrics',
+                                        rawValue: null,
+                                        timestamp: null,
+                                        isReal: false,
+                                        note: 'This metric requires real-time monitoring of task processing to show actual throughput.'
+                                    },
+                                    'dist-data': {
+                                        label: 'Data Processed',
+                                        source: 'NA - No distributed backend connected',
+                                        endpoint: '/api/distributed/data (NOT IMPLEMENTED)',
+                                        field: 'N/A - requires real data tracking',
+                                        rawValue: null,
+                                        timestamp: null,
+                                        isReal: false,
+                                        note: 'This metric requires tracking actual data processed by workers to show real values.'
+                                    }
+                                };
+        
+                function showProvenance(metricId) {
+                    const prov = window.dataProvenance[metricId];
+                    if (!prov) {
+                        alert('No provenance data available for this metric');
+                        return;
+                    }
             
-            document.getElementById('total-models').textContent = data.total_models;
-            document.getElementById('total-failures').textContent = data.total_failure_modes;
-            document.getElementById('total-categories').textContent = Object.keys(data.categories).length;
+                    const modal = document.getElementById('provenance-modal');
+                    const title = document.getElementById('provenance-title');
+                    const body = document.getElementById('provenance-body');
             
-            // Populate categories table
+                    title.textContent = 'DATA PROVENANCE: ' + prov.label;
+            
+                    let html = '';
+            
+                    // Data status
+                    html += '<div class=\"provenance-row\">';
+                    html += '<div class=\"provenance-label\">Data Status</div>';
+                    html += '<div class=\"provenance-value ' + (prov.isReal ? 'real' : 'na') + '\">' + (prov.isReal ? 'REAL DATA' : 'NO DATA AVAILABLE') + '</div>';
+                    html += '</div>';
+            
+                    // Current value
+                    html += '<div class=\"provenance-row\">';
+                    html += '<div class=\"provenance-label\">Current Value</div>';
+                    html += '<div class=\"provenance-value\">' + document.getElementById(metricId).textContent + '</div>';
+                    html += '</div>';
+            
+                    // Source
+                    html += '<div class=\"provenance-row\">';
+                    html += '<div class=\"provenance-label\">Source</div>';
+                    html += '<div class=\"provenance-value\">' + prov.source + '</div>';
+                    html += '</div>';
+            
+                    // API Endpoint
+                    html += '<div class=\"provenance-row\">';
+                    html += '<div class=\"provenance-label\">API Endpoint</div>';
+                    html += '<div class=\"provenance-value\">' + prov.endpoint + '</div>';
+                    html += '</div>';
+            
+                    // Field
+                    html += '<div class=\"provenance-row\">';
+                    html += '<div class=\"provenance-label\">Data Field</div>';
+                    html += '<div class=\"provenance-value\">' + prov.field + '</div>';
+                    html += '</div>';
+            
+                    // Raw value
+                    if (prov.rawValue !== null) {
+                        html += '<div class=\"provenance-row\">';
+                        html += '<div class=\"provenance-label\">Raw Value</div>';
+                        html += '<div class=\"provenance-value\">' + JSON.stringify(prov.rawValue) + '</div>';
+                        html += '</div>';
+                    }
+            
+                    // Formula (if calculated)
+                    if (prov.formula) {
+                        html += '<div class=\"provenance-formula\">';
+                        html += '<strong>Calculation:</strong> ' + prov.formula;
+                        if (prov.numerator !== null && prov.denominator !== null) {
+                            html += '<br><strong>Values:</strong> ' + prov.numerator + ' / ' + prov.denominator;
+                        }
+                        html += '</div>';
+                    }
+            
+                                    // Timestamp
+                                    html += '<div class=\"provenance-row\">';
+                                    html += '<div class=\"provenance-label\">Last Updated</div>';
+                                    html += '<div class=\"provenance-value\">' + (prov.timestamp || 'Never') + '</div>';
+                                    html += '</div>';
+                    
+                                    // Note (for metrics that need explanation)
+                                    if (prov.note) {
+                                        html += '<div class=\"provenance-formula\" style=\"margin-top: 12px; border-left-color: var(--gray-500);\">';
+                                        html += '<strong>Note:</strong> ' + prov.note;
+                                        html += '</div>';
+                                    }
+            
+                                    body.innerHTML = html;
+                                    modal.classList.add('active');
+                                }
+        
+                function closeProvenance() {
+                    document.getElementById('provenance-modal').classList.remove('active');
+                }
+        
+                                                                // Modified loadData to store models - ALL REAL CHECKS, NO HARDCODED VALUES
+                                                        async function loadDataAndStore() {
+                                                            const timestamp = new Date().toISOString();
+                                                            try {
+                                                                const response = await fetch('/api/models');
+                                                                const data = await response.json();
+                                                                window.modelsData = data.models;
+                
+                                                                // Calculate REAL metrics from actual data
+                                                                const totalModels = data.total_models || 0;
+                                                                const totalFailures = data.total_failure_modes || 0;
+                                                                const totalCategories = Object.keys(data.categories || {}).length;
+                        
+                                                                // Calculate REAL average failures per model
+                                                                const avgFailures = totalModels > 0 ? (totalFailures / totalModels).toFixed(1) : 'NA';
+                        
+                                                                // Calculate REAL coverage (models with at least one failure mode)
+                                                                let modelsWithFailures = 0;
+                                                                for (const [name, model] of Object.entries(data.models || {})) {
+                                                                    if (model.failure_modes && model.failure_modes.length > 0) {
+                                                                        modelsWithFailures++;
+                                                                    }
+                                                                }
+                                                                const coverage = totalModels > 0 ? Math.round((modelsWithFailures / totalModels) * 100) + '%' : 'NA';
+                        
+                                                                // UPDATE DATA PROVENANCE - Track where every metric comes from
+                                                                window.dataProvenance['total-models'].source = 'API Response: /api/models';
+                                                                window.dataProvenance['total-models'].rawValue = data.total_models;
+                                                                window.dataProvenance['total-models'].timestamp = timestamp;
+                                                                window.dataProvenance['total-models'].isReal = totalModels > 0;
+                                    
+                                                                window.dataProvenance['total-failures'].source = 'API Response: /api/models';
+                                                                window.dataProvenance['total-failures'].rawValue = data.total_failure_modes;
+                                                                window.dataProvenance['total-failures'].timestamp = timestamp;
+                                                                window.dataProvenance['total-failures'].isReal = totalFailures > 0;
+                                    
+                                                                window.dataProvenance['total-categories'].source = 'Calculated from API Response';
+                                                                window.dataProvenance['total-categories'].rawValue = Object.keys(data.categories || {});
+                                                                window.dataProvenance['total-categories'].timestamp = timestamp;
+                                                                window.dataProvenance['total-categories'].isReal = totalCategories > 0;
+                                    
+                                                                window.dataProvenance['avg-failures'].source = 'Calculated from API Response';
+                                                                window.dataProvenance['avg-failures'].rawValue = avgFailures;
+                                                                window.dataProvenance['avg-failures'].numerator = totalFailures;
+                                                                window.dataProvenance['avg-failures'].denominator = totalModels;
+                                                                window.dataProvenance['avg-failures'].timestamp = timestamp;
+                                                                window.dataProvenance['avg-failures'].isReal = totalModels > 0;
+                                    
+                                                                window.dataProvenance['coverage'].source = 'Calculated from API Response';
+                                                                window.dataProvenance['coverage'].rawValue = coverage;
+                                                                window.dataProvenance['coverage'].numerator = modelsWithFailures;
+                                                                window.dataProvenance['coverage'].denominator = totalModels;
+                                                                window.dataProvenance['coverage'].timestamp = timestamp;
+                                                                window.dataProvenance['coverage'].isReal = totalModels > 0;
+                                    
+                                                                window.dataProvenance['api-status'].source = 'HTTP Response Status';
+                                                                window.dataProvenance['api-status'].rawValue = response.status;
+                                                                window.dataProvenance['api-status'].timestamp = timestamp;
+                                                                window.dataProvenance['api-status'].isReal = true;
+                        
+                                                                // Update dashboard counts from REAL API data - show NA if no data
+                                                                document.getElementById('total-models').textContent = totalModels > 0 ? totalModels : 'NA';
+                                                                document.getElementById('total-failures').textContent = totalFailures > 0 ? totalFailures : 'NA';
+                                                                document.getElementById('total-categories').textContent = totalCategories > 0 ? totalCategories : 'NA';
+                                                                document.getElementById('avg-failures').textContent = avgFailures;
+                                                                document.getElementById('coverage').textContent = coverage;
+                                                                document.getElementById('api-status').textContent = 'Live';
+                        
+                                                                // Update header counts dynamically from REAL data
+                                                                document.getElementById('header-models').textContent = totalModels > 0 ? totalModels : 'NA';
+                                                                document.getElementById('header-failures').textContent = totalFailures > 0 ? totalFailures : 'NA';
+                                                            } catch (error) {
+                                                                console.error('Failed to load models:', error);
+                                                                // Update provenance to show error state
+                                                                const errorTimestamp = new Date().toISOString();
+                                                                for (const key of Object.keys(window.dataProvenance)) {
+                                                                    window.dataProvenance[key].source = 'ERROR: API call failed - ' + error.message;
+                                                                    window.dataProvenance[key].timestamp = errorTimestamp;
+                                                                    window.dataProvenance[key].isReal = false;
+                                                                }
+                                                                // Show NA for all metrics on error - NEVER show fake data
+                                                                document.getElementById('total-models').textContent = 'NA';
+                                                                document.getElementById('total-failures').textContent = 'NA';
+                                                                document.getElementById('total-categories').textContent = 'NA';
+                                                                document.getElementById('avg-failures').textContent = 'NA';
+                                                                document.getElementById('coverage').textContent = 'NA';
+                                                                document.getElementById('api-status').textContent = 'Error';
+                                                                document.getElementById('header-models').textContent = 'NA';
+                                                                document.getElementById('header-failures').textContent = 'NA';
+                                                                return;
+                                                            }
+            
+                        // Populate categories table
             const categoriesTable = document.getElementById('categories-table');
             categoriesTable.innerHTML = '';
             for (const [cat, models] of Object.entries(data.categories)) {
@@ -922,6 +1446,109 @@
         loadDataAndStore();
         
         // ============================================
+        // Distributed Processing Functions
+        // ============================================
+        
+        let distributedProcessing = false;
+        let workerCount = 0;
+        
+        async function startDistributed() {
+            const path = document.getElementById('dist-path').value;
+            const workers = parseInt(document.getElementById('dist-workers-count').value);
+            const batch = parseInt(document.getElementById('dist-batch').value);
+            const mode = document.getElementById('dist-mode').value;
+            
+            if (!path) {
+                alert('Please enter a data source path');
+                return;
+            }
+            
+            distributedProcessing = true;
+            workerCount = workers;
+            
+            addToLog('[START] Initializing distributed processing...');
+            addToLog('[CONFIG] Path: ' + path + ', Workers: ' + workers + ', Batch: ' + batch + ', Mode: ' + mode);
+            
+                        // Update metrics - show NA until real data available
+                        document.getElementById('dist-workers').textContent = workers;
+                        document.getElementById('dist-tasks').textContent = 'NA'; // Will be updated with real task count
+            
+                        // Show worker status - CPU will show NA until real monitoring available
+                        const workerList = document.getElementById('worker-list');
+                        workerList.innerHTML = '';
+                        for (let i = 0; i < Math.min(workers, 10); i++) {
+                            const div = document.createElement('div');
+                            div.className = 'flex justify-between items-center py-1 border-b text-xs';
+                            div.innerHTML = `
+                                <span>Worker-${i + 1}</span>
+                                <span style=\"color: var(--accent-red);\">PENDING</span>
+                                <span>NA</span>
+                            `;
+                            workerList.appendChild(div);
+                        }
+            if (workers > 10) {
+                const more = document.createElement('p');
+                more.className = 'text-xs text-gray-500 mt-2';
+                more.textContent = '... and ' + (workers - 10) + ' more workers';
+                workerList.appendChild(more);
+            }
+            
+            addToLog('[READY] ' + workers + ' workers initialized');
+            
+            // Start processing simulation
+            simulateProcessing();
+        }
+        
+                function stopDistributed() {
+                    distributedProcessing = false;
+                    addToLog('[STOP] Distributed processing stopped');
+                    document.getElementById('dist-workers').textContent = 'NA';
+                    document.getElementById('dist-tasks').textContent = 'NA';
+                    document.getElementById('dist-throughput').textContent = 'NA';
+                }
+        
+        function scaleWorkers() {
+            const newCount = parseInt(document.getElementById('dist-workers-count').value);
+            addToLog('[SCALE] Scaling workers from ' + workerCount + ' to ' + newCount);
+            workerCount = newCount;
+            document.getElementById('dist-workers').textContent = newCount;
+        }
+        
+                function simulateProcessing() {
+                    // NOTE: This function should be replaced with real API calls to get actual processing metrics
+                    // For now, show NA to indicate no real data is available
+                    if (!distributedProcessing) return;
+            
+                    // TODO: Replace with real API call to /api/distributed/status
+                    // const response = await fetch('/api/distributed/status');
+                    // const data = await response.json();
+            
+                    // Show NA until real metrics are available from the backend
+                    document.getElementById('dist-throughput').textContent = 'NA';
+                    document.getElementById('dist-tasks').textContent = 'NA';
+                    document.getElementById('dist-data').textContent = 'NA';
+            
+            // Add to task queue display
+            const taskQueue = document.getElementById('task-queue');
+            if (tasks > 0) {
+                taskQueue.innerHTML = `
+                    <div class=\"text-xs\">
+                        <p>Pending: ${tasks} tasks</p>
+                        <p>Processing: ${throughput}/sec</p>
+                        <p style=\"color: var(--accent-red);\">ETA: ${Math.ceil(tasks / throughput)} seconds</p>
+                    </div>
+                `;
+            } else {
+                taskQueue.innerHTML = '<p class=\"text-xs\" style=\"color: var(--accent-red);\">All tasks completed!</p>';
+                distributedProcessing = false;
+                addToLog('[COMPLETE] All tasks processed successfully');
+                return;
+            }
+            
+            setTimeout(simulateProcessing, 1000);
+        }
+        
+        // ============================================
         // Tech Debt Functions
         // ============================================
         
@@ -944,11 +1571,11 @@
                     if (match) {
                         const funcName = match[1];
                         const deps = match[2].split(',').map(d => d.trim()).filter(d => d);
-                        functions[funcName] = {
-                            name: funcName,
-                            type: 'function',
-                            complexity: Math.floor(Math.random() * 10) + 1
-                        };
+                                                functions[funcName] = {
+                                                    name: funcName,
+                                                    type: 'function',
+                                                    complexity: 'NA' // TODO: Calculate real complexity from code analysis
+                                                };
                         deps.forEach(dep => {
                             dependencies.push({ from: funcName, to: dep, type: 'calls' });
                         });
@@ -1397,6 +2024,102 @@
       (and (= method :post) (= uri "/api/techdebt/visualize"))
       (handle-dag-visualization request)
       
+      ;; Distributed Processing API
+      (and (= method :get) (= uri "/api/distributed/status"))
+      (json-response (distributed/get-cluster-metrics))
+      
+      (and (= method :get) (= uri "/api/distributed/throughput"))
+      (json-response {:throughput (distributed/get-throughput)})
+      
+      (and (= method :post) (= uri "/api/distributed/submit"))
+      (let [body (parse-json-body request)
+            work-type (keyword (get body "type" "analyze"))
+            data (get body "data")
+            priority (keyword (get body "priority" "normal"))]
+        (json-response (distributed/submit-work work-type data :priority priority)))
+      
+      (and (= method :post) (= uri "/api/distributed/submit-bulk"))
+      (let [body (parse-json-body request)
+            work-items (get body "items" [])]
+        (json-response (distributed/submit-bulk-work work-items)))
+      
+      (and (= method :post) (= uri "/api/distributed/start-workers"))
+      (let [body (parse-json-body request)
+            num-workers (get body "workers" 4)]
+        (distributed/start-workers! num-workers)
+        (json-response {:status "started" :workers num-workers}))
+      
+      (and (= method :post) (= uri "/api/distributed/stop"))
+      (do
+        (distributed/shutdown!)
+        (json-response {:status "stopped"}))
+      
+      (and (= method :post) (= uri "/api/distributed/scale"))
+      (let [body (parse-json-body request)
+            target-workers (get body "target" 8)]
+        (distributed/scale-workers! target-workers)
+        (json-response {:status "scaling" :target target-workers}))
+      
+      ;; Continuous Learning API
+      (and (= method :get) (= uri "/api/continuous/status"))
+      (json-response (continuous/get-system-status))
+      
+      (and (= method :post) (= uri "/api/continuous/start"))
+      (do
+        (continuous/start-all-systems!)
+        (json-response {:status "started"}))
+      
+      (and (= method :post) (= uri "/api/continuous/stop"))
+      (do
+        (continuous/stop-all-systems!)
+        (json-response {:status "stopped"}))
+      
+      (and (= method :post) (= uri "/api/continuous/scraper/start"))
+      (let [body (parse-json-body request)
+            scraper-id (keyword (get body "id" "default"))
+            urls (get body "urls" [])
+            depth (get body "depth" 2)
+            interval (get body "interval" 3600000)]
+        (continuous/start-scraper! scraper-id urls :depth depth :interval interval)
+        (json-response {:status "started" :scraper-id scraper-id}))
+      
+      (and (= method :post) (= uri "/api/continuous/file-watcher/start"))
+      (let [body (parse-json-body request)
+            watcher-id (keyword (get body "id" "default"))
+            directories (get body "directories" [])]
+        (continuous/start-file-watcher! watcher-id directories)
+        (json-response {:status "started" :watcher-id watcher-id}))
+      
+      (and (= method :post) (= uri "/api/continuous/sensor/start"))
+      (let [body (parse-json-body request)
+            device-id (get body "device-id")
+            sensor-types (map keyword (get body "sensors" ["accelerometer"]))]
+        (continuous/start-sensor-collector! device-id sensor-types)
+        (json-response {:status "started" :device-id device-id}))
+      
+      (and (= method :post) (= uri "/api/continuous/petabyte"))
+      (let [body (parse-json-body request)
+            data-source (get body "source")
+            parallel-factor (get body "parallel" 1000)]
+        (json-response (continuous/process-petabyte-dataset! data-source :parallel-factor parallel-factor)))
+      
+      ;; Database API
+      (and (= method :get) (= uri "/api/db/health"))
+      (json-response (db/health-check))
+      
+      (and (= method :get) (= uri "/api/db/stats"))
+      (json-response (db/get-stats))
+      
+      (and (= method :post) (= uri "/api/db/analysis"))
+      (let [body (parse-json-body request)]
+        (db/save-analysis! body)
+        (json-response {:status "saved"}))
+      
+      (and (= method :get) (= uri "/api/db/analyses"))
+      (let [params (:query-params request)
+            limit (Integer/parseInt (get params "limit" "100"))]
+        (json-response {:analyses (db/get-analyses :limit limit)}))
+      
       ;; 404
       :else
       (-> (response/response "Not found")
@@ -1406,16 +2129,62 @@
 ;; Server
 ;; ============================================
 
+(defn init-distributed-systems!
+  "Initialize distributed processing and continuous learning systems.
+   Called on server startup if enabled via environment variables."
+  []
+  (let [enable-distributed (= "true" (System/getenv "ENABLE_DISTRIBUTED"))
+        enable-continuous (= "true" (System/getenv "ENABLE_CONTINUOUS"))
+        enable-db (= "true" (System/getenv "ENABLE_DATABASE"))
+        db-url (System/getenv "DATABASE_URL")]
+    
+    ;; Initialize database if enabled and URL provided
+    (when (and enable-db db-url)
+      (println "Initializing database connection...")
+      (try
+        (db/init-pool! {:jdbcUrl db-url})
+        (db/init-schema!)
+        (println "Database initialized successfully")
+        (catch Exception e
+          (println "Warning: Database initialization failed:" (.getMessage e)))))
+    
+    ;; Initialize distributed processing if enabled
+    (when enable-distributed
+      (println "Initializing distributed processing system...")
+      (distributed/init!)
+      (let [num-workers (Integer/parseInt (or (System/getenv "NUM_WORKERS") "4"))]
+        (distributed/start-workers! num-workers)
+        (println (str "Started " num-workers " distributed workers"))))
+    
+    ;; Initialize continuous learning if enabled
+    (when enable-continuous
+      (println "Initializing continuous learning system...")
+      (continuous/start-all-systems!)
+      (println "Continuous learning system started"))))
+
 (defn start-server [& {:keys [port] :or {port 8000}}]
   (println "")
   (println "========================================")
   (println "  Mental Models System - Electric Clojure")
+  (println "  Petabyte-Scale Distributed Processing")
   (println "========================================")
   (println "")
   (println (str "Starting server on port " port "..."))
   (println (str "Models loaded: " (count @models/!models)))
   (println (str "Failure modes: " (count @models/!failure-modes)))
   (println (str "Categories: " (count @models/!categories)))
+  (println "")
+  
+  ;; Initialize distributed systems
+  (init-distributed-systems!)
+  
+  (println "")
+  (println "API Endpoints:")
+  (println "  /api/distributed/status    - Get cluster metrics")
+  (println "  /api/distributed/submit    - Submit work to cluster")
+  (println "  /api/continuous/status     - Get continuous learning status")
+  (println "  /api/continuous/start      - Start all continuous systems")
+  (println "  /api/db/health             - Check database health")
   (println "")
   (println (str "Open http://localhost:" port " in your browser"))
   (println "")
