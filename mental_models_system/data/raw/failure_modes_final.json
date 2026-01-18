@@ -1,0 +1,203 @@
+{
+  "category": "Final Models",
+  "models": [
+    {
+      "id": 61,
+      "name": "Game Theory",
+      "failure_modes": [
+        {"mode": "Assuming rationality", "description": "Expecting rational behavior from all players", "real_world_case": "Competitor making irrational moves.", "warning_signs": ["Unexpected moves", "Irrational behavior", "Emotion-driven decisions"], "safeguards": ["Account for irrationality", "Multiple scenarios", "Behavioral factors"], "quantitative_threshold": "Players are not always rational"},
+        {"mode": "Wrong game identification", "description": "Playing the wrong game", "real_world_case": "Treating repeated game as one-shot.", "warning_signs": ["Misread dynamics", "Wrong strategy", "Surprise outcomes"], "safeguards": ["Identify game type", "Repeated vs one-shot", "Cooperative vs competitive"], "quantitative_threshold": "Identify the game correctly"},
+        {"mode": "Ignoring other players", "description": "Not considering competitor responses", "real_world_case": "Price cut triggering price war.", "warning_signs": ["No response analysis", "Surprise retaliation", "Escalation"], "safeguards": ["Anticipate responses", "Multi-player thinking", "Scenario planning"], "quantitative_threshold": "Always consider responses"},
+        {"mode": "Nash equilibrium trap", "description": "Stuck at suboptimal Nash equilibrium", "real_world_case": "Prisoner's dilemma outcomes.", "warning_signs": ["Suboptimal outcome", "No cooperation", "Mutual harm"], "safeguards": ["Coordination", "Communication", "Repeated game strategies"], "quantitative_threshold": "Nash equilibrium may not be optimal"},
+        {"mode": "Information asymmetry in games", "description": "Not accounting for information differences", "real_world_case": "Bluffing and signaling.", "warning_signs": ["Hidden information", "Signaling", "Deception"], "safeguards": ["Information analysis", "Signal interpretation", "Verification"], "quantitative_threshold": "Information is often asymmetric"}
+      ]
+    },
+    {
+      "id": 62,
+      "name": "Principal-Agent Problem",
+      "failure_modes": [
+        {"mode": "Misaligned incentives", "description": "Agent incentives not aligned with principal", "real_world_case": "CEO maximizing short-term stock price.", "warning_signs": ["Divergent interests", "Gaming metrics", "Short-termism"], "safeguards": ["Incentive alignment", "Long-term metrics", "Skin in the game"], "quantitative_threshold": "Incentives drive behavior"},
+        {"mode": "Information asymmetry", "description": "Agent knows more than principal", "real_world_case": "Manager hiding problems from board.", "warning_signs": ["Information gaps", "Surprises", "Hidden problems"], "safeguards": ["Transparency requirements", "Multiple information sources", "Verification"], "quantitative_threshold": "Agents always have more information"},
+        {"mode": "Monitoring costs", "description": "Cost of monitoring exceeding benefits", "real_world_case": "Excessive oversight reducing productivity.", "warning_signs": ["High monitoring costs", "Bureaucracy", "Trust erosion"], "safeguards": ["Efficient monitoring", "Trust building", "Outcome focus"], "quantitative_threshold": "Balance monitoring costs and benefits"},
+        {"mode": "Multiple principals", "description": "Agent serving multiple principals with conflicting interests", "real_world_case": "Manager serving shareholders and stakeholders.", "warning_signs": ["Conflicting demands", "Impossible trade-offs", "Paralysis"], "safeguards": ["Clear priorities", "Stakeholder management", "Transparent trade-offs"], "quantitative_threshold": "Multiple principals create conflicts"},
+        {"mode": "Agent entrenchment", "description": "Agent becoming too powerful to control", "real_world_case": "CEO controlling board.", "warning_signs": ["Power concentration", "Weak oversight", "Rubber stamp board"], "safeguards": ["Governance structures", "Independent oversight", "Power balance"], "quantitative_threshold": "Agents can capture principals"}
+      ]
+    },
+    {
+      "id": 81,
+      "name": "Economies of Scale",
+      "failure_modes": [
+        {"mode": "Diseconomies of scale", "description": "Scale creating inefficiencies", "real_world_case": "Large company becoming bureaucratic.", "warning_signs": ["Rising unit costs", "Bureaucracy", "Coordination problems"], "safeguards": ["Monitor for diseconomies", "Organizational design", "Decentralization"], "quantitative_threshold": "Scale has limits"},
+        {"mode": "Scale without demand", "description": "Building scale without market", "real_world_case": "Factory capacity exceeding demand.", "warning_signs": ["Excess capacity", "Low utilization", "Fixed cost burden"], "safeguards": ["Demand validation", "Flexible capacity", "Phased scaling"], "quantitative_threshold": "Scale needs demand"},
+        {"mode": "Scale advantage erosion", "description": "Scale advantages declining", "real_world_case": "Technology enabling small-scale efficiency.", "warning_signs": ["Smaller competitors efficient", "Technology change", "Minimum efficient scale declining"], "safeguards": ["Monitor technology", "Flexibility", "New advantages"], "quantitative_threshold": "Scale advantages can erode"},
+        {"mode": "Scale rigidity", "description": "Scale creating inflexibility", "real_world_case": "Large company unable to pivot.", "warning_signs": ["Slow response", "Inflexibility", "Missed opportunities"], "safeguards": ["Maintain agility", "Modular structure", "Innovation capability"], "quantitative_threshold": "Scale can reduce flexibility"},
+        {"mode": "Scale in wrong dimension", "description": "Scaling wrong aspects", "real_world_case": "Scaling operations without scaling quality.", "warning_signs": ["Quality decline", "Customer complaints", "Wrong scaling"], "safeguards": ["Holistic scaling", "Quality maintenance", "Balanced growth"], "quantitative_threshold": "Scale all critical dimensions"}
+      ]
+    },
+    {
+      "id": 82,
+      "name": "Economies of Scope",
+      "failure_modes": [
+        {"mode": "Diseconomies of scope", "description": "Scope creating complexity", "real_world_case": "Conglomerate discount.", "warning_signs": ["Complexity costs", "Management distraction", "Underperformance"], "safeguards": ["Focus", "Synergy validation", "Complexity management"], "quantitative_threshold": "Scope has limits"},
+        {"mode": "False synergies", "description": "Expected synergies not materializing", "real_world_case": "M&A synergies never achieved.", "warning_signs": ["Synergy shortfall", "Integration problems", "Promised savings missing"], "safeguards": ["Conservative synergy estimates", "Integration planning", "Realistic expectations"], "quantitative_threshold": "Synergies often disappoint"},
+        {"mode": "Scope creep", "description": "Expanding scope beyond capabilities", "real_world_case": "Company entering unrelated businesses.", "warning_signs": ["Unrelated diversification", "Capability gaps", "Distraction"], "safeguards": ["Capability focus", "Related diversification", "Core competence"], "quantitative_threshold": "Stay within capabilities"},
+        {"mode": "Scope without integration", "description": "Scope without capturing synergies", "real_world_case": "Divisions operating independently.", "warning_signs": ["Silos", "No synergy capture", "Duplication"], "safeguards": ["Integration", "Synergy capture", "Coordination"], "quantitative_threshold": "Scope requires integration"},
+        {"mode": "Scope distraction", "description": "Scope distracting from core", "real_world_case": "New business distracting from main business.", "warning_signs": ["Core neglect", "Management distraction", "Performance decline"], "safeguards": ["Core focus", "Resource allocation", "Priority discipline"], "quantitative_threshold": "Scope can distract from core"}
+      ]
+    },
+    {
+      "id": 83,
+      "name": "First Mover Advantage",
+      "failure_modes": [
+        {"mode": "First mover disadvantage", "description": "Being first creating disadvantages", "real_world_case": "Pioneer educating market for followers.", "warning_signs": ["High education costs", "Follower success", "Pioneer struggles"], "safeguards": ["Fast follower option", "Market timing", "Sustainable advantage"], "quantitative_threshold": "First mover isn't always best"},
+        {"mode": "First mover without moat", "description": "Being first without sustainable advantage", "real_world_case": "First to market but easily copied.", "warning_signs": ["Easy copying", "No lock-in", "Follower catching up"], "safeguards": ["Build moat quickly", "Network effects", "Switching costs"], "quantitative_threshold": "First mover needs sustainable advantage"},
+        {"mode": "First mover timing", "description": "Being first too early", "real_world_case": "Product before market ready.", "warning_signs": ["No demand", "Too early", "Market not ready"], "safeguards": ["Market timing", "Demand validation", "Patience"], "quantitative_threshold": "Timing matters more than being first"},
+        {"mode": "First mover resource drain", "description": "First mover using resources before market develops", "real_world_case": "Burning cash waiting for market.", "warning_signs": ["Cash burn", "Slow market", "Resource depletion"], "safeguards": ["Capital efficiency", "Staged investment", "Runway management"], "quantitative_threshold": "First mover needs resources to wait"},
+        {"mode": "First mover lock-in to wrong approach", "description": "First mover locked into suboptimal approach", "real_world_case": "Pioneer locked into inferior technology.", "warning_signs": ["Better alternatives emerging", "Legacy burden", "Switching costs"], "safeguards": ["Flexibility", "Technology monitoring", "Adaptation capability"], "quantitative_threshold": "First mover can lock into wrong approach"}
+      ]
+    },
+    {
+      "id": 84,
+      "name": "Last Mover Advantage",
+      "failure_modes": [
+        {"mode": "Too late entry", "description": "Entering after market consolidated", "real_world_case": "Entering market with entrenched winner.", "warning_signs": ["Market locked up", "High barriers", "Winner established"], "safeguards": ["Market timing", "Differentiation", "Niche entry"], "quantitative_threshold": "Don't be too late"},
+        {"mode": "Last mover without differentiation", "description": "Late entry without competitive advantage", "real_world_case": "Me-too product in mature market.", "warning_signs": ["No differentiation", "Price competition", "Commoditization"], "safeguards": ["Clear differentiation", "Unique value", "Innovation"], "quantitative_threshold": "Last mover needs differentiation"},
+        {"mode": "Last mover cost disadvantage", "description": "Late entry facing higher costs", "real_world_case": "Incumbent scale advantages.", "warning_signs": ["Higher costs", "Scale disadvantage", "Margin pressure"], "safeguards": ["Cost innovation", "Different model", "Efficiency"], "quantitative_threshold": "Last mover may face cost disadvantage"},
+        {"mode": "Last mover learning curve", "description": "Late entry facing incumbent learning advantages", "real_world_case": "Incumbent accumulated knowledge.", "warning_signs": ["Knowledge gap", "Learning curve", "Capability gap"], "safeguards": ["Accelerated learning", "Talent acquisition", "Partnership"], "quantitative_threshold": "Incumbents have learning advantages"},
+        {"mode": "Last mover distribution disadvantage", "description": "Late entry facing locked distribution", "real_world_case": "Shelf space controlled by incumbents.", "warning_signs": ["Distribution barriers", "Channel lock-up", "Access problems"], "safeguards": ["Alternative channels", "Direct distribution", "Channel innovation"], "quantitative_threshold": "Distribution may be locked"}
+      ]
+    },
+    {
+      "id": 85,
+      "name": "Platform Business Model",
+      "failure_modes": [
+        {"mode": "Chicken and egg problem", "description": "Can't attract one side without the other", "real_world_case": "Marketplace with no buyers or sellers.", "warning_signs": ["Low activity", "No network effects", "Stalled growth"], "safeguards": ["Subsidize one side", "Single-player mode", "Staged launch"], "quantitative_threshold": "Solve chicken and egg first"},
+        {"mode": "Platform leakage", "description": "Users transacting off-platform", "real_world_case": "Buyers and sellers connecting directly.", "warning_signs": ["Off-platform activity", "Revenue leakage", "Disintermediation"], "safeguards": ["Value-add services", "Trust mechanisms", "Switching costs"], "quantitative_threshold": "Prevent platform leakage"},
+        {"mode": "Platform commoditization", "description": "Platform becoming commodity", "real_world_case": "Multiple similar platforms.", "warning_signs": ["Competition", "Price pressure", "Differentiation loss"], "safeguards": ["Unique value", "Network effects", "Differentiation"], "quantitative_threshold": "Platforms can commoditize"},
+        {"mode": "Platform regulation", "description": "Regulatory action against platform", "real_world_case": "Antitrust action against dominant platforms.", "warning_signs": ["Regulatory attention", "Political pressure", "Antitrust concerns"], "safeguards": ["Compliance", "Fair practices", "Stakeholder management"], "quantitative_threshold": "Dominant platforms face regulation"},
+        {"mode": "Platform quality decline", "description": "Platform quality deteriorating", "real_world_case": "Marketplace flooded with low-quality sellers.", "warning_signs": ["Quality complaints", "User churn", "Reputation damage"], "safeguards": ["Quality control", "Curation", "Standards enforcement"], "quantitative_threshold": "Platform quality requires management"}
+      ]
+    },
+    {
+      "id": 86,
+      "name": "Flywheel Effect",
+      "failure_modes": [
+        {"mode": "Flywheel not spinning", "description": "Flywheel not gaining momentum", "real_world_case": "Business model not creating virtuous cycle.", "warning_signs": ["No momentum", "Stalled growth", "No reinforcement"], "safeguards": ["Identify flywheel", "Initial push", "Remove friction"], "quantitative_threshold": "Flywheel needs initial momentum"},
+        {"mode": "Flywheel friction", "description": "Friction slowing flywheel", "real_world_case": "Operational issues slowing growth cycle.", "warning_signs": ["Slowing momentum", "Friction points", "Declining acceleration"], "safeguards": ["Reduce friction", "Operational excellence", "Continuous improvement"], "quantitative_threshold": "Friction slows flywheel"},
+        {"mode": "Flywheel reversal", "description": "Flywheel spinning in reverse", "real_world_case": "Negative spiral of declining quality and users.", "warning_signs": ["Negative momentum", "Declining metrics", "Vicious cycle"], "safeguards": ["Early intervention", "Break negative cycle", "Stabilization"], "quantitative_threshold": "Flywheels can reverse"},
+        {"mode": "Wrong flywheel", "description": "Building wrong flywheel", "real_world_case": "Optimizing wrong cycle.", "warning_signs": ["No value creation", "Wrong metrics", "Misaligned incentives"], "safeguards": ["Identify right flywheel", "Value focus", "Customer-centric"], "quantitative_threshold": "Identify the right flywheel"},
+        {"mode": "Flywheel dependence", "description": "Over-reliance on flywheel momentum", "real_world_case": "Assuming flywheel will continue without investment.", "warning_signs": ["Complacency", "Declining investment", "Slowing growth"], "safeguards": ["Continuous investment", "Momentum maintenance", "Never complacent"], "quantitative_threshold": "Flywheels need continuous investment"}
+      ]
+    },
+    {
+      "id": 87,
+      "name": "Vertical Integration",
+      "failure_modes": [
+        {"mode": "Integration complexity", "description": "Vertical integration creating complexity", "real_world_case": "Managing multiple business types.", "warning_signs": ["Complexity costs", "Management distraction", "Coordination problems"], "safeguards": ["Capability assessment", "Integration planning", "Complexity management"], "quantitative_threshold": "Integration adds complexity"},
+        {"mode": "Integration inflexibility", "description": "Vertical integration reducing flexibility", "real_world_case": "Locked into internal suppliers.", "warning_signs": ["Inflexibility", "Suboptimal sourcing", "Innovation lag"], "safeguards": ["Maintain options", "External benchmarking", "Flexibility"], "quantitative_threshold": "Integration reduces flexibility"},
+        {"mode": "Integration capital intensity", "description": "Vertical integration requiring high capital", "real_world_case": "Capital tied up in non-core assets.", "warning_signs": ["High capital needs", "Low returns", "Opportunity cost"], "safeguards": ["Capital efficiency", "Asset-light options", "ROI focus"], "quantitative_threshold": "Integration is capital intensive"},
+        {"mode": "Integration without advantage", "description": "Integrating without creating advantage", "real_world_case": "Owning suppliers without cost or quality benefit.", "warning_signs": ["No advantage", "Higher costs", "Lower quality"], "safeguards": ["Clear advantage case", "Make vs buy analysis", "Continuous evaluation"], "quantitative_threshold": "Integration needs clear advantage"},
+        {"mode": "Integration exit difficulty", "description": "Difficulty exiting integrated business", "real_world_case": "Can't divest integrated operation.", "warning_signs": ["Exit barriers", "Stranded assets", "Locked in"], "safeguards": ["Exit planning", "Modularity", "Flexibility"], "quantitative_threshold": "Integration creates exit barriers"}
+      ]
+    },
+    {
+      "id": 121,
+      "name": "Reflexivity",
+      "failure_modes": [
+        {"mode": "Ignoring reflexivity", "description": "Not seeing how beliefs affect reality", "real_world_case": "Market predictions becoming self-fulfilling.", "warning_signs": ["Circular causation", "Prediction affecting outcome", "Feedback loops"], "safeguards": ["Reflexivity awareness", "Second-order thinking", "Feedback analysis"], "quantitative_threshold": "Beliefs can affect reality"},
+        {"mode": "Reflexivity amplification", "description": "Reflexivity creating bubbles", "real_world_case": "Rising prices creating more buying.", "warning_signs": ["Self-reinforcing trends", "Bubble dynamics", "Disconnection from fundamentals"], "safeguards": ["Fundamental anchoring", "Contrarian thinking", "Bubble awareness"], "quantitative_threshold": "Reflexivity can create bubbles"},
+        {"mode": "Reflexivity in reverse", "description": "Negative reflexivity creating crashes", "real_world_case": "Falling prices creating more selling.", "warning_signs": ["Panic selling", "Self-reinforcing decline", "Capitulation"], "safeguards": ["Contrarian positioning", "Liquidity maintenance", "Long-term view"], "quantitative_threshold": "Reflexivity works both ways"},
+        {"mode": "Reflexivity timing", "description": "Not knowing when reflexivity will reverse", "real_world_case": "Bubble continuing longer than expected.", "warning_signs": ["Extended trends", "Timing uncertainty", "Premature positioning"], "safeguards": ["Patience", "Position sizing", "Survival focus"], "quantitative_threshold": "Reflexivity timing is unpredictable"},
+        {"mode": "Reflexivity in strategy", "description": "Strategy announcements affecting outcomes", "real_world_case": "Announced strategy triggering competitor response.", "warning_signs": ["Competitor response", "Strategy leakage", "Self-defeating announcements"], "safeguards": ["Strategic secrecy", "Response anticipation", "Flexible strategy"], "quantitative_threshold": "Strategy announcements affect outcomes"}
+      ]
+    },
+    {
+      "id": 122,
+      "name": "Optionality",
+      "failure_modes": [
+        {"mode": "Option cost blindness", "description": "Not recognizing cost of maintaining options", "real_world_case": "Keeping options open at high cost.", "warning_signs": ["High option cost", "Delayed decisions", "Resource drain"], "safeguards": ["Option cost awareness", "Decision discipline", "Commitment when appropriate"], "quantitative_threshold": "Options have costs"},
+        {"mode": "Option paralysis", "description": "Unable to exercise options", "real_world_case": "Never committing to any path.", "warning_signs": ["No commitment", "Endless optionality", "No progress"], "safeguards": ["Decision deadlines", "Commitment capability", "Action bias"], "quantitative_threshold": "Options must eventually be exercised"},
+        {"mode": "Wrong options", "description": "Maintaining wrong options", "real_world_case": "Options on declining opportunities.", "warning_signs": ["Irrelevant options", "Wasted resources", "Opportunity cost"], "safeguards": ["Option evaluation", "Pruning", "Right options"], "quantitative_threshold": "Maintain valuable options only"},
+        {"mode": "Option expiration", "description": "Options expiring worthless", "real_world_case": "Market window closing.", "warning_signs": ["Expiring opportunities", "Missed windows", "Time decay"], "safeguards": ["Expiration awareness", "Timely exercise", "Window monitoring"], "quantitative_threshold": "Options can expire"},
+        {"mode": "Optionality vs commitment", "description": "Optionality preventing necessary commitment", "real_world_case": "Not committing to win.", "warning_signs": ["Half-hearted effort", "No conviction", "Mediocre outcomes"], "safeguards": ["Strategic commitment", "Full effort when committed", "Balance"], "quantitative_threshold": "Sometimes commitment beats optionality"}
+      ]
+    },
+    {
+      "id": 123,
+      "name": "Margin of Safety",
+      "failure_modes": [
+        {"mode": "Insufficient margin", "description": "Margin of safety too small", "real_world_case": "Investment with thin margin.", "warning_signs": ["Thin margin", "High risk", "No buffer"], "safeguards": ["Adequate margin", "Conservative assumptions", "Buffer"], "quantitative_threshold": "Margin must be meaningful"},
+        {"mode": "False margin", "description": "Margin based on wrong assumptions", "real_world_case": "Margin calculated on optimistic projections.", "warning_signs": ["Optimistic assumptions", "False security", "Hidden risk"], "safeguards": ["Conservative assumptions", "Stress testing", "Multiple scenarios"], "quantitative_threshold": "Margin must be based on reality"},
+        {"mode": "Margin erosion", "description": "Margin of safety declining", "real_world_case": "Rising prices reducing margin.", "warning_signs": ["Declining margin", "Rising prices", "Reduced buffer"], "safeguards": ["Margin monitoring", "Rebalancing", "Exit discipline"], "quantitative_threshold": "Monitor margin continuously"},
+        {"mode": "Margin in wrong dimension", "description": "Margin of safety in wrong area", "real_world_case": "Financial margin but operational risk.", "warning_signs": ["Wrong risk focus", "Unprotected risks", "Surprise failures"], "safeguards": ["Comprehensive margin", "All risk dimensions", "Holistic view"], "quantitative_threshold": "Margin needed in all dimensions"},
+        {"mode": "Margin complacency", "description": "Margin creating false security", "real_world_case": "Assuming margin protects against all risks.", "warning_signs": ["Overconfidence", "Risk blindness", "Complacency"], "safeguards": ["Continuous vigilance", "Risk awareness", "No complacency"], "quantitative_threshold": "Margin doesn't eliminate risk"}
+      ]
+    },
+    {
+      "id": 124,
+      "name": "Circle of Competence",
+      "failure_modes": [
+        {"mode": "Overestimating competence", "description": "Thinking circle is larger than it is", "real_world_case": "Expert in one area assuming expertise in another.", "warning_signs": ["Overconfidence", "Outside expertise", "Poor decisions"], "safeguards": ["Honest assessment", "Feedback", "Humility"], "quantitative_threshold": "Know the boundaries of your competence"},
+        {"mode": "Static circle", "description": "Not expanding circle of competence", "real_world_case": "Expertise becoming outdated.", "warning_signs": ["Stagnation", "Declining relevance", "Outdated knowledge"], "safeguards": ["Continuous learning", "Circle expansion", "Adaptation"], "quantitative_threshold": "Expand circle deliberately"},
+        {"mode": "Circle shrinkage", "description": "Circle of competence shrinking", "real_world_case": "Skills decaying without practice.", "warning_signs": ["Skill decay", "Knowledge loss", "Declining performance"], "safeguards": ["Skill maintenance", "Practice", "Continuous use"], "quantitative_threshold": "Competence decays without maintenance"},
+        {"mode": "Circle boundary blindness", "description": "Not knowing where circle ends", "real_world_case": "Unconsciously incompetent.", "warning_signs": ["Unknown unknowns", "Surprise failures", "Blind spots"], "safeguards": ["Seek feedback", "Test boundaries", "Humility"], "quantitative_threshold": "Know where your competence ends"},
+        {"mode": "Circle constraint", "description": "Circle too narrow for opportunities", "real_world_case": "Missing opportunities outside circle.", "warning_signs": ["Missed opportunities", "Too narrow", "Limited growth"], "safeguards": ["Strategic expansion", "Partnerships", "Learning"], "quantitative_threshold": "Balance focus with expansion"}
+      ]
+    },
+    {
+      "id": 125,
+      "name": "Skin in the Game",
+      "failure_modes": [
+        {"mode": "No skin in the game", "description": "Decision makers without consequences", "real_world_case": "Advisors without accountability.", "warning_signs": ["No accountability", "Reckless advice", "Misaligned incentives"], "safeguards": ["Require skin in game", "Accountability", "Aligned incentives"], "quantitative_threshold": "Decision makers need consequences"},
+        {"mode": "Wrong skin in the game", "description": "Skin in wrong outcome", "real_world_case": "Incentives on wrong metrics.", "warning_signs": ["Wrong incentives", "Gaming", "Misaligned behavior"], "safeguards": ["Right metrics", "Outcome alignment", "Holistic incentives"], "quantitative_threshold": "Skin must be in right game"},
+        {"mode": "Asymmetric skin", "description": "Upside without downside", "real_world_case": "Bonus without clawback.", "warning_signs": ["Asymmetric payoff", "Excessive risk-taking", "Heads I win tails you lose"], "safeguards": ["Symmetric incentives", "Downside exposure", "Clawbacks"], "quantitative_threshold": "Skin should be symmetric"},
+        {"mode": "Too much skin", "description": "Excessive personal exposure", "real_world_case": "All wealth in one investment.", "warning_signs": ["Excessive concentration", "Survival risk", "Impaired judgment"], "safeguards": ["Appropriate exposure", "Diversification", "Survival first"], "quantitative_threshold": "Don't bet everything"},
+        {"mode": "Skin in the game theater", "description": "Appearance of skin without reality", "real_world_case": "Token investment for optics.", "warning_signs": ["Token exposure", "Optics focus", "No real accountability"], "safeguards": ["Meaningful exposure", "Real consequences", "Verification"], "quantitative_threshold": "Skin must be meaningful"}
+      ]
+    },
+    {
+      "id": 126,
+      "name": "Second-Order Thinking",
+      "failure_modes": [
+        {"mode": "First-order only", "description": "Only considering immediate effects", "real_world_case": "Policy with unintended consequences.", "warning_signs": ["Surprise consequences", "Unintended effects", "Short-term focus"], "safeguards": ["Ask 'and then what?'", "Consequence chains", "Long-term thinking"], "quantitative_threshold": "Always ask 'and then what?'"},
+        {"mode": "Second-order paralysis", "description": "Over-analyzing consequences", "real_world_case": "Unable to decide due to complexity.", "warning_signs": ["Analysis paralysis", "No action", "Overthinking"], "safeguards": ["Good enough analysis", "Decision deadlines", "Action bias"], "quantitative_threshold": "Don't over-analyze"},
+        {"mode": "Wrong second-order effects", "description": "Predicting wrong consequences", "real_world_case": "Anticipated effects not materializing.", "warning_signs": ["Wrong predictions", "Surprise outcomes", "Model failure"], "safeguards": ["Multiple scenarios", "Humility", "Adaptation"], "quantitative_threshold": "Second-order predictions are uncertain"},
+        {"mode": "Missing third-order effects", "description": "Not going deep enough", "real_world_case": "Missing downstream consequences.", "warning_signs": ["Deeper effects missed", "Cascade effects", "System complexity"], "safeguards": ["Deeper analysis when stakes high", "System thinking", "Expert input"], "quantitative_threshold": "Sometimes need third-order thinking"},
+        {"mode": "Second-order thinking without action", "description": "Understanding consequences but not acting", "real_world_case": "Knowing what will happen but not preparing.", "warning_signs": ["Knowledge without action", "Preparation failure", "Inaction"], "safeguards": ["Action from insight", "Preparation", "Execution"], "quantitative_threshold": "Insight must lead to action"}
+      ]
+    },
+    {
+      "id": 127,
+      "name": "Probabilistic Thinking",
+      "failure_modes": [
+        {"mode": "Binary thinking", "description": "Thinking in certainties not probabilities", "real_world_case": "Treating uncertain outcomes as certain.", "warning_signs": ["Certainty language", "No ranges", "Overconfidence"], "safeguards": ["Probability estimates", "Ranges", "Uncertainty acknowledgment"], "quantitative_threshold": "Think in probabilities, not certainties"},
+        {"mode": "Base rate neglect", "description": "Ignoring base rates", "real_world_case": "Overweighting specific information.", "warning_signs": ["Ignoring base rates", "Overweighting specifics", "Poor calibration"], "safeguards": ["Start with base rates", "Adjust from there", "Bayesian updating"], "quantitative_threshold": "Always consider base rates"},
+        {"mode": "Probability miscalibration", "description": "Probabilities not matching reality", "real_world_case": "Overconfident predictions.", "warning_signs": ["Poor calibration", "Surprise outcomes", "Overconfidence"], "safeguards": ["Track predictions", "Calibration practice", "Feedback"], "quantitative_threshold": "Calibrate probabilities to reality"},
+        {"mode": "Small probability blindness", "description": "Ignoring low probability events", "real_world_case": "Black swan events.", "warning_signs": ["Tail risk ignored", "No preparation", "Surprise events"], "safeguards": ["Tail risk awareness", "Preparation", "Antifragility"], "quantitative_threshold": "Low probability events happen"},
+        {"mode": "Probability without magnitude", "description": "Focusing on probability not impact", "real_world_case": "Ignoring high-impact low-probability events.", "warning_signs": ["Impact ignored", "Expected value errors", "Risk blindness"], "safeguards": ["Expected value thinking", "Impact consideration", "Risk-adjusted"], "quantitative_threshold": "Consider probability AND magnitude"}
+      ]
+    },
+    {
+      "id": 128,
+      "name": "Occam's Razor",
+      "failure_modes": [
+        {"mode": "Over-simplification", "description": "Making things too simple", "real_world_case": "Simple model missing key factors.", "warning_signs": ["Missing factors", "Poor predictions", "Oversimplified"], "safeguards": ["Appropriate complexity", "Key factors included", "Model validation"], "quantitative_threshold": "Simple as possible, but no simpler"},
+        {"mode": "Complexity bias", "description": "Preferring complex explanations", "real_world_case": "Elaborate theory when simple one works.", "warning_signs": ["Unnecessary complexity", "Overfitting", "Baroque explanations"], "safeguards": ["Simplicity preference", "Parsimony", "Occam's razor"], "quantitative_threshold": "Prefer simpler explanations"},
+        {"mode": "Wrong simplicity dimension", "description": "Simplifying wrong aspects", "real_world_case": "Simple model of wrong thing.", "warning_signs": ["Wrong focus", "Missing the point", "Irrelevant simplicity"], "safeguards": ["Right focus", "Key factors", "Relevant simplicity"], "quantitative_threshold": "Simplify the right things"},
+        {"mode": "Simplicity as excuse", "description": "Using simplicity to avoid hard work", "real_world_case": "Lazy analysis justified as simple.", "warning_signs": ["Insufficient analysis", "Lazy thinking", "False simplicity"], "safeguards": ["Earned simplicity", "Deep understanding", "Work before simplifying"], "quantitative_threshold": "Simplicity comes from understanding"},
+        {"mode": "Occam's razor misapplication", "description": "Applying Occam's razor incorrectly", "real_world_case": "Rejecting true complex explanation.", "warning_signs": ["Rejecting complexity", "Missing reality", "Dogmatic simplicity"], "safeguards": ["Evidence-based", "Reality check", "Flexible application"], "quantitative_threshold": "Reality may be complex"}
+      ]
+    },
+    {
+      "id": 129,
+      "name": "Hanlon's Razor",
+      "failure_modes": [
+        {"mode": "Assuming malice when stupidity", "description": "Attributing to malice what's explained by incompetence", "real_world_case": "Seeing conspiracy in bureaucratic failure.", "warning_signs": ["Conspiracy thinking", "Malice attribution", "Paranoia"], "safeguards": ["Incompetence first", "Charitable interpretation", "Evidence-based"], "quantitative_threshold": "Never attribute to malice what stupidity explains"},
+        {"mode": "Assuming stupidity when malice", "description": "Missing actual malice", "real_world_case": "Fraud dismissed as mistake.", "warning_signs": ["Repeated 'mistakes'", "Pattern of harm", "Benefit to actor"], "safeguards": ["Pattern recognition", "Cui bono", "Evidence evaluation"], "quantitative_threshold": "Sometimes it is malice"},
+        {"mode": "Hanlon's razor as excuse", "description": "Using incompetence to excuse harm", "real_world_case": "Repeated harmful 'mistakes' tolerated.", "warning_signs": ["Repeated harm", "No accountability", "Excuse pattern"], "safeguards": ["Accountability", "Pattern recognition", "Consequences"], "quantitative_threshold": "Incompetence doesn't excuse repeated harm"},
+        {"mode": "Hanlon's razor blindness", "description": "Not considering incompetence explanation", "real_world_case": "Elaborate theories for simple incompetence.", "warning_signs": ["Complex theories", "Missing simple explanation", "Overthinking"], "safeguards": ["Consider incompetence", "Simple explanations first", "Occam's razor"], "quantitative_threshold": "Incompetence is common"},
+        {"mode": "Hanlon's razor in high-stakes", "description": "Applying Hanlon's razor when stakes are high", "real_world_case": "Assuming incompetence when malice possible and stakes high.", "warning_signs": ["High stakes", "Possible malice", "Naive trust"], "safeguards": ["Stakes-appropriate caution", "Verification", "Trust but verify"], "quantitative_threshold": "Higher stakes require more caution"}
+      ]
+    }
+  ]
+}

@@ -195,7 +195,8 @@ class FailureModesLoader:
             'failure_modes_math_physics_bio.json',
             'failure_modes_organizational.json',
             'failure_modes_economics_3.json',
-            'failure_modes_moats_2.json'
+            'failure_modes_moats_2.json',
+            'failure_modes_final.json'
         ]
         
         for filename in simple_files:
