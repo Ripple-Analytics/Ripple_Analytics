@@ -1812,6 +1812,179 @@ async def list_available_metrics():
         return {"success": False, "error": str(e)}
 
 
+class LispAnalyzeRequest(BaseModel):
+    situation: str
+    context: Optional[dict] = None
+
+
+class LispInvertRequest(BaseModel):
+    problem: str
+
+
+@app.get("/lisp/models")
+async def get_lisp_models():
+    """Get all mental models defined in the Lisp DSL."""
+    try:
+        from src.lisp import get_lisp_bridge, HY_AVAILABLE
+        
+        bridge = get_lisp_bridge()
+        models = bridge.get_all_models()
+        
+        return {
+            "success": True,
+            "hy_available": HY_AVAILABLE,
+            "models": models,
+            "total_models": len(models)
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/lisp/model-names")
+async def get_lisp_model_names():
+    """Get names of all Lisp-defined mental models."""
+    try:
+        from src.lisp import get_lisp_bridge
+        
+        bridge = get_lisp_bridge()
+        names = bridge.get_model_names()
+        
+        return {
+            "success": True,
+            "model_names": names,
+            "total": len(names)
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/lisp/analyze")
+async def lisp_analyze_context(request: LispAnalyzeRequest):
+    """Analyze a situation using the Lisp mental models DSL.
+    
+    This uses Munger's latticework approach - applying multiple
+    mental models to a single problem for comprehensive analysis.
+    """
+    try:
+        from src.lisp import get_lisp_bridge
+        
+        bridge = get_lisp_bridge()
+        context = request.context or {}
+        context["situation"] = request.situation
+        
+        result = bridge.analyze_context(context)
+        
+        return {
+            "success": True,
+            "models_applied": result.models_applied,
+            "individual_results": result.individual_results,
+            "combined_confidence": result.combined_confidence,
+            "lollapalooza_potential": result.lollapalooza_potential,
+            "failure_analysis": result.failure_analysis,
+            "two_track_analysis": result.two_track_analysis,
+            "timestamp": result.timestamp
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/lisp/invert")
+async def lisp_invert_problem(request: LispInvertRequest):
+    """Apply Munger's inversion technique to a problem.
+    
+    'Invert, always invert' - Carl Jacobi
+    Think about what to avoid, not just what to do.
+    """
+    try:
+        from src.lisp import get_lisp_bridge
+        
+        bridge = get_lisp_bridge()
+        result = bridge.invert(request.problem)
+        
+        return {
+            "success": True,
+            **result
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/lisp/two-track")
+async def lisp_two_track_analysis(situation: str = Query(..., description="Situation to analyze")):
+    """Perform Munger's two-track analysis.
+    
+    Track 1: Rational factors (economics, opportunity costs, etc.)
+    Track 2: Psychological factors (biases, social proof, etc.)
+    """
+    try:
+        from src.lisp import get_lisp_bridge
+        
+        bridge = get_lisp_bridge()
+        result = bridge.two_track_analysis(situation)
+        
+        return {
+            "success": True,
+            **result
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/lisp/lollapalooza")
+async def lisp_detect_lollapalooza(request: LispAnalyzeRequest):
+    """Detect lollapalooza effects - when multiple models reinforce each other.
+    
+    A lollapalooza occurs when 3+ mental models point in the same
+    direction with high confidence, creating a powerful combined effect.
+    """
+    try:
+        from src.lisp import get_lisp_bridge
+        
+        bridge = get_lisp_bridge()
+        context = request.context or {}
+        context["situation"] = request.situation
+        
+        result = bridge.detect_lollapalooza(context)
+        
+        return {
+            "success": True,
+            **result
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/lisp/status")
+async def get_lisp_status():
+    """Get status of the Lisp (Hy) integration."""
+    try:
+        from src.lisp import get_lisp_bridge, HY_AVAILABLE
+        
+        bridge = get_lisp_bridge()
+        
+        return {
+            "success": True,
+            "hy_installed": HY_AVAILABLE,
+            "dsl_loaded": bridge._hy_module is not None if HY_AVAILABLE else False,
+            "fallback_active": not HY_AVAILABLE or bridge._hy_module is None,
+            "registered_models": len(bridge.get_model_names()),
+            "features": {
+                "macros": HY_AVAILABLE,
+                "repl": HY_AVAILABLE,
+                "homoiconicity": HY_AVAILABLE,
+                "python_interop": True
+            },
+            "benefits": [
+                "Faster feature development via macros",
+                "REPL-driven development for rapid iteration",
+                "Code as data for self-modifying systems",
+                "Minimal syntax reduces boilerplate"
+            ]
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
 TEMPLATES_DIR = Path(__file__).parent / "templates"
 
 
