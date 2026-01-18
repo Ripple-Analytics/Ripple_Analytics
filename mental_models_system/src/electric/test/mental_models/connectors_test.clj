@@ -608,3 +608,163 @@
       (is (= 2 (get-in summary [:github :requests])))
       (is (= 150 (get-in summary [:github :avg-latency-ms])))
       (is (= 0.5 (get-in summary [:github :cache-hit-rate]))))))
+
+;; ============================================
+;; Circuit Breaker Tests
+;; ============================================
+
+(deftest test-circuit-breaker-config
+  (testing "Circuit breaker configuration is defined"
+    (is (map? conn/circuit-breaker-config))
+    (is (= 5 (:failure-threshold conn/circuit-breaker-config)))
+    (is (= 3 (:success-threshold conn/circuit-breaker-config)))
+    (is (= 60000 (:timeout-ms conn/circuit-breaker-config)))
+    (is (= 3 (:half-open-max-calls conn/circuit-breaker-config)))))
+
+(deftest test-circuit-breakers-atom
+  (testing "Circuit breakers atom is initialized"
+    (is (instance? clojure.lang.Atom conn/circuit-breakers))
+    (is (map? @conn/circuit-breakers))))
+
+(deftest test-get-circuit-state
+  (testing "Get circuit state returns default for unknown connector"
+    (conn/reset-all-circuits)
+    (let [state (conn/get-circuit-state :unknown)]
+      (is (= :closed (:state state)))
+      (is (= 0 (:failure-count state)))
+      (is (= 0 (:success-count state))))))
+
+(deftest test-circuit-closed-by-default
+  (testing "Circuit is closed by default"
+    (conn/reset-all-circuits)
+    (is (false? (conn/circuit-open? :github)))
+    (is (false? (conn/circuit-half-open? :github)))))
+
+(deftest test-record-circuit-failure-opens-circuit
+  (testing "Recording failures opens circuit after threshold"
+    (conn/reset-all-circuits)
+    ;; Record failures up to threshold
+    (dotimes [_ 4]
+      (conn/record-circuit-failure :github))
+    (is (false? (conn/circuit-open? :github)))
+    
+    ;; One more failure should open the circuit
+    (conn/record-circuit-failure :github)
+    (is (true? (conn/circuit-open? :github)))))
+
+(deftest test-record-circuit-success-in-half-open
+  (testing "Recording successes in half-open closes circuit"
+    (conn/reset-all-circuits)
+    ;; Open the circuit
+    (dotimes [_ 5]
+      (conn/record-circuit-failure :github))
+    (is (true? (conn/circuit-open? :github)))
+    
+    ;; Manually set to half-open for testing
+    (swap! conn/circuit-breakers assoc :github
+           {:state :half-open :failure-count 0 :success-count 0 :half-open-calls 0})
+    
+    ;; Record successes
+    (conn/record-circuit-success :github)
+    (conn/record-circuit-success :github)
+    (is (= :half-open (:state (conn/get-circuit-state :github))))
+    
+    ;; Third success should close the circuit
+    (conn/record-circuit-success :github)
+    (is (= :closed (:state (conn/get-circuit-state :github))))))
+
+(deftest test-reset-circuit
+  (testing "Reset circuit clears state"
+    (conn/record-circuit-failure :github)
+    (conn/reset-circuit :github)
+    (is (nil? (get @conn/circuit-breakers :github)))))
+
+(deftest test-reset-all-circuits
+  (testing "Reset all circuits clears all states"
+    (conn/record-circuit-failure :github)
+    (conn/record-circuit-failure :slack)
+    (conn/reset-all-circuits)
+    (is (= {} @conn/circuit-breakers))))
+
+(deftest test-get-circuit-status
+  (testing "Get circuit status returns summary"
+    (conn/reset-all-circuits)
+    (conn/record-circuit-failure :github)
+    (conn/record-circuit-failure :github)
+    (let [status (conn/get-circuit-status)]
+      (is (map? status))
+      (is (contains? status :github))
+      (is (= :closed (get-in status [:github :state])))
+      (is (= 2 (get-in status [:github :failure-count]))))))
+
+(deftest test-with-circuit-breaker-success
+  (testing "with-circuit-breaker returns success on successful call"
+    (conn/reset-all-circuits)
+    (let [result (conn/with-circuit-breaker :github #(+ 1 2))]
+      (is (true? (:success result)))
+      (is (= 3 (:value result)))
+      (is (= :closed (:circuit-state result))))))
+
+(deftest test-with-circuit-breaker-failure
+  (testing "with-circuit-breaker returns failure on exception"
+    (conn/reset-all-circuits)
+    (let [result (conn/with-circuit-breaker :github #(throw (Exception. "test error")))]
+      (is (false? (:success result)))
+      (is (= "test error" (:error result)))
+      (is (= :closed (:circuit-state result))))))
+
+(deftest test-with-circuit-breaker-open-circuit
+  (testing "with-circuit-breaker fails fast when circuit is open"
+    (conn/reset-all-circuits)
+    ;; Open the circuit
+    (dotimes [_ 5]
+      (conn/record-circuit-failure :github))
+    
+    (let [result (conn/with-circuit-breaker :github #(+ 1 2))]
+      (is (false? (:success result)))
+      (is (= "Circuit breaker is open" (:error result)))
+      (is (= :open (:circuit-state result))))))
+
+;; ============================================
+;; Health Check Tests
+;; ============================================
+
+(deftest test-health-check-file-connector
+  (testing "Health check for file connector"
+    (let [test-dir "/tmp/mental-models-health-test"
+          _ (.mkdirs (java.io.File. test-dir))
+          connector (conn/create-file-connector test-dir)
+          result (conn/health-check-connector :file connector)]
+      (is (map? result))
+      (is (contains? result :healthy))
+      (is (contains? result :latency-ms))
+      (is (contains? result :connector-type))
+      (is (= :file (:connector-type result)))
+      (is (number? (:latency-ms result)))
+      ;; Cleanup
+      (.delete (java.io.File. test-dir)))))
+
+(deftest test-health-check-unknown-connector
+  (testing "Health check for unknown connector type"
+    (let [result (conn/health-check-connector :unknown {})]
+      (is (false? (:healthy result)))
+      (is (= :unknown (:connector-type result)))
+      (is (= "Unknown connector type" (get-in result [:details :error]))))))
+
+(deftest test-get-system-health
+  (testing "Get system health returns comprehensive status"
+    (conn/reset-metrics)
+    (conn/reset-all-circuits)
+    (conn/clear-cache)
+    
+    (let [health (conn/get-system-health)]
+      (is (map? health))
+      (is (contains? health :timestamp))
+      (is (contains? health :metrics-summary))
+      (is (contains? health :circuit-breakers))
+      (is (contains? health :rate-limiters))
+      (is (contains? health :cache-size))
+      (is (map? (:metrics-summary health)))
+      (is (map? (:circuit-breakers health)))
+      (is (map? (:rate-limiters health)))
+      (is (number? (:cache-size health))))))
