@@ -1,0 +1,2498 @@
+[
+  {
+    "id": "effectiveness_tracking_setup",
+    "category": "system_optimization",
+    "priority": 3,
+    "title": "Enable effectiveness tracking",
+    "description": "Model effectiveness tracking is not yet enabled. This prevents learning from decision outcomes.",
+    "rationale": "Without effectiveness tracking, the system cannot learn which model combinations work best in different contexts.",
+    "evidence": [
+      "No effectiveness data found"
+    ],
+    "implementation_steps": [
+      "Integrate EffectivenessTracker into decision workflow",
+      "Record model combinations used for each decision",
+      "Track decision outcomes",
+      "Run periodic effectiveness analysis"
+    ],
+    "estimated_impact": 0.9,
+    "estimated_effort": "medium",
+    "related_models": [],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845574",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_reward_and_punishment_superresponse_tendency",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Reward and Punishment Superresponse Tendency",
+    "description": "The mental model 'Reward and Punishment Superresponse Tendency' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Reward and Punishment Superresponse Tendency",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Reward and Punishment Superresponse Tendency"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845222",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_simple,_pain-avoiding_psychological_denial",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Simple, Pain-Avoiding Psychological Denial",
+    "description": "The mental model 'Simple, Pain-Avoiding Psychological Denial' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Simple, Pain-Avoiding Psychological Denial",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Simple, Pain-Avoiding Psychological Denial"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845244",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_overoptimism_tendency",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Overoptimism Tendency",
+    "description": "The mental model 'Overoptimism Tendency' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Overoptimism Tendency",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Overoptimism Tendency"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845249",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_use-it-or-lose-it_tendency",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Use-It-or-Lose-It Tendency",
+    "description": "The mental model 'Use-It-or-Lose-It Tendency' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Use-It-or-Lose-It Tendency",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Use-It-or-Lose-It Tendency"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845254",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_lollapalooza_effect",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Lollapalooza Effect",
+    "description": "The mental model 'Lollapalooza Effect' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Lollapalooza Effect",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Lollapalooza Effect"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845258",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_confirmation_bias",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Confirmation Bias",
+    "description": "The mental model 'Confirmation Bias' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Confirmation Bias",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Confirmation Bias"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845262",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_hindsight_bias",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Hindsight Bias",
+    "description": "The mental model 'Hindsight Bias' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Hindsight Bias",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Hindsight Bias"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845266",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_first-conclusion_bias",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for First-Conclusion Bias",
+    "description": "The mental model 'First-Conclusion Bias' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of First-Conclusion Bias",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "First-Conclusion Bias"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845270",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_anchoring_bias",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Anchoring Bias",
+    "description": "The mental model 'Anchoring Bias' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Anchoring Bias",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Anchoring Bias"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845273",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_incentive-caused_bias",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Incentive-Caused Bias",
+    "description": "The mental model 'Incentive-Caused Bias' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Incentive-Caused Bias",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Incentive-Caused Bias"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845276",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_pavlovian_association/conditioning",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Pavlovian Association/Conditioning",
+    "description": "The mental model 'Pavlovian Association/Conditioning' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Pavlovian Association/Conditioning",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Pavlovian Association/Conditioning"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845279",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_hyperbolic_discounting/short-termism",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Hyperbolic Discounting/Short-Termism",
+    "description": "The mental model 'Hyperbolic Discounting/Short-Termism' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Hyperbolic Discounting/Short-Termism",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Hyperbolic Discounting/Short-Termism"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845282",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_representativeness_bias",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Representativeness Bias",
+    "description": "The mental model 'Representativeness Bias' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Representativeness Bias",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Representativeness Bias"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845285",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_status_quo_bias/habit_persistence",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Status Quo Bias/Habit Persistence",
+    "description": "The mental model 'Status Quo Bias/Habit Persistence' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Status Quo Bias/Habit Persistence",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Status Quo Bias/Habit Persistence"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845287",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_checklist_approach",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Checklist Approach",
+    "description": "The mental model 'Checklist Approach' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Checklist Approach",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Checklist Approach"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845290",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_two-track_analysis",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Two-Track Analysis",
+    "description": "The mental model 'Two-Track Analysis' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Two-Track Analysis",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Two-Track Analysis"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845292",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_elementary_worldly_wisdom",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Elementary Worldly Wisdom",
+    "description": "The mental model 'Elementary Worldly Wisdom' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Elementary Worldly Wisdom",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Elementary Worldly Wisdom"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845295",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_latticework_of_mental_models",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Latticework of Mental Models",
+    "description": "The mental model 'Latticework of Mental Models' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Latticework of Mental Models",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Latticework of Mental Models"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845298",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_multidisciplinary_approach",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Multidisciplinary Approach",
+    "description": "The mental model 'Multidisciplinary Approach' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Multidisciplinary Approach",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Multidisciplinary Approach"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845300",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_falsification/disconfirming_evidence",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Falsification/Disconfirming Evidence",
+    "description": "The mental model 'Falsification/Disconfirming Evidence' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Falsification/Disconfirming Evidence",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Falsification/Disconfirming Evidence"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845304",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_scenario_analysis",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Scenario Analysis",
+    "description": "The mental model 'Scenario Analysis' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Scenario Analysis",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Scenario Analysis"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845306",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_mental_accounting",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Mental Accounting",
+    "description": "The mental model 'Mental Accounting' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Mental Accounting",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Mental Accounting"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845309",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_black_swan_events",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Black Swan Events",
+    "description": "The mental model 'Black Swan Events' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Black Swan Events",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Black Swan Events"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845315",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_gray_rhino_events",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Gray Rhino Events",
+    "description": "The mental model 'Gray Rhino Events' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Gray Rhino Events",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Gray Rhino Events"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845317",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_vivification",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Vivification",
+    "description": "The mental model 'Vivification' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Vivification",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Vivification"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845320",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_man-with-a-hammer_tendency",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Man-with-a-Hammer Tendency",
+    "description": "The mental model 'Man-with-a-Hammer Tendency' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Man-with-a-Hammer Tendency",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Man-with-a-Hammer Tendency"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845322",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_elasticity",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Elasticity",
+    "description": "The mental model 'Elasticity' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Elasticity",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Elasticity"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845325",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_marginal_utility/diminishing_returns",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Marginal Utility/Diminishing Returns",
+    "description": "The mental model 'Marginal Utility/Diminishing Returns' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Marginal Utility/Diminishing Returns",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Marginal Utility/Diminishing Returns"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845328",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_time_value_of_money",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Time Value of Money",
+    "description": "The mental model 'Time Value of Money' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Time Value of Money",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Time Value of Money"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845331",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_incentives_&_incentive_alignment",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Incentives & Incentive Alignment",
+    "description": "The mental model 'Incentives & Incentive Alignment' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Incentives & Incentive Alignment",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Incentives & Incentive Alignment"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845334",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_agency_problem/principal-agent_problem",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Agency Problem/Principal-Agent Problem",
+    "description": "The mental model 'Agency Problem/Principal-Agent Problem' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Agency Problem/Principal-Agent Problem",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Agency Problem/Principal-Agent Problem"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845336",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_information_asymmetry",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Information Asymmetry",
+    "description": "The mental model 'Information Asymmetry' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Information Asymmetry",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Information Asymmetry"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845339",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_pareto_principle_(80/20_rule)",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Pareto Principle (80/20 Rule)",
+    "description": "The mental model 'Pareto Principle (80/20 Rule)' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Pareto Principle (80/20 Rule)",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Pareto Principle (80/20 Rule)"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845341",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_gresham's_law",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Gresham's Law",
+    "description": "The mental model 'Gresham's Law' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Gresham's Law",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Gresham's Law"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845344",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_creative/competitive_destruction",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Creative/Competitive Destruction",
+    "description": "The mental model 'Creative/Competitive Destruction' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Creative/Competitive Destruction",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Creative/Competitive Destruction"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845347",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_value_to_a_private_owner",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Value to a Private Owner",
+    "description": "The mental model 'Value to a Private Owner' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Value to a Private Owner",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Value to a Private Owner"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845349",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_mr._market",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Mr. Market",
+    "description": "The mental model 'Mr. Market' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Mr. Market",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Mr. Market"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845352",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_tax_deferral_&_compounding_advantage",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Tax Deferral & Compounding Advantage",
+    "description": "The mental model 'Tax Deferral & Compounding Advantage' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Tax Deferral & Compounding Advantage",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Tax Deferral & Compounding Advantage"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845355",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_value_creation_vs._value_capture",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Value Creation vs. Value Capture",
+    "description": "The mental model 'Value Creation vs. Value Capture' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Value Creation vs. Value Capture",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Value Creation vs. Value Capture"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845357",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_obsolescence_risk",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Obsolescence Risk",
+    "description": "The mental model 'Obsolescence Risk' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Obsolescence Risk",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Obsolescence Risk"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845360",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_differentiation_&_brand_power",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Differentiation & Brand Power",
+    "description": "The mental model 'Differentiation & Brand Power' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Differentiation & Brand Power",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Differentiation & Brand Power"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845363",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_scale_economies_-_supply_side",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Scale Economies - Supply Side",
+    "description": "The mental model 'Scale Economies - Supply Side' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Scale Economies - Supply Side",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Scale Economies - Supply Side"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845366",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_scale_economies_-_demand_side",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Scale Economies - Demand Side",
+    "description": "The mental model 'Scale Economies - Demand Side' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Scale Economies - Demand Side",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Scale Economies - Demand Side"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845368",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_learning/experience_curve",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Learning/Experience Curve",
+    "description": "The mental model 'Learning/Experience Curve' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Learning/Experience Curve",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Learning/Experience Curve"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845371",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_lock-in_via_distribution/physical_network",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Lock-In via Distribution/Physical Network",
+    "description": "The mental model 'Lock-In via Distribution/Physical Network' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Lock-In via Distribution/Physical Network",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Lock-In via Distribution/Physical Network"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845373",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_winner-take-all/winner-take-most_markets",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Winner-Take-All/Winner-Take-Most Markets",
+    "description": "The mental model 'Winner-Take-All/Winner-Take-Most Markets' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Winner-Take-All/Winner-Take-Most Markets",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Winner-Take-All/Winner-Take-Most Markets"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845376",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_moat_durability",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Moat Durability",
+    "description": "The mental model 'Moat Durability' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Moat Durability",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Moat Durability"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845379",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_industry_structure",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Industry Structure",
+    "description": "The mental model 'Industry Structure' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Industry Structure",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Industry Structure"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845381",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_rational_vs._cutthroat_competition",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Rational vs. Cutthroat Competition",
+    "description": "The mental model 'Rational vs. Cutthroat Competition' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Rational vs. Cutthroat Competition",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Rational vs. Cutthroat Competition"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845384",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_platform_economics",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Platform Economics",
+    "description": "The mental model 'Platform Economics' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Platform Economics",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Platform Economics"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845386",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_capacity_&_supply_discipline",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Capacity & Supply Discipline",
+    "description": "The mental model 'Capacity & Supply Discipline' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Capacity & Supply Discipline",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Capacity & Supply Discipline"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845389",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_surfing_long_waves",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Surfing Long Waves",
+    "description": "The mental model 'Surfing Long Waves' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Surfing Long Waves",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Surfing Long Waves"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845409",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_technology_as_friend_vs._killer",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Technology as Friend vs. Killer",
+    "description": "The mental model 'Technology as Friend vs. Killer' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Technology as Friend vs. Killer",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Technology as Friend vs. Killer"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845412",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_bureaucracy/diseconomies_of_scale",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Bureaucracy/Diseconomies of Scale",
+    "description": "The mental model 'Bureaucracy/Diseconomies of Scale' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Bureaucracy/Diseconomies of Scale",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Bureaucracy/Diseconomies of Scale"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845415",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_cancer-surgery_formula",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Cancer-Surgery Formula",
+    "description": "The mental model 'Cancer-Surgery Formula' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Cancer-Surgery Formula",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Cancer-Surgery Formula"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845417",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_basic_arithmetic_fluency",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Basic Arithmetic Fluency",
+    "description": "The mental model 'Basic Arithmetic Fluency' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Basic Arithmetic Fluency",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Basic Arithmetic Fluency"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845420",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_permutations_&_combinations",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Permutations & Combinations",
+    "description": "The mental model 'Permutations & Combinations' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Permutations & Combinations",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Permutations & Combinations"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845422",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_probabilistic_thinking/base_rates",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Probabilistic Thinking/Base Rates",
+    "description": "The mental model 'Probabilistic Thinking/Base Rates' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Probabilistic Thinking/Base Rates",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Probabilistic Thinking/Base Rates"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845425",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_bayes'_rule/bayesian_updating",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Bayes' Rule/Bayesian Updating",
+    "description": "The mental model 'Bayes' Rule/Bayesian Updating' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Bayes' Rule/Bayesian Updating",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Bayes' Rule/Bayesian Updating"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845428",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_regression_to_the_mean",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Regression to the Mean",
+    "description": "The mental model 'Regression to the Mean' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Regression to the Mean",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Regression to the Mean"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845431",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_normal_distribution_vs._fat_tails",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Normal Distribution vs. Fat Tails",
+    "description": "The mental model 'Normal Distribution vs. Fat Tails' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Normal Distribution vs. Fat Tails",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Normal Distribution vs. Fat Tails"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845433",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_cost-benefit_analysis",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Cost-Benefit Analysis",
+    "description": "The mental model 'Cost-Benefit Analysis' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Cost-Benefit Analysis",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Cost-Benefit Analysis"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845436",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_optionality/asymmetric_payoffs",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Optionality/Asymmetric Payoffs",
+    "description": "The mental model 'Optionality/Asymmetric Payoffs' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Optionality/Asymmetric Payoffs",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Optionality/Asymmetric Payoffs"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845438",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_kelly-type_thinking",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Kelly-Type Thinking",
+    "description": "The mental model 'Kelly-Type Thinking' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Kelly-Type Thinking",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Kelly-Type Thinking"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845441",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_redundancy/backup_systems",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Redundancy/Backup Systems",
+    "description": "The mental model 'Redundancy/Backup Systems' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Redundancy/Backup Systems",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Redundancy/Backup Systems"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845446",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_breakpoints/phase_transitions",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Breakpoints/Phase Transitions",
+    "description": "The mental model 'Breakpoints/Phase Transitions' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Breakpoints/Phase Transitions",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Breakpoints/Phase Transitions"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845451",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_friction_&_efficiency_losses",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Friction & Efficiency Losses",
+    "description": "The mental model 'Friction & Efficiency Losses' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Friction & Efficiency Losses",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Friction & Efficiency Losses"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845454",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_reliability_engineering/safety_margins",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Reliability Engineering/Safety Margins",
+    "description": "The mental model 'Reliability Engineering/Safety Margins' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Reliability Engineering/Safety Margins",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Reliability Engineering/Safety Margins"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845456",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_feedback_loops_-_positive_(reinforcing)",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Feedback Loops - Positive (Reinforcing)",
+    "description": "The mental model 'Feedback Loops - Positive (Reinforcing)' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Feedback Loops - Positive (Reinforcing)",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Feedback Loops - Positive (Reinforcing)"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845459",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_feedback_loops_-_negative_(stabilizing)",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Feedback Loops - Negative (Stabilizing)",
+    "description": "The mental model 'Feedback Loops - Negative (Stabilizing)' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Feedback Loops - Negative (Stabilizing)",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Feedback Loops - Negative (Stabilizing)"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845462",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_bottlenecks_&_constraints",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Bottlenecks & Constraints",
+    "description": "The mental model 'Bottlenecks & Constraints' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Bottlenecks & Constraints",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Bottlenecks & Constraints"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845464",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_nonlinearity",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Nonlinearity",
+    "description": "The mental model 'Nonlinearity' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Nonlinearity",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Nonlinearity"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845467",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_system_resilience_vs._fragility",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for System Resilience vs. Fragility",
+    "description": "The mental model 'System Resilience vs. Fragility' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of System Resilience vs. Fragility",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "System Resilience vs. Fragility"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845469",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_evolution_by_natural_selection",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Evolution by Natural Selection",
+    "description": "The mental model 'Evolution by Natural Selection' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Evolution by Natural Selection",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Evolution by Natural Selection"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845472",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_adaptation_&_fitness_landscapes",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Adaptation & Fitness Landscapes",
+    "description": "The mental model 'Adaptation & Fitness Landscapes' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Adaptation & Fitness Landscapes",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Adaptation & Fitness Landscapes"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845474",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_niches_&_ecological_competition",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Niches & Ecological Competition",
+    "description": "The mental model 'Niches & Ecological Competition' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Niches & Ecological Competition",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Niches & Ecological Competition"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845477",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_population_dynamics",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Population Dynamics",
+    "description": "The mental model 'Population Dynamics' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Population Dynamics",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Population Dynamics"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845482",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_autopsy_learning",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Autopsy Learning",
+    "description": "The mental model 'Autopsy Learning' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Autopsy Learning",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Autopsy Learning"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845486",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_corporate_governance",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Corporate Governance",
+    "description": "The mental model 'Corporate Governance' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Corporate Governance",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Corporate Governance"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845489",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_management_incentives_&_compensation_design",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Management Incentives & Compensation Design",
+    "description": "The mental model 'Management Incentives & Compensation Design' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Management Incentives & Compensation Design",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Management Incentives & Compensation Design"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845547",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_culture_as_a_control_system",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Culture as a Control System",
+    "description": "The mental model 'Culture as a Control System' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Culture as a Control System",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Culture as a Control System"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845550",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_bureaucratic_inertia_&_empire_building",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Bureaucratic Inertia & Empire Building",
+    "description": "The mental model 'Bureaucratic Inertia & Empire Building' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Bureaucratic Inertia & Empire Building",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Bureaucratic Inertia & Empire Building"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845552",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_information_suppression/shooting_the_messenger",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Information Suppression/Shooting the Messenger",
+    "description": "The mental model 'Information Suppression/Shooting the Messenger' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Information Suppression/Shooting the Messenger",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Information Suppression/Shooting the Messenger"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845555",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_five_w's_rule_in_communication",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Five W's Rule in Communication",
+    "description": "The mental model 'Five W's Rule in Communication' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Five W's Rule in Communication",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Five W's Rule in Communication"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845560",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_checklists_&_standard_operating_procedures",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Checklists & Standard Operating Procedures",
+    "description": "The mental model 'Checklists & Standard Operating Procedures' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Checklists & Standard Operating Procedures",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Checklists & Standard Operating Procedures"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845562",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_talent,_trust,_and_delegation",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Talent, Trust, and Delegation",
+    "description": "The mental model 'Talent, Trust, and Delegation' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Talent, Trust, and Delegation",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Talent, Trust, and Delegation"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845565",
+    "status": "pending"
+  },
+  {
+    "id": "fm_gap_avoiding_madness_in_crowds",
+    "category": "new_failure_mode",
+    "priority": 3,
+    "title": "Add failure modes for Avoiding Madness in Crowds",
+    "description": "The mental model 'Avoiding Madness in Crowds' has only 0 failure modes. Target is at least 5 failure modes per model for comprehensive coverage.",
+    "rationale": "Insufficient failure mode coverage increases risk of misapplying the model. Each model should have documented failure modes with real-world cases.",
+    "evidence": [
+      "Current failure mode count: 0",
+      "Target failure mode count: 5",
+      "Gap: 5 failure modes needed"
+    ],
+    "implementation_steps": [
+      "Research common misapplications of Avoiding Madness in Crowds",
+      "Document real-world cases where the model was misapplied",
+      "Identify warning signs for each failure mode",
+      "Define safeguards to prevent each failure mode",
+      "Add to failure_modes JSON files"
+    ],
+    "estimated_impact": 0.7,
+    "estimated_effort": "medium",
+    "related_models": [
+      "Avoiding Madness in Crowds"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845567",
+    "status": "pending"
+  },
+  {
+    "id": "underutilized_models",
+    "category": "data_quality",
+    "priority": 2,
+    "title": "Improve discoverability of underutilized models",
+    "description": "129 models (100%) have never been used in decisions.",
+    "rationale": "Underutilized models may lack clear application guidelines or may not be surfacing in relevant contexts.",
+    "evidence": [
+      "Total models: 129",
+      "Used models: 0",
+      "Unused models: 129",
+      "Examples: Marginal Utility/Diminishing Returns, Normal Distribution vs. Fat Tails, Cancer-Surgery Formula, Evolution by Natural Selection, Influence-from-Mere-Association Tendency"
+    ],
+    "implementation_steps": [
+      "Review keywords and descriptions of unused models",
+      "Add more specific application examples",
+      "Improve search indexing for these models",
+      "Consider adding to related_models for frequently used models"
+    ],
+    "estimated_impact": 0.5,
+    "estimated_effort": "low",
+    "related_models": [
+      "Marginal Utility/Diminishing Returns",
+      "Normal Distribution vs. Fat Tails",
+      "Cancer-Surgery Formula",
+      "Evolution by Natural Selection",
+      "Influence-from-Mere-Association Tendency",
+      "Doubt-Avoidance Tendency",
+      "Cost-Benefit Analysis",
+      "Tax Deferral & Compounding Advantage",
+      "Cost Advantages",
+      "Probabilistic Thinking/Base Rates"
+    ],
+    "related_failure_modes": [],
+    "created_at": "2026-01-18T00:15:09.845618",
+    "status": "pending"
+  }
+]

@@ -472,6 +472,65 @@ async def cmd_failure_stats(args):
         print(f"   {cat}: {bar} {count}")
 
 
+async def cmd_improvements(args):
+    """Generate and show improvement suggestions."""
+    from src.improvement import ImprovementSuggestionEngine
+    
+    engine = ImprovementSuggestionEngine()
+    
+    if args.generate:
+        print("\n🔄 Generating improvement suggestions...")
+        suggestions = engine.analyze_and_suggest()
+        print(f"Generated {len(suggestions)} new suggestions")
+    
+    print("\n📊 Improvement Suggestions")
+    print("=" * 60)
+    
+    pending = engine.get_pending_suggestions()
+    
+    # Summary by priority
+    from src.improvement import ImprovementPriority
+    print(f"\nPending suggestions by priority:")
+    for priority in ImprovementPriority:
+        count = len([s for s in pending if s.priority == priority])
+        bar = '█' * min(count, 20)
+        print(f"  {priority.name:8}: {bar} {count}")
+    
+    # Show top suggestions
+    if args.priority:
+        filtered = [s for s in pending if s.priority.name.lower() == args.priority.lower()]
+    else:
+        filtered = engine.get_high_priority_suggestions()
+    
+    limit = args.limit or 10
+    print(f"\n🎯 Top {min(limit, len(filtered))} Suggestions:")
+    
+    for i, s in enumerate(filtered[:limit], 1):
+        print(f"\n{i}. [{s.priority.name}] {s.title}")
+        print(f"   Impact: {s.estimated_impact:.0%} | Effort: {s.estimated_effort}")
+        print(f"   {s.description[:150]}..." if len(s.description) > 150 else f"   {s.description}")
+        if args.verbose:
+            print(f"   Evidence: {', '.join(s.evidence[:2])}")
+            print(f"   Steps: {s.implementation_steps[0]}...")
+
+
+async def cmd_export_improvements(args):
+    """Export improvement suggestions for Manus."""
+    from src.improvement import ImprovementSuggestionEngine
+    
+    engine = ImprovementSuggestionEngine()
+    
+    output_path = args.output or None
+    export_path = engine.export_for_manus(output_path)
+    
+    print(f"\n✅ Exported improvements to: {export_path}")
+    print(f"\nThis file can be imported into Manus for implementation.")
+    
+    # Show summary
+    pending = engine.get_pending_suggestions()
+    print(f"\nExported {len(pending)} pending suggestions")
+
+
 async def cmd_similar_cases(args):
     """Find similar historical cases."""
     from src.safeguards.failure_search import FailureModeSearchEngine
@@ -626,6 +685,17 @@ Examples:
     cases_parser.add_argument("--limit", type=int, default=5, help="Maximum cases")
     cases_parser.add_argument("--verbose", "-v", action="store_true", help="Show details")
     
+    # improvements command
+    improve_parser = subparsers.add_parser("improvements", help="Show improvement suggestions")
+    improve_parser.add_argument("--generate", "-g", action="store_true", help="Generate new suggestions")
+    improve_parser.add_argument("--priority", choices=["low", "medium", "high", "critical"], help="Filter by priority")
+    improve_parser.add_argument("--limit", type=int, default=10, help="Maximum suggestions to show")
+    improve_parser.add_argument("--verbose", "-v", action="store_true", help="Show details")
+    
+    # export-improvements command
+    export_improve_parser = subparsers.add_parser("export-improvements", help="Export improvements for Manus")
+    export_improve_parser.add_argument("--output", "-o", help="Output file path")
+    
     args = parser.parse_args()
     
     if not args.command:
@@ -657,6 +727,10 @@ Examples:
         asyncio.run(cmd_failure_stats(args))
     elif args.command == "similar-cases":
         asyncio.run(cmd_similar_cases(args))
+    elif args.command == "improvements":
+        asyncio.run(cmd_improvements(args))
+    elif args.command == "export-improvements":
+        asyncio.run(cmd_export_improvements(args))
 
 
 if __name__ == "__main__":
