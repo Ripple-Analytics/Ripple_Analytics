@@ -129,17 +129,18 @@
 
 (defn health-check
   "Check if LM Studio server is running and responsive"
-  []
-  (try
-    (let [response (http/get (str (:base-url default-config) "/v1/models")
-                             {:socket-timeout 5000
-                              :connection-timeout 2000
-                              :as :json})]
-      {:healthy true
-       :models (get-in response [:body :data])})
-    (catch Exception e
-      {:healthy false
-       :error (.getMessage e)})))
+  ([] (health-check (:base-url default-config)))
+  ([base-url]
+   (try
+     (let [response (http/get (str base-url "/v1/models")
+                              {:socket-timeout 5000
+                               :connection-timeout 2000
+                               :as :json})]
+       {:healthy true
+        :models (get-in response [:body :data])})
+     (catch Exception e
+       {:healthy false
+        :error (.getMessage e)}))))
 
 ;; -- Mental Models Analysis --------------------------------------------------
 
