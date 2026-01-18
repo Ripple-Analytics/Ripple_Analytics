@@ -165,14 +165,14 @@ class TestEndToEndWorkflows:
         # Different mental models apply in different regimes
         if current_regime.mean_return > 0.0005:
             # Bull market - momentum, trend following
-            applicable_models = loader.search_models("momentum")
+            applicable_models = loader.search_models("compound")
             assert len(applicable_models) > 0
         elif current_regime.mean_return < -0.0005:
             # Bear market - mean reversion, contrarian
-            applicable_models = loader.search_models("reversion")
+            applicable_models = loader.search_models("margin")
         else:
             # Sideways - range trading, volatility
-            applicable_models = loader.search_models("volatility")
+            applicable_models = loader.search_models("opportunity")
     
     def test_knowledge_graph_workflow(self):
         """
@@ -190,7 +190,7 @@ class TestEndToEndWorkflows:
         graph = KnowledgeGraph()
         
         models = loader.get_all_models()
-        for model in models[:50]:  # Use subset for speed
+        for model in models[:100]:  # Use subset for speed, need more to include Network Effects
             graph.add_model(model)
         
         # Step 2: Find related models
