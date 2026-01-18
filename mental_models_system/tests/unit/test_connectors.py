@@ -264,6 +264,311 @@ class TestLocalStorageConnector:
         await connector.disconnect()
 
 
+@pytest.mark.asyncio
+class TestZapierConnector:
+    """Tests for Zapier connector."""
+    
+    async def test_connect(self):
+        """Test connecting the Zapier connector."""
+        from connectors.zapier_connector import ZapierConnector
+        
+        connector = ZapierConnector()
+        result = await connector.connect()
+        assert result is True
+        assert connector.status == ConnectorStatus.CONNECTED
+        await connector.disconnect()
+    
+    async def test_disconnect(self):
+        """Test disconnecting the Zapier connector."""
+        from connectors.zapier_connector import ZapierConnector
+        
+        connector = ZapierConnector()
+        await connector.connect()
+        result = await connector.disconnect()
+        assert result is True
+        assert connector.status == ConnectorStatus.DISCONNECTED
+    
+    async def test_health_check(self):
+        """Test health check."""
+        from connectors.zapier_connector import ZapierConnector
+        
+        connector = ZapierConnector()
+        await connector.connect()
+        assert await connector.health_check() is True
+        await connector.disconnect()
+        assert await connector.health_check() is False
+    
+    async def test_register_webhook(self):
+        """Test registering webhooks."""
+        from connectors.zapier_connector import ZapierConnector
+        
+        connector = ZapierConnector()
+        connector.register_webhook("test_hook", "https://hooks.zapier.com/test")
+        
+        webhooks = connector.get_webhooks()
+        assert "test_hook" in webhooks
+        assert webhooks["test_hook"] == "https://hooks.zapier.com/test"
+    
+    async def test_trigger_unknown_webhook(self):
+        """Test triggering unknown webhook raises error."""
+        from connectors.zapier_connector import ZapierConnector
+        
+        connector = ZapierConnector()
+        await connector.connect()
+        
+        with pytest.raises(ValueError, match="Unknown webhook"):
+            await connector.trigger("nonexistent", {"data": "test"})
+        
+        await connector.disconnect()
+    
+    async def test_trigger_with_mock(self):
+        """Test triggering webhook with mocked response."""
+        from connectors.zapier_connector import ZapierConnector
+        
+        with patch('aiohttp.ClientSession') as mock_session:
+            mock_response = AsyncMock()
+            mock_response.status = 200
+            mock_response.json = AsyncMock(return_value={"status": "success"})
+            mock_response.__aenter__ = AsyncMock(return_value=mock_response)
+            mock_response.__aexit__ = AsyncMock()
+            
+            mock_session_instance = MagicMock()
+            mock_session_instance.post = MagicMock(return_value=mock_response)
+            mock_session_instance.close = AsyncMock()
+            mock_session.return_value = mock_session_instance
+            
+            connector = ZapierConnector()
+            await connector.connect()
+            connector.register_webhook("test", "https://hooks.zapier.com/test")
+            
+            result = await connector.trigger("test", {"key": "value"})
+            assert result["success"] is True
+    
+    def test_factory_function(self):
+        """Test create_zapier_connector factory function."""
+        from connectors.zapier_connector import create_zapier_connector
+        
+        webhooks = {
+            "default": "https://hooks.zapier.com/default",
+            "analysis": "https://hooks.zapier.com/analysis"
+        }
+        
+        connector = create_zapier_connector(webhooks)
+        assert connector is not None
+        assert "default" in connector.get_webhooks()
+        assert "analysis" in connector.get_webhooks()
+    
+    def test_connector_info(self):
+        """Test getting connector info."""
+        from connectors.zapier_connector import ZapierConnector
+        
+        connector = ZapierConnector()
+        info = connector.get_info()
+        
+        assert info["name"] == "zapier"
+        assert info["type"] == "notification"
+        assert info["open_source"] is True
+
+
+@pytest.mark.asyncio
+class TestHuggingfaceConnector:
+    """Tests for Huggingface connector."""
+    
+    async def test_connect(self):
+        """Test connecting the Huggingface connector."""
+        from connectors.huggingface_connector import HuggingfaceConnector
+        
+        connector = HuggingfaceConnector()
+        result = await connector.connect()
+        assert result is True
+        assert connector.status == ConnectorStatus.CONNECTED
+        await connector.disconnect()
+    
+    async def test_disconnect(self):
+        """Test disconnecting the Huggingface connector."""
+        from connectors.huggingface_connector import HuggingfaceConnector
+        
+        connector = HuggingfaceConnector()
+        await connector.connect()
+        result = await connector.disconnect()
+        assert result is True
+        assert connector.status == ConnectorStatus.DISCONNECTED
+    
+    async def test_get_embeddings_with_mock(self):
+        """Test getting embeddings with mocked response."""
+        from connectors.huggingface_connector import HuggingfaceConnector
+        
+        with patch('aiohttp.ClientSession') as mock_session:
+            mock_response = AsyncMock()
+            mock_response.status = 200
+            mock_response.json = AsyncMock(return_value=[[0.1, 0.2, 0.3]])
+            mock_response.__aenter__ = AsyncMock(return_value=mock_response)
+            mock_response.__aexit__ = AsyncMock()
+            
+            mock_session_instance = MagicMock()
+            mock_session_instance.post = MagicMock(return_value=mock_response)
+            mock_session_instance.close = AsyncMock()
+            mock_session.return_value = mock_session_instance
+            
+            connector = HuggingfaceConnector()
+            await connector.connect()
+            
+            result = await connector.get_embeddings(["test text"])
+            assert result["success"] is True
+            assert "embeddings" in result
+    
+    async def test_classify_text_with_mock(self):
+        """Test text classification with mocked response."""
+        from connectors.huggingface_connector import HuggingfaceConnector
+        
+        with patch('aiohttp.ClientSession') as mock_session:
+            mock_response = AsyncMock()
+            mock_response.status = 200
+            mock_response.json = AsyncMock(return_value={
+                "labels": ["positive", "negative"],
+                "scores": [0.9, 0.1]
+            })
+            mock_response.__aenter__ = AsyncMock(return_value=mock_response)
+            mock_response.__aexit__ = AsyncMock()
+            
+            mock_session_instance = MagicMock()
+            mock_session_instance.post = MagicMock(return_value=mock_response)
+            mock_session_instance.close = AsyncMock()
+            mock_session.return_value = mock_session_instance
+            
+            connector = HuggingfaceConnector()
+            await connector.connect()
+            
+            result = await connector.classify_text("test text", ["positive", "negative"])
+            assert result["success"] is True
+            assert "labels" in result
+            assert "scores" in result
+    
+    async def test_summarize_text_with_mock(self):
+        """Test text summarization with mocked response."""
+        from connectors.huggingface_connector import HuggingfaceConnector
+        
+        with patch('aiohttp.ClientSession') as mock_session:
+            mock_response = AsyncMock()
+            mock_response.status = 200
+            mock_response.json = AsyncMock(return_value=[{"summary_text": "This is a summary."}])
+            mock_response.__aenter__ = AsyncMock(return_value=mock_response)
+            mock_response.__aexit__ = AsyncMock()
+            
+            mock_session_instance = MagicMock()
+            mock_session_instance.post = MagicMock(return_value=mock_response)
+            mock_session_instance.close = AsyncMock()
+            mock_session.return_value = mock_session_instance
+            
+            connector = HuggingfaceConnector()
+            await connector.connect()
+            
+            result = await connector.summarize_text("Long text to summarize...")
+            assert result["success"] is True
+            assert "summary" in result
+    
+    async def test_search_models_with_mock(self):
+        """Test model search with mocked response."""
+        from connectors.huggingface_connector import HuggingfaceConnector
+        
+        with patch('aiohttp.ClientSession') as mock_session:
+            mock_response = AsyncMock()
+            mock_response.status = 200
+            mock_response.json = AsyncMock(return_value=[
+                {"id": "model1", "downloads": 1000, "likes": 50, "pipeline_tag": "text-classification"}
+            ])
+            mock_response.__aenter__ = AsyncMock(return_value=mock_response)
+            mock_response.__aexit__ = AsyncMock()
+            
+            mock_session_instance = MagicMock()
+            mock_session_instance.get = MagicMock(return_value=mock_response)
+            mock_session_instance.close = AsyncMock()
+            mock_session.return_value = mock_session_instance
+            
+            connector = HuggingfaceConnector()
+            await connector.connect()
+            
+            result = await connector.search_models(query="sentiment")
+            assert result["success"] is True
+            assert "models" in result
+    
+    def test_factory_function(self):
+        """Test create_huggingface_connector factory function."""
+        from connectors.huggingface_connector import create_huggingface_connector
+        
+        connector = create_huggingface_connector(api_token="test_token")
+        assert connector is not None
+        assert connector.config.credentials.get("api_token") == "test_token"
+    
+    def test_factory_function_no_token(self):
+        """Test create_huggingface_connector without token."""
+        from connectors.huggingface_connector import create_huggingface_connector
+        
+        connector = create_huggingface_connector()
+        assert connector is not None
+    
+    def test_connector_info(self):
+        """Test getting connector info."""
+        from connectors.huggingface_connector import HuggingfaceConnector
+        
+        connector = HuggingfaceConnector()
+        info = connector.get_info()
+        
+        assert info["name"] == "huggingface"
+        assert info["type"] == "llm"
+        assert info["open_source"] is True
+    
+    async def test_classify_by_mental_models(self):
+        """Test mental model classification."""
+        from connectors.huggingface_connector import HuggingfaceConnector
+        
+        with patch('aiohttp.ClientSession') as mock_session:
+            mock_response = AsyncMock()
+            mock_response.status = 200
+            mock_response.json = AsyncMock(return_value={
+                "labels": ["Psychology & Human Behavior", "Economics & Markets"],
+                "scores": [0.8, 0.6]
+            })
+            mock_response.__aenter__ = AsyncMock(return_value=mock_response)
+            mock_response.__aexit__ = AsyncMock()
+            
+            mock_session_instance = MagicMock()
+            mock_session_instance.post = MagicMock(return_value=mock_response)
+            mock_session_instance.close = AsyncMock()
+            mock_session.return_value = mock_session_instance
+            
+            connector = HuggingfaceConnector()
+            await connector.connect()
+            
+            result = await connector.classify_by_mental_models("Test document about human behavior")
+            assert result["success"] is True
+    
+    async def test_detect_cognitive_biases(self):
+        """Test cognitive bias detection."""
+        from connectors.huggingface_connector import HuggingfaceConnector
+        
+        with patch('aiohttp.ClientSession') as mock_session:
+            mock_response = AsyncMock()
+            mock_response.status = 200
+            mock_response.json = AsyncMock(return_value={
+                "labels": ["Confirmation Bias", "Anchoring Bias"],
+                "scores": [0.7, 0.5]
+            })
+            mock_response.__aenter__ = AsyncMock(return_value=mock_response)
+            mock_response.__aexit__ = AsyncMock()
+            
+            mock_session_instance = MagicMock()
+            mock_session_instance.post = MagicMock(return_value=mock_response)
+            mock_session_instance.close = AsyncMock()
+            mock_session.return_value = mock_session_instance
+            
+            connector = HuggingfaceConnector()
+            await connector.connect()
+            
+            result = await connector.detect_cognitive_biases("Test document with potential biases")
+            assert result["success"] is True
+
+
 class TestConnectorFactory:
     """Tests for connector factory pattern."""
     
@@ -280,3 +585,17 @@ class TestConnectorFactory:
         assert "ollama" in names
         assert "github" in names
         assert "local" in names
+    
+    def test_zapier_in_registry(self):
+        """Test that Zapier connector is registered."""
+        registry = ConnectorRegistry()
+        available = registry.list_available()
+        names = [c["name"] for c in available]
+        assert "zapier" in names
+    
+    def test_huggingface_in_registry(self):
+        """Test that Huggingface connector is registered."""
+        registry = ConnectorRegistry()
+        available = registry.list_available()
+        names = [c["name"] for c in available]
+        assert "huggingface" in names

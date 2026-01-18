@@ -1223,6 +1223,768 @@ async def get_failure_mode_stats():
         }
 
 
+class HuggingfaceEmbeddingsRequest(BaseModel):
+    texts: List[str]
+    model: Optional[str] = None
+
+
+class HuggingfaceClassifyRequest(BaseModel):
+    text: str
+    labels: List[str]
+    multi_label: bool = False
+
+
+class HuggingfaceSummarizeRequest(BaseModel):
+    text: str
+    max_length: int = 150
+    min_length: int = 30
+
+
+@app.post("/huggingface/embeddings")
+async def get_huggingface_embeddings(request: HuggingfaceEmbeddingsRequest):
+    """Generate embeddings using Huggingface models."""
+    try:
+        from src.connectors.huggingface_connector import create_huggingface_connector
+        
+        connector = create_huggingface_connector()
+        await connector.connect()
+        
+        result = await connector.get_embeddings(request.texts, request.model)
+        
+        await connector.disconnect()
+        return result
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/huggingface/classify")
+async def classify_with_huggingface(request: HuggingfaceClassifyRequest):
+    """Classify text using Huggingface zero-shot classification."""
+    try:
+        from src.connectors.huggingface_connector import create_huggingface_connector
+        
+        connector = create_huggingface_connector()
+        await connector.connect()
+        
+        result = await connector.classify_text(
+            request.text, 
+            request.labels, 
+            multi_label=request.multi_label
+        )
+        
+        await connector.disconnect()
+        return result
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/huggingface/summarize")
+async def summarize_with_huggingface(request: HuggingfaceSummarizeRequest):
+    """Summarize text using Huggingface models."""
+    try:
+        from src.connectors.huggingface_connector import create_huggingface_connector
+        
+        connector = create_huggingface_connector()
+        await connector.connect()
+        
+        result = await connector.summarize_text(
+            request.text,
+            max_length=request.max_length,
+            min_length=request.min_length
+        )
+        
+        await connector.disconnect()
+        return result
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/huggingface/classify-mental-models")
+async def classify_by_mental_models_hf(request: AnalyzeContentRequest):
+    """Classify text by mental model categories using Huggingface."""
+    try:
+        from src.connectors.huggingface_connector import create_huggingface_connector
+        
+        connector = create_huggingface_connector()
+        await connector.connect()
+        
+        result = await connector.classify_by_mental_models(request.content)
+        
+        await connector.disconnect()
+        return result
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/huggingface/detect-biases")
+async def detect_biases_hf(request: AnalyzeContentRequest):
+    """Detect cognitive biases in text using Huggingface."""
+    try:
+        from src.connectors.huggingface_connector import create_huggingface_connector
+        
+        connector = create_huggingface_connector()
+        await connector.connect()
+        
+        result = await connector.detect_cognitive_biases(request.content)
+        
+        await connector.disconnect()
+        return result
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/huggingface/search-models")
+async def search_huggingface_models(
+    query: Optional[str] = None,
+    task: Optional[str] = None,
+    limit: int = 10
+):
+    """Search for models on Huggingface Hub."""
+    try:
+        from src.connectors.huggingface_connector import create_huggingface_connector
+        
+        connector = create_huggingface_connector()
+        await connector.connect()
+        
+        result = await connector.search_models(query=query, task=task, limit=limit)
+        
+        await connector.disconnect()
+        return result
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+class StatisticalAnalysisRequest(BaseModel):
+    variables: dict
+    dependent_variable: Optional[str] = None
+
+
+class CorrelationRequest(BaseModel):
+    variables: dict
+    method: str = "pearson"
+
+
+class RegressionRequest(BaseModel):
+    dependent: str
+    independents: List[str]
+    data: dict
+
+
+class CovariateRequest(BaseModel):
+    target: str
+    covariates: List[str]
+    data: dict
+
+
+@app.post("/statistics/synthesize")
+async def synthesize_variables(request: StatisticalAnalysisRequest):
+    """Synthesize multiple variables with full statistical analysis."""
+    try:
+        from src.analysis.statistical_engine import create_statistical_engine
+        
+        engine = create_statistical_engine()
+        engine.add_variables_from_dict(request.variables)
+        
+        result = engine.synthesize_variables(
+            var_names=list(request.variables.keys()),
+            dependent=request.dependent_variable
+        )
+        
+        return {
+            "success": True,
+            "synthesis": result.to_dict()
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/statistics/correlations")
+async def calculate_correlations(request: CorrelationRequest):
+    """Calculate correlation matrix for multiple variables."""
+    try:
+        from src.analysis.statistical_engine import create_statistical_engine
+        
+        engine = create_statistical_engine()
+        engine.add_variables_from_dict(request.variables)
+        
+        correlations = engine.correlation_matrix(
+            var_names=list(request.variables.keys()),
+            method=request.method
+        )
+        
+        return {
+            "success": True,
+            "correlations": [c.to_dict() for c in correlations],
+            "method": request.method
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/statistics/regression")
+async def run_regression(request: RegressionRequest):
+    """Run multiple regression analysis."""
+    try:
+        from src.analysis.statistical_engine import create_statistical_engine
+        
+        engine = create_statistical_engine()
+        engine.add_variables_from_dict(request.data)
+        
+        if len(request.independents) == 1:
+            result = engine.simple_linear_regression(
+                request.dependent, 
+                request.independents[0]
+            )
+        else:
+            result = engine.multiple_regression(
+                request.dependent, 
+                request.independents
+            )
+        
+        return {
+            "success": True,
+            "regression": result.to_dict()
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/statistics/covariates")
+async def analyze_covariates(request: CovariateRequest):
+    """Analyze covariate effects on target variable."""
+    try:
+        from src.analysis.statistical_engine import create_mental_model_statistics
+        
+        stats = create_mental_model_statistics()
+        for var, values in request.data.items():
+            stats.add_model_scores(var, values)
+        
+        result = stats.get_covariate_effects(request.target, request.covariates)
+        
+        return {
+            "success": True,
+            "covariate_analysis": result
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/statistics/factor-analysis")
+async def run_factor_analysis(request: StatisticalAnalysisRequest):
+    """Run factor analysis on multiple variables."""
+    try:
+        from src.analysis.statistical_engine import create_statistical_engine
+        
+        engine = create_statistical_engine()
+        engine.add_variables_from_dict(request.variables)
+        
+        result = engine.factor_analysis(var_names=list(request.variables.keys()))
+        
+        return {
+            "success": True,
+            "factor_analysis": result.to_dict()
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/statistics/covariance-matrix")
+async def calculate_covariance_matrix(request: StatisticalAnalysisRequest):
+    """Calculate covariance matrix for multiple variables."""
+    try:
+        from src.analysis.statistical_engine import create_statistical_engine
+        
+        engine = create_statistical_engine()
+        engine.add_variables_from_dict(request.variables)
+        
+        result = engine.covariance_matrix(var_names=list(request.variables.keys()))
+        
+        return {
+            "success": True,
+            "covariance_matrix": result.to_dict()
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/statistics/descriptive/{variable_name}")
+async def get_descriptive_statistics(variable_name: str, values: str):
+    """Get descriptive statistics for a variable."""
+    try:
+        from src.analysis.statistical_engine import create_statistical_engine
+        
+        engine = create_statistical_engine()
+        value_list = [float(v.strip()) for v in values.split(",")]
+        engine.add_variable(variable_name, value_list)
+        
+        stats = engine.get_descriptive_stats(variable_name)
+        
+        return {
+            "success": True,
+            "variable": variable_name,
+            "statistics": stats
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/statistics/mental-model-correlations")
+async def analyze_mental_model_correlations(request: StatisticalAnalysisRequest):
+    """Analyze correlations between mental model scores across documents."""
+    try:
+        from src.analysis.statistical_engine import create_mental_model_statistics
+        
+        stats = create_mental_model_statistics()
+        for model, scores in request.variables.items():
+            stats.add_model_scores(model, scores)
+        
+        correlations = stats.analyze_model_correlations()
+        clusters = stats.find_model_clusters()
+        
+        return {
+            "success": True,
+            "correlations": [c.to_dict() for c in correlations],
+            "clusters": clusters
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/code-quality")
+async def get_code_quality_metrics(path: str = Query(None, description="Project path to analyze")):
+    """Get comprehensive code quality metrics for the project."""
+    try:
+        from src.metrics import analyze_project, get_metric_summary
+        
+        project_path = path or str(Path(__file__).parent.parent.parent)
+        report = analyze_project(project_path)
+        
+        return {
+            "success": True,
+            "summary": report.get("summary", {}),
+            "project_metrics": report.get("project_metrics", {}),
+            "metrics_by_category": report.get("metrics_by_category", {}),
+            "total_metrics": len(report.get("all_metrics", [])),
+            "total_issues": len(report.get("all_issues", []))
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/code-quality/full")
+async def get_full_code_quality_report(path: str = Query(None, description="Project path to analyze")):
+    """Get full code quality report with all metrics and issues."""
+    try:
+        from src.metrics import analyze_project
+        
+        project_path = path or str(Path(__file__).parent.parent.parent)
+        report = analyze_project(project_path)
+        
+        return {
+            "success": True,
+            **report
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/code-quality/issues")
+async def get_code_issues(
+    path: str = Query(None, description="Project path to analyze"),
+    severity: str = Query(None, description="Filter by severity: critical, high, medium, low, info"),
+    category: str = Query(None, description="Filter by category")
+):
+    """Get code issues found during analysis."""
+    try:
+        from src.metrics import analyze_project
+        
+        project_path = path or str(Path(__file__).parent.parent.parent)
+        report = analyze_project(project_path)
+        
+        issues = report.get("all_issues", [])
+        
+        if severity:
+            issues = [i for i in issues if i.get("severity") == severity]
+        if category:
+            issues = [i for i in issues if i.get("category") == category]
+        
+        return {
+            "success": True,
+            "total_issues": len(issues),
+            "issues": issues
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/development")
+async def get_development_metrics(path: str = Query(None, description="Repository path")):
+    """Get git and development velocity metrics."""
+    try:
+        from src.metrics import collect_development_metrics
+        
+        repo_path = path or str(Path(__file__).parent.parent.parent.parent)
+        metrics = collect_development_metrics(repo_path)
+        
+        return {
+            "success": True,
+            **metrics
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/development/velocity")
+async def get_velocity_metrics(
+    path: str = Query(None, description="Repository path"),
+    period: str = Query("weekly", description="Period: daily, weekly, monthly, quarterly, yearly")
+):
+    """Get development velocity metrics for a specific period."""
+    try:
+        from src.metrics import GitMetricsCollector, VelocityPeriod
+        
+        repo_path = path or str(Path(__file__).parent.parent.parent.parent)
+        collector = GitMetricsCollector(repo_path)
+        collector.collect_all()
+        
+        period_enum = VelocityPeriod(period)
+        velocity = collector.get_velocity_metrics(period_enum)
+        
+        return {
+            "success": True,
+            "velocity": velocity
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/development/hotspots")
+async def get_code_hotspots(
+    path: str = Query(None, description="Repository path"),
+    limit: int = Query(20, ge=1, le=100)
+):
+    """Get code hotspots (files with high churn rate)."""
+    try:
+        from src.metrics import collect_development_metrics
+        
+        repo_path = path or str(Path(__file__).parent.parent.parent.parent)
+        metrics = collect_development_metrics(repo_path)
+        
+        hotspots = metrics.get("git_metrics", {}).get("hotspots", [])[:limit]
+        
+        return {
+            "success": True,
+            "hotspots": hotspots
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/development/contributors")
+async def get_contributor_metrics(path: str = Query(None, description="Repository path")):
+    """Get contributor metrics and statistics."""
+    try:
+        from src.metrics import collect_development_metrics
+        
+        repo_path = path or str(Path(__file__).parent.parent.parent.parent)
+        metrics = collect_development_metrics(repo_path)
+        
+        return {
+            "success": True,
+            "top_contributors": metrics.get("git_metrics", {}).get("top_contributors", []),
+            "all_authors": metrics.get("git_metrics", {}).get("all_authors", {})
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/runtime")
+async def get_runtime_metrics():
+    """Get runtime metrics (counters, gauges, histograms)."""
+    try:
+        from src.metrics import get_metrics_report
+        
+        report = get_metrics_report()
+        
+        return {
+            "success": True,
+            **report
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/runtime/prometheus")
+async def get_prometheus_metrics():
+    """Get metrics in Prometheus format."""
+    try:
+        from src.metrics import get_prometheus_metrics
+        from fastapi.responses import PlainTextResponse
+        
+        metrics = get_prometheus_metrics()
+        return PlainTextResponse(content=metrics, media_type="text/plain")
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/metrics/runtime/start")
+async def start_runtime_collection(interval: float = Query(5.0, ge=1.0, le=60.0)):
+    """Start runtime metrics collection."""
+    try:
+        from src.metrics import start_metrics_collection
+        
+        collector = start_metrics_collection(interval)
+        
+        return {
+            "success": True,
+            "message": f"Runtime metrics collection started with {interval}s interval"
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/summary")
+async def get_metrics_summary(path: str = Query(None, description="Project/repo path")):
+    """Get a summary of all metrics across all categories."""
+    try:
+        from src.metrics import (
+            analyze_project, 
+            collect_development_metrics, 
+            get_metrics_report,
+            list_all_metrics,
+            get_total_metric_count
+        )
+        
+        project_path = path or str(Path(__file__).parent.parent.parent)
+        repo_path = path or str(Path(__file__).parent.parent.parent.parent)
+        
+        code_quality = analyze_project(project_path)
+        dev_metrics = collect_development_metrics(repo_path)
+        runtime = get_metrics_report()
+        
+        total_code_metrics = len(code_quality.get("all_metrics", []))
+        total_dev_metrics = len(dev_metrics.get("git_metrics", {}).get("recent_commits", [])) + \
+                          len(dev_metrics.get("git_metrics", {}).get("hotspots", [])) + \
+                          len(dev_metrics.get("git_metrics", {}).get("top_contributors", []))
+        total_runtime_metrics = len(runtime.get("counters", {})) + \
+                               len(runtime.get("gauges", {})) + \
+                               len(runtime.get("histograms", {}))
+        
+        return {
+            "success": True,
+            "total_metrics_tracked": total_code_metrics + total_dev_metrics + total_runtime_metrics,
+            "available_metric_types": get_total_metric_count(),
+            "code_quality": {
+                "metrics_count": total_code_metrics,
+                "issues_count": len(code_quality.get("all_issues", [])),
+                "files_analyzed": code_quality.get("summary", {}).get("files_analyzed", 0),
+                "total_lines": code_quality.get("project_metrics", {}).get("total_lines", 0)
+            },
+            "development": {
+                "commits_analyzed": len(dev_metrics.get("git_metrics", {}).get("recent_commits", [])),
+                "contributors": len(dev_metrics.get("git_metrics", {}).get("all_authors", {})),
+                "iteration_speed": dev_metrics.get("iteration_speed", {})
+            },
+            "runtime": {
+                "counters": len(runtime.get("counters", {})),
+                "gauges": len(runtime.get("gauges", {})),
+                "histograms": len(runtime.get("histograms", {})),
+                "uptime_seconds": runtime.get("summary", {}).get("uptime_seconds", 0)
+            }
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/list")
+async def list_available_metrics():
+    """List all available metric types that can be tracked."""
+    try:
+        from src.metrics import list_all_metrics, METRIC_CATEGORIES
+        
+        return {
+            "success": True,
+            "categories": METRIC_CATEGORIES,
+            "all_metrics": list_all_metrics(),
+            "total_metric_types": len(list_all_metrics())
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+class LispAnalyzeRequest(BaseModel):
+    situation: str
+    context: Optional[dict] = None
+
+
+class LispInvertRequest(BaseModel):
+    problem: str
+
+
+@app.get("/lisp/models")
+async def get_lisp_models():
+    """Get all mental models defined in the Lisp DSL."""
+    try:
+        from src.lisp import get_lisp_bridge, HY_AVAILABLE
+        
+        bridge = get_lisp_bridge()
+        models = bridge.get_all_models()
+        
+        return {
+            "success": True,
+            "hy_available": HY_AVAILABLE,
+            "models": models,
+            "total_models": len(models)
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/lisp/model-names")
+async def get_lisp_model_names():
+    """Get names of all Lisp-defined mental models."""
+    try:
+        from src.lisp import get_lisp_bridge
+        
+        bridge = get_lisp_bridge()
+        names = bridge.get_model_names()
+        
+        return {
+            "success": True,
+            "model_names": names,
+            "total": len(names)
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/lisp/analyze")
+async def lisp_analyze_context(request: LispAnalyzeRequest):
+    """Analyze a situation using the Lisp mental models DSL.
+    
+    This uses Munger's latticework approach - applying multiple
+    mental models to a single problem for comprehensive analysis.
+    """
+    try:
+        from src.lisp import get_lisp_bridge
+        
+        bridge = get_lisp_bridge()
+        context = request.context or {}
+        context["situation"] = request.situation
+        
+        result = bridge.analyze_context(context)
+        
+        return {
+            "success": True,
+            "models_applied": result.models_applied,
+            "individual_results": result.individual_results,
+            "combined_confidence": result.combined_confidence,
+            "lollapalooza_potential": result.lollapalooza_potential,
+            "failure_analysis": result.failure_analysis,
+            "two_track_analysis": result.two_track_analysis,
+            "timestamp": result.timestamp
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/lisp/invert")
+async def lisp_invert_problem(request: LispInvertRequest):
+    """Apply Munger's inversion technique to a problem.
+    
+    'Invert, always invert' - Carl Jacobi
+    Think about what to avoid, not just what to do.
+    """
+    try:
+        from src.lisp import get_lisp_bridge
+        
+        bridge = get_lisp_bridge()
+        result = bridge.invert(request.problem)
+        
+        return {
+            "success": True,
+            **result
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/lisp/two-track")
+async def lisp_two_track_analysis(situation: str = Query(..., description="Situation to analyze")):
+    """Perform Munger's two-track analysis.
+    
+    Track 1: Rational factors (economics, opportunity costs, etc.)
+    Track 2: Psychological factors (biases, social proof, etc.)
+    """
+    try:
+        from src.lisp import get_lisp_bridge
+        
+        bridge = get_lisp_bridge()
+        result = bridge.two_track_analysis(situation)
+        
+        return {
+            "success": True,
+            **result
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/lisp/lollapalooza")
+async def lisp_detect_lollapalooza(request: LispAnalyzeRequest):
+    """Detect lollapalooza effects - when multiple models reinforce each other.
+    
+    A lollapalooza occurs when 3+ mental models point in the same
+    direction with high confidence, creating a powerful combined effect.
+    """
+    try:
+        from src.lisp import get_lisp_bridge
+        
+        bridge = get_lisp_bridge()
+        context = request.context or {}
+        context["situation"] = request.situation
+        
+        result = bridge.detect_lollapalooza(context)
+        
+        return {
+            "success": True,
+            **result
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/lisp/status")
+async def get_lisp_status():
+    """Get status of the Lisp (Hy) integration."""
+    try:
+        from src.lisp import get_lisp_bridge, HY_AVAILABLE
+        
+        bridge = get_lisp_bridge()
+        
+        return {
+            "success": True,
+            "hy_installed": HY_AVAILABLE,
+            "dsl_loaded": bridge._hy_module is not None if HY_AVAILABLE else False,
+            "fallback_active": not HY_AVAILABLE or bridge._hy_module is None,
+            "registered_models": len(bridge.get_model_names()),
+            "features": {
+                "macros": HY_AVAILABLE,
+                "repl": HY_AVAILABLE,
+                "homoiconicity": HY_AVAILABLE,
+                "python_interop": True
+            },
+            "benefits": [
+                "Faster feature development via macros",
+                "REPL-driven development for rapid iteration",
+                "Code as data for self-modifying systems",
+                "Minimal syntax reduces boilerplate"
+            ]
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
 TEMPLATES_DIR = Path(__file__).parent / "templates"
 
 

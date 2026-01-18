@@ -59,6 +59,17 @@ from .chat import SlackConnector, DiscordConnector, MatrixConnector
 from .data import RSSConnector, SECConnector, YahooFinanceConnector
 from .storage import LocalConnector, S3Connector, GDriveConnector
 from .llm import OllamaConnector, OpenAIConnector, LlamaCppConnector
+from .zapier_connector import ZapierConnector, create_zapier_connector
+from .huggingface_connector import HuggingfaceConnector, create_huggingface_connector
+from .lm_studio_connector import (
+    LMStudioConnector,
+    create_lm_studio_connector,
+    MENTAL_MODEL_PROMPTS,
+    ChatMessage,
+    CompletionResponse,
+    LMStudioModel,
+    LLAMAModelType,
+)
 
 __all__ = [
     # Base
@@ -94,5 +105,22 @@ __all__ = [
     # LLM
     "OllamaConnector",
     "OpenAIConnector",
-    "LlamaCppConnector"
+    "LlamaCppConnector",
+    
+    # Automation
+    "ZapierConnector",
+    "create_zapier_connector",
+    
+    # Huggingface
+    "HuggingfaceConnector",
+    "create_huggingface_connector",
+    
+    # LM Studio
+    "LMStudioConnector",
+    "create_lm_studio_connector",
+    "MENTAL_MODEL_PROMPTS",
+    "ChatMessage",
+    "CompletionResponse",
+    "LMStudioModel",
+    "LLAMAModelType",
 ]

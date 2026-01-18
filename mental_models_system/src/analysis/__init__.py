@@ -38,6 +38,25 @@ from .knowledge_graph import (
     build_graph_from_analyses,
 )
 
+from .statistical_engine import (
+    # Engine
+    StatisticalEngine,
+    MentalModelStatistics,
+    
+    # Data structures
+    Variable,
+    CorrelationResult,
+    RegressionResult,
+    CovarianceMatrix,
+    FactorAnalysisResult,
+    SynthesisResult,
+    AnalysisType,
+    
+    # Convenience
+    create_statistical_engine,
+    create_mental_model_statistics,
+)
+
 __all__ = [
     # Model analyzer
     "MentalModel",
@@ -58,4 +77,17 @@ __all__ = [
     "DocumentCategorizer",
     "create_knowledge_graph",
     "build_graph_from_analyses",
+    
+    # Statistical engine
+    "StatisticalEngine",
+    "MentalModelStatistics",
+    "Variable",
+    "CorrelationResult",
+    "RegressionResult",
+    "CovarianceMatrix",
+    "FactorAnalysisResult",
+    "SynthesisResult",
+    "AnalysisType",
+    "create_statistical_engine",
+    "create_mental_model_statistics",
 ]
