@@ -12,6 +12,10 @@ import asyncio
 from dataclasses import dataclass, field
 from datetime import datetime
 
+from ..analysis.mental_model_analyzer import MentalModelAnalyzer, AnalysisType
+from ..failure_modes.registry import FailureModeRegistry
+from ..failure_modes.detector import FailureModeDetector
+
 logger = logging.getLogger(__name__)
 
 
@@ -166,14 +170,26 @@ class SlackIntegration:
     - Integration with the improvement cycle
     """
     
-    def __init__(self, bot_token: str, app_token: Optional[str] = None):
+    def __init__(
+        self,
+        bot_token: str,
+        app_token: Optional[str] = None,
+        lm_studio_url: str = "http://localhost:1234",
+    ):
         self.bot_token = bot_token
         self.app_token = app_token
+        self.lm_studio_url = lm_studio_url
         self.event_handler = SlackEventHandler()
+        self.analyzer = MentalModelAnalyzer(lm_studio_url=lm_studio_url)
+        self.failure_registry = FailureModeRegistry()
+        self.failure_detector = FailureModeDetector()
         self._setup_default_handlers()
     
     def _setup_default_handlers(self):
         """Set up default command and event handlers."""
+        analyzer = self.analyzer
+        failure_registry = self.failure_registry
+        failure_detector = self.failure_detector
         
         @self.event_handler.on_command("analyze")
         async def handle_analyze(cmd: SlackCommand) -> Dict[str, Any]:
@@ -187,12 +203,48 @@ class SlackIntegration:
             
             text_to_analyze = " ".join(cmd.args)
             
-            # This would integrate with the MentalModelAnalyzer
-            return {
-                "response": f"Analyzing: {text_to_analyze[:100]}...\n\nAnalysis would be performed here using the Mental Models System.",
-                "channel": cmd.message.channel,
-                "thread_ts": cmd.message.thread_ts or cmd.message.ts
-            }
+            try:
+                analysis = analyzer.analyze_document(
+                    content=text_to_analyze,
+                    document_id=f"slack_{cmd.message.ts}",
+                    analysis_type=AnalysisType.FULL
+                )
+                
+                response_parts = [f"*Analysis of:* {text_to_analyze[:100]}...\n"]
+                
+                if analysis.applicable_models:
+                    response_parts.append("\n*Applicable Mental Models:*")
+                    for model in analysis.applicable_models[:5]:
+                        response_parts.append(f"- {model.model_name} ({model.relevance_score:.0%}): {model.explanation[:100]}")
+                
+                if analysis.detected_biases:
+                    response_parts.append("\n*Detected Biases:*")
+                    for bias in analysis.detected_biases[:3]:
+                        response_parts.append(f"- {bias.bias_name} ({bias.confidence:.0%}): {bias.evidence[:80]}")
+                
+                if analysis.key_insights:
+                    response_parts.append("\n*Key Insights:*")
+                    for insight in analysis.key_insights[:3]:
+                        response_parts.append(f"- {insight[:100]}")
+                
+                if analysis.lollapalooza_score > 0.5:
+                    response_parts.append(f"\n*Lollapalooza Effect:* {analysis.lollapalooza_score:.0%} - Models: {', '.join(analysis.lollapalooza_models[:3])}")
+                
+                if not analysis.applicable_models and not analysis.key_insights:
+                    response_parts.append("\n_Note: LM Studio may not be running. Start it at localhost:1234 for full analysis._")
+                
+                return {
+                    "response": "\n".join(response_parts),
+                    "channel": cmd.message.channel,
+                    "thread_ts": cmd.message.thread_ts or cmd.message.ts
+                }
+            except Exception as e:
+                logger.error(f"Analysis failed: {e}")
+                return {
+                    "response": f"Analysis failed: {str(e)[:100]}. Ensure LM Studio is running at localhost:1234.",
+                    "channel": cmd.message.channel,
+                    "thread_ts": cmd.message.thread_ts or cmd.message.ts
+                }
         
         @self.event_handler.on_command("models")
         async def handle_models(cmd: SlackCommand) -> Dict[str, Any]:
@@ -281,11 +333,41 @@ You can also mention @MentalModels in any message to get analysis."""
             
             text_to_check = " ".join(cmd.args)
             
-            return {
-                "response": f"Checking for failure modes in: {text_to_check[:100]}...\n\nFailure mode detection would be performed here.",
-                "channel": cmd.message.channel,
-                "thread_ts": cmd.message.thread_ts or cmd.message.ts
-            }
+            try:
+                context = {"content": text_to_check, "source": "slack"}
+                detection_result = failure_detector.detect_failure_modes(context)
+                
+                response_parts = [f"*Failure Mode Check:* {text_to_check[:100]}...\n"]
+                
+                if detection_result.get("detected_failures"):
+                    response_parts.append("\n*Potential Failure Modes Detected:*")
+                    for failure in detection_result["detected_failures"][:5]:
+                        response_parts.append(f"- *{failure.get('name', 'Unknown')}* ({failure.get('severity', 'medium')})")
+                        if failure.get('detection_signals'):
+                            response_parts.append(f"  Signals: {', '.join(failure['detection_signals'][:2])}")
+                        if failure.get('prevention_strategies'):
+                            response_parts.append(f"  Prevention: {failure['prevention_strategies'][0][:80]}")
+                else:
+                    response_parts.append("\nNo obvious failure modes detected. Consider:")
+                    response_parts.append("- Confirmation bias: Are you only seeing what you want to see?")
+                    response_parts.append("- Overconfidence: Are you too certain about outcomes?")
+                    response_parts.append("- Incomplete analysis: What are you missing?")
+                
+                stats = failure_registry.get_stats()
+                response_parts.append(f"\n_System has {stats['total_failure_modes']} failure modes across {stats['total_models_with_failure_modes']} models._")
+                
+                return {
+                    "response": "\n".join(response_parts),
+                    "channel": cmd.message.channel,
+                    "thread_ts": cmd.message.thread_ts or cmd.message.ts
+                }
+            except Exception as e:
+                logger.error(f"Failure mode check failed: {e}")
+                return {
+                    "response": f"Check failed: {str(e)[:100]}",
+                    "channel": cmd.message.channel,
+                    "thread_ts": cmd.message.thread_ts or cmd.message.ts
+                }
         
         @self.event_handler.on_command("invert")
         async def handle_invert(cmd: SlackCommand) -> Dict[str, Any]:
@@ -299,18 +381,32 @@ You can also mention @MentalModels in any message to get analysis."""
             
             problem = " ".join(cmd.args)
             
-            return {
-                "response": f"Inverting: {problem}\n\nInstead of asking how to succeed, ask: How could this fail?\n\nInversion analysis would be performed here.",
-                "channel": cmd.message.channel,
-                "thread_ts": cmd.message.thread_ts or cmd.message.ts
-            }
+            try:
+                inversion_result = analyzer.invert_analysis(problem)
+                
+                response_parts = [
+                    f"*Inversion Analysis:* {problem[:100]}...\n",
+                    "\n*Instead of asking how to succeed, ask: How could this fail?*\n",
+                    inversion_result[:1500] if inversion_result else "Inversion analysis unavailable - ensure LM Studio is running."
+                ]
+                
+                return {
+                    "response": "\n".join(response_parts),
+                    "channel": cmd.message.channel,
+                    "thread_ts": cmd.message.thread_ts or cmd.message.ts
+                }
+            except Exception as e:
+                logger.error(f"Inversion failed: {e}")
+                return {
+                    "response": f"Inversion failed: {str(e)[:100]}. Ensure LM Studio is running at localhost:1234.",
+                    "channel": cmd.message.channel,
+                    "thread_ts": cmd.message.thread_ts or cmd.message.ts
+                }
         
         @self.event_handler.on_mention
         async def handle_mention(message: SlackMessage) -> Dict[str, Any]:
             """Handle when the bot is mentioned."""
-            # Remove the mention from the text
             text = message.text
-            # Simple mention removal (would need proper parsing in production)
             text = " ".join(word for word in text.split() if not word.startswith("<@"))
             
             if not text.strip():
@@ -320,11 +416,43 @@ You can also mention @MentalModels in any message to get analysis."""
                     "thread_ts": message.thread_ts or message.ts
                 }
             
-            return {
-                "response": f"Analyzing your message through mental models...\n\nText: {text[:200]}...\n\nAnalysis would be performed here.",
-                "channel": message.channel,
-                "thread_ts": message.thread_ts or message.ts
-            }
+            try:
+                analysis = analyzer.analyze_document(
+                    content=text,
+                    document_id=f"slack_mention_{message.ts}",
+                    analysis_type=AnalysisType.FULL
+                )
+                
+                response_parts = [f"*Analyzing:* {text[:100]}...\n"]
+                
+                if analysis.applicable_models:
+                    response_parts.append("\n*Top Mental Models:*")
+                    for model in analysis.applicable_models[:3]:
+                        response_parts.append(f"- {model.model_name}: {model.explanation[:80]}")
+                
+                if analysis.detected_biases:
+                    response_parts.append("\n*Watch for these biases:*")
+                    for bias in analysis.detected_biases[:2]:
+                        response_parts.append(f"- {bias.bias_name}: {bias.mitigation[:80]}")
+                
+                if analysis.key_insights:
+                    response_parts.append("\n*Key Insight:* " + analysis.key_insights[0][:150])
+                
+                if not analysis.applicable_models:
+                    response_parts.append("\n_Start LM Studio at localhost:1234 for full analysis._")
+                
+                return {
+                    "response": "\n".join(response_parts),
+                    "channel": message.channel,
+                    "thread_ts": message.thread_ts or message.ts
+                }
+            except Exception as e:
+                logger.error(f"Mention analysis failed: {e}")
+                return {
+                    "response": f"Analysis failed. Ensure LM Studio is running at localhost:1234.",
+                    "channel": message.channel,
+                    "thread_ts": message.thread_ts or message.ts
+                }
     
     async def process_event(self, event: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Process an incoming Slack event."""
