@@ -25,6 +25,7 @@ src/electric/
     ├── analysis.cljc                     # Analysis engine (shared)
     ├── statistics.cljc                   # Statistical functions (shared)
     ├── data_processing.cljc              # Text processing (shared)
+    ├── tech_debt.cljc                    # Tech Debt Eliminator (shared)
     └── ui.cljc                           # Reactive UI components (shared)
 ```
 
@@ -95,6 +96,14 @@ clj -M:dev
 - Mental model classification
 - Readability scoring
 
+### Tech Debt Eliminator
+- **DAG Analysis** - Encode codebase as directed acyclic graph
+- **Tangle Detection** - Find strongly connected components (cycles)
+- **Coupling Metrics** - Identify high fan-in/fan-out nodes
+- **Refactoring Plans** - Prioritized steps to reduce tech debt
+- **LLM Integration** - AI-powered refactoring suggestions
+- **Visualization** - D3.js-compatible DAG export
+
 ## API Endpoints
 
 ### Models
@@ -112,6 +121,13 @@ clj -M:dev
 
 ### Data
 - `POST /api/data/analyze` - Document analysis
+
+### Tech Debt Eliminator
+- `POST /api/techdebt/analyze` - Analyze code DAG for tech debt
+- `POST /api/techdebt/tangles` - Detect tangled components (cycles, high coupling)
+- `POST /api/techdebt/plan` - Generate prioritized refactoring plan
+- `POST /api/techdebt/llm-refactor` - Get LLM-powered refactoring suggestions
+- `POST /api/techdebt/visualize` - Export DAG for D3.js visualization
 
 ### LLM (LM Studio Integration)
 - `GET /api/llm/status` - Check LM Studio connection status
@@ -163,8 +179,8 @@ Each model includes:
 - Application guidance
 - 5 failure modes with signals and safeguards
 
-**Last updated**: January 18, 2026 09:23 UTC
-**Lines of code**: 2,802 (models.cljc alone)
+**Last updated**: January 18, 2026 09:36 UTC
+**Lines of code**: 5,500+ (Electric Clojure modules)
 
 ## Design Philosophy
 

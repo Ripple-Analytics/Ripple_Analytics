@@ -4,7 +4,8 @@
    Main entry point for the Electric Clojure application.
    Starts the server and serves the reactive UI.
    
-   Includes LM Studio integration for local LLM inference."
+   Includes LM Studio integration for local LLM inference.
+   Includes Tech Debt Eliminator with DAG visualization."
   (:require [ring.adapter.jetty :as jetty]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [ring.util.response :as response]
@@ -12,6 +13,7 @@
             [mental-models.analysis :as analysis]
             [mental-models.statistics :as stats]
             [mental-models.data-processing :as data]
+            [mental-models.tech-debt :as tech-debt]
             [clojure.java.io :as io]
             [clojure.string :as str])
   (:import [java.net HttpURLConnection URL]
@@ -220,6 +222,7 @@
             <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('data')\">Data</button>
             <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('map')\">World Map</button>
             <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('llm')\">LLM</button>
+            <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('techdebt')\">Tech Debt</button>
         </div>
         
         <!-- Dashboard -->
@@ -432,6 +435,66 @@
                     <div class=\"p-3 max-h-96 overflow-y-auto\" id=\"llm-result\">
                         <p class=\"text-gray-500 text-xs\">Run an LLM analysis to see results</p>
                     </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tech Debt Tab -->
+        <div id=\"techdebt\" class=\"p-4 hidden\">
+            <div class=\"grid grid-cols-3 gap-4 mb-4\">
+                <div class=\"metric-card bg-white border rounded shadow-sm\">
+                    <div class=\"metric-value\" id=\"td-total-nodes\">0</div>
+                    <div class=\"metric-label\">Total Nodes</div>
+                </div>
+                <div class=\"metric-card bg-white border rounded shadow-sm\">
+                    <div class=\"metric-value\" id=\"td-total-tangles\">0</div>
+                    <div class=\"metric-label\">Tangles Detected</div>
+                </div>
+                <div class=\"metric-card bg-white border rounded shadow-sm\">
+                    <div class=\"metric-value\" id=\"td-pure-functions\">0</div>
+                    <div class=\"metric-label\">Pure Functions</div>
+                </div>
+            </div>
+            
+            <div class=\"grid grid-cols-2 gap-4\">
+                <div class=\"bg-white border rounded shadow-sm\">
+                    <div class=\"bg-gray-100 px-3 py-2 font-semibold text-xs border-b\">DAG Visualization</div>
+                    <div class=\"p-2\">
+                        <svg id=\"dag-viz\" width=\"100%\" height=\"300\"></svg>
+                        <div class=\"flex gap-2 mt-2 text-xs\">
+                            <span class=\"flex items-center\"><span class=\"w-3 h-3 bg-green-500 rounded-full mr-1\"></span>Normal</span>
+                            <span class=\"flex items-center\"><span class=\"w-3 h-3 bg-red-500 rounded-full mr-1\"></span>Tangle</span>
+                            <span class=\"flex items-center\"><span class=\"w-3 h-3 bg-yellow-500 rounded-full mr-1\"></span>High Coupling</span>
+                            <span class=\"flex items-center\"><span class=\"w-3 h-3 bg-orange-500 rounded-full mr-1\"></span>High Complexity</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class=\"bg-white border rounded shadow-sm\">
+                    <div class=\"bg-gray-100 px-3 py-2 font-semibold text-xs border-b\">Refactoring Suggestions</div>
+                    <div class=\"p-3 max-h-64 overflow-y-auto\" id=\"refactoring-suggestions\">
+                        <p class=\"text-gray-500 text-xs\">Analyze code to see suggestions</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class=\"mt-4 bg-white border rounded shadow-sm\">
+                <div class=\"bg-gray-100 px-3 py-2 font-semibold text-xs border-b\">Analyze Code</div>
+                <div class=\"p-3\">
+                    <textarea id=\"code-input\" class=\"w-full border rounded px-2 py-1 text-xs h-32 font-mono\" placeholder=\"Paste code or JSON dependency graph...\"></textarea>
+                    <div class=\"flex gap-2 mt-2\">
+                        <button class=\"bg-green-600 text-white px-3 py-1 text-xs rounded\" onclick=\"analyzeCodeDAG()\">Analyze DAG</button>
+                        <button class=\"bg-green-600 text-white px-3 py-1 text-xs rounded\" onclick=\"detectTangles()\">Detect Tangles</button>
+                        <button class=\"bg-green-600 text-white px-3 py-1 text-xs rounded\" onclick=\"generateRefactoringPlan()\">Generate Plan</button>
+                        <button class=\"bg-purple-600 text-white px-3 py-1 text-xs rounded\" onclick=\"llmRefactorSuggestion()\">LLM Refactor</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class=\"mt-4 bg-white border rounded shadow-sm\">
+                <div class=\"bg-gray-100 px-3 py-2 font-semibold text-xs border-b\">Refactoring Plan</div>
+                <div class=\"p-3\" id=\"refactoring-plan\">
+                    <p class=\"text-gray-500 text-xs\">Generate a plan to see prioritized refactoring steps</p>
                 </div>
             </div>
         </div>
@@ -857,6 +920,289 @@
         
         // Load data on page load
         loadDataAndStore();
+        
+        // ============================================
+        // Tech Debt Functions
+        // ============================================
+        
+        // Store current DAG data
+        window.currentDAG = null;
+        
+        // Parse code input to DAG format
+        function parseCodeToDAG(input) {
+            try {
+                // Try to parse as JSON first
+                return JSON.parse(input);
+            } catch (e) {
+                // Parse as simple dependency format: function_name: dep1, dep2, dep3
+                const lines = input.split('\\n').filter(l => l.trim());
+                const functions = {};
+                const dependencies = [];
+                
+                lines.forEach((line, idx) => {
+                    const match = line.match(/^([\\w-]+):\\s*(.*)$/);
+                    if (match) {
+                        const funcName = match[1];
+                        const deps = match[2].split(',').map(d => d.trim()).filter(d => d);
+                        functions[funcName] = {
+                            name: funcName,
+                            type: 'function',
+                            complexity: Math.floor(Math.random() * 10) + 1
+                        };
+                        deps.forEach(dep => {
+                            dependencies.push({ from: funcName, to: dep, type: 'calls' });
+                        });
+                    }
+                });
+                
+                return { functions, dependencies };
+            }
+        }
+        
+        // Analyze DAG
+        async function analyzeCodeDAG() {
+            const input = document.getElementById('code-input').value;
+            if (!input.trim()) {
+                alert('Please enter code or dependency graph');
+                return;
+            }
+            
+            const dagData = parseCodeToDAG(input);
+            window.currentDAG = dagData;
+            
+            const response = await fetch('/api/techdebt/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ dag: dagData })
+            });
+            const data = await response.json();
+            
+            // Update metrics
+            document.getElementById('td-total-nodes').textContent = data.total_nodes || 0;
+            document.getElementById('td-total-tangles').textContent = data.tangles?.length || 0;
+            document.getElementById('td-pure-functions').textContent = data.pure_functions || 0;
+            
+            // Update suggestions
+            const suggestions = document.getElementById('refactoring-suggestions');
+            if (data.tangles && data.tangles.length > 0) {
+                suggestions.innerHTML = data.tangles.map((t, i) => `
+                    <div class=\"mb-2 p-2 bg-red-50 rounded\">
+                        <p class=\"text-xs font-semibold\">Tangle ${i + 1}: ${t.nodes?.length || 0} nodes</p>
+                        <p class=\"text-xs text-gray-600\">${t.suggestion || 'Consider extracting pure functions'}</p>
+                    </div>
+                `).join('');
+            } else {
+                suggestions.innerHTML = '<p class=\"text-green-600 text-xs\">No tangles detected - code is well-structured!</p>';
+            }
+            
+            // Visualize DAG
+            visualizeDAG(data);
+        }
+        
+        // Detect tangles
+        async function detectTangles() {
+            const input = document.getElementById('code-input').value;
+            if (!input.trim()) {
+                alert('Please enter code or dependency graph');
+                return;
+            }
+            
+            const dagData = parseCodeToDAG(input);
+            window.currentDAG = dagData;
+            
+            const response = await fetch('/api/techdebt/tangles', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ dag: dagData })
+            });
+            const data = await response.json();
+            
+            document.getElementById('td-total-tangles').textContent = data.length || 0;
+            
+            const suggestions = document.getElementById('refactoring-suggestions');
+            if (data.length > 0) {
+                suggestions.innerHTML = data.map((t, i) => `
+                    <div class=\"mb-2 p-2 bg-red-50 rounded cursor-pointer\" onclick=\"selectTangle(${i})\">
+                        <p class=\"text-xs font-semibold\">Tangle ${i + 1}</p>
+                        <p class=\"text-xs\">Nodes: ${t.nodes?.join(', ') || 'Unknown'}</p>
+                        <p class=\"text-xs text-gray-600\">Severity: ${t.severity || 'Medium'}</p>
+                    </div>
+                `).join('');
+            } else {
+                suggestions.innerHTML = '<p class=\"text-green-600 text-xs\">No tangles detected!</p>';
+            }
+        }
+        
+        // Generate refactoring plan
+        async function generateRefactoringPlan() {
+            const input = document.getElementById('code-input').value;
+            if (!input.trim()) {
+                alert('Please enter code or dependency graph');
+                return;
+            }
+            
+            const dagData = parseCodeToDAG(input);
+            
+            const response = await fetch('/api/techdebt/plan', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ dag: dagData })
+            });
+            const data = await response.json();
+            
+            const planDiv = document.getElementById('refactoring-plan');
+            if (data.steps && data.steps.length > 0) {
+                planDiv.innerHTML = `
+                    <div class=\"text-xs\">
+                        <p class=\"font-semibold mb-2\">Priority: ${data.priority || 'Medium'}</p>
+                        <ol class=\"list-decimal list-inside space-y-1\">
+                            ${data.steps.map(s => `<li>${s}</li>`).join('')}
+                        </ol>
+                    </div>
+                `;
+            } else {
+                planDiv.innerHTML = '<p class=\"text-green-600 text-xs\">No refactoring needed - code is clean!</p>';
+            }
+        }
+        
+        // LLM refactoring suggestion
+        async function llmRefactorSuggestion() {
+            const input = document.getElementById('code-input').value;
+            if (!input.trim()) {
+                alert('Please enter code or dependency graph');
+                return;
+            }
+            
+            const dagData = parseCodeToDAG(input);
+            
+            document.getElementById('refactoring-suggestions').innerHTML = '<p class=\"text-xs text-gray-500\">Asking LLM for suggestions...</p>';
+            
+            const response = await fetch('/api/techdebt/llm-refactor', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ dag: dagData, tangle: {} })
+            });
+            const data = await response.json();
+            
+            const suggestions = document.getElementById('refactoring-suggestions');
+            if (data.success) {
+                suggestions.innerHTML = `
+                    <div class=\"bg-purple-50 p-2 rounded\">
+                        <p class=\"text-xs font-semibold\">LLM Refactoring Suggestion</p>
+                        <pre class=\"text-xs mt-2 whitespace-pre-wrap\">${data['refactoring-suggestion']}</pre>
+                    </div>
+                `;
+            } else {
+                suggestions.innerHTML = `
+                    <div class=\"bg-yellow-50 p-2 rounded\">
+                        <p class=\"text-xs text-yellow-800\">LLM not available. Generated prompt:</p>
+                        <pre class=\"text-xs mt-2 whitespace-pre-wrap bg-gray-100 p-2 rounded\">${data.prompt || 'No prompt generated'}</pre>
+                    </div>
+                `;
+            }
+        }
+        
+        // Visualize DAG using SVG
+        function visualizeDAG(data) {
+            const svg = document.getElementById('dag-viz');
+            svg.innerHTML = '';
+            
+            const nodes = data.nodes || [];
+            const edges = data.edges || [];
+            const tangles = new Set((data.tangles || []).flatMap(t => t.nodes || []));
+            
+            if (nodes.length === 0) {
+                svg.innerHTML = '<text x=\"50%\" y=\"50%\" text-anchor=\"middle\" class=\"text-xs fill-gray-400\">No nodes to visualize</text>';
+                return;
+            }
+            
+            const width = svg.clientWidth || 400;
+            const height = 300;
+            const nodeRadius = 20;
+            
+            // Simple force-directed layout simulation
+            const positions = {};
+            nodes.forEach((node, i) => {
+                const angle = (2 * Math.PI * i) / nodes.length;
+                const radius = Math.min(width, height) / 3;
+                positions[node.id] = {
+                    x: width / 2 + radius * Math.cos(angle),
+                    y: height / 2 + radius * Math.sin(angle)
+                };
+            });
+            
+            // Draw edges
+            edges.forEach(edge => {
+                const from = positions[edge.from];
+                const to = positions[edge.to];
+                if (from && to) {
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    line.setAttribute('x1', from.x);
+                    line.setAttribute('y1', from.y);
+                    line.setAttribute('x2', to.x);
+                    line.setAttribute('y2', to.y);
+                    line.setAttribute('stroke', '#ccc');
+                    line.setAttribute('stroke-width', '1');
+                    line.setAttribute('marker-end', 'url(#arrowhead)');
+                    svg.appendChild(line);
+                }
+            });
+            
+            // Add arrowhead marker
+            const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            defs.innerHTML = `
+                <marker id=\"arrowhead\" markerWidth=\"10\" markerHeight=\"7\" refX=\"10\" refY=\"3.5\" orient=\"auto\">
+                    <polygon points=\"0 0, 10 3.5, 0 7\" fill=\"#ccc\" />
+                </marker>
+            `;
+            svg.appendChild(defs);
+            
+            // Draw nodes
+            nodes.forEach(node => {
+                const pos = positions[node.id];
+                if (!pos) return;
+                
+                const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', pos.x);
+                circle.setAttribute('cy', pos.y);
+                circle.setAttribute('r', nodeRadius);
+                
+                // Color based on status
+                let fill = '#22c55e'; // green - normal
+                if (tangles.has(node.id)) {
+                    fill = '#ef4444'; // red - tangle
+                } else if (node.coupling > 5) {
+                    fill = '#eab308'; // yellow - high coupling
+                } else if (node.complexity > 7) {
+                    fill = '#f97316'; // orange - high complexity
+                }
+                
+                circle.setAttribute('fill', fill);
+                circle.setAttribute('stroke', '#fff');
+                circle.setAttribute('stroke-width', '2');
+                group.appendChild(circle);
+                
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', pos.x);
+                text.setAttribute('y', pos.y + 4);
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('fill', '#fff');
+                text.setAttribute('font-size', '8');
+                text.textContent = (node.name || node.id).substring(0, 4);
+                group.appendChild(text);
+                
+                svg.appendChild(group);
+            });
+        }
+        
+        // Select a tangle for detailed view
+        window.selectedTangle = null;
+        function selectTangle(index) {
+            window.selectedTangle = index;
+            // Could highlight in visualization
+        }
     </script>
 </body>
 </html>")
@@ -937,6 +1283,43 @@
                   :model (:model lm-studio-config)
                   :status (if (call-lm-studio "test" :max-tokens 5) "connected" "disconnected")}))
 
+;; Tech Debt handlers
+(defn handle-analyze-dag [request]
+  (let [body (cheshire.core/parse-string (slurp (:body request)) true)
+        dag-data (get body :dag {:nodes {} :edges []})]
+    (let [dag (tech-debt/build-dag-from-code dag-data)]
+      (json-response (tech-debt/analyze-codebase dag)))))
+
+(defn handle-detect-tangles [request]
+  (let [body (cheshire.core/parse-string (slurp (:body request)) true)
+        dag-data (get body :dag {:nodes {} :edges []})]
+    (let [dag (tech-debt/build-dag-from-code dag-data)]
+      (json-response (tech-debt/detect-tangles dag)))))
+
+(defn handle-refactoring-plan [request]
+  (let [body (cheshire.core/parse-string (slurp (:body request)) true)
+        dag-data (get body :dag {:nodes {} :edges []})]
+    (let [dag (tech-debt/build-dag-from-code dag-data)
+          analysis (tech-debt/analyze-codebase dag)]
+      (json-response (tech-debt/generate-refactoring-plan analysis)))))
+
+(defn handle-llm-refactor [request]
+  (let [body (cheshire.core/parse-string (slurp (:body request)) true)
+        tangle (get body :tangle {})
+        dag-data (get body :dag {:nodes {} :edges []})]
+    (let [dag (tech-debt/build-dag-from-code dag-data)
+          prompt (tech-debt/generate-llm-refactoring-prompt tangle dag)]
+      (if-let [response (call-lm-studio prompt)]
+        (json-response {:success true :refactoring-suggestion response})
+        (json-response {:success false :error "LM Studio not available"
+                       :prompt prompt})))))
+
+(defn handle-dag-visualization [request]
+  (let [body (cheshire.core/parse-string (slurp (:body request)) true)
+        dag-data (get body :dag {:nodes {} :edges []})]
+    (let [dag (tech-debt/build-dag-from-code dag-data)]
+      (json-response (tech-debt/export-dag-for-visualization dag)))))
+
 ;; ============================================
 ;; Routes
 ;; ============================================
@@ -997,6 +1380,22 @@
       
       (and (= method :post) (= uri "/api/llm/classify"))
       (handle-llm-classify request)
+      
+      ;; Tech Debt API
+      (and (= method :post) (= uri "/api/techdebt/analyze"))
+      (handle-analyze-dag request)
+      
+      (and (= method :post) (= uri "/api/techdebt/tangles"))
+      (handle-detect-tangles request)
+      
+      (and (= method :post) (= uri "/api/techdebt/plan"))
+      (handle-refactoring-plan request)
+      
+      (and (= method :post) (= uri "/api/techdebt/llm-refactor"))
+      (handle-llm-refactor request)
+      
+      (and (= method :post) (= uri "/api/techdebt/visualize"))
+      (handle-dag-visualization request)
       
       ;; 404
       :else
