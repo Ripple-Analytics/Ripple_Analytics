@@ -685,17 +685,8 @@
         let caseStudies = [];
         const modelMarkers = [];
         
-        // Sample case studies with mental models
-        const sampleCaseStudies = [
-            { lat: 40.7128, lng: -74.0060, title: 'Wall Street - Market Psychology', model: 'mr-market', description: 'Benjamin Graham\\'s Mr. Market concept originated here, teaching investors to view market fluctuations as opportunities rather than threats.' },
-            { lat: 37.7749, lng: -122.4194, title: 'Silicon Valley - Network Effects', model: 'network-effects', description: 'Tech companies here leverage network effects to build moats - each new user makes the product more valuable for all users.' },
-            { lat: 51.5074, lng: -0.1278, title: 'London - Compound Interest', model: 'compound-interest', description: 'The City of London has been a center of finance for centuries, demonstrating the power of compound interest over time.' },
-            { lat: 35.6762, lng: 139.6503, title: 'Tokyo - Kaizen/Continuous Improvement', model: 'deliberate-practice', description: 'Japanese manufacturing excellence through continuous small improvements and deliberate practice.' },
-            { lat: 52.5200, lng: 13.4050, title: 'Berlin - Creative Destruction', model: 'creative-destruction', description: 'The fall of the Berlin Wall exemplifies Schumpeter\\'s creative destruction - old systems replaced by new.' },
-            { lat: 1.3521, lng: 103.8198, title: 'Singapore - Incentives', model: 'incentives', description: 'Singapore\\'s success demonstrates how proper incentive structures can transform a nation.' },
-            { lat: -33.8688, lng: 151.2093, title: 'Sydney - Antifragility', model: 'antifragility', description: 'Australia\\'s economy shows antifragility - gaining from volatility through diversification.' },
-            { lat: 55.7558, lng: 37.6173, title: 'Moscow - Game Theory', model: 'game-theory', description: 'Cold War strategies exemplify game theory - Nash equilibrium and mutually assured destruction.' }
-        ];
+        // Case studies loaded from database (no fake/sample data)
+        // All data must be real and user-added
         
         function initMap() {
             if (worldMap) return;
@@ -705,8 +696,8 @@
                 attribution: '© OpenStreetMap contributors'
             }).addTo(worldMap);
             
-            // Add sample case studies
-            sampleCaseStudies.forEach(cs => addMarkerToMap(cs));
+            // Load real case studies from database
+            loadCaseStudiesFromDB();
             
             // Populate model dropdown
             loadData().then(() => {
@@ -763,6 +754,21 @@
             document.getElementById('case-lat').value = '';
             document.getElementById('case-lng').value = '';
             document.getElementById('case-description').value = '';
+        }
+        
+        // Load real case studies from database
+        async function loadCaseStudiesFromDB() {
+            try {
+                const response = await fetch('/api/case-studies');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.case_studies && Array.isArray(data.case_studies)) {
+                        data.case_studies.forEach(cs => addMarkerToMap(cs));
+                    }
+                }
+            } catch (e) {
+                console.log('No case studies loaded from database yet');
+            }
         }
         
         // LLM functionality
