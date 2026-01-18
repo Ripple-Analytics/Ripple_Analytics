@@ -2617,3 +2617,340 @@
     (conn/cleanup-old-traces)
     (is (= 0 (count @conn/trace-store)))
     (reset! conn/trace-store {})))
+
+;; ============================================
+;; Request Compression Tests
+;; ============================================
+
+(deftest test-compression-config-atom
+  (testing "Compression config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/compression-config))
+    (is (map? @conn/compression-config))
+    (is (contains? @conn/compression-config :enabled))
+    (is (contains? @conn/compression-config :min-size-bytes))
+    (is (contains? @conn/compression-config :algorithms))))
+
+(deftest test-get-compression-config
+  (testing "Get compression config returns config"
+    (let [config (conn/get-compression-config)]
+      (is (map? config))
+      (is (contains? config :enabled))
+      (is (contains? config :min-size-bytes)))))
+
+(deftest test-set-compression-config
+  (testing "Set compression config updates values"
+    (let [original (conn/get-compression-config)]
+      (conn/set-compression-config {:min-size-bytes 2048})
+      (is (= 2048 (:min-size-bytes (conn/get-compression-config))))
+      ;; Restore
+      (conn/set-compression-config original))))
+
+(deftest test-compress-data
+  (testing "Compress data returns compression result"
+    (let [large-data (apply str (repeat 2000 "a"))
+          result (conn/compress-data large-data :gzip)]
+      (is (map? result))
+      (is (contains? result :compressed))
+      (when (:compressed result)
+        (is (contains? result :algorithm))
+        (is (contains? result :original-size))
+        (is (contains? result :compressed-size))))))
+
+(deftest test-compress-data-small
+  (testing "Compress data skips small data"
+    (let [small-data "hello"
+          result (conn/compress-data small-data :gzip)]
+      (is (map? result))
+      (is (false? (:compressed result))))))
+
+(deftest test-decompress-data
+  (testing "Decompress data restores original"
+    (let [large-data (apply str (repeat 2000 "a"))
+          compressed (conn/compress-data large-data :gzip)]
+      (when (:compressed compressed)
+        (let [decompressed (conn/decompress-data (:data compressed) :gzip)]
+          (is (= large-data decompressed)))))))
+
+(deftest test-compression-stats-atom
+  (testing "Compression stats atom is initialized"
+    (is (instance? clojure.lang.Atom conn/compression-stats))
+    (is (map? @conn/compression-stats))
+    (is (contains? @conn/compression-stats :requests-compressed))
+    (is (contains? @conn/compression-stats :bytes-saved))))
+
+(deftest test-get-compression-stats
+  (testing "Get compression stats returns statistics"
+    (let [stats (conn/get-compression-stats)]
+      (is (map? stats))
+      (is (contains? stats :requests-compressed)))))
+
+(deftest test-reset-compression-stats
+  (testing "Reset compression stats clears values"
+    (conn/reset-compression-stats)
+    (let [stats (conn/get-compression-stats)]
+      (is (= 0 (:requests-compressed stats)))
+      (is (= 0 (:bytes-saved stats))))))
+
+;; ============================================
+;; Response Streaming Tests
+;; ============================================
+
+(deftest test-streaming-config-atom
+  (testing "Streaming config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/streaming-config))
+    (is (map? @conn/streaming-config))
+    (is (contains? @conn/streaming-config :enabled))
+    (is (contains? @conn/streaming-config :buffer-size))
+    (is (contains? @conn/streaming-config :timeout-ms))))
+
+(deftest test-get-streaming-config
+  (testing "Get streaming config returns config"
+    (let [config (conn/get-streaming-config)]
+      (is (map? config))
+      (is (contains? config :enabled))
+      (is (contains? config :buffer-size)))))
+
+(deftest test-set-streaming-config
+  (testing "Set streaming config updates values"
+    (let [original (conn/get-streaming-config)]
+      (conn/set-streaming-config {:buffer-size 16384})
+      (is (= 16384 (:buffer-size (conn/get-streaming-config))))
+      ;; Restore
+      (conn/set-streaming-config original))))
+
+(deftest test-active-streams-atom
+  (testing "Active streams atom is initialized"
+    (is (instance? clojure.lang.Atom conn/active-streams))
+    (is (map? @conn/active-streams))))
+
+(deftest test-register-stream
+  (testing "Register stream adds to registry"
+    (reset! conn/active-streams {})
+    (conn/register-stream "test-stream" {:type :test})
+    (is (contains? @conn/active-streams "test-stream"))
+    (is (= :active (:status (get @conn/active-streams "test-stream"))))
+    (reset! conn/active-streams {})))
+
+(deftest test-unregister-stream
+  (testing "Unregister stream removes from registry"
+    (reset! conn/active-streams {"test-stream" {:status :active}})
+    (conn/unregister-stream "test-stream")
+    (is (not (contains? @conn/active-streams "test-stream")))
+    (reset! conn/active-streams {})))
+
+(deftest test-get-active-streams
+  (testing "Get active streams returns registry"
+    (reset! conn/active-streams {"stream-1" {:status :active}})
+    (let [streams (conn/get-active-streams)]
+      (is (map? streams))
+      (is (contains? streams "stream-1")))
+    (reset! conn/active-streams {})))
+
+(deftest test-close-stream
+  (testing "Close stream updates status"
+    (reset! conn/active-streams {"test-stream" {:status :active :started-at 0}})
+    (let [result (conn/close-stream "test-stream")]
+      (is (= :closed (:status result))))
+    (reset! conn/active-streams {})))
+
+(deftest test-get-stream-stats
+  (testing "Get stream stats returns statistics"
+    (reset! conn/active-streams {"stream-1" {:status :active}})
+    (let [stats (conn/get-stream-stats)]
+      (is (map? stats))
+      (is (contains? stats :active-count))
+      (is (contains? stats :total-streams)))
+    (reset! conn/active-streams {})))
+
+;; ============================================
+;; Connector Versioning Tests
+;; ============================================
+
+(deftest test-connector-versions-atom
+  (testing "Connector versions atom is initialized"
+    (is (instance? clojure.lang.Atom conn/connector-versions))
+    (is (map? @conn/connector-versions))))
+
+(deftest test-versioning-config-atom
+  (testing "Versioning config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/versioning-config))
+    (is (map? @conn/versioning-config))
+    (is (contains? @conn/versioning-config :enabled))
+    (is (contains? @conn/versioning-config :default-version))))
+
+(deftest test-get-versioning-config
+  (testing "Get versioning config returns config"
+    (let [config (conn/get-versioning-config)]
+      (is (map? config))
+      (is (contains? config :enabled))
+      (is (contains? config :default-version)))))
+
+(deftest test-set-versioning-config
+  (testing "Set versioning config updates values"
+    (let [original (conn/get-versioning-config)]
+      (conn/set-versioning-config {:default-version "2.0.0"})
+      (is (= "2.0.0" (:default-version (conn/get-versioning-config))))
+      ;; Restore
+      (conn/set-versioning-config original))))
+
+(deftest test-register-connector-version
+  (testing "Register connector version adds to registry"
+    (reset! conn/connector-versions {})
+    (conn/register-connector-version :test-connector "1.0.0")
+    (is (contains? (get @conn/connector-versions :test-connector) "1.0.0"))
+    (reset! conn/connector-versions {})))
+
+(deftest test-get-connector-version
+  (testing "Get connector version returns version info"
+    (reset! conn/connector-versions {})
+    (conn/register-connector-version :test-connector "1.0.0" :changelog "Initial release")
+    (let [version (conn/get-connector-version :test-connector "1.0.0")]
+      (is (map? version))
+      (is (= "1.0.0" (:version version))))
+    (reset! conn/connector-versions {})))
+
+(deftest test-get-latest-version
+  (testing "Get latest version returns non-deprecated version"
+    (reset! conn/connector-versions {})
+    (conn/register-connector-version :test-connector "1.0.0" :deprecated true)
+    (conn/register-connector-version :test-connector "2.0.0")
+    (let [latest (conn/get-latest-version :test-connector)]
+      (is (= "2.0.0" latest)))
+    (reset! conn/connector-versions {})))
+
+(deftest test-is-version-deprecated
+  (testing "Is version deprecated returns correct status"
+    (reset! conn/connector-versions {})
+    (conn/register-connector-version :test-connector "1.0.0" :deprecated true)
+    (is (true? (conn/is-version-deprecated? :test-connector "1.0.0")))
+    (reset! conn/connector-versions {})))
+
+(deftest test-get-deprecation-warning
+  (testing "Get deprecation warning returns warning for deprecated"
+    (reset! conn/connector-versions {})
+    (conn/register-connector-version :test-connector "1.0.0" :deprecated true :replacement-version "2.0.0")
+    (let [warning (conn/get-deprecation-warning :test-connector "1.0.0")]
+      (is (map? warning))
+      (is (contains? warning :warning))
+      (is (= "2.0.0" (:replacement-version warning))))
+    (reset! conn/connector-versions {})))
+
+(deftest test-list-connector-versions
+  (testing "List connector versions returns all versions"
+    (reset! conn/connector-versions {})
+    (conn/register-connector-version :test-connector "1.0.0")
+    (conn/register-connector-version :test-connector "2.0.0")
+    (let [versions (conn/list-connector-versions :test-connector)]
+      (is (vector? versions))
+      (is (= 2 (count versions))))
+    (reset! conn/connector-versions {})))
+
+(deftest test-get-version-stats
+  (testing "Get version stats returns statistics"
+    (reset! conn/connector-versions {})
+    (conn/register-connector-version :test-connector "1.0.0")
+    (let [stats (conn/get-version-stats)]
+      (is (map? stats))
+      (is (contains? stats :connectors))
+      (is (contains? stats :total-versions)))
+    (reset! conn/connector-versions {})))
+
+;; ============================================
+;; Request Signing Tests
+;; ============================================
+
+(deftest test-signing-config-atom
+  (testing "Signing config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/signing-config))
+    (is (map? @conn/signing-config))
+    (is (contains? @conn/signing-config :enabled))
+    (is (contains? @conn/signing-config :algorithm))
+    (is (contains? @conn/signing-config :timestamp-tolerance-ms))))
+
+(deftest test-get-signing-config
+  (testing "Get signing config returns config"
+    (let [config (conn/get-signing-config)]
+      (is (map? config))
+      (is (contains? config :enabled))
+      (is (contains? config :algorithm)))))
+
+(deftest test-set-signing-config
+  (testing "Set signing config updates values"
+    (let [original (conn/get-signing-config)]
+      (conn/set-signing-config {:algorithm :hmac-sha512})
+      (is (= :hmac-sha512 (:algorithm (conn/get-signing-config))))
+      ;; Restore
+      (conn/set-signing-config original))))
+
+(deftest test-signing-keys-atom
+  (testing "Signing keys atom is initialized"
+    (is (instance? clojure.lang.Atom conn/signing-keys))
+    (is (map? @conn/signing-keys))))
+
+(deftest test-register-signing-key
+  (testing "Register signing key adds to registry"
+    (reset! conn/signing-keys {})
+    (conn/register-signing-key :test-connector "key-1" "secret123")
+    (is (contains? (get @conn/signing-keys :test-connector) "key-1"))
+    (reset! conn/signing-keys {})))
+
+(deftest test-get-signing-key
+  (testing "Get signing key returns secret"
+    (reset! conn/signing-keys {})
+    (conn/register-signing-key :test-connector "key-1" "secret123")
+    (let [secret (conn/get-signing-key :test-connector "key-1")]
+      (is (= "secret123" secret)))
+    (reset! conn/signing-keys {})))
+
+(deftest test-compute-signature
+  (testing "Compute signature returns base64 string"
+    (let [signature (conn/compute-signature "secret" "string-to-sign" :hmac-sha256)]
+      (is (string? signature))
+      (is (pos? (count signature))))))
+
+(deftest test-create-string-to-sign
+  (testing "Create string to sign returns canonical string"
+    (let [string-to-sign (conn/create-string-to-sign "GET" "/api/test" {:host "example.com"} 1234567890)]
+      (is (string? string-to-sign))
+      (is (.contains string-to-sign "GET"))
+      (is (.contains string-to-sign "/api/test")))))
+
+(deftest test-sign-request
+  (testing "Sign request returns signature info"
+    (reset! conn/signing-keys {})
+    (conn/register-signing-key :test-connector "key-1" "secret123")
+    (let [result (conn/sign-request :test-connector "key-1" "GET" "/api/test" {} nil)]
+      (is (map? result))
+      (is (true? (:signed result)))
+      (is (contains? result :signature))
+      (is (contains? result :timestamp)))
+    (reset! conn/signing-keys {})))
+
+(deftest test-sign-request-no-key
+  (testing "Sign request returns error when key not found"
+    (reset! conn/signing-keys {})
+    (let [result (conn/sign-request :test-connector "unknown-key" "GET" "/api/test" {} nil)]
+      (is (map? result))
+      (is (false? (:signed result)))
+      (is (contains? result :error)))
+    (reset! conn/signing-keys {})))
+
+(deftest test-verify-signature
+  (testing "Verify signature validates correctly"
+    (reset! conn/signing-keys {})
+    (conn/register-signing-key :test-connector "key-1" "secret123")
+    (let [sign-result (conn/sign-request :test-connector "key-1" "GET" "/api/test" {} nil)
+          verify-result (conn/verify-signature :test-connector "key-1" "GET" "/api/test" {} (:timestamp sign-result) (:signature sign-result))]
+      (is (map? verify-result))
+      (is (true? (:valid verify-result))))
+    (reset! conn/signing-keys {})))
+
+(deftest test-get-signing-stats
+  (testing "Get signing stats returns statistics"
+    (reset! conn/signing-keys {})
+    (conn/register-signing-key :test-connector "key-1" "secret123")
+    (let [stats (conn/get-signing-stats)]
+      (is (map? stats))
+      (is (contains? stats :connectors-with-keys))
+      (is (contains? stats :total-keys)))
+    (reset! conn/signing-keys {})))
