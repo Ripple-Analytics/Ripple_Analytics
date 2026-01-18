@@ -768,3 +768,120 @@
       (is (map? (:circuit-breakers health)))
       (is (map? (:rate-limiters health)))
       (is (number? (:cache-size health))))))
+
+;; ============================================
+;; Bulk Operations Tests
+;; ============================================
+
+(deftest test-bulk-request-success
+  (testing "Bulk request executes multiple functions in parallel"
+    (conn/reset-all-circuits)
+    (let [requests [{:connector-type :test
+                     :connector {}
+                     :fn (fn [_] {:result 1})}
+                    {:connector-type :test
+                     :connector {}
+                     :fn (fn [_] {:result 2})}
+                    {:connector-type :test
+                     :connector {}
+                     :fn (fn [_] {:result 3})}]
+          results (conn/bulk-request requests)]
+      (is (vector? results))
+      (is (= 3 (count results)))
+      (is (every? #(contains? % :success) results)))))
+
+(deftest test-bulk-request-with-failures
+  (testing "Bulk request handles failures gracefully"
+    (conn/reset-all-circuits)
+    (let [requests [{:connector-type :test
+                     :connector {}
+                     :fn (fn [_] {:result 1})}
+                    {:connector-type :test
+                     :connector {}
+                     :fn (fn [_] (throw (Exception. "Test error")))}
+                    {:connector-type :test
+                     :connector {}
+                     :fn (fn [_] {:result 3})}]
+          results (conn/bulk-request requests)]
+      (is (vector? results))
+      (is (= 3 (count results)))
+      ;; First and third should succeed
+      (is (true? (:success (first results))))
+      ;; Second should fail
+      (is (false? (:success (second results)))))))
+
+;; ============================================
+;; Connector Lifecycle Management Tests
+;; ============================================
+
+(deftest test-active-connectors-atom
+  (testing "Active connectors atom is initialized"
+    (is (instance? clojure.lang.Atom conn/active-connectors))
+    (is (map? @conn/active-connectors))))
+
+(deftest test-register-connector
+  (testing "Register connector adds to active connectors"
+    (conn/shutdown-all-connectors)
+    (let [connector (conn/create-file-connector "/tmp")]
+      (conn/register-connector "test-file" :file connector)
+      (is (contains? @conn/active-connectors "test-file"))
+      (is (= :file (get-in @conn/active-connectors ["test-file" :type])))
+      (is (= :active (get-in @conn/active-connectors ["test-file" :status]))))))
+
+(deftest test-unregister-connector
+  (testing "Unregister connector removes from active connectors"
+    (conn/shutdown-all-connectors)
+    (let [connector (conn/create-file-connector "/tmp")]
+      (conn/register-connector "test-file" :file connector)
+      (is (contains? @conn/active-connectors "test-file"))
+      (conn/unregister-connector "test-file")
+      (is (not (contains? @conn/active-connectors "test-file"))))))
+
+(deftest test-get-connector
+  (testing "Get connector retrieves registered connector"
+    (conn/shutdown-all-connectors)
+    (let [connector (conn/create-file-connector "/tmp")]
+      (conn/register-connector "test-file" :file connector)
+      (let [retrieved (conn/get-connector "test-file")]
+        (is (= connector retrieved)))
+      (is (nil? (conn/get-connector "nonexistent"))))))
+
+(deftest test-list-active-connectors
+  (testing "List active connectors returns all registered"
+    (conn/shutdown-all-connectors)
+    (conn/register-connector "file1" :file (conn/create-file-connector "/tmp"))
+    (conn/register-connector "file2" :file (conn/create-file-connector "/var"))
+    (let [connectors (conn/list-active-connectors)]
+      (is (vector? connectors))
+      (is (= 2 (count connectors)))
+      (is (every? #(contains? % :name) connectors))
+      (is (every? #(contains? % :type) connectors))
+      (is (every? #(contains? % :status) connectors)))))
+
+(deftest test-health-check-all
+  (testing "Health check all runs checks on all registered connectors"
+    (conn/shutdown-all-connectors)
+    (let [test-dir "/tmp/health-check-all-test"
+          _ (.mkdirs (java.io.File. test-dir))]
+      (conn/register-connector "test-file" :file (conn/create-file-connector test-dir))
+      (let [results (conn/health-check-all)]
+        (is (map? results))
+        (is (contains? results "test-file"))
+        (is (contains? (get results "test-file") :healthy)))
+      ;; Cleanup
+      (.delete (java.io.File. test-dir)))))
+
+(deftest test-shutdown-all-connectors
+  (testing "Shutdown all connectors cleans up everything"
+    (conn/register-connector "test" :file (conn/create-file-connector "/tmp"))
+    (conn/record-request :github)
+    (conn/record-circuit-failure :github)
+    (conn/set-cached :github {:data "test"} "key")
+    
+    (let [result (conn/shutdown-all-connectors)]
+      (is (= :shutdown (:status result)))
+      (is (contains? result :timestamp))
+      (is (= {} @conn/active-connectors))
+      (is (= {} @conn/circuit-breakers))
+      (is (= {} (:requests @conn/metrics)))
+      (is (= {} @conn/response-cache)))))
