@@ -23,7 +23,7 @@
       "Each failure mode has detection signals and safeguards",
       "Tests pass for all new failure modes"
     ],
-    "created_at": "2026-01-18T01:19:27.172986",
+    "created_at": "2026-01-18T01:55:43.073507",
     "status": "suggested",
     "source": "automated"
   },
@@ -51,7 +51,7 @@
       "Examples are searchable by domain and model",
       "Examples include source citations"
     ],
-    "created_at": "2026-01-18T01:19:27.172991",
+    "created_at": "2026-01-18T01:55:43.073513",
     "status": "suggested",
     "source": "automated"
   },
@@ -78,7 +78,7 @@
       "Integration tests run in CI/CD",
       "Performance benchmarks established"
     ],
-    "created_at": "2026-01-18T01:19:27.172995",
+    "created_at": "2026-01-18T01:55:43.073517",
     "status": "suggested",
     "source": "automated"
   },
@@ -104,7 +104,7 @@
       "Property tests for all analysis functions",
       "No failures found by fuzzing"
     ],
-    "created_at": "2026-01-18T01:19:27.172998",
+    "created_at": "2026-01-18T01:55:43.073520",
     "status": "suggested",
     "source": "automated"
   },
@@ -132,7 +132,7 @@
       "Getting started guide complete",
       "Documentation builds without errors"
     ],
-    "created_at": "2026-01-18T01:19:27.173001",
+    "created_at": "2026-01-18T01:55:43.073523",
     "status": "suggested",
     "source": "automated"
   },
@@ -158,7 +158,7 @@
       "All major components documented",
       "Design decisions recorded"
     ],
-    "created_at": "2026-01-18T01:19:27.173004",
+    "created_at": "2026-01-18T01:55:43.073526",
     "status": "suggested",
     "source": "automated"
   },
@@ -183,7 +183,7 @@
       "mypy passes with strict mode",
       "All public APIs have type hints"
     ],
-    "created_at": "2026-01-18T01:19:27.173007",
+    "created_at": "2026-01-18T01:55:43.073530",
     "status": "suggested",
     "source": "automated"
   },
@@ -210,7 +210,7 @@
       "All errors have meaningful messages",
       "Error handling is consistent across modules"
     ],
-    "created_at": "2026-01-18T01:19:27.173010",
+    "created_at": "2026-01-18T01:55:43.073533",
     "status": "suggested",
     "source": "automated"
   },
@@ -239,7 +239,7 @@
       "Outcomes can be tracked over time",
       "Analytics show decision patterns"
     ],
-    "created_at": "2026-01-18T01:19:27.173013",
+    "created_at": "2026-01-18T01:55:43.073536",
     "status": "suggested",
     "source": "automated"
   },
@@ -267,7 +267,7 @@
       "System learns from user feedback",
       "Recommendation accuracy > 70%"
     ],
-    "created_at": "2026-01-18T01:19:27.173016",
+    "created_at": "2026-01-18T01:55:43.073539",
     "status": "suggested",
     "source": "automated"
   },
@@ -294,7 +294,7 @@
       "Core features available offline",
       "Syncs with main system"
     ],
-    "created_at": "2026-01-18T01:19:27.173019",
+    "created_at": "2026-01-18T01:55:43.073542",
     "status": "suggested",
     "source": "automated"
   },
@@ -321,7 +321,7 @@
       "Decision journal syncs bidirectionally",
       "Conflicts handled gracefully"
     ],
-    "created_at": "2026-01-18T01:19:27.173022",
+    "created_at": "2026-01-18T01:55:43.073546",
     "status": "suggested",
     "source": "automated"
   },
@@ -347,7 +347,7 @@
       "Reminders sent before reviews",
       "Supports multiple calendar providers"
     ],
-    "created_at": "2026-01-18T01:19:27.173026",
+    "created_at": "2026-01-18T01:55:43.073549",
     "status": "suggested",
     "source": "automated"
   },
@@ -375,7 +375,7 @@
       "Each failure mode has detection signals and safeguards",
       "Tests pass for all new failure modes"
     ],
-    "created_at": "2026-01-18T01:19:27.173049",
+    "created_at": "2026-01-18T01:55:43.073552",
     "status": "suggested",
     "source": "automated"
   },
@@ -403,7 +403,7 @@
       "Examples are searchable by domain and model",
       "Examples include source citations"
     ],
-    "created_at": "2026-01-18T01:19:27.173055",
+    "created_at": "2026-01-18T01:55:43.073555",
     "status": "suggested",
     "source": "automated"
   },
@@ -430,7 +430,7 @@
       "Integration tests run in CI/CD",
       "Performance benchmarks established"
     ],
-    "created_at": "2026-01-18T01:19:27.173061",
+    "created_at": "2026-01-18T01:55:43.073558",
     "status": "suggested",
     "source": "automated"
   },
@@ -456,7 +456,7 @@
       "Property tests for all analysis functions",
       "No failures found by fuzzing"
     ],
-    "created_at": "2026-01-18T01:19:27.173066",
+    "created_at": "2026-01-18T01:55:43.073562",
     "status": "suggested",
     "source": "automated"
   },
@@ -484,7 +484,7 @@
       "Getting started guide complete",
       "Documentation builds without errors"
     ],
-    "created_at": "2026-01-18T01:19:27.173071",
+    "created_at": "2026-01-18T01:55:43.073565",
     "status": "suggested",
     "source": "automated"
   },
@@ -510,7 +510,7 @@
       "All major components documented",
       "Design decisions recorded"
     ],
-    "created_at": "2026-01-18T01:19:27.173075",
+    "created_at": "2026-01-18T01:55:43.073568",
     "status": "suggested",
     "source": "automated"
   },
@@ -535,7 +535,7 @@
       "mypy passes with strict mode",
       "All public APIs have type hints"
     ],
-    "created_at": "2026-01-18T01:19:27.173080",
+    "created_at": "2026-01-18T01:55:43.073571",
     "status": "suggested",
     "source": "automated"
   },
@@ -562,7 +562,7 @@
       "All errors have meaningful messages",
       "Error handling is consistent across modules"
     ],
-    "created_at": "2026-01-18T01:19:27.173085",
+    "created_at": "2026-01-18T01:55:43.073574",
     "status": "suggested",
     "source": "automated"
   },
@@ -591,7 +591,7 @@
       "Outcomes can be tracked over time",
       "Analytics show decision patterns"
     ],
-    "created_at": "2026-01-18T01:19:27.173089",
+    "created_at": "2026-01-18T01:55:43.073577",
     "status": "suggested",
     "source": "automated"
   },
@@ -619,7 +619,7 @@
       "System learns from user feedback",
       "Recommendation accuracy > 70%"
     ],
-    "created_at": "2026-01-18T01:19:27.173093",
+    "created_at": "2026-01-18T01:55:43.073581",
     "status": "suggested",
     "source": "automated"
   },
@@ -646,7 +646,7 @@
       "Core features available offline",
       "Syncs with main system"
     ],
-    "created_at": "2026-01-18T01:19:27.173098",
+    "created_at": "2026-01-18T01:55:43.073584",
     "status": "suggested",
     "source": "automated"
   },
@@ -673,7 +673,7 @@
       "Decision journal syncs bidirectionally",
       "Conflicts handled gracefully"
     ],
-    "created_at": "2026-01-18T01:19:27.173103",
+    "created_at": "2026-01-18T01:55:43.073587",
     "status": "suggested",
     "source": "automated"
   },
@@ -699,7 +699,1767 @@
       "Reminders sent before reviews",
       "Supports multiple calendar providers"
     ],
-    "created_at": "2026-01-18T01:19:27.173108",
+    "created_at": "2026-01-18T01:55:43.073590",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "a24284bbee46",
+    "title": "Expand Failure Modes Database",
+    "description": "Add failure modes for all 129 mental models. Currently only 5 models have comprehensive failure mode analysis.",
+    "category": "content",
+    "priority": 2,
+    "impact_score": 0.9,
+    "effort_estimate": "large",
+    "affected_components": [
+      "safeguards/failure_modes.py",
+      "safeguards/failure_modes_deep.py"
+    ],
+    "implementation_steps": [
+      "Identify models without failure modes",
+      "Research common failure patterns for each model",
+      "Document 5 failure modes per model",
+      "Add case studies and quantitative thresholds",
+      "Write tests for new failure modes"
+    ],
+    "acceptance_criteria": [
+      "All 129 models have at least 3 failure modes",
+      "Each failure mode has detection signals and safeguards",
+      "Tests pass for all new failure modes"
+    ],
+    "created_at": "2026-01-18T01:55:43.073593",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "4f8f528e79d7",
+    "title": "Add Real-World Examples Database",
+    "description": "Create comprehensive database of real-world examples for each mental model, including business cases, historical events, and personal applications.",
+    "category": "content",
+    "priority": 3,
+    "impact_score": 0.8,
+    "effort_estimate": "large",
+    "affected_components": [
+      "data/examples/",
+      "analysis/model_analyzer.py"
+    ],
+    "implementation_steps": [
+      "Create examples data structure",
+      "Research 3-5 examples per model",
+      "Categorize by domain (business, personal, historical)",
+      "Link examples to failure modes where applicable",
+      "Add search functionality for examples"
+    ],
+    "acceptance_criteria": [
+      "Each model has at least 3 real-world examples",
+      "Examples are searchable by domain and model",
+      "Examples include source citations"
+    ],
+    "created_at": "2026-01-18T01:55:43.073596",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "61909d50977c",
+    "title": "Add Integration Test Suite",
+    "description": "Create comprehensive integration tests that test complete workflows from signal detection to Lollapalooza analysis.",
+    "category": "testing",
+    "priority": 2,
+    "impact_score": 0.85,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "tests/integration/"
+    ],
+    "implementation_steps": [
+      "Map critical user workflows",
+      "Create test fixtures with realistic data",
+      "Write end-to-end tests for each workflow",
+      "Add performance benchmarks",
+      "Set up CI/CD integration"
+    ],
+    "acceptance_criteria": [
+      "Coverage of all critical paths > 80%",
+      "Integration tests run in CI/CD",
+      "Performance benchmarks established"
+    ],
+    "created_at": "2026-01-18T01:55:43.073599",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "22a2d51fa9f8",
+    "title": "Add Property-Based Testing",
+    "description": "Implement property-based tests using Hypothesis to find edge cases in analysis algorithms.",
+    "category": "testing",
+    "priority": 3,
+    "impact_score": 0.7,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "tests/property/",
+      "analysis/"
+    ],
+    "implementation_steps": [
+      "Install Hypothesis library",
+      "Identify invariants in analysis functions",
+      "Write property-based tests for core algorithms",
+      "Add fuzzing for input validation"
+    ],
+    "acceptance_criteria": [
+      "Property tests for all analysis functions",
+      "No failures found by fuzzing"
+    ],
+    "created_at": "2026-01-18T01:55:43.073602",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "b80031d2ce1a",
+    "title": "Generate API Documentation",
+    "description": "Create comprehensive API documentation using Sphinx or MkDocs, including examples and tutorials.",
+    "category": "documentation",
+    "priority": 2,
+    "impact_score": 0.8,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "docs/",
+      "src/"
+    ],
+    "implementation_steps": [
+      "Set up documentation framework",
+      "Write docstrings for all public APIs",
+      "Create getting started guide",
+      "Add code examples for common use cases",
+      "Generate API reference automatically"
+    ],
+    "acceptance_criteria": [
+      "All public APIs documented",
+      "Getting started guide complete",
+      "Documentation builds without errors"
+    ],
+    "created_at": "2026-01-18T01:55:43.073605",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "a4bf89776b46",
+    "title": "Create Architecture Documentation",
+    "description": "Document system architecture with diagrams showing component interactions, data flows, and design decisions.",
+    "category": "documentation",
+    "priority": 3,
+    "impact_score": 0.7,
+    "effort_estimate": "small",
+    "affected_components": [
+      "docs/architecture/"
+    ],
+    "implementation_steps": [
+      "Create system overview diagram",
+      "Document each major component",
+      "Explain data flow patterns",
+      "Document design decisions and rationale"
+    ],
+    "acceptance_criteria": [
+      "Architecture diagrams created",
+      "All major components documented",
+      "Design decisions recorded"
+    ],
+    "created_at": "2026-01-18T01:55:43.073608",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "61d38a008d99",
+    "title": "Complete Type Hint Coverage",
+    "description": "Add comprehensive type hints to all modules for better IDE support and static analysis.",
+    "category": "quality",
+    "priority": 3,
+    "impact_score": 0.6,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/"
+    ],
+    "implementation_steps": [
+      "Run mypy to identify missing type hints",
+      "Add type hints to all public functions",
+      "Add type hints to class attributes",
+      "Configure strict mypy checking"
+    ],
+    "acceptance_criteria": [
+      "mypy passes with strict mode",
+      "All public APIs have type hints"
+    ],
+    "created_at": "2026-01-18T01:55:43.073611",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "6b97fcde258b",
+    "title": "Improve Error Handling",
+    "description": "Implement consistent error handling with custom exceptions and proper error messages.",
+    "category": "quality",
+    "priority": 2,
+    "impact_score": 0.75,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/",
+      "src/exceptions.py"
+    ],
+    "implementation_steps": [
+      "Create custom exception hierarchy",
+      "Replace generic exceptions with specific ones",
+      "Add error context to all exceptions",
+      "Implement error recovery where possible"
+    ],
+    "acceptance_criteria": [
+      "Custom exception classes defined",
+      "All errors have meaningful messages",
+      "Error handling is consistent across modules"
+    ],
+    "created_at": "2026-01-18T01:55:43.073614",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "0cc1be2e05a8",
+    "title": "Add Decision Journal Feature",
+    "description": "Create a decision journal that tracks decisions made using mental models, outcomes, and lessons learned.",
+    "category": "feature",
+    "priority": 2,
+    "impact_score": 0.9,
+    "effort_estimate": "large",
+    "affected_components": [
+      "src/journal/",
+      "src/api/"
+    ],
+    "implementation_steps": [
+      "Design decision journal data model",
+      "Create journal entry CRUD operations",
+      "Link entries to mental models used",
+      "Add outcome tracking and analysis",
+      "Create journal analytics dashboard"
+    ],
+    "acceptance_criteria": [
+      "Users can create decision entries",
+      "Entries link to mental models",
+      "Outcomes can be tracked over time",
+      "Analytics show decision patterns"
+    ],
+    "created_at": "2026-01-18T01:55:43.073617",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "550132ca1e25",
+    "title": "Build Model Recommendation Engine",
+    "description": "Create ML-powered recommendation system that suggests relevant mental models based on context and past usage.",
+    "category": "feature",
+    "priority": 3,
+    "impact_score": 0.85,
+    "effort_estimate": "large",
+    "affected_components": [
+      "src/analysis/recommender.py",
+      "src/ml/"
+    ],
+    "implementation_steps": [
+      "Collect usage data for training",
+      "Design recommendation algorithm",
+      "Implement collaborative filtering",
+      "Add content-based recommendations",
+      "Create A/B testing framework"
+    ],
+    "acceptance_criteria": [
+      "Recommendations are contextually relevant",
+      "System learns from user feedback",
+      "Recommendation accuracy > 70%"
+    ],
+    "created_at": "2026-01-18T01:55:43.073621",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "5db93b3d23fb",
+    "title": "Create Mobile Companion App",
+    "description": "Build a mobile app for quick mental model lookups, decision journaling, and real-time alerts.",
+    "category": "feature",
+    "priority": 4,
+    "impact_score": 0.7,
+    "effort_estimate": "large",
+    "affected_components": [
+      "mobile/"
+    ],
+    "implementation_steps": [
+      "Design mobile-first UI/UX",
+      "Choose cross-platform framework",
+      "Implement core features",
+      "Add offline support",
+      "Integrate with main system via API"
+    ],
+    "acceptance_criteria": [
+      "App works on iOS and Android",
+      "Core features available offline",
+      "Syncs with main system"
+    ],
+    "created_at": "2026-01-18T01:55:43.073624",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "0dfe8f3a8f7c",
+    "title": "Add Notion Integration",
+    "description": "Create bidirectional sync with Notion for decision journals and mental model databases.",
+    "category": "integration",
+    "priority": 3,
+    "impact_score": 0.75,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/connectors/notion.py"
+    ],
+    "implementation_steps": [
+      "Set up Notion API client",
+      "Design sync data model",
+      "Implement export to Notion",
+      "Implement import from Notion",
+      "Add conflict resolution"
+    ],
+    "acceptance_criteria": [
+      "Mental models sync to Notion database",
+      "Decision journal syncs bidirectionally",
+      "Conflicts handled gracefully"
+    ],
+    "created_at": "2026-01-18T01:55:43.073627",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "f95148333c66",
+    "title": "Add Calendar Integration",
+    "description": "Integrate with Google Calendar/Outlook to schedule decision reviews and model study sessions.",
+    "category": "integration",
+    "priority": 4,
+    "impact_score": 0.6,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/connectors/calendar.py"
+    ],
+    "implementation_steps": [
+      "Implement Google Calendar connector",
+      "Implement Outlook connector",
+      "Create scheduling logic",
+      "Add reminder notifications"
+    ],
+    "acceptance_criteria": [
+      "Events created in user's calendar",
+      "Reminders sent before reviews",
+      "Supports multiple calendar providers"
+    ],
+    "created_at": "2026-01-18T01:55:43.073630",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "49d8e9819481",
+    "title": "Expand Failure Modes Database",
+    "description": "Add failure modes for all 129 mental models. Currently only 5 models have comprehensive failure mode analysis.",
+    "category": "content",
+    "priority": 2,
+    "impact_score": 0.9,
+    "effort_estimate": "large",
+    "affected_components": [
+      "safeguards/failure_modes.py",
+      "safeguards/failure_modes_deep.py"
+    ],
+    "implementation_steps": [
+      "Identify models without failure modes",
+      "Research common failure patterns for each model",
+      "Document 5 failure modes per model",
+      "Add case studies and quantitative thresholds",
+      "Write tests for new failure modes"
+    ],
+    "acceptance_criteria": [
+      "All 129 models have at least 3 failure modes",
+      "Each failure mode has detection signals and safeguards",
+      "Tests pass for all new failure modes"
+    ],
+    "created_at": "2026-01-18T01:55:43.073633",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "12beaf382070",
+    "title": "Add Real-World Examples Database",
+    "description": "Create comprehensive database of real-world examples for each mental model, including business cases, historical events, and personal applications.",
+    "category": "content",
+    "priority": 3,
+    "impact_score": 0.8,
+    "effort_estimate": "large",
+    "affected_components": [
+      "data/examples/",
+      "analysis/model_analyzer.py"
+    ],
+    "implementation_steps": [
+      "Create examples data structure",
+      "Research 3-5 examples per model",
+      "Categorize by domain (business, personal, historical)",
+      "Link examples to failure modes where applicable",
+      "Add search functionality for examples"
+    ],
+    "acceptance_criteria": [
+      "Each model has at least 3 real-world examples",
+      "Examples are searchable by domain and model",
+      "Examples include source citations"
+    ],
+    "created_at": "2026-01-18T01:55:43.073636",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "35e4f33b86ab",
+    "title": "Add Integration Test Suite",
+    "description": "Create comprehensive integration tests that test complete workflows from signal detection to Lollapalooza analysis.",
+    "category": "testing",
+    "priority": 2,
+    "impact_score": 0.85,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "tests/integration/"
+    ],
+    "implementation_steps": [
+      "Map critical user workflows",
+      "Create test fixtures with realistic data",
+      "Write end-to-end tests for each workflow",
+      "Add performance benchmarks",
+      "Set up CI/CD integration"
+    ],
+    "acceptance_criteria": [
+      "Coverage of all critical paths > 80%",
+      "Integration tests run in CI/CD",
+      "Performance benchmarks established"
+    ],
+    "created_at": "2026-01-18T01:55:43.073639",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "6524177aedc3",
+    "title": "Add Property-Based Testing",
+    "description": "Implement property-based tests using Hypothesis to find edge cases in analysis algorithms.",
+    "category": "testing",
+    "priority": 3,
+    "impact_score": 0.7,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "tests/property/",
+      "analysis/"
+    ],
+    "implementation_steps": [
+      "Install Hypothesis library",
+      "Identify invariants in analysis functions",
+      "Write property-based tests for core algorithms",
+      "Add fuzzing for input validation"
+    ],
+    "acceptance_criteria": [
+      "Property tests for all analysis functions",
+      "No failures found by fuzzing"
+    ],
+    "created_at": "2026-01-18T01:55:43.073642",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "effd22bca758",
+    "title": "Generate API Documentation",
+    "description": "Create comprehensive API documentation using Sphinx or MkDocs, including examples and tutorials.",
+    "category": "documentation",
+    "priority": 2,
+    "impact_score": 0.8,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "docs/",
+      "src/"
+    ],
+    "implementation_steps": [
+      "Set up documentation framework",
+      "Write docstrings for all public APIs",
+      "Create getting started guide",
+      "Add code examples for common use cases",
+      "Generate API reference automatically"
+    ],
+    "acceptance_criteria": [
+      "All public APIs documented",
+      "Getting started guide complete",
+      "Documentation builds without errors"
+    ],
+    "created_at": "2026-01-18T01:55:43.073647",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "f7c0acba8c5d",
+    "title": "Create Architecture Documentation",
+    "description": "Document system architecture with diagrams showing component interactions, data flows, and design decisions.",
+    "category": "documentation",
+    "priority": 3,
+    "impact_score": 0.7,
+    "effort_estimate": "small",
+    "affected_components": [
+      "docs/architecture/"
+    ],
+    "implementation_steps": [
+      "Create system overview diagram",
+      "Document each major component",
+      "Explain data flow patterns",
+      "Document design decisions and rationale"
+    ],
+    "acceptance_criteria": [
+      "Architecture diagrams created",
+      "All major components documented",
+      "Design decisions recorded"
+    ],
+    "created_at": "2026-01-18T01:55:43.073650",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "7979c60b5af5",
+    "title": "Complete Type Hint Coverage",
+    "description": "Add comprehensive type hints to all modules for better IDE support and static analysis.",
+    "category": "quality",
+    "priority": 3,
+    "impact_score": 0.6,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/"
+    ],
+    "implementation_steps": [
+      "Run mypy to identify missing type hints",
+      "Add type hints to all public functions",
+      "Add type hints to class attributes",
+      "Configure strict mypy checking"
+    ],
+    "acceptance_criteria": [
+      "mypy passes with strict mode",
+      "All public APIs have type hints"
+    ],
+    "created_at": "2026-01-18T01:55:43.073654",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "33b072e51030",
+    "title": "Improve Error Handling",
+    "description": "Implement consistent error handling with custom exceptions and proper error messages.",
+    "category": "quality",
+    "priority": 2,
+    "impact_score": 0.75,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/",
+      "src/exceptions.py"
+    ],
+    "implementation_steps": [
+      "Create custom exception hierarchy",
+      "Replace generic exceptions with specific ones",
+      "Add error context to all exceptions",
+      "Implement error recovery where possible"
+    ],
+    "acceptance_criteria": [
+      "Custom exception classes defined",
+      "All errors have meaningful messages",
+      "Error handling is consistent across modules"
+    ],
+    "created_at": "2026-01-18T01:55:43.073656",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "ac847e68e7c3",
+    "title": "Add Decision Journal Feature",
+    "description": "Create a decision journal that tracks decisions made using mental models, outcomes, and lessons learned.",
+    "category": "feature",
+    "priority": 2,
+    "impact_score": 0.9,
+    "effort_estimate": "large",
+    "affected_components": [
+      "src/journal/",
+      "src/api/"
+    ],
+    "implementation_steps": [
+      "Design decision journal data model",
+      "Create journal entry CRUD operations",
+      "Link entries to mental models used",
+      "Add outcome tracking and analysis",
+      "Create journal analytics dashboard"
+    ],
+    "acceptance_criteria": [
+      "Users can create decision entries",
+      "Entries link to mental models",
+      "Outcomes can be tracked over time",
+      "Analytics show decision patterns"
+    ],
+    "created_at": "2026-01-18T01:55:43.073660",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "20010289fe08",
+    "title": "Build Model Recommendation Engine",
+    "description": "Create ML-powered recommendation system that suggests relevant mental models based on context and past usage.",
+    "category": "feature",
+    "priority": 3,
+    "impact_score": 0.85,
+    "effort_estimate": "large",
+    "affected_components": [
+      "src/analysis/recommender.py",
+      "src/ml/"
+    ],
+    "implementation_steps": [
+      "Collect usage data for training",
+      "Design recommendation algorithm",
+      "Implement collaborative filtering",
+      "Add content-based recommendations",
+      "Create A/B testing framework"
+    ],
+    "acceptance_criteria": [
+      "Recommendations are contextually relevant",
+      "System learns from user feedback",
+      "Recommendation accuracy > 70%"
+    ],
+    "created_at": "2026-01-18T01:55:43.073663",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "21dea2134201",
+    "title": "Create Mobile Companion App",
+    "description": "Build a mobile app for quick mental model lookups, decision journaling, and real-time alerts.",
+    "category": "feature",
+    "priority": 4,
+    "impact_score": 0.7,
+    "effort_estimate": "large",
+    "affected_components": [
+      "mobile/"
+    ],
+    "implementation_steps": [
+      "Design mobile-first UI/UX",
+      "Choose cross-platform framework",
+      "Implement core features",
+      "Add offline support",
+      "Integrate with main system via API"
+    ],
+    "acceptance_criteria": [
+      "App works on iOS and Android",
+      "Core features available offline",
+      "Syncs with main system"
+    ],
+    "created_at": "2026-01-18T01:55:43.073666",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "aaee3cd2474c",
+    "title": "Add Notion Integration",
+    "description": "Create bidirectional sync with Notion for decision journals and mental model databases.",
+    "category": "integration",
+    "priority": 3,
+    "impact_score": 0.75,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/connectors/notion.py"
+    ],
+    "implementation_steps": [
+      "Set up Notion API client",
+      "Design sync data model",
+      "Implement export to Notion",
+      "Implement import from Notion",
+      "Add conflict resolution"
+    ],
+    "acceptance_criteria": [
+      "Mental models sync to Notion database",
+      "Decision journal syncs bidirectionally",
+      "Conflicts handled gracefully"
+    ],
+    "created_at": "2026-01-18T01:55:43.073669",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "8dc1afad9848",
+    "title": "Add Calendar Integration",
+    "description": "Integrate with Google Calendar/Outlook to schedule decision reviews and model study sessions.",
+    "category": "integration",
+    "priority": 4,
+    "impact_score": 0.6,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/connectors/calendar.py"
+    ],
+    "implementation_steps": [
+      "Implement Google Calendar connector",
+      "Implement Outlook connector",
+      "Create scheduling logic",
+      "Add reminder notifications"
+    ],
+    "acceptance_criteria": [
+      "Events created in user's calendar",
+      "Reminders sent before reviews",
+      "Supports multiple calendar providers"
+    ],
+    "created_at": "2026-01-18T01:55:43.073672",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "c78a92e338bf",
+    "title": "Expand Failure Modes Database",
+    "description": "Add failure modes for all 129 mental models. Currently only 5 models have comprehensive failure mode analysis.",
+    "category": "content",
+    "priority": 2,
+    "impact_score": 0.9,
+    "effort_estimate": "large",
+    "affected_components": [
+      "safeguards/failure_modes.py",
+      "safeguards/failure_modes_deep.py"
+    ],
+    "implementation_steps": [
+      "Identify models without failure modes",
+      "Research common failure patterns for each model",
+      "Document 5 failure modes per model",
+      "Add case studies and quantitative thresholds",
+      "Write tests for new failure modes"
+    ],
+    "acceptance_criteria": [
+      "All 129 models have at least 3 failure modes",
+      "Each failure mode has detection signals and safeguards",
+      "Tests pass for all new failure modes"
+    ],
+    "created_at": "2026-01-18T01:55:43.073675",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "ea4ad8229e38",
+    "title": "Add Real-World Examples Database",
+    "description": "Create comprehensive database of real-world examples for each mental model, including business cases, historical events, and personal applications.",
+    "category": "content",
+    "priority": 3,
+    "impact_score": 0.8,
+    "effort_estimate": "large",
+    "affected_components": [
+      "data/examples/",
+      "analysis/model_analyzer.py"
+    ],
+    "implementation_steps": [
+      "Create examples data structure",
+      "Research 3-5 examples per model",
+      "Categorize by domain (business, personal, historical)",
+      "Link examples to failure modes where applicable",
+      "Add search functionality for examples"
+    ],
+    "acceptance_criteria": [
+      "Each model has at least 3 real-world examples",
+      "Examples are searchable by domain and model",
+      "Examples include source citations"
+    ],
+    "created_at": "2026-01-18T01:55:43.073678",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "c2719c8f165b",
+    "title": "Add Integration Test Suite",
+    "description": "Create comprehensive integration tests that test complete workflows from signal detection to Lollapalooza analysis.",
+    "category": "testing",
+    "priority": 2,
+    "impact_score": 0.85,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "tests/integration/"
+    ],
+    "implementation_steps": [
+      "Map critical user workflows",
+      "Create test fixtures with realistic data",
+      "Write end-to-end tests for each workflow",
+      "Add performance benchmarks",
+      "Set up CI/CD integration"
+    ],
+    "acceptance_criteria": [
+      "Coverage of all critical paths > 80%",
+      "Integration tests run in CI/CD",
+      "Performance benchmarks established"
+    ],
+    "created_at": "2026-01-18T01:55:43.073681",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "b813b364ebc3",
+    "title": "Add Property-Based Testing",
+    "description": "Implement property-based tests using Hypothesis to find edge cases in analysis algorithms.",
+    "category": "testing",
+    "priority": 3,
+    "impact_score": 0.7,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "tests/property/",
+      "analysis/"
+    ],
+    "implementation_steps": [
+      "Install Hypothesis library",
+      "Identify invariants in analysis functions",
+      "Write property-based tests for core algorithms",
+      "Add fuzzing for input validation"
+    ],
+    "acceptance_criteria": [
+      "Property tests for all analysis functions",
+      "No failures found by fuzzing"
+    ],
+    "created_at": "2026-01-18T01:55:43.073684",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "f4788b11b521",
+    "title": "Generate API Documentation",
+    "description": "Create comprehensive API documentation using Sphinx or MkDocs, including examples and tutorials.",
+    "category": "documentation",
+    "priority": 2,
+    "impact_score": 0.8,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "docs/",
+      "src/"
+    ],
+    "implementation_steps": [
+      "Set up documentation framework",
+      "Write docstrings for all public APIs",
+      "Create getting started guide",
+      "Add code examples for common use cases",
+      "Generate API reference automatically"
+    ],
+    "acceptance_criteria": [
+      "All public APIs documented",
+      "Getting started guide complete",
+      "Documentation builds without errors"
+    ],
+    "created_at": "2026-01-18T01:55:43.073687",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "9157fec58b41",
+    "title": "Create Architecture Documentation",
+    "description": "Document system architecture with diagrams showing component interactions, data flows, and design decisions.",
+    "category": "documentation",
+    "priority": 3,
+    "impact_score": 0.7,
+    "effort_estimate": "small",
+    "affected_components": [
+      "docs/architecture/"
+    ],
+    "implementation_steps": [
+      "Create system overview diagram",
+      "Document each major component",
+      "Explain data flow patterns",
+      "Document design decisions and rationale"
+    ],
+    "acceptance_criteria": [
+      "Architecture diagrams created",
+      "All major components documented",
+      "Design decisions recorded"
+    ],
+    "created_at": "2026-01-18T01:55:43.073690",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "3e41f3883a6a",
+    "title": "Complete Type Hint Coverage",
+    "description": "Add comprehensive type hints to all modules for better IDE support and static analysis.",
+    "category": "quality",
+    "priority": 3,
+    "impact_score": 0.6,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/"
+    ],
+    "implementation_steps": [
+      "Run mypy to identify missing type hints",
+      "Add type hints to all public functions",
+      "Add type hints to class attributes",
+      "Configure strict mypy checking"
+    ],
+    "acceptance_criteria": [
+      "mypy passes with strict mode",
+      "All public APIs have type hints"
+    ],
+    "created_at": "2026-01-18T01:55:43.073693",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "2b2d50c9116c",
+    "title": "Improve Error Handling",
+    "description": "Implement consistent error handling with custom exceptions and proper error messages.",
+    "category": "quality",
+    "priority": 2,
+    "impact_score": 0.75,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/",
+      "src/exceptions.py"
+    ],
+    "implementation_steps": [
+      "Create custom exception hierarchy",
+      "Replace generic exceptions with specific ones",
+      "Add error context to all exceptions",
+      "Implement error recovery where possible"
+    ],
+    "acceptance_criteria": [
+      "Custom exception classes defined",
+      "All errors have meaningful messages",
+      "Error handling is consistent across modules"
+    ],
+    "created_at": "2026-01-18T01:55:43.073696",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "76d255c5c4f3",
+    "title": "Add Decision Journal Feature",
+    "description": "Create a decision journal that tracks decisions made using mental models, outcomes, and lessons learned.",
+    "category": "feature",
+    "priority": 2,
+    "impact_score": 0.9,
+    "effort_estimate": "large",
+    "affected_components": [
+      "src/journal/",
+      "src/api/"
+    ],
+    "implementation_steps": [
+      "Design decision journal data model",
+      "Create journal entry CRUD operations",
+      "Link entries to mental models used",
+      "Add outcome tracking and analysis",
+      "Create journal analytics dashboard"
+    ],
+    "acceptance_criteria": [
+      "Users can create decision entries",
+      "Entries link to mental models",
+      "Outcomes can be tracked over time",
+      "Analytics show decision patterns"
+    ],
+    "created_at": "2026-01-18T01:55:43.073699",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "ca486a9b4462",
+    "title": "Build Model Recommendation Engine",
+    "description": "Create ML-powered recommendation system that suggests relevant mental models based on context and past usage.",
+    "category": "feature",
+    "priority": 3,
+    "impact_score": 0.85,
+    "effort_estimate": "large",
+    "affected_components": [
+      "src/analysis/recommender.py",
+      "src/ml/"
+    ],
+    "implementation_steps": [
+      "Collect usage data for training",
+      "Design recommendation algorithm",
+      "Implement collaborative filtering",
+      "Add content-based recommendations",
+      "Create A/B testing framework"
+    ],
+    "acceptance_criteria": [
+      "Recommendations are contextually relevant",
+      "System learns from user feedback",
+      "Recommendation accuracy > 70%"
+    ],
+    "created_at": "2026-01-18T01:55:43.073702",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "1b381b95ad1a",
+    "title": "Create Mobile Companion App",
+    "description": "Build a mobile app for quick mental model lookups, decision journaling, and real-time alerts.",
+    "category": "feature",
+    "priority": 4,
+    "impact_score": 0.7,
+    "effort_estimate": "large",
+    "affected_components": [
+      "mobile/"
+    ],
+    "implementation_steps": [
+      "Design mobile-first UI/UX",
+      "Choose cross-platform framework",
+      "Implement core features",
+      "Add offline support",
+      "Integrate with main system via API"
+    ],
+    "acceptance_criteria": [
+      "App works on iOS and Android",
+      "Core features available offline",
+      "Syncs with main system"
+    ],
+    "created_at": "2026-01-18T01:55:43.073705",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "599a60a0f02f",
+    "title": "Add Notion Integration",
+    "description": "Create bidirectional sync with Notion for decision journals and mental model databases.",
+    "category": "integration",
+    "priority": 3,
+    "impact_score": 0.75,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/connectors/notion.py"
+    ],
+    "implementation_steps": [
+      "Set up Notion API client",
+      "Design sync data model",
+      "Implement export to Notion",
+      "Implement import from Notion",
+      "Add conflict resolution"
+    ],
+    "acceptance_criteria": [
+      "Mental models sync to Notion database",
+      "Decision journal syncs bidirectionally",
+      "Conflicts handled gracefully"
+    ],
+    "created_at": "2026-01-18T01:55:43.073708",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "d4a75fe8b019",
+    "title": "Add Calendar Integration",
+    "description": "Integrate with Google Calendar/Outlook to schedule decision reviews and model study sessions.",
+    "category": "integration",
+    "priority": 4,
+    "impact_score": 0.6,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/connectors/calendar.py"
+    ],
+    "implementation_steps": [
+      "Implement Google Calendar connector",
+      "Implement Outlook connector",
+      "Create scheduling logic",
+      "Add reminder notifications"
+    ],
+    "acceptance_criteria": [
+      "Events created in user's calendar",
+      "Reminders sent before reviews",
+      "Supports multiple calendar providers"
+    ],
+    "created_at": "2026-01-18T01:55:43.073711",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "8d5791ebbb14",
+    "title": "Expand Failure Modes Database",
+    "description": "Add failure modes for all 129 mental models. Currently only 5 models have comprehensive failure mode analysis.",
+    "category": "content",
+    "priority": 2,
+    "impact_score": 0.9,
+    "effort_estimate": "large",
+    "affected_components": [
+      "safeguards/failure_modes.py",
+      "safeguards/failure_modes_deep.py"
+    ],
+    "implementation_steps": [
+      "Identify models without failure modes",
+      "Research common failure patterns for each model",
+      "Document 5 failure modes per model",
+      "Add case studies and quantitative thresholds",
+      "Write tests for new failure modes"
+    ],
+    "acceptance_criteria": [
+      "All 129 models have at least 3 failure modes",
+      "Each failure mode has detection signals and safeguards",
+      "Tests pass for all new failure modes"
+    ],
+    "created_at": "2026-01-18T01:55:43.073714",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "6a11acc29003",
+    "title": "Add Real-World Examples Database",
+    "description": "Create comprehensive database of real-world examples for each mental model, including business cases, historical events, and personal applications.",
+    "category": "content",
+    "priority": 3,
+    "impact_score": 0.8,
+    "effort_estimate": "large",
+    "affected_components": [
+      "data/examples/",
+      "analysis/model_analyzer.py"
+    ],
+    "implementation_steps": [
+      "Create examples data structure",
+      "Research 3-5 examples per model",
+      "Categorize by domain (business, personal, historical)",
+      "Link examples to failure modes where applicable",
+      "Add search functionality for examples"
+    ],
+    "acceptance_criteria": [
+      "Each model has at least 3 real-world examples",
+      "Examples are searchable by domain and model",
+      "Examples include source citations"
+    ],
+    "created_at": "2026-01-18T01:55:43.073717",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "fc789ba84099",
+    "title": "Add Integration Test Suite",
+    "description": "Create comprehensive integration tests that test complete workflows from signal detection to Lollapalooza analysis.",
+    "category": "testing",
+    "priority": 2,
+    "impact_score": 0.85,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "tests/integration/"
+    ],
+    "implementation_steps": [
+      "Map critical user workflows",
+      "Create test fixtures with realistic data",
+      "Write end-to-end tests for each workflow",
+      "Add performance benchmarks",
+      "Set up CI/CD integration"
+    ],
+    "acceptance_criteria": [
+      "Coverage of all critical paths > 80%",
+      "Integration tests run in CI/CD",
+      "Performance benchmarks established"
+    ],
+    "created_at": "2026-01-18T01:55:43.073744",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "01c019fee492",
+    "title": "Add Property-Based Testing",
+    "description": "Implement property-based tests using Hypothesis to find edge cases in analysis algorithms.",
+    "category": "testing",
+    "priority": 3,
+    "impact_score": 0.7,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "tests/property/",
+      "analysis/"
+    ],
+    "implementation_steps": [
+      "Install Hypothesis library",
+      "Identify invariants in analysis functions",
+      "Write property-based tests for core algorithms",
+      "Add fuzzing for input validation"
+    ],
+    "acceptance_criteria": [
+      "Property tests for all analysis functions",
+      "No failures found by fuzzing"
+    ],
+    "created_at": "2026-01-18T01:55:43.073748",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "23904ae8ef20",
+    "title": "Generate API Documentation",
+    "description": "Create comprehensive API documentation using Sphinx or MkDocs, including examples and tutorials.",
+    "category": "documentation",
+    "priority": 2,
+    "impact_score": 0.8,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "docs/",
+      "src/"
+    ],
+    "implementation_steps": [
+      "Set up documentation framework",
+      "Write docstrings for all public APIs",
+      "Create getting started guide",
+      "Add code examples for common use cases",
+      "Generate API reference automatically"
+    ],
+    "acceptance_criteria": [
+      "All public APIs documented",
+      "Getting started guide complete",
+      "Documentation builds without errors"
+    ],
+    "created_at": "2026-01-18T01:55:43.073753",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "81ed36e5a9cf",
+    "title": "Create Architecture Documentation",
+    "description": "Document system architecture with diagrams showing component interactions, data flows, and design decisions.",
+    "category": "documentation",
+    "priority": 3,
+    "impact_score": 0.7,
+    "effort_estimate": "small",
+    "affected_components": [
+      "docs/architecture/"
+    ],
+    "implementation_steps": [
+      "Create system overview diagram",
+      "Document each major component",
+      "Explain data flow patterns",
+      "Document design decisions and rationale"
+    ],
+    "acceptance_criteria": [
+      "Architecture diagrams created",
+      "All major components documented",
+      "Design decisions recorded"
+    ],
+    "created_at": "2026-01-18T01:55:43.073757",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "c1316bc9e5cb",
+    "title": "Complete Type Hint Coverage",
+    "description": "Add comprehensive type hints to all modules for better IDE support and static analysis.",
+    "category": "quality",
+    "priority": 3,
+    "impact_score": 0.6,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/"
+    ],
+    "implementation_steps": [
+      "Run mypy to identify missing type hints",
+      "Add type hints to all public functions",
+      "Add type hints to class attributes",
+      "Configure strict mypy checking"
+    ],
+    "acceptance_criteria": [
+      "mypy passes with strict mode",
+      "All public APIs have type hints"
+    ],
+    "created_at": "2026-01-18T01:55:43.073761",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "4a7a6c50119d",
+    "title": "Improve Error Handling",
+    "description": "Implement consistent error handling with custom exceptions and proper error messages.",
+    "category": "quality",
+    "priority": 2,
+    "impact_score": 0.75,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/",
+      "src/exceptions.py"
+    ],
+    "implementation_steps": [
+      "Create custom exception hierarchy",
+      "Replace generic exceptions with specific ones",
+      "Add error context to all exceptions",
+      "Implement error recovery where possible"
+    ],
+    "acceptance_criteria": [
+      "Custom exception classes defined",
+      "All errors have meaningful messages",
+      "Error handling is consistent across modules"
+    ],
+    "created_at": "2026-01-18T01:55:43.073766",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "6cf219cc0846",
+    "title": "Add Decision Journal Feature",
+    "description": "Create a decision journal that tracks decisions made using mental models, outcomes, and lessons learned.",
+    "category": "feature",
+    "priority": 2,
+    "impact_score": 0.9,
+    "effort_estimate": "large",
+    "affected_components": [
+      "src/journal/",
+      "src/api/"
+    ],
+    "implementation_steps": [
+      "Design decision journal data model",
+      "Create journal entry CRUD operations",
+      "Link entries to mental models used",
+      "Add outcome tracking and analysis",
+      "Create journal analytics dashboard"
+    ],
+    "acceptance_criteria": [
+      "Users can create decision entries",
+      "Entries link to mental models",
+      "Outcomes can be tracked over time",
+      "Analytics show decision patterns"
+    ],
+    "created_at": "2026-01-18T01:55:43.073771",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "dd988987289a",
+    "title": "Build Model Recommendation Engine",
+    "description": "Create ML-powered recommendation system that suggests relevant mental models based on context and past usage.",
+    "category": "feature",
+    "priority": 3,
+    "impact_score": 0.85,
+    "effort_estimate": "large",
+    "affected_components": [
+      "src/analysis/recommender.py",
+      "src/ml/"
+    ],
+    "implementation_steps": [
+      "Collect usage data for training",
+      "Design recommendation algorithm",
+      "Implement collaborative filtering",
+      "Add content-based recommendations",
+      "Create A/B testing framework"
+    ],
+    "acceptance_criteria": [
+      "Recommendations are contextually relevant",
+      "System learns from user feedback",
+      "Recommendation accuracy > 70%"
+    ],
+    "created_at": "2026-01-18T01:55:43.073775",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "c80217aa3518",
+    "title": "Create Mobile Companion App",
+    "description": "Build a mobile app for quick mental model lookups, decision journaling, and real-time alerts.",
+    "category": "feature",
+    "priority": 4,
+    "impact_score": 0.7,
+    "effort_estimate": "large",
+    "affected_components": [
+      "mobile/"
+    ],
+    "implementation_steps": [
+      "Design mobile-first UI/UX",
+      "Choose cross-platform framework",
+      "Implement core features",
+      "Add offline support",
+      "Integrate with main system via API"
+    ],
+    "acceptance_criteria": [
+      "App works on iOS and Android",
+      "Core features available offline",
+      "Syncs with main system"
+    ],
+    "created_at": "2026-01-18T01:55:43.073778",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "18befc2c8598",
+    "title": "Add Notion Integration",
+    "description": "Create bidirectional sync with Notion for decision journals and mental model databases.",
+    "category": "integration",
+    "priority": 3,
+    "impact_score": 0.75,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/connectors/notion.py"
+    ],
+    "implementation_steps": [
+      "Set up Notion API client",
+      "Design sync data model",
+      "Implement export to Notion",
+      "Implement import from Notion",
+      "Add conflict resolution"
+    ],
+    "acceptance_criteria": [
+      "Mental models sync to Notion database",
+      "Decision journal syncs bidirectionally",
+      "Conflicts handled gracefully"
+    ],
+    "created_at": "2026-01-18T01:55:43.073782",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "9950d16ab4b4",
+    "title": "Add Calendar Integration",
+    "description": "Integrate with Google Calendar/Outlook to schedule decision reviews and model study sessions.",
+    "category": "integration",
+    "priority": 4,
+    "impact_score": 0.6,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/connectors/calendar.py"
+    ],
+    "implementation_steps": [
+      "Implement Google Calendar connector",
+      "Implement Outlook connector",
+      "Create scheduling logic",
+      "Add reminder notifications"
+    ],
+    "acceptance_criteria": [
+      "Events created in user's calendar",
+      "Reminders sent before reviews",
+      "Supports multiple calendar providers"
+    ],
+    "created_at": "2026-01-18T01:55:43.073784",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "fa16e513a291",
+    "title": "Expand Failure Modes Database",
+    "description": "Add failure modes for all 129 mental models. Currently only 5 models have comprehensive failure mode analysis.",
+    "category": "content",
+    "priority": 2,
+    "impact_score": 0.9,
+    "effort_estimate": "large",
+    "affected_components": [
+      "safeguards/failure_modes.py",
+      "safeguards/failure_modes_deep.py"
+    ],
+    "implementation_steps": [
+      "Identify models without failure modes",
+      "Research common failure patterns for each model",
+      "Document 5 failure modes per model",
+      "Add case studies and quantitative thresholds",
+      "Write tests for new failure modes"
+    ],
+    "acceptance_criteria": [
+      "All 129 models have at least 3 failure modes",
+      "Each failure mode has detection signals and safeguards",
+      "Tests pass for all new failure modes"
+    ],
+    "created_at": "2026-01-18T01:55:43.073826",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "7fb769c329f4",
+    "title": "Add Real-World Examples Database",
+    "description": "Create comprehensive database of real-world examples for each mental model, including business cases, historical events, and personal applications.",
+    "category": "content",
+    "priority": 3,
+    "impact_score": 0.8,
+    "effort_estimate": "large",
+    "affected_components": [
+      "data/examples/",
+      "analysis/model_analyzer.py"
+    ],
+    "implementation_steps": [
+      "Create examples data structure",
+      "Research 3-5 examples per model",
+      "Categorize by domain (business, personal, historical)",
+      "Link examples to failure modes where applicable",
+      "Add search functionality for examples"
+    ],
+    "acceptance_criteria": [
+      "Each model has at least 3 real-world examples",
+      "Examples are searchable by domain and model",
+      "Examples include source citations"
+    ],
+    "created_at": "2026-01-18T01:55:43.073832",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "7897df3b3840",
+    "title": "Add Integration Test Suite",
+    "description": "Create comprehensive integration tests that test complete workflows from signal detection to Lollapalooza analysis.",
+    "category": "testing",
+    "priority": 2,
+    "impact_score": 0.85,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "tests/integration/"
+    ],
+    "implementation_steps": [
+      "Map critical user workflows",
+      "Create test fixtures with realistic data",
+      "Write end-to-end tests for each workflow",
+      "Add performance benchmarks",
+      "Set up CI/CD integration"
+    ],
+    "acceptance_criteria": [
+      "Coverage of all critical paths > 80%",
+      "Integration tests run in CI/CD",
+      "Performance benchmarks established"
+    ],
+    "created_at": "2026-01-18T01:55:43.073838",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "2a2089b6356e",
+    "title": "Add Property-Based Testing",
+    "description": "Implement property-based tests using Hypothesis to find edge cases in analysis algorithms.",
+    "category": "testing",
+    "priority": 3,
+    "impact_score": 0.7,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "tests/property/",
+      "analysis/"
+    ],
+    "implementation_steps": [
+      "Install Hypothesis library",
+      "Identify invariants in analysis functions",
+      "Write property-based tests for core algorithms",
+      "Add fuzzing for input validation"
+    ],
+    "acceptance_criteria": [
+      "Property tests for all analysis functions",
+      "No failures found by fuzzing"
+    ],
+    "created_at": "2026-01-18T01:55:43.073843",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "d99184e507e7",
+    "title": "Generate API Documentation",
+    "description": "Create comprehensive API documentation using Sphinx or MkDocs, including examples and tutorials.",
+    "category": "documentation",
+    "priority": 2,
+    "impact_score": 0.8,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "docs/",
+      "src/"
+    ],
+    "implementation_steps": [
+      "Set up documentation framework",
+      "Write docstrings for all public APIs",
+      "Create getting started guide",
+      "Add code examples for common use cases",
+      "Generate API reference automatically"
+    ],
+    "acceptance_criteria": [
+      "All public APIs documented",
+      "Getting started guide complete",
+      "Documentation builds without errors"
+    ],
+    "created_at": "2026-01-18T01:55:43.073848",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "008ecbafd9c1",
+    "title": "Create Architecture Documentation",
+    "description": "Document system architecture with diagrams showing component interactions, data flows, and design decisions.",
+    "category": "documentation",
+    "priority": 3,
+    "impact_score": 0.7,
+    "effort_estimate": "small",
+    "affected_components": [
+      "docs/architecture/"
+    ],
+    "implementation_steps": [
+      "Create system overview diagram",
+      "Document each major component",
+      "Explain data flow patterns",
+      "Document design decisions and rationale"
+    ],
+    "acceptance_criteria": [
+      "Architecture diagrams created",
+      "All major components documented",
+      "Design decisions recorded"
+    ],
+    "created_at": "2026-01-18T01:55:43.073853",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "28d3b6ee1ee6",
+    "title": "Complete Type Hint Coverage",
+    "description": "Add comprehensive type hints to all modules for better IDE support and static analysis.",
+    "category": "quality",
+    "priority": 3,
+    "impact_score": 0.6,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/"
+    ],
+    "implementation_steps": [
+      "Run mypy to identify missing type hints",
+      "Add type hints to all public functions",
+      "Add type hints to class attributes",
+      "Configure strict mypy checking"
+    ],
+    "acceptance_criteria": [
+      "mypy passes with strict mode",
+      "All public APIs have type hints"
+    ],
+    "created_at": "2026-01-18T01:55:43.073858",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "e8b3a3daeb8f",
+    "title": "Improve Error Handling",
+    "description": "Implement consistent error handling with custom exceptions and proper error messages.",
+    "category": "quality",
+    "priority": 2,
+    "impact_score": 0.75,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/",
+      "src/exceptions.py"
+    ],
+    "implementation_steps": [
+      "Create custom exception hierarchy",
+      "Replace generic exceptions with specific ones",
+      "Add error context to all exceptions",
+      "Implement error recovery where possible"
+    ],
+    "acceptance_criteria": [
+      "Custom exception classes defined",
+      "All errors have meaningful messages",
+      "Error handling is consistent across modules"
+    ],
+    "created_at": "2026-01-18T01:55:43.073863",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "19aff7732c08",
+    "title": "Add Decision Journal Feature",
+    "description": "Create a decision journal that tracks decisions made using mental models, outcomes, and lessons learned.",
+    "category": "feature",
+    "priority": 2,
+    "impact_score": 0.9,
+    "effort_estimate": "large",
+    "affected_components": [
+      "src/journal/",
+      "src/api/"
+    ],
+    "implementation_steps": [
+      "Design decision journal data model",
+      "Create journal entry CRUD operations",
+      "Link entries to mental models used",
+      "Add outcome tracking and analysis",
+      "Create journal analytics dashboard"
+    ],
+    "acceptance_criteria": [
+      "Users can create decision entries",
+      "Entries link to mental models",
+      "Outcomes can be tracked over time",
+      "Analytics show decision patterns"
+    ],
+    "created_at": "2026-01-18T01:55:43.073869",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "25b860fc8a58",
+    "title": "Build Model Recommendation Engine",
+    "description": "Create ML-powered recommendation system that suggests relevant mental models based on context and past usage.",
+    "category": "feature",
+    "priority": 3,
+    "impact_score": 0.85,
+    "effort_estimate": "large",
+    "affected_components": [
+      "src/analysis/recommender.py",
+      "src/ml/"
+    ],
+    "implementation_steps": [
+      "Collect usage data for training",
+      "Design recommendation algorithm",
+      "Implement collaborative filtering",
+      "Add content-based recommendations",
+      "Create A/B testing framework"
+    ],
+    "acceptance_criteria": [
+      "Recommendations are contextually relevant",
+      "System learns from user feedback",
+      "Recommendation accuracy > 70%"
+    ],
+    "created_at": "2026-01-18T01:55:43.073873",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "ec9b47f586e3",
+    "title": "Create Mobile Companion App",
+    "description": "Build a mobile app for quick mental model lookups, decision journaling, and real-time alerts.",
+    "category": "feature",
+    "priority": 4,
+    "impact_score": 0.7,
+    "effort_estimate": "large",
+    "affected_components": [
+      "mobile/"
+    ],
+    "implementation_steps": [
+      "Design mobile-first UI/UX",
+      "Choose cross-platform framework",
+      "Implement core features",
+      "Add offline support",
+      "Integrate with main system via API"
+    ],
+    "acceptance_criteria": [
+      "App works on iOS and Android",
+      "Core features available offline",
+      "Syncs with main system"
+    ],
+    "created_at": "2026-01-18T01:55:43.073878",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "0ea5af52f445",
+    "title": "Add Notion Integration",
+    "description": "Create bidirectional sync with Notion for decision journals and mental model databases.",
+    "category": "integration",
+    "priority": 3,
+    "impact_score": 0.75,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/connectors/notion.py"
+    ],
+    "implementation_steps": [
+      "Set up Notion API client",
+      "Design sync data model",
+      "Implement export to Notion",
+      "Implement import from Notion",
+      "Add conflict resolution"
+    ],
+    "acceptance_criteria": [
+      "Mental models sync to Notion database",
+      "Decision journal syncs bidirectionally",
+      "Conflicts handled gracefully"
+    ],
+    "created_at": "2026-01-18T01:55:43.073883",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "75b8e40f2d60",
+    "title": "Add Calendar Integration",
+    "description": "Integrate with Google Calendar/Outlook to schedule decision reviews and model study sessions.",
+    "category": "integration",
+    "priority": 4,
+    "impact_score": 0.6,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/connectors/calendar.py"
+    ],
+    "implementation_steps": [
+      "Implement Google Calendar connector",
+      "Implement Outlook connector",
+      "Create scheduling logic",
+      "Add reminder notifications"
+    ],
+    "acceptance_criteria": [
+      "Events created in user's calendar",
+      "Reminders sent before reviews",
+      "Supports multiple calendar providers"
+    ],
+    "created_at": "2026-01-18T01:55:43.073888",
     "status": "suggested",
     "source": "automated"
   }

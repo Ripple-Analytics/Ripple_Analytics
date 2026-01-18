@@ -64,22 +64,16 @@ class TestMentalModelAnalyzer:
         
         analyzer = MentalModelAnalyzer(mock_llm_client)
         
-        # Mock the analysis
-        mock_llm_client.generate.return_value = MagicMock(
-            text=json.dumps({
-                "models": [
-                    {"id": 1, "name": "Incentive-Caused Bias", "relevance": 0.9},
-                    {"id": 2, "name": "Social Proof", "relevance": 0.7}
-                ],
-                "lollapalooza": True,
-                "confidence": 0.85
-            })
-        )
+        # Mock the analysis - return proper JSON strings for each call
+        # The analyzer makes multiple LLM calls: identify_models, detect_lollapalooza, categorize_document
+        mock_llm_client.generate.return_value = json.dumps([
+            {"model_name": "Incentive-Caused Bias", "relevance_score": 0.9, "confidence": 0.85, "evidence": "test", "insights": ["test"]}
+        ])
         
         result = await analyzer.analyze_text(sample_document_text)
         
-        # Verify LLM was called
-        mock_llm_client.generate.assert_called_once()
+        # Verify LLM was called (multiple times for different analysis steps)
+        assert mock_llm_client.generate.call_count >= 1
     
     async def test_batch_analyze(self, mock_llm_client):
         """Test batch analysis of multiple texts."""

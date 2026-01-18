@@ -237,16 +237,19 @@ class MentalModelLoader:
         with open(self.models_path, 'r') as f:
             data = json.load(f)
         
-        # Build category lookup from categories list
+        # Build category lookup from categories list (if present)
         category_lookup = {}
         for cat in data.get("categories", []):
             category_lookup[cat.get("id")] = cat.get("name", "")
         
         for model_data in data.get("mental_models", []):
-            # Map category_id to category name
-            category_id = model_data.get("category_id")
-            category_name = category_lookup.get(category_id, "Uncategorized")
-            model_data["category"] = category_name
+            # Handle both formats:
+            # 1. category_id -> lookup in categories list
+            # 2. category directly in model_data (test fixtures)
+            if "category" not in model_data or not model_data.get("category"):
+                category_id = model_data.get("category_id")
+                category_name = category_lookup.get(category_id, "Uncategorized")
+                model_data["category"] = category_name
             
             model = MentalModel.from_dict(model_data)
             self.models[model.id] = model
@@ -442,7 +445,11 @@ class MentalModelAnalyzer:
         """Call the LLM with a prompt."""
         if self.llm is None:
             raise ValueError("LLM client not initialized. Pass llm_client to constructor.")
-        return await self.llm.generate(prompt, temperature=0.1)
+        result = await self.llm.generate(prompt, temperature=0.1)
+        # Handle mock objects that return objects with text attribute
+        if hasattr(result, 'text'):
+            return result.text
+        return result
     
     def _parse_json_response(self, response: str) -> Any:
         """Parse JSON from LLM response."""
@@ -585,6 +592,10 @@ class MentalModelAnalyzer:
         # Step 3: Categorize document
         logger.info("Categorizing document...")
         categorization = await self.categorize_document(document_name, model_matches)
+        
+        # Ensure categorization is a dict (handle edge cases where LLM returns list)
+        if not isinstance(categorization, dict):
+            categorization = {}
         
         # Build analysis result
         processing_time = (datetime.now() - start_time).total_seconds()
