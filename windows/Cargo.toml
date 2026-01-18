@@ -1,0 +1,68 @@
+[package]
+name = "mental-models-windows"
+version = "1.0.0"
+edition = "2021"
+description = "Mental Models Windows App - Distributed Compute Mesh with Continuous Data Harvesting"
+authors = ["Ripple Analytics"]
+license = "MIT"
+
+[dependencies]
+# Tauri
+tauri = { version = "1.5", features = ["shell-open", "system-tray", "updater"] }
+
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+futures = "0.3"
+
+# HTTP client
+reqwest = { version = "0.11", features = ["json", "rustls-tls", "stream"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# UUID
+uuid = { version = "1.6", features = ["v4"] }
+
+# System info
+num_cpus = "1.16"
+sysinfo = "0.30"
+hostname = "0.3"
+
+# File watching
+notify = "6.1"
+walkdir = "2.4"
+
+# Web scraping
+scraper = "0.18"
+url = "2.5"
+
+# RSS/Atom parsing
+feed-rs = "1.4"
+
+# Directories
+dirs = "5.0"
+
+# mDNS for mesh discovery
+mdns-sd = "0.10"
+
+# GPU compute (optional)
+# cuda-runtime-sys = { version = "0.3", optional = true }
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
+gpu = []
+
+[build-dependencies]
+tauri-build = { version = "1.5", features = [] }
+
+[[bin]]
+name = "mental-models"
+path = "src/main.rs"
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
