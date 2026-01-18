@@ -83,6 +83,42 @@
       ],
       "enabled": true,
       "usage_count": 0
+    },
+    {
+      "key_hash": "7f99575dc3d7ce499be2d433bcf764d3109d565e49f5acea2d6d32d9bf3674ce",
+      "name": "test_key",
+      "created_at": "2026-01-18T01:10:20.505839",
+      "expires_at": null,
+      "rate_limit_multiplier": 1.0,
+      "scopes": [
+        "read"
+      ],
+      "enabled": true,
+      "usage_count": 0
+    },
+    {
+      "key_hash": "8c127e639e37a4a2c815b241ddedf021d7e93187a5ec48d84320e19ac9aaca8b",
+      "name": "test_key",
+      "created_at": "2026-01-18T01:14:11.618089",
+      "expires_at": null,
+      "rate_limit_multiplier": 1.0,
+      "scopes": [
+        "read"
+      ],
+      "enabled": true,
+      "usage_count": 0
+    },
+    {
+      "key_hash": "e95a22ad4b58e8ac220ba622cecb0e9355afd213d32c61b4868e566d937e1703",
+      "name": "test_key",
+      "created_at": "2026-01-18T01:15:30.965402",
+      "expires_at": null,
+      "rate_limit_multiplier": 1.0,
+      "scopes": [
+        "read"
+      ],
+      "enabled": true,
+      "usage_count": 0
     }
   ]
 }

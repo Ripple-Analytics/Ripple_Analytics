@@ -850,6 +850,85 @@ DEEP_FAILURE_MODES["1_F3"] = DeepFailureMode(
 # This would continue for all 129 models with similar depth
 
 # =============================================================================
+# ANALYZER CLASS
+# =============================================================================
+
+class DeepFailureModeAnalyzer:
+    """Analyzer for deep failure modes with comprehensive analysis."""
+    
+    def __init__(self):
+        self.failure_modes = DEEP_FAILURE_MODES
+    
+    def get_deep_analysis(self, model_id: int) -> List[Dict]:
+        """Get deep analysis for a specific model."""
+        results = []
+        for fm in self.failure_modes.values():
+            if fm.model_id == model_id:
+                results.append({
+                    "id": fm.id,
+                    "failure_name": fm.failure_name,
+                    "description": fm.description,
+                    "mechanism": fm.mechanism,
+                    "psychological_root": fm.psychological_root,
+                    "case_studies": [
+                        {
+                            "name": cs.name,
+                            "year": cs.year,
+                            "entity": cs.entity,
+                            "description": cs.description,
+                            "quantitative_impact": cs.quantitative_impact
+                        }
+                        for cs in fm.case_studies
+                    ],
+                    "quantitative_thresholds": [
+                        {
+                            "metric_name": qt.metric_name,
+                            "warning": qt.warning_threshold,
+                            "critical": qt.critical_threshold
+                        }
+                        for qt in fm.quantitative_thresholds
+                    ],
+                    "behavioral_signals": fm.behavioral_signals,
+                    "safeguards": {
+                        "structural": fm.structural_safeguards,
+                        "cognitive": fm.cognitive_safeguards,
+                        "social": fm.social_safeguards
+                    }
+                })
+        return results
+    
+    def get_case_studies(self, model_id: int) -> List[Dict]:
+        """Get case studies for a model."""
+        studies = []
+        for fm in self.failure_modes.values():
+            if fm.model_id == model_id:
+                for cs in fm.case_studies:
+                    studies.append({
+                        "name": cs.name,
+                        "title": cs.name,
+                        "year": cs.year,
+                        "entity": cs.entity,
+                        "description": cs.description,
+                        "impact": cs.quantitative_impact
+                    })
+        return studies
+    
+    def get_thresholds(self, model_id: int) -> List[Dict]:
+        """Get quantitative thresholds for a model."""
+        thresholds = []
+        for fm in self.failure_modes.values():
+            if fm.model_id == model_id:
+                for qt in fm.quantitative_thresholds:
+                    thresholds.append({
+                        "metric": qt.metric_name,
+                        "warning": qt.warning_threshold,
+                        "critical": qt.critical_threshold,
+                        "method": qt.measurement_method
+                    })
+        return thresholds
+
+
+# =============================================================================
 # HELPER FUNCTIONS
 # =============================================================================
 
