@@ -849,6 +849,115 @@
      {:status :shutdown :timestamp (java.time.Instant/now)}))
 
 ;; ============================================
+;; Connector Factory Pattern
+;; ============================================
+
+(def connector-registry
+  "Registry of connector types and their factory functions."
+  (atom {}))
+
+#?(:clj
+   (defn register-connector-type
+     "Register a connector type with its factory function.
+      Factory function should accept a config map and return a connector."
+     [connector-type factory-fn & {:keys [description required-config]}]
+     (swap! connector-registry assoc connector-type
+            {:factory-fn factory-fn
+             :description description
+             :required-config (or required-config [])
+             :registered-at (java.time.Instant/now)})))
+
+#?(:clj
+   (defn unregister-connector-type
+     "Unregister a connector type."
+     [connector-type]
+     (swap! connector-registry dissoc connector-type)))
+
+#?(:clj
+   (defn list-connector-types
+     "List all registered connector types."
+     []
+     (mapv (fn [[type info]]
+             {:type type
+              :description (:description info)
+              :required-config (:required-config info)})
+           @connector-registry)))
+
+#?(:clj
+   (defn create-connector
+     "Create a connector using the factory pattern.
+      Validates required config and calls the registered factory function."
+     [connector-type config]
+     (if-let [type-info (get @connector-registry connector-type)]
+       (let [required (:required-config type-info)
+             missing (filter #(not (contains? config %)) required)]
+         (if (seq missing)
+           {:error (str "Missing required config: " (str/join ", " (map name missing)))
+            :status :error}
+           (try
+             (let [connector ((:factory-fn type-info) config)]
+               (emit-event :connector-created {:connector-type connector-type :config (dissoc config :api-key :token :password)})
+               connector)
+             (catch Exception e
+               {:error (.getMessage e) :status :error}))))
+       {:error (str "Unknown connector type: " (name connector-type))
+        :status :error})))
+
+#?(:clj
+   (defn create-and-register
+     "Create a connector and register it for lifecycle management."
+     [name connector-type config]
+     (let [connector (create-connector connector-type config)]
+       (if (:error connector)
+         connector
+         (do
+           (register-connector name connector-type connector)
+           {:status :success
+            :name name
+            :connector-type connector-type
+            :connector connector})))))
+
+;; Register built-in connector types
+#?(:clj
+   (do
+     (register-connector-type :github
+       (fn [{:keys [token]}] (create-github-connector token))
+       :description "GitHub API connector"
+       :required-config [:token])
+     
+     (register-connector-type :slack
+       (fn [{:keys [token]}] (create-slack-connector token))
+       :description "Slack API connector"
+       :required-config [:token])
+     
+     (register-connector-type :huggingface
+       (fn [{:keys [api-key]}] (create-huggingface-connector api-key))
+       :description "Huggingface inference API connector"
+       :required-config [:api-key])
+     
+     (register-connector-type :lm-studio
+       (fn [{:keys [base-url] :or {base-url "http://localhost:1234"}}]
+         (create-lm-studio-connector base-url))
+       :description "LM Studio local LLM connector"
+       :required-config [])
+     
+     (register-connector-type :zapier
+       (fn [{:keys [webhook-url]}] (create-zapier-connector webhook-url))
+       :description "Zapier webhook connector"
+       :required-config [:webhook-url])
+     
+     (register-connector-type :web-scraper
+       (fn [{:keys [user-agent] :or {user-agent "Mozilla/5.0"}}]
+         (create-web-scraper-connector user-agent))
+       :description "Web scraper connector"
+       :required-config [])
+     
+     (register-connector-type :file
+       (fn [{:keys [base-path]}] (create-file-connector base-path))
+       :description "Local file system connector"
+       :required-config [:base-path])))
+
+;; ============================================
 ;; Request/Response Logging
 ;; ============================================
 
