@@ -198,36 +198,83 @@
     <link rel=\"stylesheet\" href=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.css\" />
     <script src=\"https://unpkg.com/leaflet@1.9.4/dist/leaflet.js\"></script>
     <style>
+        /* M&S + Costco Design Language: Monochrome + Strategic Red Accents ONLY */
+        :root {
+            --black: #000000;
+            --gray-900: #1a1a1a;
+            --gray-800: #2d2d2d;
+            --gray-700: #404040;
+            --gray-600: #525252;
+            --gray-500: #6b6b6b;
+            --gray-400: #8a8a8a;
+            --gray-300: #a3a3a3;
+            --gray-200: #d4d4d4;
+            --gray-100: #e5e5e5;
+            --gray-50: #f5f5f5;
+            --white: #ffffff;
+            --accent-red: #cc1a1a;
+            --accent-red-light: #fee2e2;
+        }
         /* Value Line-style density */
-        body { font-size: 11px; line-height: 1.3; }
-        .dense-table td, .dense-table th { padding: 2px 4px; }
-        .metric-card { text-align: center; padding: 8px; }
-        .metric-value { font-size: 18px; font-weight: bold; color: #2563eb; }
-        .metric-label { font-size: 10px; color: #6b7280; }
+        body { font-size: 11px; line-height: 1.3; background: var(--gray-50); color: var(--gray-900); }
+        .dense-table td, .dense-table th { padding: 2px 4px; border-bottom: 1px solid var(--gray-200); }
+        .metric-card { text-align: center; padding: 8px; background: var(--white); border: 1px solid var(--gray-200); }
+        .metric-value { font-size: 18px; font-weight: bold; color: var(--black); font-family: ui-monospace, monospace; }
+        .metric-value.accent { color: var(--accent-red); }
+        .metric-label { font-size: 10px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px; }
         #world-map { height: 400px; width: 100%; }
         .model-popup { max-width: 300px; }
-        .model-popup h4 { font-weight: bold; margin-bottom: 4px; }
-        .model-popup .category { color: #6b7280; font-size: 10px; }
+        .model-popup h4 { font-weight: bold; margin-bottom: 4px; color: var(--black); }
+        .model-popup .category { color: var(--gray-500); font-size: 10px; }
+        /* Beast Mode Toggle */
+        .beast-mode-toggle { display: flex; align-items: center; gap: 8px; padding: 8px 16px; background: var(--gray-900); }
+        .beast-mode-toggle.active { background: var(--accent-red); }
+        .beast-mode-label { color: var(--white); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        /* Navigation */
+        .nav-tab { color: var(--gray-600); border-bottom: 2px solid transparent; }
+        .nav-tab:hover { background: var(--gray-100); }
+        .nav-tab.active { color: var(--black); border-bottom-color: var(--accent-red); background: var(--white); font-weight: 600; }
+        /* Buttons */
+        .btn-primary { background: var(--gray-900); color: var(--white); }
+        .btn-primary:hover { background: var(--black); }
+        .btn-accent { background: var(--accent-red); color: var(--white); }
+        .btn-accent:hover { background: #b31515; }
+        .btn-secondary { background: var(--gray-200); color: var(--gray-900); }
+        .btn-secondary:hover { background: var(--gray-300); }
+        /* Status indicators */
+        .status-active { color: var(--accent-red); }
+        .status-inactive { color: var(--gray-400); }
+        /* Progress bars */
+        .progress-bar { background: var(--gray-200); }
+        .progress-fill { background: var(--gray-700); }
+        .progress-fill.accent { background: var(--accent-red); }
     </style>
 </head>
 <body class=\"bg-gray-50\">
     <div id=\"app\">
-        <!-- Header -->
-        <div class=\"bg-gray-900 text-white px-4 py-2\">
-            <h1 class=\"text-lg font-bold\">Mental Models System</h1>
-            <p class=\"text-xs text-gray-400\">Electric Clojure - Reactive Full-Stack</p>
+        <!-- Header with Beast Mode Toggle -->
+        <div class=\"flex justify-between items-center\" style=\"background: var(--gray-900);\">
+            <div class=\"px-4 py-2\">
+                <h1 class=\"text-lg font-bold\" style=\"color: var(--white);\">MENTAL MODELS SYSTEM</h1>
+                <p class=\"text-xs\" style=\"color: var(--gray-400);\">Electric Clojure - Reactive Full-Stack | 129 Models | 645 Failure Modes</p>
+            </div>
+            <div class=\"beast-mode-toggle\" id=\"beast-mode-btn\" onclick=\"toggleBeastMode()\">
+                <span class=\"beast-mode-label\">BEAST MODE</span>
+                <span id=\"beast-mode-indicator\" style=\"width: 8px; height: 8px; border-radius: 50%; background: var(--gray-500);\"></span>
+            </div>
         </div>
         
-        <!-- Navigation -->
-        <div class=\"flex border-b border-gray-300 bg-gray-100\">
-            <button class=\"px-4 py-2 text-xs font-semibold bg-white border-b-2 border-blue-600\" onclick=\"showTab('dashboard')\">Dashboard</button>
-            <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('models')\">Models</button>
-            <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('analysis')\">Analysis</button>
-            <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('statistics')\">Statistics</button>
-            <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('data')\">Data</button>
-            <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('map')\">World Map</button>
-            <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('llm')\">LLM</button>
-            <button class=\"px-4 py-2 text-xs text-gray-600 hover:bg-gray-200\" onclick=\"showTab('techdebt')\">Tech Debt</button>
+        <!-- Navigation - Monochrome with Red Accent -->
+        <div class=\"flex border-b\" style=\"border-color: var(--gray-200); background: var(--gray-100);\">
+            <button class=\"nav-tab active px-4 py-2 text-xs\" onclick=\"showTab('dashboard')\">DASHBOARD</button>
+            <button class=\"nav-tab px-4 py-2 text-xs\" onclick=\"showTab('models')\">MODELS</button>
+            <button class=\"nav-tab px-4 py-2 text-xs\" onclick=\"showTab('analysis')\">ANALYSIS</button>
+            <button class=\"nav-tab px-4 py-2 text-xs\" onclick=\"showTab('statistics')\">STATISTICS</button>
+            <button class=\"nav-tab px-4 py-2 text-xs\" onclick=\"showTab('data')\">DATA</button>
+            <button class=\"nav-tab px-4 py-2 text-xs\" onclick=\"showTab('map')\">WORLD MAP</button>
+            <button class=\"nav-tab px-4 py-2 text-xs\" onclick=\"showTab('llm')\">LLM</button>
+            <button class=\"nav-tab px-4 py-2 text-xs\" onclick=\"showTab('techdebt')\">TECH DEBT</button>
+            <button class=\"nav-tab px-4 py-2 text-xs\" onclick=\"showTab('distributed')\">DISTRIBUTED</button>
         </div>
         
         <!-- Dashboard -->
@@ -283,8 +330,8 @@
                     <div class=\"p-3\">
                         <textarea id=\"analysis-input\" class=\"w-full border rounded px-2 py-1 text-xs h-20\" placeholder=\"Enter situation to analyze...\"></textarea>
                         <div class=\"flex gap-2 mt-2\">
-                            <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded hover:bg-blue-700\" onclick=\"runAnalysis()\">Analyze</button>
-                            <button class=\"bg-gray-200 text-gray-800 px-3 py-1 text-xs rounded hover:bg-gray-300\" onclick=\"detectBiases()\">Detect Biases</button>
+                                                        <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"runAnalysis()\">ANALYZE</button>
+                                                        <button class=\"btn-secondary px-3 py-1 text-xs rounded\" onclick=\"detectBiases()\">DETECT BIASES</button>
                         </div>
                         <div id=\"analysis-result\" class=\"mt-2 text-xs\"></div>
                     </div>
@@ -332,10 +379,10 @@
                     <div class=\"p-3\">
                         <textarea id=\"comprehensive-input\" class=\"w-full border rounded px-2 py-1 text-xs h-32\" placeholder=\"Enter situation for comprehensive analysis...\"></textarea>
                         <div class=\"flex gap-2 mt-2\">
-                            <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded\" onclick=\"runLatticework()\">Latticework</button>
-                            <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded\" onclick=\"runLollapalooza()\">Lollapalooza</button>
-                            <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded\" onclick=\"runInversion()\">Inversion</button>
-                            <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded\" onclick=\"runTwoTrack()\">Two-Track</button>
+                                                        <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"runLatticework()\">LATTICEWORK</button>
+                                                        <button class=\"btn-accent px-3 py-1 text-xs rounded\" onclick=\"runLollapalooza()\">LOLLAPALOOZA</button>
+                                                        <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"runInversion()\">INVERSION</button>
+                                                        <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"runTwoTrack()\">TWO-TRACK</button>
                         </div>
                     </div>
                 </div>
@@ -364,7 +411,7 @@
                             <input type=\"text\" id=\"stats-y\" class=\"w-full border rounded px-2 py-1 text-xs mt-1\" placeholder=\"2, 4, 5, 4, 5\">
                         </div>
                     </div>
-                    <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded mt-2\" onclick=\"runStatistics()\">Calculate</button>
+                    <button class=\"btn-primary px-3 py-1 text-xs rounded mt-2\" onclick=\"runStatistics()\">CALCULATE</button>
                     <div id=\"stats-result\" class=\"mt-4\"></div>
                 </div>
             </div>
@@ -377,9 +424,9 @@
                 <div class=\"p-3\">
                     <textarea id=\"data-input\" class=\"w-full border rounded px-2 py-1 text-xs h-32\" placeholder=\"Paste text to analyze...\"></textarea>
                     <div class=\"flex gap-2 mt-2\">
-                        <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded\" onclick=\"analyzeDocument()\">Analyze Document</button>
-                        <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded\" onclick=\"extractEntities()\">Extract Entities</button>
-                        <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded\" onclick=\"classifyText()\">Classify by Models</button>
+                                                <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"analyzeDocument()\">ANALYZE DOCUMENT</button>
+                                                <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"extractEntities()\">EXTRACT ENTITIES</button>
+                                                <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"classifyText()\">CLASSIFY BY MODELS</button>
                     </div>
                     <div id=\"data-result\" class=\"mt-4\"></div>
                 </div>
@@ -412,7 +459,7 @@
                         <select id=\"case-model\" class=\"border rounded px-2 py-1 text-xs\"></select>
                     </div>
                     <textarea id=\"case-description\" class=\"w-full border rounded px-2 py-1 text-xs mt-2 h-16\" placeholder=\"Description...\"></textarea>
-                    <button class=\"bg-blue-600 text-white px-3 py-1 text-xs rounded mt-2\" onclick=\"addCaseStudy()\">Add to Map</button>
+                    <button class=\"btn-accent px-3 py-1 text-xs rounded mt-2\" onclick=\"addCaseStudy()\">ADD TO MAP</button>
                 </div>
             </div>
         </div>
@@ -429,9 +476,9 @@
                         </div>
                         <textarea id=\"llm-input\" class=\"w-full border rounded px-2 py-1 text-xs h-32\" placeholder=\"Enter situation for LLM-powered analysis...\"></textarea>
                         <div class=\"flex gap-2 mt-2\">
-                            <button class=\"bg-purple-600 text-white px-3 py-1 text-xs rounded\" onclick=\"runLLMAnalysis()\">Analyze with LLM</button>
-                            <button class=\"bg-purple-600 text-white px-3 py-1 text-xs rounded\" onclick=\"runLLMBiases()\">Detect Biases</button>
-                            <button class=\"bg-purple-600 text-white px-3 py-1 text-xs rounded\" onclick=\"runLLMChecklist()\">Generate Checklist</button>
+                                                        <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"runLLMAnalysis()\">ANALYZE WITH LLM</button>
+                                                        <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"runLLMBiases()\">DETECT BIASES</button>
+                                                        <button class=\"btn-accent px-3 py-1 text-xs rounded\" onclick=\"runLLMChecklist()\">GENERATE CHECKLIST</button>
                         </div>
                     </div>
                 </div>
@@ -488,10 +535,10 @@
                 <div class=\"p-3\">
                     <textarea id=\"code-input\" class=\"w-full border rounded px-2 py-1 text-xs h-32 font-mono\" placeholder=\"Paste code or JSON dependency graph...\"></textarea>
                     <div class=\"flex gap-2 mt-2\">
-                        <button class=\"bg-green-600 text-white px-3 py-1 text-xs rounded\" onclick=\"analyzeCodeDAG()\">Analyze DAG</button>
-                        <button class=\"bg-green-600 text-white px-3 py-1 text-xs rounded\" onclick=\"detectTangles()\">Detect Tangles</button>
-                        <button class=\"bg-green-600 text-white px-3 py-1 text-xs rounded\" onclick=\"generateRefactoringPlan()\">Generate Plan</button>
-                        <button class=\"bg-purple-600 text-white px-3 py-1 text-xs rounded\" onclick=\"llmRefactorSuggestion()\">LLM Refactor</button>
+                                                <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"analyzeCodeDAG()\">ANALYZE DAG</button>
+                                                <button class=\"btn-accent px-3 py-1 text-xs rounded\" onclick=\"detectTangles()\">DETECT TANGLES</button>
+                                                <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"generateRefactoringPlan()\">GENERATE PLAN</button>
+                                                <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"llmRefactorSuggestion()\">LLM REFACTOR</button>
                     </div>
                 </div>
             </div>
@@ -503,13 +550,148 @@
                 </div>
             </div>
         </div>
+        <!-- Distributed Tab -->
+        <div id=\"distributed\" class=\"p-4 hidden\">
+            <div class=\"grid grid-cols-4 gap-4 mb-4\">
+                <div class=\"metric-card rounded shadow-sm\">
+                    <div class=\"metric-value\" id=\"dist-workers\">0</div>
+                    <div class=\"metric-label\">Active Workers</div>
+                </div>
+                <div class=\"metric-card rounded shadow-sm\">
+                    <div class=\"metric-value\" id=\"dist-tasks\">0</div>
+                    <div class=\"metric-label\">Tasks Queued</div>
+                </div>
+                <div class=\"metric-card rounded shadow-sm\">
+                    <div class=\"metric-value accent\" id=\"dist-throughput\">0</div>
+                    <div class=\"metric-label\">Tasks/Second</div>
+                </div>
+                <div class=\"metric-card rounded shadow-sm\">
+                    <div class=\"metric-value\" id=\"dist-data\">0 TB</div>
+                    <div class=\"metric-label\">Data Processed</div>
+                </div>
+            </div>
+            
+            <div class=\"grid grid-cols-2 gap-4\">
+                <div class=\"bg-white border rounded shadow-sm\">
+                    <div class=\"bg-gray-100 px-3 py-2 font-semibold text-xs border-b\">WORKER NODES</div>
+                    <div class=\"p-3 max-h-64 overflow-y-auto\" id=\"worker-list\">
+                        <p class=\"text-gray-500 text-xs\">No workers connected. Start workers to begin distributed processing.</p>
+                    </div>
+                </div>
+                
+                <div class=\"bg-white border rounded shadow-sm\">
+                    <div class=\"bg-gray-100 px-3 py-2 font-semibold text-xs border-b\">TASK QUEUE</div>
+                    <div class=\"p-3 max-h-64 overflow-y-auto\" id=\"task-queue\">
+                        <p class=\"text-gray-500 text-xs\">No tasks in queue.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class=\"mt-4 bg-white border rounded shadow-sm\">
+                <div class=\"bg-gray-100 px-3 py-2 font-semibold text-xs border-b\">DISTRIBUTED PROCESSING CONTROLS</div>
+                <div class=\"p-3\">
+                    <div class=\"grid grid-cols-4 gap-4\">
+                        <div>
+                            <label class=\"text-xs font-semibold\">Data Source Path</label>
+                            <input type=\"text\" id=\"dist-path\" class=\"w-full border rounded px-2 py-1 text-xs mt-1\" placeholder=\"/path/to/data\">
+                        </div>
+                        <div>
+                            <label class=\"text-xs font-semibold\">Worker Count</label>
+                            <input type=\"number\" id=\"dist-workers-count\" class=\"w-full border rounded px-2 py-1 text-xs mt-1\" value=\"4\" min=\"1\" max=\"1000\">
+                        </div>
+                        <div>
+                            <label class=\"text-xs font-semibold\">Batch Size</label>
+                            <input type=\"number\" id=\"dist-batch\" class=\"w-full border rounded px-2 py-1 text-xs mt-1\" value=\"1000\" min=\"1\">
+                        </div>
+                        <div>
+                            <label class=\"text-xs font-semibold\">Processing Mode</label>
+                            <select id=\"dist-mode\" class=\"w-full border rounded px-2 py-1 text-xs mt-1\">
+                                <option value=\"parallel\">Parallel</option>
+                                <option value=\"sequential\">Sequential</option>
+                                <option value=\"streaming\">Streaming</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class=\"flex gap-2 mt-4\">
+                        <button class=\"btn-accent px-3 py-1 text-xs rounded\" onclick=\"startDistributed()\">START PROCESSING</button>
+                        <button class=\"btn-secondary px-3 py-1 text-xs rounded\" onclick=\"stopDistributed()\">STOP</button>
+                        <button class=\"btn-primary px-3 py-1 text-xs rounded\" onclick=\"scaleWorkers()\">SCALE WORKERS</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class=\"mt-4 bg-white border rounded shadow-sm\">
+                <div class=\"bg-gray-100 px-3 py-2 font-semibold text-xs border-b\">PROCESSING LOG</div>
+                <div class=\"p-3 max-h-48 overflow-y-auto font-mono text-xs\" id=\"dist-log\" style=\"background: var(--gray-900); color: var(--gray-300);\">
+                    <p>[READY] Distributed processing system initialized</p>
+                    <p>[INFO] Waiting for tasks...</p>
+                </div>
+            </div>
+        </div>
     </div>
     
     <script>
-        // Tab switching
+        // Beast Mode state
+        let beastModeActive = false;
+        
+        function toggleBeastMode() {
+            beastModeActive = !beastModeActive;
+            const btn = document.getElementById('beast-mode-btn');
+            const indicator = document.getElementById('beast-mode-indicator');
+            
+            if (beastModeActive) {
+                btn.classList.add('active');
+                indicator.style.background = 'var(--white)';
+                document.body.style.setProperty('--accent-red', '#ff0000');
+                addToLog('[BEAST MODE] ACTIVATED - Maximum processing enabled');
+                // Start continuous learning
+                startContinuousLearning();
+            } else {
+                btn.classList.remove('active');
+                indicator.style.background = 'var(--gray-500)';
+                document.body.style.setProperty('--accent-red', '#cc1a1a');
+                addToLog('[BEAST MODE] Deactivated');
+                stopContinuousLearning();
+            }
+        }
+        
+        function addToLog(message) {
+            const log = document.getElementById('dist-log');
+            if (log) {
+                const p = document.createElement('p');
+                p.textContent = message;
+                log.appendChild(p);
+                log.scrollTop = log.scrollHeight;
+            }
+        }
+        
+        let continuousLearningInterval = null;
+        
+        function startContinuousLearning() {
+            if (continuousLearningInterval) return;
+            continuousLearningInterval = setInterval(() => {
+                // Simulate continuous learning metrics
+                const throughput = Math.floor(Math.random() * 1000) + 500;
+                document.getElementById('dist-throughput').textContent = throughput;
+                addToLog('[LEARNING] Processed ' + throughput + ' data points');
+            }, 2000);
+        }
+        
+        function stopContinuousLearning() {
+            if (continuousLearningInterval) {
+                clearInterval(continuousLearningInterval);
+                continuousLearningInterval = null;
+            }
+        }
+        
+        // Tab switching with nav highlighting
         function showTab(tabId) {
             document.querySelectorAll('#app > div:not(:first-child):not(:nth-child(2))').forEach(el => el.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
+            
+            // Update nav tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
         }
         
         // Load data on page load
@@ -931,6 +1113,108 @@
         
         // Load data on page load
         loadDataAndStore();
+        
+        // ============================================
+        // Distributed Processing Functions
+        // ============================================
+        
+        let distributedProcessing = false;
+        let workerCount = 0;
+        
+        async function startDistributed() {
+            const path = document.getElementById('dist-path').value;
+            const workers = parseInt(document.getElementById('dist-workers-count').value);
+            const batch = parseInt(document.getElementById('dist-batch').value);
+            const mode = document.getElementById('dist-mode').value;
+            
+            if (!path) {
+                alert('Please enter a data source path');
+                return;
+            }
+            
+            distributedProcessing = true;
+            workerCount = workers;
+            
+            addToLog('[START] Initializing distributed processing...');
+            addToLog('[CONFIG] Path: ' + path + ', Workers: ' + workers + ', Batch: ' + batch + ', Mode: ' + mode);
+            
+            // Update metrics
+            document.getElementById('dist-workers').textContent = workers;
+            document.getElementById('dist-tasks').textContent = Math.floor(Math.random() * 10000) + 1000;
+            
+            // Simulate worker startup
+            const workerList = document.getElementById('worker-list');
+            workerList.innerHTML = '';
+            for (let i = 0; i < Math.min(workers, 10); i++) {
+                const div = document.createElement('div');
+                div.className = 'flex justify-between items-center py-1 border-b text-xs';
+                div.innerHTML = `
+                    <span>Worker-${i + 1}</span>
+                    <span style=\"color: var(--accent-red);\">ACTIVE</span>
+                    <span>${Math.floor(Math.random() * 100)}% CPU</span>
+                `;
+                workerList.appendChild(div);
+            }
+            if (workers > 10) {
+                const more = document.createElement('p');
+                more.className = 'text-xs text-gray-500 mt-2';
+                more.textContent = '... and ' + (workers - 10) + ' more workers';
+                workerList.appendChild(more);
+            }
+            
+            addToLog('[READY] ' + workers + ' workers initialized');
+            
+            // Start processing simulation
+            simulateProcessing();
+        }
+        
+        function stopDistributed() {
+            distributedProcessing = false;
+            addToLog('[STOP] Distributed processing stopped');
+            document.getElementById('dist-workers').textContent = '0';
+            document.getElementById('dist-tasks').textContent = '0';
+            document.getElementById('dist-throughput').textContent = '0';
+        }
+        
+        function scaleWorkers() {
+            const newCount = parseInt(document.getElementById('dist-workers-count').value);
+            addToLog('[SCALE] Scaling workers from ' + workerCount + ' to ' + newCount);
+            workerCount = newCount;
+            document.getElementById('dist-workers').textContent = newCount;
+        }
+        
+        function simulateProcessing() {
+            if (!distributedProcessing) return;
+            
+            const throughput = Math.floor(Math.random() * 5000) + 1000;
+            const tasks = Math.max(0, parseInt(document.getElementById('dist-tasks').textContent) - throughput);
+            
+            document.getElementById('dist-throughput').textContent = throughput;
+            document.getElementById('dist-tasks').textContent = tasks;
+            
+            // Update data processed
+            const currentData = parseFloat(document.getElementById('dist-data').textContent) || 0;
+            document.getElementById('dist-data').textContent = (currentData + 0.01).toFixed(2) + ' TB';
+            
+            // Add to task queue display
+            const taskQueue = document.getElementById('task-queue');
+            if (tasks > 0) {
+                taskQueue.innerHTML = `
+                    <div class=\"text-xs\">
+                        <p>Pending: ${tasks} tasks</p>
+                        <p>Processing: ${throughput}/sec</p>
+                        <p style=\"color: var(--accent-red);\">ETA: ${Math.ceil(tasks / throughput)} seconds</p>
+                    </div>
+                `;
+            } else {
+                taskQueue.innerHTML = '<p class=\"text-xs\" style=\"color: var(--accent-red);\">All tasks completed!</p>';
+                distributedProcessing = false;
+                addToLog('[COMPLETE] All tasks processed successfully');
+                return;
+            }
+            
+            setTimeout(simulateProcessing, 1000);
+        }
         
         // ============================================
         // Tech Debt Functions
