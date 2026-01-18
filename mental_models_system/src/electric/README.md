@@ -145,7 +145,7 @@ export LM_STUDIO_MODEL=local-model
 
 ## Mental Models Included
 
-The system includes **91 mental models** with **455 failure modes** across 22 categories:
+The system includes **129 mental models** with **645 failure modes** across 34 categories:
 
 - **Decision Making**: Circle of Competence, Margin of Safety, Second-Order Thinking, Inversion, Opportunity Cost
 - **Psychology**: Incentives, Social Proof, Commitment/Consistency, Availability Heuristic, Loss Aversion, Confirmation Bias, Hindsight Bias, Dunning-Kruger, Status Quo Bias, Narrative Fallacy
@@ -173,14 +173,25 @@ The system includes **91 mental models** with **455 failure modes** across 22 ca
 - **Management**: Principal-Agent, Span of Control, Peter Principle
 - **History**: Lindy Effect, Chesterton's Fence, Path Dependence
 - **Complexity**: Cynefin, Tight Coupling, Normal Accidents
+- **Behavioral Economics**: Prospect Theory, Hyperbolic Discounting, Mental Accounting
+- **Cognitive Science**: Cognitive Load, Dual Process Theory, Attention Economy
+- **Systems Dynamics**: Stocks and Flows, Leverage Points, System Archetypes
+- **Decision Theory**: Regret Minimization, Reversibility, Satisficing
+- **Information Theory**: Signal vs Noise, Information Asymmetry
+- **Game Theory**: Nash Equilibrium, Mechanism Design, Coordination Games
+- **Epistemology**: Epistemic Humility, Bayesian Updating, Falsificationism
+- **Organizational**: Conway's Law, Goodhart's Law, Parkinson's Law (Bureaucracy)
+- **Evolution**: Fitness Landscape, Punctuated Equilibrium
+- **Network Science**: Small World Networks, Preferential Attachment
+- **Rhetoric**: Ethos-Pathos-Logos, Steelmanning
 
 Each model includes:
 - Description and key insight
 - Application guidance
 - 5 failure modes with signals and safeguards
 
-**Last updated**: January 18, 2026 09:36 UTC
-**Lines of code**: 5,500+ (Electric Clojure modules)
+**Last updated**: January 18, 2026 09:44 UTC
+**Lines of code**: 6,500+ (Electric Clojure modules)
 
 ## Design Philosophy
 
