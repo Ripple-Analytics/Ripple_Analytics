@@ -119,6 +119,18 @@
       ],
       "enabled": true,
       "usage_count": 0
+    },
+    {
+      "key_hash": "cf047defcab292d5dfd150b374a4d1b7e614618997d89bbc4bb8cd2d570f8bd3",
+      "name": "test_key",
+      "created_at": "2026-01-18T01:19:26.992854",
+      "expires_at": null,
+      "rate_limit_multiplier": 1.0,
+      "scopes": [
+        "read"
+      ],
+      "enabled": true,
+      "usage_count": 0
     }
   ]
 }
