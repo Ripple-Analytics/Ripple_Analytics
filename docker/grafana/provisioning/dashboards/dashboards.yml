@@ -1,0 +1,14 @@
+# Mental Models System - Dashboard Provisioning
+apiVersion: 1
+
+providers:
+  - name: 'Mental Models Dashboards'
+    orgId: 1
+    folder: 'Mental Models System'
+    folderUid: 'mental-models'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    allowUiUpdates: true
+    options:
+      path: /var/lib/grafana/dashboards

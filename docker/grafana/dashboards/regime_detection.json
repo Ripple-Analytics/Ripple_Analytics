@@ -1,0 +1,244 @@
+{
+  "annotations": {"list": []},
+  "description": "Market Regime Detection using Hidden Markov Models - Bull/Bear/Sideways Analysis",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "mappings": [
+            {"options": {"bull": {"color": "green", "index": 0, "text": "BULL"}}, "type": "value"},
+            {"options": {"bear": {"color": "red", "index": 1, "text": "BEAR"}}, "type": "value"},
+            {"options": {"sideways": {"color": "yellow", "index": 2, "text": "SIDEWAYS"}}, "type": "value"}
+          ],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 4, "w": 8, "x": 0, "y": 0},
+      "id": 1,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+          "rawQuery": true,
+          "rawSql": "SELECT regime_type as value FROM regime_detection ORDER BY detection_date DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "title": "Current Market Regime",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "blue", "value": null}]},
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 4, "w": 8, "x": 8, "y": 0},
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+          "rawQuery": true,
+          "rawSql": "SELECT confidence as value FROM regime_detection ORDER BY detection_date DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "title": "Regime Confidence",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "purple", "value": null}]},
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 4, "w": 8, "x": 16, "y": 0},
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+          "rawQuery": true,
+          "rawSql": "SELECT duration_days as value FROM regime_detection ORDER BY detection_date DESC LIMIT 1;",
+          "refId": "A"
+        }
+      ],
+      "title": "Current Regime Duration (Days)",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 30,
+            "gradientMode": "none",
+            "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+            "lineInterpolation": "stepAfter",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {"type": "linear"},
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {"group": "A", "mode": "none"},
+            "thresholdsStyle": {"mode": "off"}
+          },
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
+        },
+        "overrides": [
+          {
+            "matcher": {"id": "byName", "options": "bull"},
+            "properties": [{"id": "color", "value": {"fixedColor": "green", "mode": "fixed"}}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "bear"},
+            "properties": [{"id": "color", "value": {"fixedColor": "red", "mode": "fixed"}}]
+          },
+          {
+            "matcher": {"id": "byName", "options": "sideways"},
+            "properties": [{"id": "color", "value": {"fixedColor": "yellow", "mode": "fixed"}}]
+          }
+        ]
+      },
+      "gridPos": {"h": 10, "w": 24, "x": 0, "y": 4},
+      "id": 4,
+      "options": {
+        "legend": {"calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true},
+        "tooltip": {"mode": "single", "sort": "none"}
+      },
+      "targets": [
+        {
+          "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+          "rawQuery": true,
+          "rawSql": "SELECT detection_date as time, CASE WHEN regime_type = 'bull' THEN 1 ELSE 0 END as bull, CASE WHEN regime_type = 'bear' THEN 1 ELSE 0 END as bear, CASE WHEN regime_type = 'sideways' THEN 1 ELSE 0 END as sideways FROM regime_detection ORDER BY detection_date;",
+          "refId": "A"
+        }
+      ],
+      "title": "Regime History Timeline",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {"hideFrom": {"legend": false, "tooltip": false, "viz": false}},
+          "mappings": []
+        },
+        "overrides": [
+          {"matcher": {"id": "byName", "options": "bull"}, "properties": [{"id": "color", "value": {"fixedColor": "green", "mode": "fixed"}}]},
+          {"matcher": {"id": "byName", "options": "bear"}, "properties": [{"id": "color", "value": {"fixedColor": "red", "mode": "fixed"}}]},
+          {"matcher": {"id": "byName", "options": "sideways"}, "properties": [{"id": "color", "value": {"fixedColor": "yellow", "mode": "fixed"}}]}
+        ]
+      },
+      "gridPos": {"h": 8, "w": 8, "x": 0, "y": 14},
+      "id": 5,
+      "options": {
+        "legend": {"displayMode": "list", "placement": "right", "showLegend": true},
+        "pieType": "pie",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": true},
+        "tooltip": {"mode": "single", "sort": "none"}
+      },
+      "targets": [
+        {
+          "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+          "rawQuery": true,
+          "rawSql": "SELECT regime_type, COUNT(*) as count FROM regime_detection GROUP BY regime_type;",
+          "refId": "A"
+        }
+      ],
+      "title": "Regime Distribution",
+      "type": "piechart"
+    },
+    {
+      "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "custom": {"align": "auto", "cellOptions": {"type": "auto"}, "inspect": false},
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 8, "w": 16, "x": 8, "y": 14},
+      "id": 6,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {"countRows": false, "fields": "", "reducer": ["sum"], "show": false},
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+          "rawQuery": true,
+          "rawSql": "SELECT regime_type, ROUND(AVG(duration_days)::numeric, 1) as avg_duration, ROUND(AVG(confidence)::numeric, 3) as avg_confidence, COUNT(*) as occurrences, ROUND(SUM(duration_days)::numeric / (SELECT SUM(duration_days) FROM regime_detection) * 100, 1) as time_percentage FROM regime_detection GROUP BY regime_type ORDER BY time_percentage DESC;",
+          "refId": "A"
+        }
+      ],
+      "title": "Regime Statistics",
+      "type": "table"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["regime", "hmm", "market"],
+  "templating": {"list": []},
+  "time": {"from": "now-1y", "to": "now"},
+  "timepicker": {},
+  "timezone": "",
+  "title": "Regime Detection Dashboard",
+  "uid": "regime-detection",
+  "version": 1,
+  "weekStart": ""
+}

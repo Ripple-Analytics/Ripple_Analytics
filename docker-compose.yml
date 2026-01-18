@@ -1,0 +1,218 @@
+version: '3.8'
+
+# Mental Models System - The Oligarch's Operating System
+# Full Docker orchestration for 100-year infrastructure
+# Integrates: PostgreSQL, FastAPI, PySpark, Grafana, Redis
+
+services:
+  # =============================================================================
+  # DATABASE LAYER - PostgreSQL with TimescaleDB for time-series optimization
+  # =============================================================================
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    container_name: mental_models_db
+    environment:
+      POSTGRES_DB: mental_models
+      POSTGRES_USER: ${POSTGRES_USER:-oligarch}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-munger_wisdom_2024}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U oligarch -d mental_models"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mental_models_network
+    restart: unless-stopped
+
+  # =============================================================================
+  # CACHE LAYER - Redis for high-speed model lookups and session management
+  # =============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: mental_models_cache
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - mental_models_network
+    restart: unless-stopped
+
+  # =============================================================================
+  # API LAYER - FastAPI backend for mental models queries
+  # =============================================================================
+  api:
+    build:
+      context: .
+      dockerfile: docker/api/Dockerfile
+    container_name: mental_models_api
+    environment:
+      DATABASE_URL: postgresql://oligarch:munger_wisdom_2024@postgres:5432/mental_models
+      REDIS_URL: redis://redis:6379/0
+      ENVIRONMENT: production
+      LOG_LEVEL: INFO
+    volumes:
+      - ./mental_models_system:/app/mental_models_system
+      - ./data:/app/data
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - mental_models_network
+    restart: unless-stopped
+
+  # =============================================================================
+  # SPARK LAYER - PySpark for large-scale analysis (1.2M+ case studies)
+  # =============================================================================
+  spark-master:
+    image: bitnami/spark:3.5
+    container_name: mental_models_spark_master
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    volumes:
+      - ./mental_models_system:/opt/spark-apps
+      - ./data:/opt/spark-data
+      - spark_logs:/opt/spark/logs
+    ports:
+      - "8080:8080"
+      - "7077:7077"
+    networks:
+      - mental_models_network
+    restart: unless-stopped
+
+  spark-worker:
+    image: bitnami/spark:3.5
+    container_name: mental_models_spark_worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=4G
+      - SPARK_WORKER_CORES=2
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    volumes:
+      - ./mental_models_system:/opt/spark-apps
+      - ./data:/opt/spark-data
+    depends_on:
+      - spark-master
+    networks:
+      - mental_models_network
+    restart: unless-stopped
+
+  # =============================================================================
+  # MONITORING LAYER - Grafana for dashboards and visualization
+  # =============================================================================
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: mental_models_grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-oligarch_dashboard}
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource,grafana-piechart-panel
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: /var/lib/grafana/dashboards/mental_models_overview.json
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning
+      - ./docker/grafana/dashboards:/var/lib/grafana/dashboards
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+      - api
+    networks:
+      - mental_models_network
+    restart: unless-stopped
+
+  # =============================================================================
+  # PROMETHEUS - Metrics collection for system monitoring
+  # =============================================================================
+  prometheus:
+    image: prom/prometheus:v2.47.0
+    container_name: mental_models_prometheus
+    volumes:
+      - ./docker/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=90d'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    networks:
+      - mental_models_network
+    restart: unless-stopped
+
+  # =============================================================================
+  # JUPYTER - Interactive analysis and model development
+  # =============================================================================
+  jupyter:
+    build:
+      context: .
+      dockerfile: docker/jupyter/Dockerfile
+    container_name: mental_models_jupyter
+    environment:
+      JUPYTER_TOKEN: ${JUPYTER_TOKEN:-oligarch_notebook}
+      DATABASE_URL: postgresql://oligarch:munger_wisdom_2024@postgres:5432/mental_models
+    volumes:
+      - ./notebooks:/home/jovyan/notebooks
+      - ./mental_models_system:/home/jovyan/mental_models_system
+      - ./data:/home/jovyan/data
+    ports:
+      - "8888:8888"
+    depends_on:
+      - postgres
+    networks:
+      - mental_models_network
+    restart: unless-stopped
+
+# =============================================================================
+# NETWORKS
+# =============================================================================
+networks:
+  mental_models_network:
+    driver: bridge
+    name: mental_models_net
+
+# =============================================================================
+# VOLUMES - Persistent storage for 100-year data retention
+# =============================================================================
+volumes:
+  postgres_data:
+    name: mental_models_postgres_data
+  redis_data:
+    name: mental_models_redis_data
+  grafana_data:
+    name: mental_models_grafana_data
+  prometheus_data:
+    name: mental_models_prometheus_data
+  spark_logs:
+    name: mental_models_spark_logs

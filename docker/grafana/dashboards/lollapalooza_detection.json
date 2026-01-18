@@ -1,0 +1,241 @@
+{
+  "annotations": {"list": []},
+  "description": "Lollapalooza Effect Detection - Multi-Model Convergence Patterns",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+      "description": "Events where 3+ mental models converge for amplified outcomes",
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]},
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 4, "w": 8, "x": 0, "y": 0},
+      "id": 1,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(*) as value FROM lollapalooza_events WHERE model_count >= 3;",
+          "refId": "A"
+        }
+      ],
+      "title": "3+ Model Convergences",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "blue", "value": null}]},
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 4, "w": 8, "x": 8, "y": 0},
+      "id": 2,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+          "rawQuery": true,
+          "rawSql": "SELECT COUNT(*) as value FROM lollapalooza_events WHERE model_count >= 5;",
+          "refId": "A"
+        }
+      ],
+      "title": "5+ Model Convergences (Rare)",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "purple", "value": null}]},
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 4, "w": 8, "x": 16, "y": 0},
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+          "rawQuery": true,
+          "rawSql": "SELECT ROUND(AVG(outcome_multiplier)::numeric, 2) as value FROM lollapalooza_events WHERE model_count >= 3;",
+          "refId": "A"
+        }
+      ],
+      "title": "Avg Outcome Multiplier",
+      "type": "stat"
+    },
+    {
+      "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "continuous-GrYlRd"},
+          "custom": {"hideFrom": {"legend": false, "tooltip": false, "viz": false}},
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 10, "w": 12, "x": 0, "y": 4},
+      "id": 4,
+      "options": {
+        "calculate": false,
+        "cellGap": 1,
+        "color": {"exponent": 0.5, "fill": "dark-orange", "mode": "scheme", "reverse": false, "scale": "exponential", "scheme": "Oranges", "steps": 64},
+        "exemplars": {"color": "rgba(255,0,255,0.7)"},
+        "filterValues": {"le": 1e-9},
+        "legend": {"show": true},
+        "rowsFrame": {"layout": "auto"},
+        "tooltip": {"show": true, "yHistogram": false},
+        "yAxis": {"axisPlacement": "left", "reverse": false}
+      },
+      "targets": [
+        {
+          "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+          "rawQuery": true,
+          "rawSql": "SELECT mm1.name as model_1, mm2.name as model_2, COUNT(*) as co_occurrence FROM model_case_mappings mcm1 JOIN model_case_mappings mcm2 ON mcm1.case_study_id = mcm2.case_study_id AND mcm1.model_id < mcm2.model_id JOIN mental_models mm1 ON mcm1.model_id = mm1.id JOIN mental_models mm2 ON mcm2.model_id = mm2.id GROUP BY mm1.name, mm2.name ORDER BY co_occurrence DESC LIMIT 100;",
+          "refId": "A"
+        }
+      ],
+      "title": "Model Co-occurrence Heatmap",
+      "type": "heatmap"
+    },
+    {
+      "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "thresholds"},
+          "custom": {"align": "auto", "cellOptions": {"type": "auto"}, "inspect": false},
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
+        },
+        "overrides": [
+          {
+            "matcher": {"id": "byName", "options": "synergy_score"},
+            "properties": [
+              {"id": "custom.cellOptions", "value": {"mode": "gradient", "type": "gauge"}},
+              {"id": "max", "value": 10},
+              {"id": "min", "value": 0}
+            ]
+          }
+        ]
+      },
+      "gridPos": {"h": 10, "w": 12, "x": 12, "y": 4},
+      "id": 5,
+      "options": {
+        "cellHeight": "sm",
+        "footer": {"countRows": false, "fields": "", "reducer": ["sum"], "show": false},
+        "showHeader": true
+      },
+      "targets": [
+        {
+          "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+          "rawQuery": true,
+          "rawSql": "SELECT le.id, cs.title as case_title, le.model_count, ROUND(le.synergy_score::numeric, 2) as synergy_score, ROUND(le.outcome_multiplier::numeric, 2) as outcome_multiplier, cs.outcome, cs.decade FROM lollapalooza_events le JOIN case_studies cs ON le.case_study_id = cs.id ORDER BY le.synergy_score DESC LIMIT 50;",
+          "refId": "A"
+        }
+      ],
+      "title": "Top Lollapalooza Events",
+      "type": "table"
+    },
+    {
+      "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+      "fieldConfig": {
+        "defaults": {
+          "color": {"mode": "palette-classic"},
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 80,
+            "gradientMode": "none",
+            "hideFrom": {"legend": false, "tooltip": false, "viz": false},
+            "lineWidth": 1,
+            "scaleDistribution": {"type": "linear"},
+            "thresholdsStyle": {"mode": "off"}
+          },
+          "mappings": [],
+          "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
+        },
+        "overrides": []
+      },
+      "gridPos": {"h": 8, "w": 24, "x": 0, "y": 14},
+      "id": 6,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.97,
+        "groupWidth": 0.7,
+        "legend": {"calcs": [], "displayMode": "list", "placement": "bottom", "showLegend": true},
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "none",
+        "tooltip": {"mode": "single", "sort": "none"},
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 0
+      },
+      "targets": [
+        {
+          "datasource": {"type": "postgres", "uid": "PostgreSQL"},
+          "rawQuery": true,
+          "rawSql": "SELECT model_count, COUNT(*) as event_count, ROUND(AVG(synergy_score)::numeric, 2) as avg_synergy, ROUND(AVG(outcome_multiplier)::numeric, 2) as avg_multiplier FROM lollapalooza_events GROUP BY model_count ORDER BY model_count;",
+          "refId": "A"
+        }
+      ],
+      "title": "Lollapalooza Distribution by Model Count",
+      "type": "barchart"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["lollapalooza", "munger", "convergence"],
+  "templating": {"list": []},
+  "time": {"from": "now-30d", "to": "now"},
+  "timepicker": {},
+  "timezone": "",
+  "title": "Lollapalooza Detection Dashboard",
+  "uid": "lollapalooza-detection",
+  "version": 1,
+  "weekStart": ""
+}

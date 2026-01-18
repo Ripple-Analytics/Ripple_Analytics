@@ -1,0 +1,130 @@
+id,name,category_id,thinker_id,description,complexity,applicability
+1,Reward and Punishment Superresponse Tendency,1,1,"People respond intensely to incentives, both positive and negative. Never think about something else when you should be thinking about incentives.",3,0.95
+2,Liking/Loving Tendency,1,1,"We tend to distort facts to favor people and things we like or love, ignoring faults and complying with wishes.",2,0.85
+3,Disliking/Hating Tendency,1,1,"We distort facts, ignore virtues, and dislike people associated with those we already dislike.",2,0.85
+4,Doubt-Avoidance Tendency,1,1,"The brain is designed to remove doubt by reaching quick decisions, especially under stress.",3,0.8
+5,Inconsistency-Avoidance Tendency,1,1,"We resist changing our habits, beliefs, and conclusions once formed. The brain conserves programming space.",4,0.9
+6,Curiosity Tendency,1,1,"Humans have a natural drive to seek knowledge and understanding, which can be cultivated.",2,0.75
+7,Kantian Fairness Tendency,1,1,"We expect fair exchanges and reciprocal behavior, and react strongly to perceived unfairness.",3,0.8
+8,Envy/Jealousy Tendency,1,1,Envy drives much human behavior and is often underestimated as a motivating force.,2,0.85
+9,Reciprocation Tendency,1,1,"We feel obligated to repay favors and concessions, even when unsolicited.",3,0.9
+10,Influence-from-Mere-Association Tendency,1,1,"We are influenced by associations, both positive and negative, even when logically irrelevant.",3,0.85
+11,"Simple, Pain-Avoiding Psychological Denial",1,1,"We deny reality when it is too painful to accept, distorting facts to reduce psychological pain.",3,0.8
+12,Excessive Self-Regard Tendency,1,1,"We overestimate our own abilities, contributions, and the value of what we own.",3,0.9
+13,Overoptimism Tendency,1,1,"We tend to be unrealistically optimistic about outcomes, especially our own.",2,0.85
+14,Deprival-Superreaction Tendency,1,1,We react more intensely to losses than to equivalent gains. Loss aversion drives much behavior.,4,0.95
+15,Social-Proof Tendency,1,1,"We look to others to determine correct behavior, especially in uncertain situations.",3,0.9
+16,Contrast-Misreaction Tendency,1,1,"We misjudge based on contrasts rather than absolute values, leading to poor decisions.",3,0.85
+17,Stress-Influence Tendency,1,1,"Stress can cause both enhanced performance and dysfunction, including extreme reactions.",3,0.8
+18,Availability-Misweighing Tendency,1,1,We overweight information that is easily available or vivid in memory.,3,0.9
+19,Use-It-or-Lose-It Tendency,1,1,Skills and knowledge deteriorate without practice and use.,2,0.85
+20,Drug-Misinfluence Tendency,1,1,Chemical substances can severely impair cognition and judgment.,2,0.7
+21,Senescence-Misinfluence Tendency,1,1,"Aging naturally degrades cognitive function, though continuous learning can slow decline.",2,0.75
+22,Authority-Misinfluence Tendency,1,1,We tend to follow authority figures even when they are wrong or acting against our interests.,3,0.85
+23,Twaddle Tendency,1,1,People spend time on trivial matters while ignoring important ones.,2,0.8
+24,Reason-Respecting Tendency,1,1,"People comply more readily when given reasons, even poor ones.",2,0.85
+25,Lollapalooza Effect,1,1,"When multiple psychological tendencies act in concert, they create extreme outcomes - the key to understanding major events.",5,0.95
+26,Confirmation Bias,1,1,We seek information that confirms our existing beliefs and ignore contradictory evidence.,3,0.95
+27,Hindsight Bias,1,1,We believe past events were predictable after learning the outcome.,2,0.85
+28,First-Conclusion Bias,1,1,We tend to accept the first conclusion that comes to mind without adequate analysis.,3,0.85
+29,Anchoring Bias,1,1,Initial information disproportionately influences subsequent judgments.,3,0.9
+30,Incentive-Caused Bias,1,1,Professional incentives unconsciously bias judgment and recommendations.,4,0.95
+31,Pavlovian Association/Conditioning,1,1,We form automatic associations through repeated pairing of stimuli.,3,0.85
+32,Hyperbolic Discounting/Short-Termism,1,1,We overvalue immediate rewards relative to future ones.,3,0.9
+33,Representativeness Bias,1,1,We judge probability by similarity to stereotypes rather than base rates.,3,0.85
+34,Status Quo Bias/Habit Persistence,1,1,We prefer the current state of affairs and resist change.,3,0.9
+35,Inversion,2,1,"Invert, always invert. Solve problems backwards. Think about what you want to avoid.",3,0.95
+36,Checklist Approach,2,1,Use systematic checklists to avoid omission errors and ensure comprehensive analysis.,2,0.9
+37,Two-Track Analysis,2,1,Analyze problems through both rational factors and psychological/subconscious influences.,4,0.9
+38,Elementary Worldly Wisdom,2,1,Build a latticework of basic models from multiple disciplines for better thinking.,4,0.95
+39,Latticework of Mental Models,2,1,Facts must hang together on a latticework of theory to be useful.,5,0.95
+40,Multidisciplinary Approach,2,1,Draw models from multiple disciplines - all wisdom is not in one academic department.,4,0.9
+41,Circle of Competence,2,2,Know the boundaries of your knowledge and stay within them.,3,0.95
+42,First Principles Thinking,2,15,Break down problems to fundamental truths and reason up from there.,4,0.9
+43,Second-Order Thinking,2,1,Think beyond first effects to subsequent consequences.,4,0.9
+44,Occam's Razor,2,1,Prefer simpler explanations over complex ones when equally valid.,2,0.85
+45,Hanlon's Razor,2,1,Don't attribute to malice what can be explained by stupidity or incompetence.,2,0.8
+46,Falsification/Disconfirming Evidence,2,1,"Actively seek evidence that disproves your hypothesis, like Darwin did.",4,0.9
+47,Scenario Analysis,2,4,Consider multiple possible futures and plan for various outcomes.,3,0.85
+48,Mental Accounting,2,1,Understand how people psychologically frame and categorize money differently.,3,0.8
+49,Black Swan Events,2,1,"Prepare for extreme, hard-to-predict events with massive impact.",4,0.85
+50,Gray Rhino Events,2,1,Recognize obvious but neglected big risks that people ignore.,3,0.85
+51,Vivification,2,1,Make ideas vivid and concrete so they stick in memory.,2,0.8
+52,Man-with-a-Hammer Tendency,2,1,"Avoid overusing one model - to a man with a hammer, everything looks like a nail.",3,0.9
+53,Supply and Demand,3,1,Prices are determined by the interaction of supply and demand.,2,0.95
+54,Elasticity,3,1,Sensitivity of quantity demanded or supplied to changes in price or other factors.,3,0.85
+55,Opportunity Cost,3,1,The true cost of anything is what you give up to get it.,3,0.95
+56,Comparative Advantage,3,1,"Specialize in what you do relatively better, even if not absolutely better.",3,0.85
+57,Marginal Utility/Diminishing Returns,3,1,Each additional unit provides less satisfaction than the previous one.,3,0.9
+58,Time Value of Money,3,1,Money today is worth more than the same amount in the future.,2,0.95
+59,Incentives & Incentive Alignment,3,1,People respond to incentives - ensure they are properly aligned.,4,0.95
+60,Agency Problem/Principal-Agent Problem,3,1,Agents may not act in the best interest of principals they represent.,4,0.9
+61,Information Asymmetry,3,1,One party has more or better information than another in a transaction.,3,0.85
+62,Adverse Selection,3,1,Bad participants drive out good ones when information is asymmetric.,4,0.85
+63,Moral Hazard,3,1,Behavior changes when insulated from risk or consequences.,4,0.9
+64,Pareto Principle (80/20 Rule),3,1,Roughly 80% of effects come from 20% of causes.,2,0.9
+65,Gresham's Law,3,1,Bad money drives out good; can apply broadly to quality degradation.,3,0.8
+66,Creative/Competitive Destruction,3,1,Innovation destroys old industries while creating new ones.,3,0.85
+67,Value to a Private Owner,3,2,What would a rational private buyer pay for the entire business?,4,0.9
+68,Mr. Market,3,2,"The market is a manic-depressive partner offering prices daily - use it, don't be used by it.",3,0.9
+69,Margin of Safety,3,2,Buy with a significant buffer between price and value to protect against errors.,3,0.95
+70,Tax Deferral & Compounding Advantage,3,1,Deferring taxes allows more capital to compound over time.,3,0.85
+71,Value Creation vs. Value Capture,3,9,Creating value is different from capturing it - who keeps the surplus?,4,0.85
+72,Obsolescence Risk,3,1,Business decay from innovation and changing technology.,3,0.85
+73,Economic Moats,4,2,Durable competitive advantages that protect a business from competition.,4,0.95
+74,Cost Advantages,4,1,Structural low-cost position that competitors cannot easily replicate.,3,0.9
+75,Differentiation & Brand Power,4,1,Unique products or strong brands that command premium pricing.,3,0.9
+76,Switching Costs,4,1,Costs that make it difficult for customers to change suppliers.,3,0.9
+77,Network Effects,4,1,Value increases as more users join the network.,4,0.9
+78,Scale Economies - Supply Side,4,1,Fixed costs spread over larger volumes reduce per-unit costs.,3,0.9
+79,Scale Economies - Demand Side,4,1,More users create more value for all users.,3,0.85
+80,Learning/Experience Curve,4,1,Costs fall with cumulative production as efficiency improves.,3,0.85
+81,Lock-In via Distribution/Physical Network,4,1,Physical distribution networks create barriers to entry.,4,0.85
+82,Winner-Take-All/Winner-Take-Most Markets,4,9,Markets where the leader captures disproportionate value.,4,0.85
+83,Moat Durability,4,2,How long the competitive advantage will last.,4,0.9
+84,Industry Structure,4,1,"Monopoly, oligopoly, or competitive dynamics shape profitability.",3,0.85
+85,Rational vs. Cutthroat Competition,4,1,Some industries compete rationally; others destroy value through price wars.,4,0.85
+86,Platform Economics,4,1,Two-sided markets connecting different user groups.,4,0.85
+87,Capacity & Supply Discipline,4,1,Overcapacity destroys returns; disciplined supply maintains pricing.,3,0.85
+88,Surfing Long Waves,4,1,Riding strong secular trends for sustained growth.,3,0.85
+89,Technology as Friend vs. Killer,4,1,Technology can strengthen or destroy competitive positions.,4,0.85
+90,Bureaucracy/Diseconomies of Scale,4,1,Large organizations develop dysfunction that offsets scale benefits.,4,0.9
+91,Cancer-Surgery Formula,4,1,Cut out bad parts quickly to save the system.,3,0.85
+92,Basic Arithmetic Fluency,5,1,Master basic math - you must be able to handle numbers and quantities.,1,0.95
+93,Permutations & Combinations,5,1,The elementary math of possibilities - essential for probability thinking.,3,0.9
+94,Expected Value,5,1,Probability-weighted average of all possible outcomes.,3,0.95
+95,Probabilistic Thinking/Base Rates,5,1,"Think in probabilities, not certainties. Start with base rates.",4,0.95
+96,Bayes' Rule/Bayesian Updating,5,1,Update probabilities as new evidence arrives.,4,0.9
+97,Regression to the Mean,5,1,Extreme outcomes tend to be followed by more average ones.,3,0.9
+98,Normal Distribution vs. Fat Tails,5,1,Many distributions have fatter tails than normal - extreme events more likely.,4,0.85
+99,Power Laws,5,9,Extreme concentration of outcomes - a few items dominate.,4,0.9
+100,Cost-Benefit Analysis,5,1,Formalized comparison of costs and benefits for decision-making.,2,0.9
+101,Compounding,5,1,Growth on growth - the eighth wonder of the world.,2,0.95
+102,Optionality/Asymmetric Payoffs,5,1,Positions with limited downside and unlimited upside.,4,0.9
+103,Kelly-Type Thinking,5,1,Optimal position sizing based on edge and odds.,4,0.85
+104,Critical Mass,6,1,Threshold where dynamics fundamentally change.,3,0.9
+105,Leverage,6,1,Amplifying force or outcome through mechanical or financial means.,3,0.9
+106,Redundancy/Backup Systems,6,1,Multiple systems ensure reliability when one fails.,3,0.9
+107,Breakpoints/Phase Transitions,6,1,Points where systems shift to fundamentally different states.,4,0.85
+108,Friction & Efficiency Losses,6,1,Real systems have friction that reduces efficiency.,2,0.85
+109,Reliability Engineering/Safety Margins,6,1,Build in safety factors to handle unexpected stresses.,3,0.9
+110,Feedback Loops - Positive (Reinforcing),6,3,Self-reinforcing cycles that amplify changes.,4,0.9
+111,Feedback Loops - Negative (Stabilizing),6,1,Self-correcting cycles that maintain equilibrium.,3,0.85
+112,Bottlenecks & Constraints,6,1,System output limited by the weakest link.,3,0.9
+113,Nonlinearity,6,1,Disproportionate responses - small inputs can cause large outputs.,4,0.85
+114,System Resilience vs. Fragility,6,1,Some systems strengthen under stress; others break.,4,0.85
+115,Evolution by Natural Selection,7,1,"Variation, selection, and retention drive adaptation.",3,0.9
+116,Adaptation & Fitness Landscapes,7,1,Organisms and organizations adapt to their environment.,4,0.85
+117,Red Queen Effect,7,1,Must run hard just to stay in place as competitors evolve.,3,0.85
+118,Niches & Ecological Competition,7,1,Specialization in narrow niches can be highly successful.,3,0.85
+119,Population Dynamics,7,1,Boom-bust cycles in populations and markets.,3,0.8
+120,Autopsy Learning,7,1,Study failures and deaths to learn what went wrong.,3,0.9
+121,Corporate Governance,8,1,Board incentives and oversight structures matter.,4,0.85
+122,Management Incentives & Compensation Design,8,1,How managers are paid determines how they behave.,4,0.9
+123,Culture as a Control System,8,1,Norms and culture are more powerful than formal rules.,4,0.9
+124,Bureaucratic Inertia & Empire Building,8,1,Organizations naturally grow bureaucracy and resist change.,3,0.9
+125,Information Suppression/Shooting the Messenger,8,1,Bad news gets filtered out as it moves up the hierarchy.,3,0.85
+126,Five W's Rule in Communication,8,1,"Always tell who, what, where, when, and especially WHY.",2,0.9
+127,Checklists & Standard Operating Procedures,8,1,Systematic processes reduce errors and ensure consistency.,2,0.9
+128,"Talent, Trust, and Delegation",8,1,"Few, high-quality people with trust and autonomy outperform bureaucracy.",4,0.9
+129,Avoiding Madness in Crowds,8,1,Resist groupthink and maintain independent judgment.,4,0.9
