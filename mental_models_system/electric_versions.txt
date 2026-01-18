@@ -1,0 +1,33 @@
+Available Electric Clojure versions on Clojars (com.hyperfiddle/electric):
+
+V3 Alpha versions:
+- v3-alpha-86cef0fb
+- v3-alpha-2025-07-11
+- v3-alpha-00120400
+- v3-alpha-47b55e68
+- v3-alpha-fb739c12
+- v3-alpha-1216762a
+- v3-alpha-e417d318
+- v3-alpha-ae552e27
+
+V2 Alpha versions:
+- v2-alpha-540-ga4699532 (closest to v2-alpha-540-g0e06dbb5)
+- v2-alpha-536-g0c582f78
+- v2-alpha-469-gb6d9865c
+- v2-alpha-428-g22937f75
+- v2-alpha-422-g96e5c0a5
+- v2-alpha-349-ge9996713
+- v2-alpha-338-geec2f3df
+- v2-alpha-284-g0bc5f4bc
+- v2-alpha-283-gd4f718a7
+- v2-alpha-263-g89da9d11
+- v2-alpha-264-gebe571c1
+- v2-alpha-262-g41fd1d72
+- v2-alpha-167-gbd475584
+- v2-alpha-123-ga7fa624f
+- v2-alpha-68-g7e22216c
+- v2-alpha-60-g4cb70086
+- v2-alpha-0-g40c3384e
+
+Note: The version v2-alpha-540-g0e06dbb5 specified in deps.edn does NOT exist on Clojars.
+The closest available version is v2-alpha-540-ga4699532.
