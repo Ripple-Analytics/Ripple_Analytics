@@ -1,0 +1,31 @@
+{:paths ["src" "resources"]
+ 
+ :deps {;; Electric Clojure
+        hyperfiddle/electric {:mvn/version "v2-alpha-540-g0e06dbb5"}
+        
+        ;; Server
+        ring/ring-core {:mvn/version "1.11.0"}
+        ring/ring-jetty-adapter {:mvn/version "1.11.0"}
+        metosin/reitit {:mvn/version "0.7.0"}
+        
+        ;; Database
+        com.github.seancorfield/next.jdbc {:mvn/version "1.3.909"}
+        com.mysql/mysql-connector-j {:mvn/version "8.2.0"}
+        com.github.seancorfield/honeysql {:mvn/version "2.5.1103"}
+        
+        ;; JSON & HTTP
+        metosin/jsonista {:mvn/version "0.3.8"}
+        clj-http/clj-http {:mvn/version "3.12.3"}
+        
+        ;; Logging & Utils
+        com.taoensso/timbre {:mvn/version "6.3.1"}
+        environ/environ {:mvn/version "1.2.0"}
+        
+        ;; Statistics
+        net.mikera/core.matrix {:mvn/version "0.63.0"}
+        net.mikera/vectorz-clj {:mvn/version "0.48.0"}}
+ 
+ :aliases
+ {:dev {:extra-paths ["dev"]
+        :extra-deps {nrepl/nrepl {:mvn/version "1.1.0"}}}
+  :prod {:main-opts ["-m" "mental-models.main"]}}}
