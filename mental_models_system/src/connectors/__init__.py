@@ -61,6 +61,15 @@ from .storage import LocalConnector, S3Connector, GDriveConnector
 from .llm import OllamaConnector, OpenAIConnector, LlamaCppConnector
 from .zapier_connector import ZapierConnector, create_zapier_connector
 from .huggingface_connector import HuggingfaceConnector, create_huggingface_connector
+from .lm_studio_connector import (
+    LMStudioConnector,
+    create_lm_studio_connector,
+    MENTAL_MODEL_PROMPTS,
+    ChatMessage,
+    CompletionResponse,
+    LMStudioModel,
+    LLAMAModelType,
+)
 
 __all__ = [
     # Base
@@ -104,5 +113,14 @@ __all__ = [
     
     # Huggingface
     "HuggingfaceConnector",
-    "create_huggingface_connector"
+    "create_huggingface_connector",
+    
+    # LM Studio
+    "LMStudioConnector",
+    "create_lm_studio_connector",
+    "MENTAL_MODEL_PROMPTS",
+    "ChatMessage",
+    "CompletionResponse",
+    "LMStudioModel",
+    "LLAMAModelType",
 ]

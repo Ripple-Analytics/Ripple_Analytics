@@ -4,6 +4,23 @@
 
 Built for 100 years. Planck knowledge, not chauffeur knowledge.
 
+## Project Statistics
+
+| Metric | Value |
+|--------|-------|
+| Total Lines of Code | 80,118 |
+| Python Code | 55,906 lines |
+| JSON Data | 22,395 lines |
+| HTML/Templates | 860 lines |
+| YAML/Config | 1,957 lines |
+| Total Files | 200+ |
+| Mental Models | 129 |
+| Failure Modes | 645 |
+| Connectors | 11 |
+| Task Handlers | 9 |
+
+**Last Updated:** January 18, 2026
+
 ## Architecture
 
 ```
