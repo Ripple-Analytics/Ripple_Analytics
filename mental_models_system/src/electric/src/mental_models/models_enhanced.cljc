@@ -1585,6 +1585,483 @@
       "Missed opportunities due to inaction"]
      :safeguards ["Invert: 'What's the cost of not changing?'" "Opportunity cost of status quo" "Regular strategy reviews" "Bias toward action when opportunity cost is high"]}]})
 
+;; Enhanced Model: Systems Thinking
+;; Understanding interconnections, feedback loops, and emergent properties
+(def systems-thinking-enhanced
+  {:name "systems-thinking"
+   :category "decision_making"
+   :description "Understanding how parts of a system interact and influence each other over time, including feedback loops, delays, and emergent properties."
+   :key-insight "You can't understand a system by only looking at its parts. The interactions between parts create behaviors that don't exist in any single component."
+   :application "Map the system: identify components, relationships, feedback loops, delays, and leverage points. Look for unintended consequences and emergent properties."
+   :munger-quote "I think it is undeniably true that the human brain must work in models. The trick is to have your brain work better than the other person's brain because it understands the most fundamental models."
+   :failure-modes
+   [{:name "reductionist-thinking"
+     :severity "high"
+     :description "Breaking complex systems into parts and optimizing each part independently, destroying emergent properties and system-level performance."
+     :mechanism "Analytical reduction works for simple systems but fails for complex adaptive systems where interactions matter more than components."
+     :psychological-root "Reductionism is cognitively easier. Understanding whole systems requires holding multiple relationships in mind simultaneously."
+     :evolutionary-origin "Ancestral problems were mostly simple cause-effect. Complex systems thinking is recent evolutionary demand."
+     :signals
+     ["Optimizing departments independently"
+      "Ignoring cross-functional dependencies"
+      "Local optimization hurting global performance"
+      "Surprise at system-level failures"
+      "Inability to explain emergent behaviors"
+      "Treating symptoms instead of root causes"
+      "Reorganizations that don't improve performance"
+      "Metrics improving while outcomes worsen"]
+     :case-studies
+     [{:name "Soviet Nail Factory"
+       :year 1960
+       :entity "Soviet Central Planning"
+       :description "Factory given quota by weight produced only heavy nails. Changed to quota by quantity, produced only tiny useless nails. Optimized metric, destroyed system purpose."
+       :quantitative-impact "Massive waste of resources. Chronic shortage of useful nails throughout Soviet economy."
+       :root-cause "Reductionist optimization of single metric without understanding system purpose and interactions."
+       :should-have-done "Define system purpose (useful nails for construction), measure outcomes not outputs, allow market feedback."
+       :sources ["Kornai, J. The Socialist System (1992)", "Soviet economic planning literature"]}
+      {:name "US Healthcare System"
+       :year "2000-present"
+       :entity "US Healthcare Industry"
+       :description "Each component optimized independently: hospitals for bed utilization, doctors for patient volume, insurers for claim denial, pharma for drug prices. System-level outcome: highest cost, mediocre results."
+       :quantitative-impact "$4.3T annual spending (18% of GDP), 50% higher per capita than other developed nations. Outcomes: lower life expectancy, higher infant mortality."
+       :root-cause "Reductionist optimization of each component without system-level design. Perverse incentives at every interface."
+       :should-have-done "Design for system-level outcomes (health, not healthcare). Align incentives across components. Measure what matters."
+       :sources ["Commonwealth Fund reports", "WHO health statistics", "OECD health data"]}
+      {:name "Boeing 737 MAX"
+       :year 2019
+       :entity "Boeing Corporation"
+       :description "Optimized for: low pilot training cost (reuse 737 certification), fuel efficiency (larger engines), production speed (minimal changes). System interaction: larger engines changed aerodynamics, MCAS software added, pilots not trained, crashes killed 346."
+       :quantitative-impact "346 deaths, $20B+ in costs, 20-month grounding, criminal charges, reputation destroyed."
+       :root-cause "Optimized individual components and constraints without understanding system-level safety implications and interactions."
+       :should-have-done "System-level safety analysis, comprehensive pilot training, transparent MCAS documentation, proper certification."
+       :sources ["Congressional investigation report", "NTSB reports", "DOJ criminal investigation"]}
+      {:name "Wells Fargo Account Fraud"
+       :year "2011-2016"
+       :entity "Wells Fargo Bank"
+       :description "Optimized sales metrics: accounts per customer, cross-selling ratios. Ignored system interactions: employee pressure, customer trust, regulatory risk. Employees opened 3.5M fake accounts."
+       :quantitative-impact "$3B in fines, CEO resigned, 5,300 employees fired, reputation damage, customer exodus."
+       :root-cause "Reductionist focus on sales metrics without understanding system-level effects on culture, ethics, and customer relationships."
+       :should-have-done "System-level thinking: how do incentives affect behavior? What are unintended consequences? Monitor for gaming."
+       :sources ["CFPB enforcement action", "Congressional testimony", "Independent investigation reports"]}
+      {:name "Enron Energy Trading"
+       :year 2001
+       :entity "Enron Corporation"
+       :description "Optimized mark-to-market accounting, SPV structures, and reported earnings independently. System interaction: accounting fraud enabled by complex structures, auditor conflicts, board failures."
+       :quantitative-impact "$74B in shareholder losses, 20,000 jobs lost, pension funds destroyed, criminal convictions."
+       :root-cause "Reductionist optimization of financial metrics without understanding system-level integrity and sustainability."
+       :should-have-done "System-level analysis: Are earnings real? Can this be sustained? What are the risks? Independent oversight."
+       :sources ["Powers Report (2002)", "Enron bankruptcy examiner report", "Criminal trial records"]}]
+     :quantitative-thresholds
+     [{:metric "Cross-Functional Dependencies Mapped"
+       :warning-threshold "< 50% of major dependencies identified"
+       :critical-threshold "< 25% identified"
+       :measurement "Percentage of system interactions documented"
+       :frequency "Per major initiative"
+       :example "Identified 3 of 12 cross-functional dependencies in new product launch"}
+      {:metric "System-Level Metrics vs Component Metrics"
+       :warning-threshold "< 30% system-level metrics"
+       :critical-threshold "< 10% system-level metrics"
+       :measurement "Ratio of outcome metrics to output metrics"
+       :frequency "Quarterly metric review"
+       :example "Measuring department outputs but not customer outcomes"}]
+     :environmental-triggers
+     ["Siloed organizational structure"
+      "Component-level incentives"
+      "Short-term pressure"
+      "Lack of systems expertise"
+      "Complexity and time pressure"
+      "Narrow functional expertise"]
+     :structural-safeguards
+     ["System dynamics modeling for major decisions"
+      "Cross-functional teams with system authority"
+      "System-level metrics and incentives"
+      "Regular system audits"
+      "Causal loop diagrams required"
+      "End-to-end process ownership"
+      "System architects in decision-making"]
+     :cognitive-safeguards
+     ["Map the full system before optimizing parts"
+      "Identify feedback loops and delays"
+      "Look for unintended consequences"
+      "Ask: 'What happens when everyone does this?'"
+      "Consider second and third-order effects"
+      "Study system failures in similar domains"]
+     :social-safeguards
+     ["Diverse perspectives in system design"
+      "External system reviews"
+      "Stakeholder feedback loops"
+      "Transparency and open discussion"
+      "Challenge reductionist thinking"]
+     :recovery-protocols
+     [{:step 1
+       :action "Map the actual system including all interactions"
+       :responsible "Systems analysis team"
+       :timeline "Within 1 week"
+       :success-criteria "Complete system map with feedback loops"
+       :escalation "If system too complex, bring in systems thinking expert"}
+      {:step 2
+       :action "Identify where reductionist optimization is causing system-level harm"
+       :responsible "Cross-functional team"
+       :timeline "Within 2 weeks"
+       :success-criteria "Root causes identified with quantitative impact"
+       :escalation "If causes unclear, conduct system simulation"}
+      {:step 3
+       :action "Redesign for system-level optimization"
+       :responsible "Strategy and operations teams"
+       :timeline "Within 1 month"
+       :success-criteria "New design with aligned incentives and metrics"
+       :escalation "If redesign insufficient, consider fundamental restructuring"}
+      {:step 4
+       :action "Implement with system-level monitoring"
+       :responsible "All teams"
+       :timeline "Within 2 months"
+       :success-criteria "System-level metrics improving"
+       :escalation "If not improving, return to step 2"}]
+     :lollapalooza-risk 0.90
+     :amplifying-biases ["confirmation-bias" "availability-heuristic" "dunning-kruger"]
+     :mitigating-models ["second-order-thinking" "inversion" "feedback-loops" "unintended-consequences"]}
+    
+    {:name "ignoring-feedback-loops"
+     :severity "critical"
+     :description "Failing to recognize and account for reinforcing and balancing feedback loops that can cause exponential growth, collapse, or oscillation."
+     :mechanism "Linear thinking assumes one-way causation. Feedback loops create circular causation where effects become causes."
+     :psychological-root "Human cognition evolved for simple cause-effect. Circular causation is cognitively demanding and counter-intuitive."
+     :evolutionary-origin "Most ancestral problems involved linear causation. Complex system dynamics with feedback loops are modern phenomena."
+     :signals
+     ["Surprise at exponential growth or collapse"
+      "Failure to anticipate tipping points"
+      "Boom-bust cycles"
+      "Runaway processes"
+      "Inability to explain why problems keep recurring"
+      "Short-term fixes that worsen long-term problems"
+      "Missing reinforcing loops (virtuous/vicious cycles)"
+      "Missing balancing loops (goal-seeking, resistance)"]
+     :case-studies
+     [{:name "2008 Financial Crisis"
+       :year "2007-2008"
+       :entity "Global Financial System"
+       :description "Reinforcing loop: Easy credit → rising home prices → more lending (collateral rising!) → more speculation → higher prices → more lending. Ignored balancing loop: affordability declining, defaults rising. Loop reversed: defaults → falling prices → more defaults → credit freeze → crash."
+       :quantitative-impact "$7.4T in stock wealth destroyed, 8.7M jobs lost, 10M foreclosures, $498B in TARP bailouts, Great Recession."
+       :root-cause "Ignored positive feedback loop amplifying risk. Assumed prices would keep rising. Missed tipping point."
+       :should-have-done "Recognize bubble dynamics, model feedback loops, identify tipping points, tighten lending before crisis."
+       :sources ["Financial Crisis Inquiry Report (2011)", "Federal Reserve studies", "IMF reports"]}
+      {:name "Antibiotic Resistance"
+       :year "1950-present"
+       :entity "Global Healthcare"
+       :description "Reinforcing loop: Antibiotic use → bacterial resistance → infections harder to treat → more antibiotic use → more resistance. Now 700,000 deaths/year, projected 10M/year by 2050."
+       :quantitative-impact "700,000 annual deaths from resistant infections. $100B+ annual healthcare costs. Existential threat to modern medicine."
+       :root-cause "Ignored feedback loop between antibiotic use and resistance. Treated antibiotics as unlimited resource."
+       :should-have-done "Antibiotic stewardship, reserve drugs for severe cases, invest in alternatives, monitor resistance, model feedback dynamics."
+       :sources ["O'Neill Report (2016)", "WHO Global Action Plan on AMR", "CDC reports"]}
+      {:name "Social Media Polarization"
+       :year "2010-present"
+       :entity "Facebook, Twitter, YouTube"
+       :description "Reinforcing loop: Engagement algorithm → shows extreme content (gets engagement) → users see more extreme content → become more extreme → engage more with extreme content → algorithm learns. Balancing loop ignored: societal polarization, mental health, democracy."
+       :quantitative-impact "Measurable increase in political polarization, mental health crisis in teens, election interference, genocide incitement (Myanmar)."
+       :root-cause "Optimized engagement metric without understanding feedback loop to extremism and societal harm."
+       :should-have-done "Model feedback loops, optimize for well-being not engagement, add friction for extreme content, diversify recommendations."
+       :sources ["Haugen testimony (2021)", "Academic studies on polarization", "Amnesty International reports"]}]
+     :quantitative-thresholds
+     [{:metric "Feedback Loops Identified"
+       :warning-threshold "< 3 major loops identified"
+       :critical-threshold "< 1 loop identified"
+       :measurement "Number of reinforcing and balancing loops documented"
+       :frequency "Per system change"
+       :example "Identified 1 of 6 feedback loops in new incentive system"}]
+     :environmental-triggers
+     ["Complex systems with delays"
+      "Multiple interacting agents"
+      "Non-linear relationships"
+      "Optimization for single metric"
+      "Lack of system modeling"]
+     :structural-safeguards
+     ["Causal loop diagrams required"
+      "System dynamics modeling"
+      "Feedback loop monitoring"
+      "Early warning systems"
+      "Kill switches for runaway processes"
+      "Gradual rollouts with monitoring"]
+     :cognitive-safeguards
+     ["Map reinforcing and balancing loops"
+      "Identify time delays"
+      "Look for tipping points"
+      "Ask: 'What happens at scale?'"
+      "Consider exponential dynamics"
+      "Study historical feedback loop failures"]
+     :social-safeguards
+     ["Systems thinking expertise in decisions"
+      "External review of system dynamics"
+      "Stakeholder feedback mechanisms"
+      "Regulatory oversight for systemic risks"]
+     :recovery-protocols
+     [{:step 1
+       :action "Identify the feedback loop causing runaway behavior"
+       :responsible "Systems analysis team"
+       :timeline "Immediately"
+       :success-criteria "Documented causal loop diagram"
+       :escalation "If loop unclear, emergency expert consultation"}
+      {:step 2
+       :action "Determine intervention points to break or reverse loop"
+       :responsible "Strategy team"
+       :timeline "Within days"
+       :success-criteria "Multiple intervention options with predicted effects"
+       :escalation "If no interventions found, consider system shutdown"}
+      {:step 3
+       :action "Implement intervention with intensive monitoring"
+       :responsible "Operations team"
+       :timeline "Within 1 week"
+       :success-criteria "Feedback loop weakening or reversing"
+       :escalation "If ineffective, implement backup intervention"}
+      {:step 4
+       :action "Build permanent monitoring and safeguards"
+       :responsible "Risk management"
+       :timeline "Within 1 month"
+       :success-criteria "Early warning system preventing recurrence"
+       :escalation "If insufficient, redesign system"}]
+     :lollapalooza-risk 0.95
+     :amplifying-biases ["exponential-growth-bias" "optimism-bias" "confirmation-bias"]
+     :mitigating-models ["second-order-thinking" "inversion" "margin-of-safety" "scenario-analysis"]}
+    
+    {:name "missing-leverage-points"
+     :severity "high"
+     :description "Failing to identify high-leverage intervention points in systems, leading to ineffective interventions or wasted effort."
+     :mechanism "Not all intervention points are equal. Small changes at leverage points can cause large system changes. Most interventions target low-leverage points."
+     :psychological-root "Leverage points are often counter-intuitive and non-obvious. Obvious interventions feel more actionable."
+     :evolutionary-origin "Direct action on visible problems was effective in simple environments. Leverage points are modern concept."
+     :signals
+     ["Lots of effort, little system change"
+      "Treating symptoms not root causes"
+      "Interventions that don't stick"
+      "Problems keep recurring"
+      "Resources wasted on low-impact changes"
+      "Missing structural vs symptomatic interventions"]
+     :safeguards ["Leverage point analysis (Meadows)", "Root cause analysis", "System modeling", "Focus on structure not events", "Test interventions before scaling"]}
+    
+    {:name "ignoring-delays"
+     :severity "medium"
+     :description "Failing to account for time delays between actions and consequences, leading to overcorrection, oscillation, or premature abandonment."
+     :mechanism "Delays between cause and effect obscure causation. Interventions take time to work. Impatience leads to overcorrection."
+     :psychological-root "Humans expect immediate feedback. Delayed consequences are cognitively difficult to connect to causes."
+     :evolutionary-origin "Ancestral cause-effect was mostly immediate. Long delays are modern phenomenon."
+     :signals
+     ["Frequent strategy changes"
+      "Overcorrection and oscillation"
+      "Impatience with initiatives"
+      "Boom-bust cycles"
+      "Abandoning strategies prematurely"
+      "Not waiting for feedback"]
+     :safeguards ["Patience protocols", "Time-series analysis", "Leading indicators", "Commitment devices", "Model expected delays", "Resist overcorrection"]}
+    
+    {:name "linear-thinking-in-non-linear-systems"
+     :severity "high"
+     :description "Assuming linear relationships when reality involves thresholds, tipping points, phase transitions, and exponential dynamics."
+     :mechanism "Linear extrapolation is cognitively easy but wrong for non-linear systems. Thresholds and tipping points cause sudden regime changes."
+     :psychological-root "Linear thinking is default. Non-linear dynamics are counter-intuitive and require mathematical modeling."
+     :evolutionary-origin "Many ancestral relationships were approximately linear in normal ranges. Extreme non-linearity is modern."
+     :signals
+     ["Surprise at sudden changes"
+      "Failure to anticipate tipping points"
+      "Linear extrapolation errors"
+      "Missing phase transitions"
+      "Underestimating exponential growth"
+      "Not recognizing thresholds"]
+     :safeguards ["Non-linear modeling", "Threshold identification", "Sensitivity analysis", "Phase transition awareness", "Exponential thinking", "Scenario analysis"]}]})
+
+;; Enhanced Model: First Principles Thinking
+;; Breaking down complex problems to fundamental truths and reasoning up from there
+(def first-principles-enhanced
+  {:name "first-principles"
+   :category "decision_making"
+   :description "Break down complex problems into their most basic, foundational truths and reason up from there, rather than reasoning by analogy or convention."
+   :key-insight "Don't accept conventional wisdom or analogies as truth. Question assumptions down to fundamental physics, economics, or human nature."
+   :application "When facing a problem: (1) Identify and challenge all assumptions, (2) Break down to fundamental truths that cannot be deduced further, (3) Reason up from first principles to create new solutions."
+   :munger-quote "I think it is undeniably true that the human brain must work in models. The trick is to have your brain work better than the other person's brain because it understands the most fundamental models."
+   :failure-modes
+   [{:name "reasoning-by-analogy"
+     :severity "high"
+     :description "Accepting 'this is how it's always been done' or 'this is like X' instead of questioning down to fundamental truths."
+     :mechanism "Analogies and conventions are cognitively easy. First principles thinking requires hard mental work to question everything."
+     :psychological-root "Social proof, authority bias, and cognitive ease. Brains conserve energy by accepting existing patterns."
+     :evolutionary-origin "Following the tribe's conventions was survival-optimal. Questioning everything was dangerous and energy-intensive."
+     :signals
+     ["Frequent use of analogies in reasoning"
+      "'That's how it's always done' justifications"
+      "Accepting industry conventions without question"
+      "Incremental thinking within existing paradigms"
+      "Inability to explain why something must be true"
+      "Following best practices without understanding"
+      "Copying competitors without understanding fundamentals"
+      "Resistance to questioning assumptions"]
+     :case-studies
+     [{:name "SpaceX Rocket Reusability"
+       :year 2015
+       :entity "SpaceX"
+       :description "Rocket industry: 'Rockets are expendable, that's how it's always been.' Musk: 'What are rockets made of? Aerospace-grade aluminum alloys, titanium, carbon fiber. What's the material cost? ~$200K. Why does a launch cost $60M? Because we throw it away.' Built reusable rockets."
+       :quantitative-impact "Launch cost reduced from $60M to $28M (53% reduction). Falcon 9 boosters reused 15+ times. Revolutionized space industry."
+       :root-cause "Industry reasoned by analogy ('rockets have always been expendable') instead of first principles (material costs vs launch costs)."
+       :should-have-done "Question: Why are rockets expendable? What's the fundamental physics? What's the material cost? Can we reuse?"
+       :sources ["Musk interviews", "SpaceX technical papers", "Industry cost analyses"]}
+      {:name "Tesla Electric Vehicles"
+       :year 2008
+       :entity "Tesla Motors"
+       :description "Auto industry: 'EVs are golf carts, limited range, expensive batteries.' Musk: 'What are batteries made of? Lithium, cobalt, nickel, carbon. What's the material cost per kWh? Can we reduce it?' Built battery gigafactory, reduced cost 85%."
+       :quantitative-impact "Battery cost: $1,000/kWh (2008) → $137/kWh (2020). Tesla market cap $800B+, forced entire auto industry to EVs."
+       :root-cause "Industry reasoned by analogy ('EVs have always been expensive') instead of first principles (material costs, manufacturing scale)."
+       :should-have-done "Question: Why are batteries expensive? What's the material cost? What's the manufacturing cost? Can we scale?"
+       :sources ["Tesla battery day presentations", "BloombergNEF battery price survey", "Industry analyses"]}
+      {:name "Airbnb Hotel Alternative"
+       :year 2008
+       :entity "Airbnb"
+       :description "Hospitality industry: 'Lodging requires hotels, professional management, licenses.' Airbnb: 'What do travelers need? A place to sleep. What do homeowners have? Extra rooms. Can we connect them?'"
+       :quantitative-impact "$100B+ valuation, 7M listings, disrupted $600B hotel industry, created new market."
+       :root-cause "Industry reasoned by analogy ('lodging = hotels') instead of first principles (travelers need beds, homeowners have beds)."
+       :should-have-done "Question: Why do we need hotels? What's the fundamental need? What resources exist? Can we match supply and demand?"
+       :sources ["Airbnb founding story", "Market analyses", "Valuation reports"]}
+      {:name "Netflix Streaming vs DVD"
+       :year 2007
+       :entity "Netflix"
+       :description "Video rental industry: 'People rent physical media from stores or by mail.' Netflix: 'What do people want? Content. How can content be delivered? Internet bandwidth is growing. Can we stream?'"
+       :quantitative-impact "$280B market cap, 230M subscribers, destroyed Blockbuster ($5B), revolutionized entertainment."
+       :root-cause "Blockbuster reasoned by analogy ('video rental = physical stores') instead of first principles (content delivery via internet)."
+       :should-have-done "Question: What's the fundamental need? Content access. What's the best delivery method given technology trends?"
+       :sources ["Netflix history", "Blockbuster bankruptcy filing", "Streaming industry reports"]}
+      {:name "Amazon AWS Cloud Computing"
+       :year 2006
+       :entity "Amazon Web Services"
+       :description "Tech industry: 'Companies need their own data centers and servers.' Amazon: 'What do companies need? Compute and storage. We have excess capacity. Can we rent it?'"
+       :quantitative-impact "$80B+ annual revenue, 32% of cloud market, $1T+ market created, changed how all software is built."
+       :root-cause "Industry reasoned by analogy ('IT = own your servers') instead of first principles (compute as utility, economies of scale)."
+       :should-have-done "Question: Why own servers? What's the fundamental need? Can compute be a utility like electricity?"
+       :sources ["AWS history", "Cloud market reports", "Bezos shareholder letters"]}]
+     :quantitative-thresholds
+     [{:metric "Assumptions Challenged"
+       :warning-threshold "< 30% of major assumptions questioned"
+       :critical-threshold "< 10% questioned"
+       :measurement "Percentage of key assumptions broken down to first principles"
+       :frequency "Per major decision or strategy"
+       :example "Accepted 9 of 10 industry assumptions without questioning fundamentals"}
+      {:metric "Reasoning by Analogy vs First Principles"
+       :warning-threshold "> 70% analogies"
+       :critical-threshold "> 90% analogies"
+       :measurement "Ratio of analogical reasoning to first principles reasoning in decision documents"
+       :frequency "Per strategy document"
+       :example "Strategy justified by 'like Uber but for X' without fundamental analysis"}]
+     :environmental-triggers
+     ["Strong industry conventions"
+      "Time pressure"
+      "Lack of technical depth"
+      "Social proof and conformity pressure"
+      "Authority figures defending status quo"
+      "Complexity and cognitive load"]
+     :structural-safeguards
+     ["Mandatory assumption documentation"
+      "First principles analysis required for major decisions"
+      "Challenge sessions with technical experts"
+      "Assumption testing and validation"
+      "Diverse perspectives (outsiders, different industries)"
+      "Innovation time for questioning fundamentals"]
+     :cognitive-safeguards
+     ["Ask: 'What are we assuming that might not be true?'"
+      "Ask: 'What are the fundamental constraints? (physics, economics, human nature)'"
+      "Ask: 'Why is this the way it is? Could it be different?'"
+      "Break down to material/energy/information fundamentals"
+      "Separate what's possible from what's conventional"
+      "Study breakthrough innovations in other domains"]
+     :social-safeguards
+     ["Encourage questioning of sacred cows"
+      "Reward innovative thinking"
+      "Bring in outsiders without industry baggage"
+      "Create psychological safety for challenging assumptions"
+      "Study first principles thinkers (Musk, Bezos, Feynman)"]
+     :recovery-protocols
+     [{:step 1
+       :action "Identify what assumptions were accepted without questioning"
+       :responsible "Strategy team"
+       :timeline "Within 1 week"
+       :success-criteria "Complete list of unquestioned assumptions"
+       :escalation "If assumptions unclear, bring in external perspective"}
+      {:step 2
+       :action "Break down each assumption to first principles"
+       :responsible "Technical and strategy teams"
+       :timeline "Within 2 weeks"
+       :success-criteria "First principles analysis of each assumption"
+       :escalation "If analysis insufficient, bring in domain experts"}
+      {:step 3
+       :action "Develop alternative approaches based on first principles"
+       :responsible "Innovation team"
+       :timeline "Within 1 month"
+       :success-criteria "3+ alternative approaches that challenge conventions"
+       :escalation "If no alternatives found, expand search to other industries"}
+      {:step 4
+       :action "Test and validate new approaches"
+       :responsible "Product and operations teams"
+       :timeline "Within 2 months"
+       :success-criteria "Validated approach that outperforms conventional wisdom"
+       :escalation "If validation fails, iterate on alternatives"}]
+     :lollapalooza-risk 0.80
+     :amplifying-biases ["authority-bias" "social-proof" "status-quo-bias" "confirmation-bias"]
+     :mitigating-models ["inversion" "second-order-thinking" "circle-of-competence" "intellectual-humility"]}
+    
+    {:name "stopping-too-early"
+     :severity "high"
+     :description "Stopping the questioning process before reaching true first principles, accepting intermediate assumptions as fundamental."
+     :mechanism "Questioning is hard work. People stop when they reach something that 'sounds fundamental' even if it can be broken down further."
+     :psychological-root "Cognitive ease, satisficing, and social pressure to accept certain assumptions as given."
+     :evolutionary-origin "Infinite questioning was impractical. 'Good enough' answers enabled action."
+     :signals
+     ["Accepting 'that's just how it is' explanations"
+      "Stopping at disciplinary boundaries"
+      "Not questioning foundational assumptions"
+      "Accepting intermediate conclusions as fundamental"
+      "Inability to explain at deeper levels"
+      "Circular reasoning"]
+     :safeguards ["Ask 'Why?' five times (Toyota 5 Whys)", "Question across disciplines", "Seek explanations at physics/economics/human nature level", "Test if assumption can be broken down further"]}
+    
+    {:name "ignoring-constraints"
+     :severity "medium"
+     :description "Reasoning from first principles without considering real-world constraints (physics, economics, human nature, regulations)."
+     :mechanism "Pure first principles thinking can lead to solutions that violate fundamental constraints or are economically infeasible."
+     :psychological-root "Optimism bias and lack of practical experience. Theory without reality testing."
+     :evolutionary-origin "Theoretical thinking without practical constraints is modern luxury."
+     :signals
+     ["Solutions that violate physics"
+      "Economically infeasible proposals"
+      "Ignoring human nature"
+      "Regulatory impossibilities"
+      "'Sounds good in theory' solutions"
+      "Lack of practical validation"]
+     :safeguards ["Validate against fundamental constraints", "Economic feasibility analysis", "Physics/engineering review", "Human nature reality check", "Regulatory assessment"]}
+    
+    {:name "reinventing-the-wheel"
+     :severity "medium"
+     :description "Questioning everything including things that are actually well-optimized, wasting time on problems already solved."
+     :mechanism "Not all conventions are wrong. Some represent accumulated wisdom and optimization. Questioning everything is inefficient."
+     :psychological-root "Overconfidence in ability to improve on existing solutions. Not-invented-here syndrome."
+     :evolutionary-origin "Respecting accumulated wisdom was survival-optimal. Pure individualism was risky."
+     :signals
+     ["Questioning well-optimized solutions"
+      "Ignoring accumulated wisdom"
+      "Reinventing inferior solutions"
+      "Time wasted on solved problems"
+      "Not-invented-here syndrome"
+      "Arrogance about existing solutions"]
+     :safeguards ["Chesterton's Fence: understand why before changing", "Study history of existing solutions", "Identify what's actually suboptimal vs well-optimized", "Balance innovation with respect for wisdom"]}
+    
+    {:name "analysis-paralysis"
+     :severity "medium"
+     :description "Questioning everything indefinitely without ever reaching conclusions or taking action."
+     :mechanism "First principles thinking is intellectually satisfying but can prevent action. Perfect understanding is impossible."
+     :psychological-root "Perfectionism, fear of being wrong, preference for thinking over doing."
+     :evolutionary-origin "Overthinking was safer than premature action in some contexts."
+     :signals
+     ["Endless analysis without decisions"
+      "Perfectionism in understanding"
+      "Inability to act with uncertainty"
+      "Missing opportunities due to overthinking"
+      "Competitors moving faster"
+      "Diminishing returns on analysis"]
+     :safeguards ["Set decision deadlines", "Good enough is good enough", "Test and learn vs perfect understanding", "Reversible decisions need less analysis", "Bias toward action"]}]})
+
 ;; Export all enhanced models
 (def enhanced-models
   [second-order-thinking-enhanced
@@ -1592,4 +2069,601 @@
    incentives-enhanced
    margin-of-safety-enhanced
    circle-of-competence-enhanced
-   opportunity-cost-enhanced])
+   opportunity-cost-enhanced
+   systems-thinking-enhanced
+   first-principles-enhanced])
+
+;; Enhanced Model: Asymmetric Risk/Reward
+;; Seeking opportunities where upside vastly exceeds downside
+(def asymmetric-risk-enhanced
+  {:name "asymmetric-risk"
+   :category "decision_making"
+   :description "Seek situations where potential upside is much larger than potential downside. Avoid situations where downside is catastrophic regardless of upside."
+   :key-insight "You don't need to be right often if your wins are much bigger than your losses. Conversely, avoid risks where one bad outcome can destroy you."
+   :application "For each decision: (1) What's the worst case? (2) What's the best case? (3) What's the probability distribution? (4) Is the risk/reward asymmetric? (5) Can I survive the worst case?"
+   :munger-quote "It is remarkable how much long-term advantage people like us have gotten by trying to be consistently not stupid, instead of trying to be very intelligent."
+   :failure-modes
+   [{:name "symmetric-thinking"
+     :severity "high"
+     :description "Treating all risks and rewards as symmetric, missing opportunities with massive upside and limited downside, or taking risks with catastrophic downside."
+     :mechanism "Default mental model assumes normal distributions and symmetric outcomes. Reality often has fat tails and extreme asymmetry."
+     :psychological-root "Linear thinking, normal distribution bias, and inability to grasp exponential outcomes."
+     :evolutionary-origin "Ancestral risks and rewards were mostly symmetric. Extreme asymmetry is modern phenomenon."
+     :signals
+     ["Equal weight to upside and downside"
+      "Missing convex opportunities (limited downside, unlimited upside)"
+      "Taking concave risks (limited upside, unlimited downside)"
+      "Not distinguishing between Type 1 and Type 2 risks"
+      "Ignoring tail risks"
+      "Not seeking optionality"
+      "Missing venture capital / startup logic"
+      "Treating all decisions as equally reversible"]
+     :case-studies
+     [{:name "Venture Capital Model"
+       :year "1970-present"
+       :entity "VC Industry"
+       :description "Asymmetric model: Invest in 100 startups. 90 fail (lose 1x), 9 return 2-3x, 1 returns 100x+. Portfolio returns 5-10x despite 90% failure rate. Works because upside is unlimited, downside is capped at investment."
+       :quantitative-impact "Top VC funds return 5-10x over 10 years. Sequoia: $1M in Google → $4.3B (4,300x). Benchmark: $6.7M in Uber → $7B (1,045x)."
+       :root-cause "Understanding asymmetric risk: capped downside (lose investment), unlimited upside (company can grow 1000x)."
+       :should-have-done "Apply to personal decisions: take asymmetric bets where downside is limited and upside is exponential."
+       :sources ["VC fund returns", "Sequoia/Benchmark case studies", "Power law distributions in VC"]}
+      {:name "Nassim Taleb's Barbell Strategy"
+       :year 2007
+       :entity "Nassim Taleb"
+       :description "Before 2008 crisis: 90% in ultra-safe Treasury bonds, 10% in highly speculative options betting on market crash. Asymmetric: limited downside (can only lose 10%), unlimited upside (options pay 10-100x in crash). Made fortune in 2008."
+       :quantitative-impact "Universa (Taleb's fund) returned 65% in 2008 while S&P fell 37%. Similar gains in 2020 COVID crash."
+       :root-cause "Understanding asymmetry: avoid middle (symmetric risk), combine safe + highly asymmetric bets."
+       :should-have-done "Avoid symmetric risks (can lose 50%, gain 50%). Seek asymmetric (lose 10%, gain 1000%)."
+       :sources ["Taleb, N. The Black Swan (2007)", "Universa fund returns", "Barbell strategy papers"]}
+      {:name "Amazon Bet on AWS"
+       :year 2006
+       :entity "Amazon"
+       :description "Bezos: 'What if we rent our excess compute capacity?' Downside: $1-2B investment, might fail. Upside: could create new market. Asymmetric bet. AWS now $80B+ revenue, more profitable than retail."
+       :quantitative-impact "AWS: $80B+ annual revenue, 32% of cloud market, 70%+ of Amazon's operating profit. 40x+ return on initial investment."
+       :root-cause "Recognized asymmetry: limited downside (affordable investment), massive upside (new market creation)."
+       :should-have-done "Look for opportunities where downside is affordable and upside is transformational."
+       :sources ["Bezos shareholder letters", "AWS financial reports", "Amazon history"]}
+      {:name "Long-Term Capital Management (LTCM)"
+       :year 1998
+       :entity "LTCM Hedge Fund"
+       :description "Symmetric thinking failure: Strategies with small consistent gains (0.5-1% monthly) but catastrophic tail risk. Made money 47 months, lost everything in month 48. Downside was unlimited (bankruptcy), upside was limited (1% monthly)."
+       :quantitative-impact "$4.6B loss, near collapse of financial system, $3.6B bailout, fund liquidated."
+       :root-cause "Ignored asymmetry: limited upside (capped gains), unlimited downside (bankruptcy). Concave risk profile."
+       :should-have-done "Avoid strategies with limited upside and catastrophic downside. Seek opposite."
+       :sources ["Lowenstein, R. When Genius Failed (2000)", "Federal Reserve reports", "LTCM case studies"]}
+      {:name "Nuclear Power Plant Design"
+       :year "1970-present"
+       :entity "Nuclear Industry"
+       :description "Asymmetric risk: Upside is limited (electricity generation, predictable revenue). Downside is catastrophic (Chernobyl, Fukushima). Concave risk profile. Compare to solar: limited downside (panel fails), limited upside (predictable generation). But downside is affordable."
+       :quantitative-impact "Chernobyl: $235B cost, 4,000-60,000 deaths. Fukushima: $500B+ cost, 154,000 evacuated. Nuclear growth stalled."
+       :root-cause "Concave risk profile: limited upside, catastrophic downside. Asymmetry works against you."
+       :should-have-done "Avoid technologies/strategies with catastrophic downside regardless of upside. Seek convex profiles."
+       :sources ["WHO reports", "IAEA studies", "Nuclear accident cost analyses"]}]
+     :quantitative-thresholds
+     [{:metric "Upside/Downside Ratio"
+       :warning-threshold "< 3:1"
+       :critical-threshold "< 1:1 (symmetric or concave)"
+       :measurement "Ratio of potential upside to potential downside"
+       :frequency "Per major decision"
+       :example "Investment with 50% upside, 40% downside = 1.25:1 (poor asymmetry)"}
+      {:metric "Ruin Probability"
+       :warning-threshold "> 1%"
+       :critical-threshold "> 5%"
+       :measurement "Probability of catastrophic loss (bankruptcy, death, irreversible harm)"
+       :frequency "Per major risk"
+       :example "Strategy with 10% chance of bankruptcy regardless of upside"}]
+     :environmental-triggers
+     ["Normal distribution assumptions"
+      "Ignoring tail risks"
+      "Pressure for consistent returns"
+      "Lack of optionality thinking"
+      "Short-term thinking"
+      "Not understanding convexity"]
+     :structural-safeguards
+     ["Asymmetry analysis required for major decisions"
+      "Ruin probability calculation"
+      "Barbell strategies (safe + asymmetric)"
+      "Portfolio approach to risks"
+      "Never bet the company on symmetric risks"
+      "Seek optionality and convexity"]
+     :cognitive-safeguards
+     ["Ask: 'What's the worst case? Can I survive it?'"
+      "Ask: 'What's the best case? Is it transformational?'"
+      "Ask: 'Is this convex (limited down, unlimited up) or concave (limited up, unlimited down)?'"
+      "Seek situations where you can't lose much but can gain a lot"
+      "Avoid situations where you can't gain much but can lose a lot"
+      "Think in terms of optionality"]
+     :social-safeguards
+     ["Risk review by independent experts"
+      "Tail risk assessment"
+      "Study asymmetric successes (VC, Taleb)"
+      "Challenge symmetric thinking"]
+     :recovery-protocols
+     [{:step 1
+       :action "Identify if you're in a concave risk situation (limited upside, large downside)"
+       :responsible "Risk management team"
+       :timeline "Immediately"
+       :success-criteria "Clear assessment of risk asymmetry"
+       :escalation "If in catastrophic risk situation, emergency exit"}
+      {:step 2
+       :action "Calculate ruin probability and maximum loss"
+       :responsible "Finance and risk teams"
+       :timeline "Within 48 hours"
+       :success-criteria "Quantified worst-case scenarios"
+       :escalation "If ruin probability > 5%, immediate de-risking"}
+      {:step 3
+       :action "Restructure for convex risk profile"
+       :responsible "Strategy team"
+       :timeline "Within 1 week"
+       :success-criteria "Limited downside, preserved upside optionality"
+       :escalation "If restructuring insufficient, exit position"}
+      {:step 4
+       :action "Implement asymmetry analysis for all future decisions"
+       :responsible "All decision-makers"
+       :timeline "Ongoing"
+       :success-criteria "Systematic asymmetry evaluation"
+       :escalation "If not adopted, mandate training"}]
+     :lollapalooza-risk 0.95
+     :amplifying-biases ["normal-distribution-bias" "optimism-bias" "underestimating-tail-risks"]
+     :mitigating-models ["margin-of-safety" "inversion" "second-order-thinking" "optionality"]}
+    
+    {:name "ignoring-tail-risks"
+     :severity "critical"
+     :description "Focusing on average outcomes while ignoring low-probability, high-impact tail events that can cause ruin."
+     :mechanism "Normal distribution thinking. Reality has fat tails. Rare events are more common and more extreme than normal models predict."
+     :psychological-root "Cognitive ease of normal distributions. Difficulty imagining extreme events."
+     :evolutionary-origin "Extreme events were rare in ancestral environments. Modern interconnected systems create fat tails."
+     :signals
+     ["Using normal distribution assumptions"
+      "Ignoring 'black swan' events"
+      "No stress testing for extremes"
+      "Overconfidence in models"
+      "Dismissing low-probability events"
+      "No ruin analysis"]
+     :safeguards ["Stress test for 3-sigma, 5-sigma events", "Assume fat tails", "Calculate ruin probability", "Margin of safety for tail events", "Study historical extremes"]}
+    
+    {:name "not-seeking-optionality"
+     :severity "high"
+     :description "Failing to seek and create options that provide asymmetric upside with limited downside."
+     :mechanism "Options have convex payoff: limited downside (option premium), unlimited upside. Most people don't think in terms of optionality."
+     :psychological-root "Linear thinking. Options and convexity are counter-intuitive."
+     :evolutionary-origin "Optionality is modern concept. Ancestral decisions were mostly binary."
+     :signals
+     ["Making irreversible commitments"
+      "Not preserving flexibility"
+      "Missing opportunities to create options"
+      "Not valuing optionality"
+      "Burning bridges"
+      "All-or-nothing thinking"]
+     :safeguards ["Seek optionality", "Preserve flexibility", "Make reversible decisions", "Create options before committing", "Value flexibility", "Bezos Type 2 decisions"]}
+    
+    {:name "taking-concave-risks"
+     :severity "critical"
+     :description "Taking risks with limited upside and unlimited downside (selling options, picking up pennies in front of steamroller)."
+     :mechanism "Concave strategies feel good (consistent small wins) until catastrophic loss. Like selling insurance or lottery tickets."
+     :psychological-root "Humans prefer consistent small gains over lumpy uncertain gains. Underestimate tail risks."
+     :evolutionary-origin "Consistent resources were survival-optimal. Boom-bust was risky."
+     :signals
+     ["Consistent small gains"
+      "Selling volatility or insurance"
+      "Strategies that 'work until they don't'"
+      "Picking up pennies in front of steamroller"
+      "Ignoring catastrophic scenarios"
+      "Overconfidence in risk management"]
+     :safeguards ["Identify concave risk profiles", "Avoid selling options", "Avoid strategies with catastrophic downside", "Seek convex not concave"]}
+    
+    {:name "betting-the-company"
+     :severity "critical"
+     :description "Taking risks where one bad outcome can cause ruin, regardless of upside."
+     :mechanism "Ruin is permanent. No amount of upside justifies ruin risk. But people take ruin risks for insufficient upside."
+     :psychological-root "Optimism bias, overconfidence, greed, and pressure."
+     :evolutionary-origin "All-or-nothing bets were sometimes necessary for survival."
+     :signals
+     ["Single point of failure"
+      "Concentrated risks"
+      "High leverage"
+      "No margin of safety"
+      "One bad outcome = bankruptcy"
+      "Ignoring ruin probability"]
+     :safeguards ["Never bet the company", "Diversify", "Margin of safety", "Calculate ruin probability", "Avoid leverage on ruin risks", "Portfolio approach"]}]})
+
+;; Enhanced Model: Reversible vs Irreversible Decisions (Bezos Type 1 vs Type 2)
+;; Different decision processes for different types of decisions
+(def reversible-decisions-enhanced
+  {:name "reversible-decisions"
+   :category "decision_making"
+   :description "Distinguish between irreversible decisions (Type 1: one-way doors) that require careful analysis, and reversible decisions (Type 2: two-way doors) that should be made quickly by individuals or small teams."
+   :key-insight "Most decisions are reversible (Type 2) and should be made fast with 70% of information. Irreversible decisions (Type 1) require more analysis. Treating all decisions as Type 1 causes organizational paralysis."
+   :application "For each decision: (1) Is this reversible? (2) If reversible, decide fast with 70% info. (3) If irreversible, slow down and analyze deeply. (4) Most decisions are Type 2."
+   :munger-quote "It is remarkable how much long-term advantage people like us have gotten by trying to be consistently not stupid, instead of trying to be very intelligent."
+   :failure-modes
+   [{:name "treating-type-2-as-type-1"
+     :severity "high"
+     :description "Treating reversible decisions as if they're irreversible, leading to analysis paralysis, slow decision-making, and loss of competitive advantage."
+     :mechanism "Risk aversion and perfectionism cause over-analysis of reversible decisions. Organizations default to slow careful process for all decisions."
+     :psychological-root "Loss aversion, fear of being wrong, desire for certainty, and CYA culture."
+     :evolutionary-origin "Caution was survival-optimal. Hasty decisions were dangerous."
+     :signals
+     ["Analysis paralysis on reversible decisions"
+      "Slow decision-making on minor issues"
+      "Requiring extensive data for reversible choices"
+      "Multiple approval layers for Type 2 decisions"
+      "Competitors moving faster"
+      "Missing opportunities due to slow decisions"
+      "Perfectionism on reversible choices"
+      "Inability to distinguish decision types"]
+     :case-studies
+     [{:name "Amazon's Bias for Action"
+       :year "1997-present"
+       :entity "Amazon"
+       :description "Bezos: 'Most decisions are Type 2 (reversible). Make them fast with 70% of info. Type 1 (irreversible) need more analysis. Most organizations treat all decisions as Type 1 and become slow.' Amazon's speed is competitive advantage."
+       :quantitative-impact "$1.7T market cap, fastest innovation cycle in retail/tech, outpaced all competitors. Speed as core advantage."
+       :root-cause "Correctly distinguishing Type 1 vs Type 2. Fast decisions on Type 2, careful on Type 1."
+       :should-have-done "Adopt this framework. Identify what's truly irreversible. Move fast on everything else."
+       :sources ["Bezos shareholder letters", "Amazon leadership principles", "Working Backwards book"]}
+      {:name "Google's 20% Time"
+       :year "2004-2013"
+       :entity "Google"
+       :description "Engineers could spend 20% time on side projects. Type 2 decisions: try projects, kill if not working. Created Gmail, AdSense, Google News. Later killed program, slowed innovation."
+       :quantitative-impact "Gmail: 1.8B users. AdSense: $20B+ annual revenue. Google News: 1B+ users. All from Type 2 experiments."
+       :root-cause "Recognized side projects are Type 2 (reversible). Enabled fast experimentation."
+       :should-have-done "Maintain Type 2 experimentation culture. Don't let bureaucracy slow reversible decisions."
+       :sources ["Google history", "Product revenue data", "Employee accounts"]}
+      {:name "Netflix Culture of Freedom and Responsibility"
+       :year "2009-present"
+       :entity "Netflix"
+       :description "Empower employees to make reversible decisions without approval. 'Don't seek to please your boss, seek to do what's best for Netflix.' Type 2 decisions made by individuals. Type 1 decisions have process."
+       :quantitative-impact "$280B market cap, 230M subscribers, outpaced all entertainment competitors in streaming transition."
+       :root-cause "Correctly identified that most operational decisions are Type 2. Empowered fast decision-making."
+       :should-have-done "Adopt similar culture. Trust employees on Type 2 decisions."
+       :sources ["Netflix culture deck", "No Rules Rules book", "Hastings interviews"]}
+      {:name "Yahoo's Slow Decision-Making"
+       :year "2000-2010"
+       :entity "Yahoo"
+       :description "Treated all decisions as Type 1. Multiple approval layers, extensive analysis, slow execution. Missed Google acquisition ($1M ask), Facebook acquisition ($1B ask), search innovation, mobile. Declined from $125B to $4.5B."
+       :quantitative-impact "$125B peak valuation → $4.5B sale to Verizon. Lost $120B+ in value. Passed on Google and Facebook."
+       :root-cause "Treated Type 2 decisions (acquisitions, product experiments) as Type 1. Analysis paralysis."
+       :should-have-done "Distinguish Type 1 vs Type 2. Move fast on acquisitions and experiments (Type 2). Slow down on irreversible bets (Type 1)."
+       :sources ["Yahoo history", "Acquisition case studies", "Marissa Mayer accounts"]}
+      {:name "Kodak's Digital Photography Delay"
+       :year "1975-2000"
+       :entity "Kodak"
+       :description "Invented digital camera in 1975. Treated digital transition as Type 1 (irreversible, threatening film business). Delayed for 25 years. Actually was Type 2 (could experiment, iterate, learn). Bankruptcy 2012."
+       :quantitative-impact "$31B peak value → bankruptcy. Lost entire digital photography market to Canon, Nikon, Sony, smartphones."
+       :root-cause "Treated digital experiments as Type 1 (irreversible commitment). Actually Type 2 (reversible experiments)."
+       :should-have-done "Recognize digital experiments are Type 2. Run parallel experiments. Learn fast. Iterate."
+       :sources ["Kodak bankruptcy filing", "Digital camera history", "Innovation case studies"]}]
+     :quantitative-thresholds
+     [{:metric "Decision Velocity"
+       :warning-threshold "< 70% of decisions made within 1 week"
+       :critical-threshold "< 50% within 1 week"
+       :measurement "Percentage of Type 2 decisions made within 1 week"
+       :frequency "Monthly decision audit"
+       :example "Only 40% of reversible decisions made within 1 week"}
+      {:metric "Type 1 vs Type 2 Identification"
+       :warning-threshold "< 80% correctly identified"
+       :critical-threshold "< 60% correctly identified"
+       :measurement "Percentage of decisions correctly classified as Type 1 or Type 2"
+       :frequency "Quarterly decision review"
+       :example "Treating 50% of Type 2 decisions as Type 1"}]
+     :environmental-triggers
+     ["Risk-averse culture"
+      "Perfectionism"
+      "Lack of trust"
+      "Bureaucratic processes"
+      "Fear of failure"
+      "CYA culture"]
+     :structural-safeguards
+     ["Explicit Type 1 vs Type 2 classification"
+      "Fast-track process for Type 2 decisions"
+      "Empower individuals/small teams for Type 2"
+      "Careful process only for Type 1"
+      "Decision velocity metrics"
+      "Bias for action on Type 2"]
+     :cognitive-safeguards
+     ["Ask: 'Is this reversible?'"
+      "Ask: 'What's the cost of reversing this decision?'"
+      "Ask: 'What's the cost of delay?'"
+      "Default to Type 2 unless proven Type 1"
+      "70% information rule for Type 2"
+      "Study Bezos framework"]
+     :social-safeguards
+     ["Culture of experimentation"
+      "Celebrate fast decisions on Type 2"
+      "Punish slow decisions on Type 2, not failed experiments"
+      "Trust and empowerment"
+      "Reduce approval layers"]
+     :recovery-protocols
+     [{:step 1
+       :action "Audit recent decisions: Type 1 or Type 2?"
+       :responsible "Leadership team"
+       :timeline "Within 1 week"
+       :success-criteria "Complete decision classification"
+       :escalation "If most Type 2 treated as Type 1, culture problem"}
+      {:step 2
+       :action "Identify bottlenecks in Type 2 decision-making"
+       :responsible "Operations team"
+       :timeline "Within 2 weeks"
+       :success-criteria "Root causes of slow Type 2 decisions"
+       :escalation "If systemic (approval layers, culture), escalate to CEO"}
+      {:step 3
+       :action "Implement fast-track process for Type 2"
+       :responsible "All teams"
+       :timeline "Within 1 month"
+       :success-criteria "Type 2 decisions made in < 1 week"
+       :escalation "If not improving, mandate decision velocity metrics"}
+      {:step 4
+       :action "Build culture of bias for action"
+       :responsible "Leadership"
+       :timeline "Ongoing"
+       :success-criteria "Decision velocity increasing, innovation accelerating"
+       :escalation "If culture doesn't shift, leadership changes needed"}]
+     :lollapalooza-risk 0.85
+     :amplifying-biases ["loss-aversion" "status-quo-bias" "perfectionism" "fear-of-failure"]
+     :mitigating-models ["inversion" "opportunity-cost" "first-principles" "asymmetric-risk"]}
+    
+    {:name "treating-type-1-as-type-2"
+     :severity "critical"
+     :description "Treating irreversible decisions as if they're reversible, leading to hasty decisions with catastrophic consequences."
+     :mechanism "Overconfidence and optimism lead to treating irreversible decisions casually. 'We can always fix it later' when you can't."
+     :psychological-root "Optimism bias, overconfidence, impatience, and underestimating irreversibility."
+     :evolutionary-origin "Optimism and action bias were survival-optimal in many contexts."
+     :signals
+     ["Hasty decisions on irreversible matters"
+      "Insufficient analysis of Type 1 decisions"
+      "Overconfidence in ability to reverse"
+      "Ignoring irreversible consequences"
+      "Impatience with necessary analysis"
+      "Dismissing concerns as 'overthinking'"]
+     :safeguards ["Identify truly irreversible decisions", "Slow down on Type 1", "Pre-mortem for Type 1", "Margin of safety", "Inversion: what makes this irreversible?"]}
+    
+    {:name "not-identifying-decision-type"
+     :severity "high"
+     :description "Failing to classify decisions as Type 1 or Type 2, leading to random decision processes."
+     :mechanism "Without explicit classification, organizations default to treating all decisions the same (usually Type 1 process)."
+     :psychological-root "Lack of framework. Not taught to distinguish decision types."
+     :evolutionary-origin "Decision type classification is modern concept."
+     :signals
+     ["No explicit decision classification"
+      "Same process for all decisions"
+      "Inconsistent decision speed"
+      "Confusion about when to slow down vs speed up"
+      "No shared framework"]
+     :safeguards ["Explicit Type 1 vs Type 2 classification", "Teach Bezos framework", "Decision classification checklist", "Shared language"]}
+    
+    {:name "reversibility-illusion"
+     :severity "high"
+     :description "Believing decisions are reversible when they're actually irreversible or very costly to reverse."
+     :mechanism "Optimism bias and underestimating switching costs, reputation effects, and path dependencies."
+     :psychological-root "Optimism bias, present bias, and difficulty imagining future constraints."
+     :evolutionary-origin "Overconfidence in ability to change course was sometimes adaptive."
+     :signals
+     ["Underestimating switching costs"
+      "Ignoring reputation effects"
+      "Missing path dependencies"
+      "Overconfidence in reversibility"
+      "Discovering decisions are harder to reverse than expected"]
+     :safeguards ["Realistically assess reversibility", "Calculate switching costs", "Consider reputation and relationship effects", "Identify path dependencies"]}
+    
+    {:name "speed-at-all-costs"
+     :severity "medium"
+     :description "Overvaluing speed and treating all decisions as Type 2, even when careful analysis is warranted."
+     :mechanism "Bias for action becomes dogma. Speed is valued over quality even for irreversible decisions."
+     :psychological-root "Action bias, impatience, and overconfidence."
+     :evolutionary-origin "Action was often better than inaction in ancestral environments."
+     :signals
+     ["Rushing irreversible decisions"
+      "Dismissing analysis as 'overthinking'"
+      "Valuing speed over quality on Type 1"
+      "Regretting hasty irreversible decisions"
+      "Culture of 'move fast and break things' on Type 1"]
+     :safeguards ["Distinguish Type 1 vs Type 2", "Slow down on Type 1", "Fast on Type 2, careful on Type 1", "Balance speed and quality"]}]})
+
+;; Enhanced Model: Compounding
+;; Understanding exponential growth and decay over time
+(def compounding-enhanced
+  {:name "compounding"
+   :category "decision_making"
+   :description "Small changes compound exponentially over time. 1% improvement daily = 37x improvement in a year. Works for good (learning, investing) and bad (debt, bad habits)."
+   :key-insight "Compounding is the most powerful force in the universe (Einstein allegedly). Most people underestimate exponential growth and focus on linear improvements."
+   :application "For any decision: (1) What compounds? (2) What's the rate? (3) What's the time horizon? (4) Am I compounding positively or negatively? (5) Small differences in rate create massive differences over time."
+   :munger-quote "Understanding both the power of compound return and the difficulty of getting it is the heart and soul of understanding a lot of things."
+   :failure-modes
+   [{:name "linear-thinking"
+     :severity "high"
+     :description "Thinking linearly when reality compounds exponentially, leading to massive underestimation of long-term effects."
+     :mechanism "Human brains evolved for linear thinking. Exponential growth is counter-intuitive and cognitively difficult."
+     :psychological-root "Linear thinking is default. Exponential requires mathematical thinking."
+     :evolutionary-origin "Most ancestral phenomena were linear. Exponential growth is modern."
+     :signals
+     ["Linear extrapolation of exponential trends"
+      "Underestimating long-term effects"
+      "Surprise at exponential outcomes"
+      "Not understanding 'hockey stick' curves"
+      "Dismissing small improvements as insignificant"
+      "Not recognizing compounding in action"
+      "Focusing on absolute numbers not rates"
+      "Missing the power of small rate differences"]
+     :case-studies
+     [{:name "Warren Buffett's Wealth"
+       :year "1950-2024"
+       :entity "Warren Buffett"
+       :description "Started investing at age 11. 99% of his $120B wealth was created after age 50. Not because he got better, but because compounding had more time. 22% annual return for 70 years = $120B from modest start."
+       :quantitative-impact "$120B net worth. 99% created after age 50. 22% CAGR over 70 years. $1,000 invested in Berkshire in 1965 = $42M in 2024."
+       :root-cause "Understanding compounding. Time + rate = exponential wealth. Most people focus on rate, ignore time."
+       :should-have-done "Start early. Focus on sustainable rate. Let time do the work. Don't interrupt compounding."
+       :sources ["Berkshire Hathaway annual reports", "Buffett biography", "Investment performance data"]}
+      {:name "COVID-19 Exponential Spread"
+       :year 2020
+       :entity "Global pandemic"
+       :description "Early 2020: 'Just 100 cases, no big deal.' Exponential growth: doubles every 3 days. 100 → 200 → 400 → 800 → 1,600 → 3,200 → 6,400 → 12,800 → 25,600 → 51,200 → 102,400 → 204,800 in one month. Linear thinkers missed it."
+       :quantitative-impact "7M deaths globally, $16T economic cost, complete societal disruption. Could have been prevented with exponential thinking."
+       :root-cause "Linear thinking about exponential spread. 'Just 100 cases' → 100,000 cases in 30 days."
+       :should-have-done "Understand exponential growth. Act early when numbers are small. Exponential problems require exponential response."
+       :sources ["WHO data", "Economic impact studies", "Epidemiological models"]}
+      {:name "Moore's Law and Computing"
+       :year "1965-2024"
+       :entity "Semiconductor industry"
+       :description "Transistors per chip double every 2 years. 1971: 2,300 transistors. 2024: 100 billion transistors. 43 million times improvement. Enabled smartphones, AI, internet. Linear thinkers missed it."
+       :quantitative-impact "Computing power: 43M times improvement. Created $5T+ tech industry. Transformed civilization."
+       :root-cause "Understanding exponential technology improvement. Compound at 41% annually for 50 years = 43M times."
+       :should-have-done "Recognize exponential technology trends. Invest early. Build on exponential foundations."
+       :sources ["Moore's Law data", "Semiconductor industry reports", "Technology history"]}
+      {:name "Credit Card Debt Trap"
+       :year "1980-present"
+       :entity "US Consumer Debt"
+       :description "18-29% APR on credit cards. $5,000 balance at 24% APR, paying minimum (2% = $100/month): Takes 30 years to pay off, total paid = $19,000. Negative compounding destroys wealth."
+       :quantitative-impact "$1T+ in US credit card debt. Average household: $6,000 balance. Millions trapped in debt spiral."
+       :root-cause "Not understanding negative compounding. 'Just $5,000' becomes $19,000 over time."
+       :should-have-done "Understand negative compounding. Avoid high-interest debt. Pay off fast. Don't let debt compound."
+       :sources ["Federal Reserve consumer credit data", "Credit card industry reports", "Debt studies"]}
+      {:name "Learning and Skill Compounding"
+       :year "Lifetime"
+       :entity "Individual development"
+       :description "1% improvement daily = 37x improvement in a year (1.01^365 = 37.8). 1% decline daily = 97% decline in a year (0.99^365 = 0.03). Small daily habits compound to life transformation."
+       :quantitative-impact "10 years of 1% daily improvement = 37^10 = 4.8 quadrillion times improvement (theoretical). Practically: expert level in any skill."
+       :root-cause "Understanding positive compounding of learning. Small daily improvements compound exponentially."
+       :should-have-done "Focus on daily improvement rate. Consistency matters more than intensity. Let compounding work."
+       :sources ["Atomic Habits (Clear)", "Peak (Ericsson)", "Deliberate practice research"]}]
+     :quantitative-thresholds
+     [{:metric "Compounding Rate Awareness"
+       :warning-threshold "< 50% of decisions consider compounding effects"
+       :critical-threshold "< 25% consider compounding"
+       :measurement "Percentage of decisions that explicitly analyze compounding"
+       :frequency "Quarterly decision audit"
+       :example "Made 20 decisions, only 3 considered long-term compounding effects"}
+      {:metric "Time Horizon"
+       :warning-threshold "< 3 years"
+       :critical-threshold "< 1 year"
+       :measurement "Average time horizon in decision analysis"
+       :frequency "Per major decision"
+       :example "Optimizing for quarterly results, ignoring 10-year compounding"}]
+     :environmental-triggers
+     ["Short-term thinking"
+      "Quarterly pressure"
+      "Lack of mathematical literacy"
+      "Impatience"
+      "Focus on absolute numbers not rates"
+      "Interrupting compounding"]
+     :structural-safeguards
+     ["Long-term incentives aligned with compounding"
+      "Compound interest calculators required"
+      "Exponential thinking training"
+      "Long time horizons in planning"
+      "Protect compounding processes"
+      "Measure rates not just absolutes"]
+     :cognitive-safeguards
+     ["Ask: 'What compounds here?'"
+      "Ask: 'What's the rate and time horizon?'"
+      "Ask: 'Am I thinking linearly about something exponential?'"
+      "Calculate exponential outcomes"
+      "Focus on sustainable rates"
+      "Don't interrupt compounding"
+      "Study exponential examples"]
+     :social-safeguards
+     ["Share exponential thinking frameworks"
+      "Celebrate long-term compounding"
+      "Resist short-term pressure"
+      "Study compounding success stories"]
+     :recovery-protocols
+     [{:step 1
+       :action "Identify where linear thinking caused exponential problem"
+       :responsible "Analysis team"
+       :timeline "Within 1 week"
+       :success-criteria "Clear understanding of exponential dynamics"
+       :escalation "If exponential crisis, emergency response"}
+      {:step 2
+       :action "Model exponential scenarios"
+       :responsible "Strategy team"
+       :timeline "Within 2 weeks"
+       :success-criteria "Exponential projections for key variables"
+       :escalation "If projections show crisis, escalate to leadership"}
+      {:step 3
+       :action "Implement exponential response"
+       :responsible "Operations team"
+       :timeline "Immediately"
+       :success-criteria "Response matches exponential dynamics"
+       :escalation "If linear response to exponential problem, override"}
+      {:step 4
+       :action "Build exponential thinking into decision processes"
+       :responsible "All teams"
+       :timeline "Ongoing"
+       :success-criteria "Exponential analysis standard practice"
+       :escalation "If not adopted, mandate training"}]
+     :lollapalooza-risk 0.90
+     :amplifying-biases ["linear-thinking-bias" "present-bias" "impatience"]
+     :mitigating-models ["second-order-thinking" "long-term-thinking" "patience" "systems-thinking"]}
+    
+    {:name "short-time-horizons"
+     :severity "high"
+     :description "Focusing on short-term results and interrupting compounding processes before they can work."
+     :mechanism "Compounding requires time. Interrupting early destroys exponential gains. Quarterly thinking kills compounding."
+     :psychological-root "Present bias, impatience, and short-term incentives."
+     :evolutionary-origin "Immediate rewards were more certain than distant rewards."
+     :signals
+     ["Quarterly thinking"
+      "Frequent strategy changes"
+      "Interrupting long-term processes"
+      "Impatience with compounding"
+      "Chasing short-term gains"
+      "Not giving compounding time to work"]
+     :safeguards ["Long time horizons", "Patience", "Don't interrupt compounding", "Long-term incentives", "Ignore short-term noise"]}
+    
+    {:name "negative-compounding"
+     :severity "critical"
+     :description "Allowing negative habits, debt, or problems to compound, leading to exponential decline."
+     :mechanism "Negative compounding is as powerful as positive. Bad habits, debt, and problems compound exponentially."
+     :psychological-root "Present bias, denial, and difficulty changing habits."
+     :evolutionary-origin "Immediate gratification was survival-optimal."
+     :signals
+     ["Accumulating debt"
+      "Bad habits persisting"
+      "Problems growing exponentially"
+      "Denial of negative trends"
+      "Not addressing compounding problems early"
+      "Exponential decline"]
+     :safeguards ["Identify negative compounding early", "Address immediately", "Break negative compound loops", "Avoid high-interest debt", "Fix bad habits fast"]}
+    
+    {:name "not-starting-early"
+     :severity "high"
+     :description "Delaying the start of positive compounding processes, losing years of exponential growth."
+     :mechanism "Compounding is time-dependent. Starting late loses years of exponential growth. Starting at 25 vs 35 = 2x wealth at retirement."
+     :psychological-root "Present bias, procrastination, and not understanding time value."
+     :evolutionary-origin "Delayed gratification was cognitively demanding."
+     :signals
+     ["Procrastinating on investing"
+      "Delaying learning"
+      "Not starting good habits"
+      "Waiting for 'perfect time'"
+      "Missing early compounding years"
+      "Starting late"]
+     :safeguards ["Start now", "Don't wait for perfect conditions", "Understand time value", "Early start > perfect start", "Begin compounding immediately"]}
+    
+    {:name "focusing-on-rate-ignoring-time"
+     :severity "medium"
+     :description "Obsessing over rate of return while ignoring time horizon, missing that time is often more important than rate."
+     :mechanism "10% for 40 years > 15% for 20 years. But people focus on rate and ignore time."
+     :psychological-root "Rate is salient and controllable. Time is abstract and uncontrollable."
+     :evolutionary-origin "Immediate high returns were more valuable than distant returns."
+     :signals
+     ["Chasing high returns"
+      "Ignoring time horizon"
+      "Taking excessive risk for rate"
+      "Not understanding time value"
+      "Interrupting compounding for higher rate"
+      "Missing that time > rate"]
+     :safeguards ["Understand time value", "Sustainable rate > maximum rate", "Don't interrupt compounding", "Time is the key variable", "Patience"]}]})
+
+;; Update export to include all enhanced models
+(def enhanced-models
+  [second-order-thinking-enhanced
+   inversion-enhanced
+   incentives-enhanced
+   margin-of-safety-enhanced
+   circle-of-competence-enhanced
+   opportunity-cost-enhanced
+   systems-thinking-enhanced
+   first-principles-enhanced
+   asymmetric-risk-enhanced
+   reversible-decisions-enhanced
+   compounding-enhanced])
