@@ -559,6 +559,297 @@ async def cmd_recommend(args):
         print(f"\n✅ Exported to: {export_path}")
 
 
+async def cmd_scheduler_list(args):
+    """List all scheduled jobs."""
+    from src.scheduler import JobScheduler
+    
+    scheduler = JobScheduler()
+    jobs = scheduler.list_jobs()
+    
+    print(f"\n📅 Scheduled Jobs ({len(jobs)} total)")
+    print("=" * 70)
+    
+    if not jobs:
+        print("No scheduled jobs")
+        return
+    
+    for job in jobs:
+        status = "✅" if job.enabled else "❌"
+        print(f"\n{status} {job.name} ({job.id})")
+        print(f"   Type: {job.schedule_type}")
+        print(f"   Schedule: {job.schedule_value}")
+        print(f"   Priority: {job.priority.name}")
+        if job.next_run:
+            print(f"   Next run: {job.next_run.strftime('%Y-%m-%d %H:%M:%S')}")
+        if job.last_run:
+            print(f"   Last run: {job.last_run.strftime('%Y-%m-%d %H:%M:%S')}")
+        print(f"   Runs: {job.run_count} (failures: {job.failure_count})")
+        if args.verbose:
+            print(f"   Handler: {job.handler}")
+            print(f"   Description: {job.description}")
+
+
+async def cmd_scheduler_add(args):
+    """Add a new scheduled job."""
+    from src.scheduler import JobScheduler, ScheduledJob, JobPriority
+    
+    scheduler = JobScheduler()
+    
+    priority = JobPriority[args.priority.upper()]
+    
+    job = ScheduledJob(
+        id=args.id,
+        name=args.name,
+        description=args.description or f"Custom job: {args.name}",
+        handler=args.handler,
+        schedule_type=args.type,
+        schedule_value=args.schedule,
+        priority=priority,
+        enabled=not args.disabled
+    )
+    
+    if scheduler.add_job(job):
+        print(f"✅ Added job: {args.name}")
+        print(f"   ID: {args.id}")
+        print(f"   Schedule: {args.type} - {args.schedule}")
+        if job.next_run:
+            print(f"   Next run: {job.next_run.strftime('%Y-%m-%d %H:%M:%S')}")
+    else:
+        print(f"❌ Failed to add job: {args.name}")
+
+
+async def cmd_scheduler_remove(args):
+    """Remove a scheduled job."""
+    from src.scheduler import JobScheduler
+    
+    scheduler = JobScheduler()
+    
+    if scheduler.remove_job(args.job_id):
+        print(f"✅ Removed job: {args.job_id}")
+    else:
+        print(f"❌ Job not found: {args.job_id}")
+
+
+async def cmd_scheduler_enable(args):
+    """Enable or disable a scheduled job."""
+    from src.scheduler import JobScheduler
+    
+    scheduler = JobScheduler()
+    
+    if args.disable:
+        if scheduler.disable_job(args.job_id):
+            print(f"✅ Disabled job: {args.job_id}")
+        else:
+            print(f"❌ Job not found: {args.job_id}")
+    else:
+        if scheduler.enable_job(args.job_id):
+            print(f"✅ Enabled job: {args.job_id}")
+        else:
+            print(f"❌ Job not found: {args.job_id}")
+
+
+async def cmd_scheduler_run(args):
+    """Run a scheduled job immediately."""
+    from src.scheduler import JobScheduler
+    import importlib
+    
+    scheduler = JobScheduler()
+    
+    if args.job_id not in scheduler.jobs:
+        print(f"❌ Job not found: {args.job_id}")
+        return
+    
+    job = scheduler.jobs[args.job_id]
+    print(f"🔄 Running job: {job.name}")
+    
+    try:
+        # Import and run the handler
+        module_path, func_name = job.handler.rsplit('.', 1)
+        module = importlib.import_module(module_path)
+        handler = getattr(module, func_name)
+        
+        if asyncio.iscoroutinefunction(handler):
+            result = await handler()
+        else:
+            result = handler()
+        
+        print(f"✅ Job completed successfully")
+        if result:
+            print(f"   Result: {result}")
+    except Exception as e:
+        print(f"❌ Job failed: {e}")
+
+
+async def cmd_scheduler_stats(args):
+    """Show scheduler statistics."""
+    from src.scheduler import JobScheduler
+    
+    scheduler = JobScheduler()
+    stats = scheduler.get_stats()
+    
+    print(f"\n📊 Scheduler Statistics")
+    print("=" * 60)
+    print(f"Total jobs: {stats['total_jobs']}")
+    print(f"Enabled jobs: {stats['enabled_jobs']}")
+    print(f"Total runs: {stats['total_runs']}")
+    print(f"Total failures: {stats['total_failures']}")
+    print(f"Webhooks configured: {stats.get('webhooks', 0)}")
+    
+    # Calculate success rate
+    if stats['total_runs'] > 0:
+        success_rate = ((stats['total_runs'] - stats['total_failures']) / stats['total_runs']) * 100
+        print(f"Success rate: {success_rate:.1f}%")
+    else:
+        print(f"Success rate: N/A (no runs yet)")
+    
+    # Show jobs by type
+    jobs = scheduler.list_jobs()
+    by_type = {}
+    by_priority = {}
+    for job in jobs:
+        by_type[job.schedule_type] = by_type.get(job.schedule_type, 0) + 1
+        by_priority[job.priority.name] = by_priority.get(job.priority.name, 0) + 1
+    
+    print(f"\n📅 Jobs by Type:")
+    for jtype, count in by_type.items():
+        print(f"   {jtype}: {count}")
+    
+    print(f"\n⏰ Jobs by Priority:")
+    for priority, count in by_priority.items():
+        print(f"   {priority}: {count}")
+
+
+async def cmd_webhook_list(args):
+    """List all webhook targets."""
+    from src.webhooks import WebhookManager
+    
+    manager = WebhookManager()
+    targets = manager.list_targets()
+    
+    print(f"\n🔔 Webhook Targets ({len(targets)} total)")
+    print("=" * 70)
+    
+    if not targets:
+        print("No webhook targets configured")
+        return
+    
+    for target in targets:
+        status = "✅" if target.enabled else "❌"
+        print(f"\n{status} {target.name} ({target.id})")
+        print(f"   Type: {target.type.value}")
+        print(f"   URL: {target.url[:50]}..." if len(target.url) > 50 else f"   URL: {target.url}")
+        print(f"   Min Priority: {target.min_priority.name}")
+        if target.events:
+            print(f"   Events: {', '.join(e.value for e in target.events)}")
+        else:
+            print(f"   Events: All")
+        if args.verbose:
+            print(f"   Rate limit: {target.rate_limit_per_minute}/min")
+            print(f"   Retry: {target.max_retries} retries")
+
+
+async def cmd_webhook_add(args):
+    """Add a new webhook target."""
+    from src.webhooks import WebhookManager, WebhookTarget, WebhookType, EventType, EventPriority
+    
+    manager = WebhookManager()
+    
+    webhook_type = WebhookType(args.type)
+    min_priority = EventPriority[args.priority.upper()]
+    
+    events = []
+    if args.events:
+        for event_name in args.events.split(','):
+            events.append(EventType(event_name.strip()))
+    
+    target = WebhookTarget(
+        id=args.id,
+        name=args.name,
+        type=webhook_type,
+        url=args.url,
+        events=events,
+        min_priority=min_priority,
+        enabled=not args.disabled
+    )
+    
+    if manager.add_target(target):
+        print(f"✅ Added webhook target: {args.name}")
+        print(f"   ID: {args.id}")
+        print(f"   Type: {args.type}")
+        print(f"   URL: {args.url}")
+    else:
+        print(f"❌ Failed to add webhook target: {args.name}")
+
+
+async def cmd_webhook_remove(args):
+    """Remove a webhook target."""
+    from src.webhooks import WebhookManager
+    
+    manager = WebhookManager()
+    
+    if manager.remove_target(args.target_id):
+        print(f"✅ Removed webhook target: {args.target_id}")
+    else:
+        print(f"❌ Target not found: {args.target_id}")
+
+
+async def cmd_webhook_test(args):
+    """Send a test webhook."""
+    from src.webhooks import WebhookManager, WebhookEvent, EventType, EventPriority
+    
+    manager = WebhookManager()
+    
+    event = WebhookEvent(
+        type=EventType.SYSTEM_ALERT,
+        priority=EventPriority.LOW,
+        title="Test Webhook",
+        message="This is a test message from the Mental Models System",
+        data={"test": True, "timestamp": datetime.now().isoformat()}
+    )
+    
+    print(f"🔔 Sending test webhook...")
+    
+    if args.target_id:
+        # Send to specific target
+        if args.target_id not in manager.targets:
+            print(f"❌ Target not found: {args.target_id}")
+            return
+        
+        target = manager.targets[args.target_id]
+        success = await manager._send_to_target(target, event)
+        if success:
+            print(f"✅ Test webhook sent to: {target.name}")
+        else:
+            print(f"❌ Failed to send test webhook")
+    else:
+        # Send to all targets
+        results = await manager.send(event)
+        print(f"✅ Sent to {len(results)} targets")
+
+
+async def cmd_webhook_stats(args):
+    """Show webhook statistics."""
+    from src.webhooks import WebhookManager
+    
+    manager = WebhookManager()
+    stats = manager.get_stats()
+    
+    print(f"\n📊 Webhook Statistics")
+    print("=" * 60)
+    print(f"Total targets: {stats['total_targets']}")
+    print(f"Enabled targets: {stats['enabled_targets']}")
+    print(f"Total deliveries: {stats['total_deliveries']}")
+    print(f"Successful: {stats['successful_deliveries']}")
+    print(f"Failed: {stats['failed_deliveries']}")
+    print(f"Success rate: {stats['success_rate']}")
+    
+    if stats['recent_deliveries']:
+        print(f"\n📨 Recent Deliveries:")
+        for delivery in stats['recent_deliveries'][:5]:
+            status = "✅" if delivery['success'] else "❌"
+            print(f"   {status} {delivery['target']} - {delivery['event_type']} ({delivery['timestamp']})")
+
+
 async def cmd_similar_cases(args):
     """Find similar historical cases."""
     from src.safeguards.failure_search import FailureModeSearchEngine
@@ -724,6 +1015,62 @@ Examples:
     export_improve_parser = subparsers.add_parser("export-improvements", help="Export improvements for Manus")
     export_improve_parser.add_argument("--output", "-o", help="Output file path")
     
+    # scheduler-list command
+    sched_list_parser = subparsers.add_parser("scheduler-list", help="List all scheduled jobs")
+    sched_list_parser.add_argument("--verbose", "-v", action="store_true", help="Show details")
+    
+    # scheduler-add command
+    sched_add_parser = subparsers.add_parser("scheduler-add", help="Add a new scheduled job")
+    sched_add_parser.add_argument("id", help="Unique job ID")
+    sched_add_parser.add_argument("name", help="Job name")
+    sched_add_parser.add_argument("handler", help="Handler function (e.g., src.module.function)")
+    sched_add_parser.add_argument("--type", choices=["cron", "interval"], default="interval", help="Schedule type")
+    sched_add_parser.add_argument("--schedule", required=True, help="Schedule value (cron expression or seconds)")
+    sched_add_parser.add_argument("--priority", default="medium", choices=["low", "medium", "high", "critical"], help="Job priority")
+    sched_add_parser.add_argument("--description", help="Job description")
+    sched_add_parser.add_argument("--disabled", action="store_true", help="Create job disabled")
+    
+    # scheduler-remove command
+    sched_remove_parser = subparsers.add_parser("scheduler-remove", help="Remove a scheduled job")
+    sched_remove_parser.add_argument("job_id", help="Job ID to remove")
+    
+    # scheduler-enable command
+    sched_enable_parser = subparsers.add_parser("scheduler-enable", help="Enable or disable a job")
+    sched_enable_parser.add_argument("job_id", help="Job ID")
+    sched_enable_parser.add_argument("--disable", action="store_true", help="Disable instead of enable")
+    
+    # scheduler-run command
+    sched_run_parser = subparsers.add_parser("scheduler-run", help="Run a job immediately")
+    sched_run_parser.add_argument("job_id", help="Job ID to run")
+    
+    # scheduler-stats command
+    sched_stats_parser = subparsers.add_parser("scheduler-stats", help="Show scheduler statistics")
+    
+    # webhook-list command
+    wh_list_parser = subparsers.add_parser("webhook-list", help="List all webhook targets")
+    wh_list_parser.add_argument("--verbose", "-v", action="store_true", help="Show details")
+    
+    # webhook-add command
+    wh_add_parser = subparsers.add_parser("webhook-add", help="Add a new webhook target")
+    wh_add_parser.add_argument("id", help="Unique target ID")
+    wh_add_parser.add_argument("name", help="Target name")
+    wh_add_parser.add_argument("url", help="Webhook URL")
+    wh_add_parser.add_argument("--type", default="generic", choices=["slack", "discord", "teams", "generic"], help="Webhook type")
+    wh_add_parser.add_argument("--events", help="Event types to receive (comma-separated)")
+    wh_add_parser.add_argument("--priority", default="low", choices=["low", "medium", "high", "critical"], help="Minimum priority")
+    wh_add_parser.add_argument("--disabled", action="store_true", help="Create target disabled")
+    
+    # webhook-remove command
+    wh_remove_parser = subparsers.add_parser("webhook-remove", help="Remove a webhook target")
+    wh_remove_parser.add_argument("target_id", help="Target ID to remove")
+    
+    # webhook-test command
+    wh_test_parser = subparsers.add_parser("webhook-test", help="Send a test webhook")
+    wh_test_parser.add_argument("--target-id", help="Specific target to test (default: all)")
+    
+    # webhook-stats command
+    wh_stats_parser = subparsers.add_parser("webhook-stats", help="Show webhook statistics")
+    
     # recommend command
     recommend_parser = subparsers.add_parser("recommend", help="Get decision recommendations")
     recommend_parser.add_argument("description", help="Description of the decision")
@@ -779,6 +1126,28 @@ Examples:
         asyncio.run(cmd_export_improvements(args))
     elif args.command == "recommend":
         asyncio.run(cmd_recommend(args))
+    elif args.command == "scheduler-list":
+        asyncio.run(cmd_scheduler_list(args))
+    elif args.command == "scheduler-add":
+        asyncio.run(cmd_scheduler_add(args))
+    elif args.command == "scheduler-remove":
+        asyncio.run(cmd_scheduler_remove(args))
+    elif args.command == "scheduler-enable":
+        asyncio.run(cmd_scheduler_enable(args))
+    elif args.command == "scheduler-run":
+        asyncio.run(cmd_scheduler_run(args))
+    elif args.command == "scheduler-stats":
+        asyncio.run(cmd_scheduler_stats(args))
+    elif args.command == "webhook-list":
+        asyncio.run(cmd_webhook_list(args))
+    elif args.command == "webhook-add":
+        asyncio.run(cmd_webhook_add(args))
+    elif args.command == "webhook-remove":
+        asyncio.run(cmd_webhook_remove(args))
+    elif args.command == "webhook-test":
+        asyncio.run(cmd_webhook_test(args))
+    elif args.command == "webhook-stats":
+        asyncio.run(cmd_webhook_stats(args))
 
 
 if __name__ == "__main__":
