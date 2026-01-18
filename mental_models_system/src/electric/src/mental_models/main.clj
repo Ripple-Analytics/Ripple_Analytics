@@ -5,7 +5,9 @@
    Starts the server and serves the reactive UI.
    
    Includes LM Studio integration for local LLM inference.
-   Includes Tech Debt Eliminator with DAG visualization."
+   Includes Tech Debt Eliminator with DAG visualization.
+   Includes Petabyte-scale distributed processing.
+   Includes 24/7 continuous learning system."
   (:require [ring.adapter.jetty :as jetty]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [ring.util.response :as response]
@@ -14,6 +16,9 @@
             [mental-models.statistics :as stats]
             [mental-models.data-processing :as data]
             [mental-models.tech-debt :as tech-debt]
+            [mental-models.db :as db]
+            [mental-models.distributed :as distributed]
+            [mental-models.continuous :as continuous]
             [clojure.java.io :as io]
             [clojure.string :as str])
   (:import [java.net HttpURLConnection URL]
@@ -1397,6 +1402,102 @@
       (and (= method :post) (= uri "/api/techdebt/visualize"))
       (handle-dag-visualization request)
       
+      ;; Distributed Processing API
+      (and (= method :get) (= uri "/api/distributed/status"))
+      (json-response (distributed/get-cluster-metrics))
+      
+      (and (= method :get) (= uri "/api/distributed/throughput"))
+      (json-response {:throughput (distributed/get-throughput)})
+      
+      (and (= method :post) (= uri "/api/distributed/submit"))
+      (let [body (parse-json-body request)
+            work-type (keyword (get body "type" "analyze"))
+            data (get body "data")
+            priority (keyword (get body "priority" "normal"))]
+        (json-response (distributed/submit-work work-type data :priority priority)))
+      
+      (and (= method :post) (= uri "/api/distributed/submit-bulk"))
+      (let [body (parse-json-body request)
+            work-items (get body "items" [])]
+        (json-response (distributed/submit-bulk-work work-items)))
+      
+      (and (= method :post) (= uri "/api/distributed/start-workers"))
+      (let [body (parse-json-body request)
+            num-workers (get body "workers" 4)]
+        (distributed/start-workers! num-workers)
+        (json-response {:status "started" :workers num-workers}))
+      
+      (and (= method :post) (= uri "/api/distributed/stop"))
+      (do
+        (distributed/shutdown!)
+        (json-response {:status "stopped"}))
+      
+      (and (= method :post) (= uri "/api/distributed/scale"))
+      (let [body (parse-json-body request)
+            target-workers (get body "target" 8)]
+        (distributed/scale-workers! target-workers)
+        (json-response {:status "scaling" :target target-workers}))
+      
+      ;; Continuous Learning API
+      (and (= method :get) (= uri "/api/continuous/status"))
+      (json-response (continuous/get-system-status))
+      
+      (and (= method :post) (= uri "/api/continuous/start"))
+      (do
+        (continuous/start-all-systems!)
+        (json-response {:status "started"}))
+      
+      (and (= method :post) (= uri "/api/continuous/stop"))
+      (do
+        (continuous/stop-all-systems!)
+        (json-response {:status "stopped"}))
+      
+      (and (= method :post) (= uri "/api/continuous/scraper/start"))
+      (let [body (parse-json-body request)
+            scraper-id (keyword (get body "id" "default"))
+            urls (get body "urls" [])
+            depth (get body "depth" 2)
+            interval (get body "interval" 3600000)]
+        (continuous/start-scraper! scraper-id urls :depth depth :interval interval)
+        (json-response {:status "started" :scraper-id scraper-id}))
+      
+      (and (= method :post) (= uri "/api/continuous/file-watcher/start"))
+      (let [body (parse-json-body request)
+            watcher-id (keyword (get body "id" "default"))
+            directories (get body "directories" [])]
+        (continuous/start-file-watcher! watcher-id directories)
+        (json-response {:status "started" :watcher-id watcher-id}))
+      
+      (and (= method :post) (= uri "/api/continuous/sensor/start"))
+      (let [body (parse-json-body request)
+            device-id (get body "device-id")
+            sensor-types (map keyword (get body "sensors" ["accelerometer"]))]
+        (continuous/start-sensor-collector! device-id sensor-types)
+        (json-response {:status "started" :device-id device-id}))
+      
+      (and (= method :post) (= uri "/api/continuous/petabyte"))
+      (let [body (parse-json-body request)
+            data-source (get body "source")
+            parallel-factor (get body "parallel" 1000)]
+        (json-response (continuous/process-petabyte-dataset! data-source :parallel-factor parallel-factor)))
+      
+      ;; Database API
+      (and (= method :get) (= uri "/api/db/health"))
+      (json-response (db/health-check))
+      
+      (and (= method :get) (= uri "/api/db/stats"))
+      (json-response (db/get-stats))
+      
+      (and (= method :post) (= uri "/api/db/analysis"))
+      (let [body (parse-json-body request)]
+        (db/save-analysis! body)
+        (json-response {:status "saved"}))
+      
+      (and (= method :get) (= uri "/api/db/analyses"))
+      (let [params (:query-params request)
+            limit (Integer/parseInt (get params "limit" "100"))]
+        (json-response {:analyses (db/get-analyses :limit limit)}))
+      
       ;; 404
       :else
       (-> (response/response "Not found")
@@ -1406,16 +1507,62 @@
 ;; Server
 ;; ============================================
 
+(defn init-distributed-systems!
+  "Initialize distributed processing and continuous learning systems.
+   Called on server startup if enabled via environment variables."
+  []
+  (let [enable-distributed (= "true" (System/getenv "ENABLE_DISTRIBUTED"))
+        enable-continuous (= "true" (System/getenv "ENABLE_CONTINUOUS"))
+        enable-db (= "true" (System/getenv "ENABLE_DATABASE"))
+        db-url (System/getenv "DATABASE_URL")]
+    
+    ;; Initialize database if enabled and URL provided
+    (when (and enable-db db-url)
+      (println "Initializing database connection...")
+      (try
+        (db/init-pool! {:jdbcUrl db-url})
+        (db/init-schema!)
+        (println "Database initialized successfully")
+        (catch Exception e
+          (println "Warning: Database initialization failed:" (.getMessage e)))))
+    
+    ;; Initialize distributed processing if enabled
+    (when enable-distributed
+      (println "Initializing distributed processing system...")
+      (distributed/init!)
+      (let [num-workers (Integer/parseInt (or (System/getenv "NUM_WORKERS") "4"))]
+        (distributed/start-workers! num-workers)
+        (println (str "Started " num-workers " distributed workers"))))
+    
+    ;; Initialize continuous learning if enabled
+    (when enable-continuous
+      (println "Initializing continuous learning system...")
+      (continuous/start-all-systems!)
+      (println "Continuous learning system started"))))
+
 (defn start-server [& {:keys [port] :or {port 8000}}]
   (println "")
   (println "========================================")
   (println "  Mental Models System - Electric Clojure")
+  (println "  Petabyte-Scale Distributed Processing")
   (println "========================================")
   (println "")
   (println (str "Starting server on port " port "..."))
   (println (str "Models loaded: " (count @models/!models)))
   (println (str "Failure modes: " (count @models/!failure-modes)))
   (println (str "Categories: " (count @models/!categories)))
+  (println "")
+  
+  ;; Initialize distributed systems
+  (init-distributed-systems!)
+  
+  (println "")
+  (println "API Endpoints:")
+  (println "  /api/distributed/status    - Get cluster metrics")
+  (println "  /api/distributed/submit    - Submit work to cluster")
+  (println "  /api/continuous/status     - Get continuous learning status")
+  (println "  /api/continuous/start      - Start all continuous systems")
+  (println "  /api/db/health             - Check database health")
   (println "")
   (println (str "Open http://localhost:" port " in your browser"))
   (println "")

@@ -14,6 +14,9 @@
         ;; JSON
         cheshire/cheshire {:mvn/version "5.12.0"}
         
+        ;; Async
+        org.clojure/core.async {:mvn/version "1.6.681"}
+        
         ;; Math
         org.clojure/math.numeric-tower {:mvn/version "0.0.5"}
         
