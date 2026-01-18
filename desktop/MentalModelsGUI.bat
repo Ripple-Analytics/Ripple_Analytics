@@ -6,14 +6,15 @@ cls
 echo.
 echo  ================================================================
 echo                 MENTAL MODELS DESKTOP APP
-echo                       GUI Version v1.0.5
+echo                       GUI Version v1.0.6
 echo  ================================================================
 echo.
 
 :: Set paths
 set "APP_DIR=%~dp0"
 set "JAVA_DIR=%APP_DIR%jre"
-set "CLJ_DIR=%APP_DIR%clojure"
+set "LIB_DIR=%APP_DIR%lib"
+set "M2_REPO=%USERPROFILE%\.m2\repository"
 
 :: ============================================================
 :: JAVA CHECK - Need Java 17+
@@ -23,12 +24,13 @@ set "CLJ_DIR=%APP_DIR%clojure"
 if exist "%JAVA_DIR%\bin\java.exe" (
     echo [OK] Using bundled Java 21
     set "JAVA_HOME=%JAVA_DIR%"
-    set "PATH=%JAVA_DIR%\bin;%PATH%"
-    goto :check_clojure
+    set "JAVA_CMD=%JAVA_DIR%\bin\java.exe"
+    goto :check_deps
 )
 
 :: Check system Java version
 set "JAVA_OK=0"
+set "JAVA_CMD=java"
 for /f "tokens=3" %%v in ('java -version 2^>^&1 ^| findstr /i "version"') do (
     set "JAVA_VER=%%~v"
 )
@@ -40,29 +42,20 @@ if defined JAVA_VER (
 
 if "!JAVA_OK!"=="1" (
     echo [OK] System Java !JAVA_VER! detected
-    goto :check_clojure
+    goto :check_deps
 )
 
 :: Need to download Java
 echo [INFO] Java 17+ required. Found: !JAVA_VER!
 echo [INFO] Downloading portable Java 21...
-echo [INFO] This is a one-time download (~50MB)
 echo.
 
 if not exist "%APP_DIR%temp" mkdir "%APP_DIR%temp"
 
-:: Try curl first (faster, available on Windows 10+)
-curl --version >nul 2>&1
-if %ERRORLEVEL% equ 0 (
-    echo [INFO] Downloading with curl...
-    curl -L -# -o "%APP_DIR%temp\java.zip" "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.2+13/OpenJDK21U-jre_x64_windows_hotspot_21.0.2_13.zip"
-) else (
-    echo [INFO] Downloading with PowerShell...
-    powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri 'https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.2+13/OpenJDK21U-jre_x64_windows_hotspot_21.0.2_13.zip' -OutFile '%APP_DIR%temp\java.zip'"
-)
+curl -L -# -o "%APP_DIR%temp\java.zip" "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.2+13/OpenJDK21U-jre_x64_windows_hotspot_21.0.2_13.zip"
 
 if not exist "%APP_DIR%temp\java.zip" (
-    echo [ERROR] Failed to download Java. Check internet connection.
+    echo [ERROR] Failed to download Java
     pause
     exit /b 1
 )
@@ -80,7 +73,7 @@ rmdir /s /q "%APP_DIR%temp" 2>nul
 if exist "%JAVA_DIR%\bin\java.exe" (
     echo [OK] Java 21 installed
     set "JAVA_HOME=%JAVA_DIR%"
-    set "PATH=%JAVA_DIR%\bin;%PATH%"
+    set "JAVA_CMD=%JAVA_DIR%\bin\java.exe"
 ) else (
     echo [ERROR] Java installation failed
     pause
@@ -88,59 +81,80 @@ if exist "%JAVA_DIR%\bin\java.exe" (
 )
 
 :: ============================================================
-:: CLOJURE CHECK - Using portable install
+:: DOWNLOAD DEPENDENCIES
 :: ============================================================
-:check_clojure
+:check_deps
 
-:: Check for our portable Clojure tools jar
-if exist "%CLJ_DIR%\clojure-tools.jar" (
-    echo [OK] Using bundled Clojure tools
+if not exist "%LIB_DIR%" mkdir "%LIB_DIR%"
+
+:: Check if we have the core jars
+if exist "%LIB_DIR%\clojure.jar" (
+    echo [OK] Dependencies cached
     goto :run_app
 )
 
-:: Check system Clojure
-where clj >nul 2>&1
-if %ERRORLEVEL% equ 0 (
-    echo [OK] System Clojure detected
-    goto :run_app_clj
-)
+echo [INFO] Downloading dependencies (one-time)...
 
-:: Download Clojure tools directly (no installer needed)
-echo [INFO] Downloading Clojure tools...
-if not exist "%CLJ_DIR%" mkdir "%CLJ_DIR%"
+:: Download Clojure core
+echo [INFO] Downloading Clojure 1.11.1...
+curl -L -# -o "%LIB_DIR%\clojure.jar" "https://repo1.maven.org/maven2/org/clojure/clojure/1.11.1/clojure-1.11.1.jar"
 
-curl --version >nul 2>&1
-if %ERRORLEVEL% equ 0 (
-    curl -L -# -o "%CLJ_DIR%\clojure-tools.zip" "https://download.clojure.org/install/clojure-tools-1.11.1.1435.zip"
-) else (
-    powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; $ProgressPreference = 'SilentlyContinue'; Invoke-WebRequest -Uri 'https://download.clojure.org/install/clojure-tools-1.11.1.1435.zip' -OutFile '%CLJ_DIR%\clojure-tools.zip'"
-)
+:: Download spec.alpha
+echo [INFO] Downloading spec.alpha...
+curl -L -# -o "%LIB_DIR%\spec.alpha.jar" "https://repo1.maven.org/maven2/org/clojure/spec.alpha/0.3.218/spec.alpha-0.3.218.jar"
 
-if not exist "%CLJ_DIR%\clojure-tools.zip" (
-    echo [ERROR] Failed to download Clojure tools
-    pause
-    exit /b 1
-)
+:: Download core.specs.alpha
+echo [INFO] Downloading core.specs.alpha...
+curl -L -# -o "%LIB_DIR%\core.specs.alpha.jar" "https://repo1.maven.org/maven2/org/clojure/core.specs.alpha/0.2.62/core.specs.alpha-0.2.62.jar"
 
-echo [INFO] Extracting Clojure tools...
-powershell -Command "Expand-Archive -Path '%CLJ_DIR%\clojure-tools.zip' -DestinationPath '%CLJ_DIR%' -Force"
+:: Download CLJFX
+echo [INFO] Downloading CLJFX...
+curl -L -# -o "%LIB_DIR%\cljfx.jar" "https://repo1.maven.org/maven2/cljfx/cljfx/1.7.24/cljfx-1.7.24.jar"
 
-:: Find the jar file
-for %%f in ("%CLJ_DIR%\ClojureTools\clojure-tools-*.jar") do (
-    copy "%%f" "%CLJ_DIR%\clojure-tools.jar" >nul
-)
+:: Download JavaFX (Windows)
+echo [INFO] Downloading JavaFX...
+curl -L -# -o "%LIB_DIR%\javafx-base.jar" "https://repo1.maven.org/maven2/org/openjfx/javafx-base/21/javafx-base-21-win.jar"
+curl -L -# -o "%LIB_DIR%\javafx-controls.jar" "https://repo1.maven.org/maven2/org/openjfx/javafx-controls/21/javafx-controls-21-win.jar"
+curl -L -# -o "%LIB_DIR%\javafx-graphics.jar" "https://repo1.maven.org/maven2/org/openjfx/javafx-graphics/21/javafx-graphics-21-win.jar"
 
-:: Copy other needed files
-if exist "%CLJ_DIR%\ClojureTools\deps.edn" copy "%CLJ_DIR%\ClojureTools\deps.edn" "%CLJ_DIR%\" >nul
-if exist "%CLJ_DIR%\ClojureTools\exec.jar" copy "%CLJ_DIR%\ClojureTools\exec.jar" "%CLJ_DIR%\" >nul
-if exist "%CLJ_DIR%\ClojureTools\tools.edn" copy "%CLJ_DIR%\ClojureTools\tools.edn" "%CLJ_DIR%\" >nul
+:: Download core.async
+echo [INFO] Downloading core.async...
+curl -L -# -o "%LIB_DIR%\core.async.jar" "https://repo1.maven.org/maven2/org/clojure/core.async/1.6.681/core.async-1.6.681.jar"
 
-del "%CLJ_DIR%\clojure-tools.zip" 2>nul
+:: Download tools.analyzer
+curl -L -# -o "%LIB_DIR%\tools.analyzer.jar" "https://repo1.maven.org/maven2/org/clojure/tools.analyzer/1.1.1/tools.analyzer-1.1.1.jar"
+curl -L -# -o "%LIB_DIR%\tools.analyzer.jvm.jar" "https://repo1.maven.org/maven2/org/clojure/tools.analyzer.jvm/1.2.3/tools.analyzer.jvm-1.2.3.jar"
 
-echo [OK] Clojure tools installed
+:: Download SQLite JDBC
+echo [INFO] Downloading SQLite...
+curl -L -# -o "%LIB_DIR%\sqlite-jdbc.jar" "https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.44.1.0/sqlite-jdbc-3.44.1.0.jar"
+
+:: Download HTTP client
+echo [INFO] Downloading HTTP client...
+curl -L -# -o "%LIB_DIR%\clj-http.jar" "https://repo1.maven.org/maven2/clj-http/clj-http/3.12.3/clj-http-3.12.3.jar"
+curl -L -# -o "%LIB_DIR%\httpcore.jar" "https://repo1.maven.org/maven2/org/apache/httpcomponents/httpcore/4.4.16/httpcore-4.4.16.jar"
+curl -L -# -o "%LIB_DIR%\httpclient.jar" "https://repo1.maven.org/maven2/org/apache/httpcomponents/httpclient/4.5.14/httpclient-4.5.14.jar"
+curl -L -# -o "%LIB_DIR%\httpmime.jar" "https://repo1.maven.org/maven2/org/apache/httpcomponents/httpmime/4.5.14/httpmime-4.5.14.jar"
+curl -L -# -o "%LIB_DIR%\commons-logging.jar" "https://repo1.maven.org/maven2/commons-logging/commons-logging/1.2/commons-logging-1.2.jar"
+curl -L -# -o "%LIB_DIR%\commons-codec.jar" "https://repo1.maven.org/maven2/commons-codec/commons-codec/1.16.0/commons-codec-1.16.0.jar"
+
+:: Download Cheshire (JSON)
+echo [INFO] Downloading JSON library...
+curl -L -# -o "%LIB_DIR%\cheshire.jar" "https://repo1.maven.org/maven2/cheshire/cheshire/5.12.0/cheshire-5.12.0.jar"
+curl -L -# -o "%LIB_DIR%\jackson-core.jar" "https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.15.3/jackson-core-2.15.3.jar"
+curl -L -# -o "%LIB_DIR%\jackson-databind.jar" "https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.15.3/jackson-databind-2.15.3.jar"
+curl -L -# -o "%LIB_DIR%\jackson-annotations.jar" "https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.15.3/jackson-annotations-2.15.3.jar"
+curl -L -# -o "%LIB_DIR%\tigris.jar" "https://repo1.maven.org/maven2/tigris/tigris/0.1.2/tigris-0.1.2.jar"
+
+:: Download Timbre (logging)
+echo [INFO] Downloading logging library...
+curl -L -# -o "%LIB_DIR%\timbre.jar" "https://repo1.maven.org/maven2/com/taoensso/timbre/6.3.1/timbre-6.3.1.jar"
+curl -L -# -o "%LIB_DIR%\encore.jar" "https://repo1.maven.org/maven2/com/taoensso/encore/3.68.0/encore-3.68.0.jar"
+
+echo [OK] Dependencies downloaded
 
 :: ============================================================
-:: RUN APPLICATION (using java directly with clojure-tools)
+:: RUN APPLICATION
 :: ============================================================
 :run_app
 echo.
@@ -151,66 +165,47 @@ echo.
 
 cd /d "%APP_DIR%"
 
-if exist ".cpcache" (
-    echo [OK] Dependencies cached - starting quickly
-) else (
-    echo [INFO] First run - downloading dependencies...
-    echo [INFO] This takes 2-3 minutes, please wait...
-)
+:: Build classpath
+set "CP=%LIB_DIR%\clojure.jar"
+set "CP=%CP%;%LIB_DIR%\spec.alpha.jar"
+set "CP=%CP%;%LIB_DIR%\core.specs.alpha.jar"
+set "CP=%CP%;%LIB_DIR%\cljfx.jar"
+set "CP=%CP%;%LIB_DIR%\javafx-base.jar"
+set "CP=%CP%;%LIB_DIR%\javafx-controls.jar"
+set "CP=%CP%;%LIB_DIR%\javafx-graphics.jar"
+set "CP=%CP%;%LIB_DIR%\core.async.jar"
+set "CP=%CP%;%LIB_DIR%\tools.analyzer.jar"
+set "CP=%CP%;%LIB_DIR%\tools.analyzer.jvm.jar"
+set "CP=%CP%;%LIB_DIR%\sqlite-jdbc.jar"
+set "CP=%CP%;%LIB_DIR%\clj-http.jar"
+set "CP=%CP%;%LIB_DIR%\httpcore.jar"
+set "CP=%CP%;%LIB_DIR%\httpclient.jar"
+set "CP=%CP%;%LIB_DIR%\httpmime.jar"
+set "CP=%CP%;%LIB_DIR%\commons-logging.jar"
+set "CP=%CP%;%LIB_DIR%\commons-codec.jar"
+set "CP=%CP%;%LIB_DIR%\cheshire.jar"
+set "CP=%CP%;%LIB_DIR%\jackson-core.jar"
+set "CP=%CP%;%LIB_DIR%\jackson-databind.jar"
+set "CP=%CP%;%LIB_DIR%\jackson-annotations.jar"
+set "CP=%CP%;%LIB_DIR%\tigris.jar"
+set "CP=%CP%;%LIB_DIR%\timbre.jar"
+set "CP=%CP%;%LIB_DIR%\encore.jar"
+set "CP=%CP%;src"
+
+echo [INFO] Starting Mental Models GUI...
 echo.
 
-:: Run using java with clojure-tools.jar
-java -jar "%CLJ_DIR%\clojure-tools.jar" -Sdeps "{:deps {cljfx/cljfx {:mvn/version \"1.7.24\"} org.xerial/sqlite-jdbc {:mvn/version \"3.44.1.0\"} clj-http/clj-http {:mvn/version \"3.12.3\"} cheshire/cheshire {:mvn/version \"5.12.0\"} com.taoensso/timbre {:mvn/version \"6.3.1\"} org.clojure/core.async {:mvn/version \"1.6.681\"}}}" -M -m mental-models.desktop.gui.app
-
-if %ERRORLEVEL% neq 0 (
-    echo.
-    echo [INFO] Trying alternative startup...
-    goto :run_app_alt
-)
-goto :end
-
-:: ============================================================
-:: RUN APPLICATION (using system clj command)
-:: ============================================================
-:run_app_clj
-echo.
-echo  ================================================================
-echo                    STARTING APPLICATION
-echo  ================================================================
-echo.
-
-cd /d "%APP_DIR%"
-
-if exist ".cpcache" (
-    echo [OK] Dependencies cached
-) else (
-    echo [INFO] First run - downloading dependencies (2-3 min)...
-)
-echo.
-
-clj -M:gui
+"%JAVA_CMD%" --module-path "%LIB_DIR%" --add-modules javafx.controls,javafx.graphics -cp "%CP%" clojure.main -m mental-models.desktop.gui.app
 
 if %ERRORLEVEL% neq 0 (
     echo.
     echo [ERROR] Application failed to start
+    echo.
+    echo Troubleshooting:
+    echo   1. Make sure all files downloaded correctly
+    echo   2. Check the lib folder has all jar files
+    echo   3. Try deleting the lib folder and running again
+    echo.
 )
-goto :end
 
-:: ============================================================
-:: ALTERNATIVE: Run with explicit classpath
-:: ============================================================
-:run_app_alt
-echo [INFO] Building classpath...
-
-:: Create a simple runner
-java -jar "%CLJ_DIR%\clojure-tools.jar" -Spath -Sdeps "{:deps {cljfx/cljfx {:mvn/version \"1.7.24\"} org.xerial/sqlite-jdbc {:mvn/version \"3.44.1.0\"} clj-http/clj-http {:mvn/version \"3.12.3\"} cheshire/cheshire {:mvn/version \"5.12.0\"} com.taoensso/timbre {:mvn/version \"6.3.1\"} org.clojure/core.async {:mvn/version \"1.6.681\"}}}" > "%APP_DIR%temp_cp.txt"
-
-set /p CLASSPATH=<"%APP_DIR%temp_cp.txt"
-del "%APP_DIR%temp_cp.txt" 2>nul
-
-echo [INFO] Starting with explicit classpath...
-java -cp "%CLASSPATH%;src" clojure.main -m mental-models.desktop.gui.app
-
-:end
-echo.
 pause
