@@ -1,0 +1,419 @@
+{
+  "category": "Organizational",
+  "models": [
+    {
+      "id": 121,
+      "name": "Principal-Agent Problem",
+      "failure_modes": [
+        {
+          "mode": "Misaligned incentives",
+          "description": "Agent incentives don't match principal goals",
+          "real_world_case": "Fund managers churning for fees, not returns.",
+          "warning_signs": ["Different metrics", "Short-term focus", "Hidden agendas"],
+          "safeguards": ["Align incentives", "Skin in the game", "Long-term compensation"],
+          "quantitative_threshold": "Agent should have 10%+ of wealth tied to principal outcomes"
+        },
+        {
+          "mode": "Information asymmetry exploitation",
+          "description": "Agent uses superior information against principal",
+          "real_world_case": "Real estate agents rushing sales for commission.",
+          "warning_signs": ["Rushed decisions", "Limited information sharing", "Pressure tactics"],
+          "safeguards": ["Independent verification", "Multiple opinions", "Transparency requirements"],
+          "quantitative_threshold": "Agents spend 10x more time on own transactions"
+        },
+        {
+          "mode": "Moral hazard",
+          "description": "Agent takes risks because principal bears cost",
+          "real_world_case": "Bank executives taking excessive risk with depositor money.",
+          "warning_signs": ["Risk-seeking behavior", "No downside for agent", "Asymmetric payoffs"],
+          "safeguards": ["Clawbacks", "Deferred compensation", "Personal liability"],
+          "quantitative_threshold": "Agents should face 50%+ of downside they create"
+        },
+        {
+          "mode": "Adverse selection",
+          "description": "Attracting wrong type of agents",
+          "real_world_case": "High commission structures attracting aggressive salespeople.",
+          "warning_signs": ["Wrong culture", "High turnover", "Customer complaints"],
+          "safeguards": ["Screen for values", "Balanced incentives", "Culture fit"],
+          "quantitative_threshold": "Incentive structure determines who you attract"
+        },
+        {
+          "mode": "Monitoring costs exceeding benefits",
+          "description": "Cost of oversight exceeds agency costs",
+          "real_world_case": "Excessive compliance costs in regulated industries.",
+          "warning_signs": ["Bureaucracy growth", "Diminishing returns", "Trust deficit"],
+          "safeguards": ["Trust but verify", "Spot checks", "Outcome focus"],
+          "quantitative_threshold": "Monitoring costs should be < 10% of value at risk"
+        }
+      ]
+    },
+    {
+      "id": 122,
+      "name": "Bureaucracy",
+      "failure_modes": [
+        {
+          "mode": "Process over outcome",
+          "description": "Following rules becomes more important than results",
+          "real_world_case": "Government agencies focused on compliance, not service.",
+          "warning_signs": ["Rule worship", "No outcome metrics", "Procedure focus"],
+          "safeguards": ["Outcome metrics", "Process audits", "Customer focus"],
+          "quantitative_threshold": "If process time > value creation time, bureaucracy is winning"
+        },
+        {
+          "mode": "Empire building",
+          "description": "Growing organization for its own sake",
+          "real_world_case": "Departments hiring to increase budget and power.",
+          "warning_signs": ["Headcount focus", "Budget maximization", "Turf wars"],
+          "safeguards": ["Output per person metrics", "Zero-based budgeting", "Flat structures"],
+          "quantitative_threshold": "Revenue per employee should increase, not decrease"
+        },
+        {
+          "mode": "Decision paralysis",
+          "description": "Too many approvals preventing action",
+          "real_world_case": "Large companies unable to respond to market changes.",
+          "warning_signs": ["Long approval chains", "Slow decisions", "Risk aversion"],
+          "safeguards": ["Decision rights clarity", "Approval limits", "Bias to action"],
+          "quantitative_threshold": "Decisions should take hours/days, not weeks/months"
+        },
+        {
+          "mode": "Information filtering",
+          "description": "Bad news filtered out as it rises",
+          "real_world_case": "Executives unaware of ground-level problems.",
+          "warning_signs": ["Only good news reaches top", "Surprise failures", "Disconnect"],
+          "safeguards": ["Skip-level meetings", "Anonymous channels", "MBWA"],
+          "quantitative_threshold": "Leaders should hear unfiltered bad news weekly"
+        },
+        {
+          "mode": "Coordination costs exceeding benefits",
+          "description": "Cost of coordination exceeds value of coordination",
+          "real_world_case": "Meetings about meetings, reports about reports.",
+          "warning_signs": ["Meeting overload", "Report proliferation", "Coordination overhead"],
+          "safeguards": ["Meeting audits", "Coordination cost tracking", "Autonomy"],
+          "quantitative_threshold": "Coordination should be < 20% of time"
+        }
+      ]
+    },
+    {
+      "id": 123,
+      "name": "Specialization",
+      "failure_modes": [
+        {
+          "mode": "Silo mentality",
+          "description": "Specialists not communicating across boundaries",
+          "real_world_case": "Engineering and sales not talking, building wrong product.",
+          "warning_signs": ["Cross-functional friction", "Miscommunication", "Finger pointing"],
+          "safeguards": ["Cross-functional teams", "Shared metrics", "Rotation programs"],
+          "quantitative_threshold": "30% of problems are cross-functional"
+        },
+        {
+          "mode": "Over-specialization fragility",
+          "description": "Too specialized to adapt",
+          "real_world_case": "Specialists unable to pivot when field changes.",
+          "warning_signs": ["Narrow expertise", "Change resistance", "Obsolescence risk"],
+          "safeguards": ["T-shaped skills", "Continuous learning", "Adjacent knowledge"],
+          "quantitative_threshold": "20% of time should be learning adjacent areas"
+        },
+        {
+          "mode": "Specialist blindness",
+          "description": "Only seeing problems through specialist lens",
+          "real_world_case": "To a hammer, everything looks like a nail.",
+          "warning_signs": ["Single tool application", "Ignoring other approaches", "Confirmation bias"],
+          "safeguards": ["Diverse perspectives", "Generalist input", "Multiple frameworks"],
+          "quantitative_threshold": "Every problem should be viewed through 3+ lenses"
+        },
+        {
+          "mode": "Knowledge hoarding",
+          "description": "Specialists protecting knowledge for job security",
+          "real_world_case": "Key person risk from undocumented expertise.",
+          "warning_signs": ["Single points of failure", "No documentation", "Resistance to training"],
+          "safeguards": ["Documentation requirements", "Knowledge sharing incentives", "Redundancy"],
+          "quantitative_threshold": "No single person should be > 20% of critical knowledge"
+        },
+        {
+          "mode": "Coordination failure",
+          "description": "Specialists not integrating work effectively",
+          "real_world_case": "Components that don't work together.",
+          "warning_signs": ["Integration problems", "Rework", "Blame shifting"],
+          "safeguards": ["Integration testing", "Clear interfaces", "System thinking"],
+          "quantitative_threshold": "Integration should be planned from start, not afterthought"
+        }
+      ]
+    },
+    {
+      "id": 124,
+      "name": "Scale Effects",
+      "failure_modes": [
+        {
+          "mode": "Diseconomies of scale",
+          "description": "Getting worse as you get bigger",
+          "real_world_case": "Large companies becoming slow and bureaucratic.",
+          "warning_signs": ["Declining efficiency", "Coordination costs", "Complexity"],
+          "safeguards": ["Monitor efficiency metrics", "Decentralization", "Small teams"],
+          "quantitative_threshold": "Watch for efficiency decline after 150-person teams"
+        },
+        {
+          "mode": "Scale without moat",
+          "description": "Getting big without sustainable advantage",
+          "real_world_case": "Groupon - scale without defensibility.",
+          "warning_signs": ["Easy replication", "No switching costs", "Commodity product"],
+          "safeguards": ["Build moats while scaling", "Network effects", "Switching costs"],
+          "quantitative_threshold": "Scale without moat = race to bottom"
+        },
+        {
+          "mode": "Premature scaling",
+          "description": "Scaling before product-market fit",
+          "real_world_case": "Startups burning cash on growth before proving model.",
+          "warning_signs": ["High churn", "Negative unit economics", "Forced growth"],
+          "safeguards": ["Prove unit economics first", "Organic growth signals", "Patience"],
+          "quantitative_threshold": "Don't scale until LTV > 3x CAC"
+        },
+        {
+          "mode": "Scale blindness to niches",
+          "description": "Ignoring small opportunities that don't scale",
+          "real_world_case": "Large companies ignoring profitable niches.",
+          "warning_signs": ["Only big opportunities", "Niche dismissal", "Innovator's dilemma"],
+          "safeguards": ["Separate niche units", "Different metrics", "Skunkworks"],
+          "quantitative_threshold": "Today's niche can be tomorrow's mainstream"
+        },
+        {
+          "mode": "Scale culture destruction",
+          "description": "Losing culture as you scale",
+          "real_world_case": "Startups losing innovation culture as they grow.",
+          "warning_signs": ["Culture dilution", "Process over people", "Bureaucracy"],
+          "safeguards": ["Culture carriers", "Hiring for values", "Small team structure"],
+          "quantitative_threshold": "Culture degrades 10% with each doubling of headcount"
+        }
+      ]
+    },
+    {
+      "id": 125,
+      "name": "Margin of Safety",
+      "failure_modes": [
+        {
+          "mode": "Insufficient margin",
+          "description": "Not enough buffer for uncertainty",
+          "real_world_case": "Companies with no cash reserves failing in downturns.",
+          "warning_signs": ["Tight margins", "No reserves", "Optimistic assumptions"],
+          "safeguards": ["Conservative assumptions", "Cash reserves", "Stress testing"],
+          "quantitative_threshold": "6-12 months cash runway minimum"
+        },
+        {
+          "mode": "Margin erosion over time",
+          "description": "Gradually reducing safety margins",
+          "real_world_case": "NASA Challenger - normalized deviance from safety standards.",
+          "warning_signs": ["Incremental reductions", "Nothing bad happened yet", "Cost pressure"],
+          "safeguards": ["Absolute standards", "Regular audits", "No compromise culture"],
+          "quantitative_threshold": "Safety margins should never decrease"
+        },
+        {
+          "mode": "False precision eliminating margin",
+          "description": "Precise calculations creating false confidence",
+          "real_world_case": "Financial models with precise but wrong assumptions.",
+          "warning_signs": ["Decimal place precision", "Model worship", "Ignoring uncertainty"],
+          "safeguards": ["Ranges not points", "Sensitivity analysis", "Humility"],
+          "quantitative_threshold": "Add 20-30% margin to all precise calculations"
+        },
+        {
+          "mode": "Margin in wrong dimension",
+          "description": "Safety margin in area that doesn't matter",
+          "real_world_case": "Over-engineering unimportant features, under-engineering critical ones.",
+          "warning_signs": ["Misallocated safety", "Wrong priorities", "Critical gaps"],
+          "safeguards": ["Identify critical paths", "Prioritize margins", "Risk-based allocation"],
+          "quantitative_threshold": "80% of margin should be on 20% of critical risks"
+        },
+        {
+          "mode": "Competitive pressure eliminating margin",
+          "description": "Racing to bottom removes all safety",
+          "real_world_case": "Airlines cutting maintenance to compete on price.",
+          "warning_signs": ["Price wars", "Cost cutting", "Safety compromises"],
+          "safeguards": ["Non-negotiable standards", "Differentiation", "Value pricing"],
+          "quantitative_threshold": "Some margins are non-negotiable regardless of competition"
+        }
+      ]
+    },
+    {
+      "id": 126,
+      "name": "Feedback Loops",
+      "failure_modes": [
+        {
+          "mode": "Ignoring feedback",
+          "description": "Not listening to signals",
+          "real_world_case": "Companies ignoring customer complaints until crisis.",
+          "warning_signs": ["Dismissed feedback", "No action on input", "Defensive responses"],
+          "safeguards": ["Feedback systems", "Action requirements", "Closing the loop"],
+          "quantitative_threshold": "Every feedback should have response within 48 hours"
+        },
+        {
+          "mode": "Delayed feedback",
+          "description": "Feedback comes too late to be useful",
+          "real_world_case": "Annual reviews when problems need immediate attention.",
+          "warning_signs": ["Long feedback cycles", "Stale information", "Missed opportunities"],
+          "safeguards": ["Real-time feedback", "Short cycles", "Leading indicators"],
+          "quantitative_threshold": "Feedback should come within 1 cycle of action"
+        },
+        {
+          "mode": "Positive feedback runaway",
+          "description": "Reinforcing loops spiraling out of control",
+          "real_world_case": "Bank runs - fear causing withdrawals causing more fear.",
+          "warning_signs": ["Accelerating trends", "Self-reinforcing dynamics", "Exponential growth"],
+          "safeguards": ["Circuit breakers", "Dampening mechanisms", "Early intervention"],
+          "quantitative_threshold": "Positive feedback loops need external limits"
+        },
+        {
+          "mode": "Wrong feedback metrics",
+          "description": "Measuring and responding to wrong things",
+          "real_world_case": "Optimizing for clicks instead of value.",
+          "warning_signs": ["Goodhart's Law", "Gaming metrics", "Perverse outcomes"],
+          "safeguards": ["Multiple metrics", "Outcome focus", "Regular metric review"],
+          "quantitative_threshold": "Any metric that becomes a target ceases to be a good metric"
+        },
+        {
+          "mode": "Feedback without authority",
+          "description": "Getting feedback but unable to act on it",
+          "real_world_case": "Frontline employees seeing problems but unable to fix.",
+          "warning_signs": ["Frustration", "Learned helplessness", "Disengagement"],
+          "safeguards": ["Empower action", "Clear authority", "Feedback-action coupling"],
+          "quantitative_threshold": "Feedback receiver should have authority to act 80% of time"
+        }
+      ]
+    },
+    {
+      "id": 127,
+      "name": "Redundancy",
+      "failure_modes": [
+        {
+          "mode": "Single point of failure",
+          "description": "No backup for critical components",
+          "real_world_case": "Key person leaving and taking all knowledge.",
+          "warning_signs": ["Single sources", "No backups", "Concentration"],
+          "safeguards": ["Identify critical points", "Create redundancy", "Documentation"],
+          "quantitative_threshold": "Every critical function needs 2+ capable people"
+        },
+        {
+          "mode": "Correlated redundancy",
+          "description": "Backups that fail together",
+          "real_world_case": "Backup generators in same flood zone as primary.",
+          "warning_signs": ["Same failure modes", "Correlated risks", "False security"],
+          "safeguards": ["Diverse redundancy", "Different failure modes", "Geographic separation"],
+          "quantitative_threshold": "Redundant systems should have < 10% correlation"
+        },
+        {
+          "mode": "Redundancy cost blindness",
+          "description": "Not investing in redundancy until too late",
+          "real_world_case": "No disaster recovery until after disaster.",
+          "warning_signs": ["Cost cutting on backups", "It won't happen to us", "Short-term focus"],
+          "safeguards": ["Budget for redundancy", "Insurance thinking", "Long-term view"],
+          "quantitative_threshold": "Redundancy cost should be 5-15% of critical system cost"
+        },
+        {
+          "mode": "Untested redundancy",
+          "description": "Backups that don't work when needed",
+          "real_world_case": "Backup systems that fail during actual emergency.",
+          "warning_signs": ["No testing", "Assumed functionality", "Degraded backups"],
+          "safeguards": ["Regular testing", "Failover drills", "Maintenance"],
+          "quantitative_threshold": "Test redundancy quarterly minimum"
+        },
+        {
+          "mode": "Over-redundancy inefficiency",
+          "description": "Too much redundancy wasting resources",
+          "real_world_case": "Multiple backup systems for non-critical functions.",
+          "warning_signs": ["Excessive duplication", "Resource waste", "Complexity"],
+          "safeguards": ["Risk-based redundancy", "Prioritization", "Efficiency review"],
+          "quantitative_threshold": "Match redundancy level to criticality and risk"
+        }
+      ]
+    },
+    {
+      "id": 128,
+      "name": "Checklists",
+      "failure_modes": [
+        {
+          "mode": "Checklist without understanding",
+          "description": "Following checklist mechanically without comprehension",
+          "real_world_case": "Compliance checklists checked without actual compliance.",
+          "warning_signs": ["Box ticking", "No understanding", "Mechanical compliance"],
+          "safeguards": ["Training on why", "Understanding checks", "Spot audits"],
+          "quantitative_threshold": "Users should be able to explain why for each item"
+        },
+        {
+          "mode": "Outdated checklists",
+          "description": "Checklists not updated for current conditions",
+          "real_world_case": "Using old procedures for new systems.",
+          "warning_signs": ["Stale content", "Irrelevant items", "Missing new risks"],
+          "safeguards": ["Regular reviews", "Version control", "Update triggers"],
+          "quantitative_threshold": "Review checklists quarterly or after any incident"
+        },
+        {
+          "mode": "Checklist overload",
+          "description": "Too many items reducing effectiveness",
+          "real_world_case": "Long checklists that get skipped or rushed.",
+          "warning_signs": ["Checklist fatigue", "Skipping items", "Time pressure"],
+          "safeguards": ["Prioritize items", "Keep concise", "Tiered checklists"],
+          "quantitative_threshold": "Checklists should be < 10 items for routine use"
+        },
+        {
+          "mode": "False security from checklists",
+          "description": "Thinking checklist completion means safety",
+          "real_world_case": "Checklist complete but novel risk not covered.",
+          "warning_signs": ["Checklist worship", "No thinking beyond list", "Novel risk blindness"],
+          "safeguards": ["Encourage thinking", "Novel risk awareness", "Checklist + judgment"],
+          "quantitative_threshold": "Checklists cover known risks, judgment covers unknown"
+        },
+        {
+          "mode": "Checklist resistance",
+          "description": "Experts refusing to use checklists",
+          "real_world_case": "Experienced surgeons skipping safety checklists.",
+          "warning_signs": ["Expert arrogance", "Checklist dismissal", "Inconsistent use"],
+          "safeguards": ["Culture of safety", "Leadership modeling", "No exceptions"],
+          "quantitative_threshold": "Checklists reduce errors 30-50% even for experts"
+        }
+      ]
+    },
+    {
+      "id": 129,
+      "name": "Occam's Razor",
+      "failure_modes": [
+        {
+          "mode": "Oversimplification",
+          "description": "Making things too simple, missing important complexity",
+          "real_world_case": "Simple models missing critical variables.",
+          "warning_signs": ["Ignoring relevant factors", "Poor predictions", "Surprise failures"],
+          "safeguards": ["Test against reality", "Include key variables", "Iterate"],
+          "quantitative_threshold": "Simple as possible, but no simpler"
+        },
+        {
+          "mode": "Complexity bias",
+          "description": "Preferring complex explanations when simple ones work",
+          "real_world_case": "Elaborate trading strategies underperforming simple index.",
+          "warning_signs": ["Unnecessary complexity", "Overfitting", "Poor performance"],
+          "safeguards": ["Start simple", "Add complexity only if needed", "Benchmark against simple"],
+          "quantitative_threshold": "Simple strategies beat complex 70% of time"
+        },
+        {
+          "mode": "Wrong simplicity dimension",
+          "description": "Simplifying wrong aspect of problem",
+          "real_world_case": "Simplifying user interface but complicating user journey.",
+          "warning_signs": ["Wrong focus", "Shifted complexity", "User frustration"],
+          "safeguards": ["User-centric simplicity", "End-to-end view", "Test with users"],
+          "quantitative_threshold": "Simplify what matters to user, not what's easy to simplify"
+        },
+        {
+          "mode": "Simplicity as excuse for not understanding",
+          "description": "Using Occam's Razor to avoid deep analysis",
+          "real_world_case": "Simple explanation that's simply wrong.",
+          "warning_signs": ["Lazy analysis", "Premature closure", "Ignoring evidence"],
+          "safeguards": ["Understand before simplifying", "Evidence-based", "Iterate"],
+          "quantitative_threshold": "Simplicity should emerge from understanding, not replace it"
+        },
+        {
+          "mode": "Context-dependent simplicity",
+          "description": "Simple in one context, complex in another",
+          "real_world_case": "Solution simple for experts, complex for novices.",
+          "warning_signs": ["Audience mismatch", "Communication failure", "Adoption problems"],
+          "safeguards": ["Know your audience", "Multiple explanations", "Test understanding"],
+          "quantitative_threshold": "Simplicity is relative to the audience"
+        }
+      ]
+    }
+  ]
+}

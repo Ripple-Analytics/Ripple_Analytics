@@ -1,0 +1,465 @@
+{
+  "category": "Psychology",
+  "models": [
+    {
+      "id": 6,
+      "name": "Liking/Loving Tendency",
+      "failure_modes": [
+        {
+          "mode": "Halo effect blindness",
+          "description": "Liking someone makes you ignore their flaws",
+          "real_world_case": "Elizabeth Holmes - investors liked her, ignored red flags at Theranos.",
+          "warning_signs": ["Strong positive feelings", "Dismissing criticism", "Defending without evidence"],
+          "safeguards": ["Separate person from analysis", "Seek disconfirming evidence", "Use checklists"],
+          "quantitative_threshold": "If you can't name 3 flaws, you're probably biased"
+        },
+        {
+          "mode": "Nepotism and favoritism",
+          "description": "Promoting liked people over qualified ones",
+          "real_world_case": "Family businesses failing due to unqualified family members in leadership.",
+          "warning_signs": ["Personal relationships driving decisions", "Ignoring performance data", "Resentment from others"],
+          "safeguards": ["Blind evaluation processes", "External benchmarking", "Performance metrics"],
+          "quantitative_threshold": "Liked candidates should still meet 80% of objective criteria"
+        },
+        {
+          "mode": "Association bias",
+          "description": "Liking things associated with liked people",
+          "real_world_case": "Celebrity endorsements - liking celebrity transfers to product regardless of quality.",
+          "warning_signs": ["Decisions based on associations", "No independent evaluation", "Following influencers"],
+          "safeguards": ["Evaluate independently", "Ignore endorsements", "Focus on fundamentals"],
+          "quantitative_threshold": "Celebrity endorsement adds 0 information about product quality"
+        },
+        {
+          "mode": "Sycophancy vulnerability",
+          "description": "Being manipulated by those who flatter you",
+          "real_world_case": "CEOs surrounded by yes-men making poor decisions.",
+          "warning_signs": ["Only positive feedback", "No challenges", "Flattery from subordinates"],
+          "safeguards": ["Seek critics", "Reward honest feedback", "Create safe dissent channels"],
+          "quantitative_threshold": "If no one disagrees with you, you're not getting honest feedback"
+        },
+        {
+          "mode": "In-group preference",
+          "description": "Favoring those similar to you",
+          "real_world_case": "Homogeneous boards and teams missing diverse perspectives.",
+          "warning_signs": ["Similar backgrounds", "Echo chamber", "Groupthink"],
+          "safeguards": ["Diverse hiring", "Structured decision processes", "Outside perspectives"],
+          "quantitative_threshold": "Teams with < 30% diversity underperform on complex problems"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Disliking/Hating Tendency",
+      "failure_modes": [
+        {
+          "mode": "Dismissing good ideas from disliked sources",
+          "description": "Rejecting valid information because of who says it",
+          "real_world_case": "Political polarization - dismissing opponent's valid points.",
+          "warning_signs": ["Source-based rejection", "Not engaging with content", "Ad hominem"],
+          "safeguards": ["Evaluate ideas independently", "Steelman opposing views", "Blind evaluation"],
+          "quantitative_threshold": "Good ideas are equally valid regardless of source"
+        },
+        {
+          "mode": "Confirmation bias against disliked",
+          "description": "Seeking evidence to confirm negative views",
+          "real_world_case": "Short sellers becoming blind to positive developments in hated companies.",
+          "warning_signs": ["Only negative research", "Ignoring positive data", "Emotional investment in being right"],
+          "safeguards": ["Seek disconfirming evidence", "Set update triggers", "Time-bound positions"],
+          "quantitative_threshold": "If you can't name 3 positives about disliked entity, you're biased"
+        },
+        {
+          "mode": "Escalation through hatred",
+          "description": "Conflicts escalate due to mutual dislike",
+          "real_world_case": "Business feuds destroying value for both parties.",
+          "warning_signs": ["Escalating conflict", "Irrational decisions", "Spite-based actions"],
+          "safeguards": ["Cool-off periods", "Third-party mediation", "Focus on interests not positions"],
+          "quantitative_threshold": "Conflict costs typically exceed 'winning' benefits by 3-5x"
+        },
+        {
+          "mode": "Talent loss from personal conflicts",
+          "description": "Losing valuable people due to interpersonal dislike",
+          "real_world_case": "Key employees leaving due to personality conflicts with leadership.",
+          "warning_signs": ["Talent departures", "Interpersonal tensions", "Avoidance behaviors"],
+          "safeguards": ["Professional boundaries", "Conflict resolution processes", "Focus on results"],
+          "quantitative_threshold": "Replacing key talent costs 150-200% of annual salary"
+        },
+        {
+          "mode": "Market opportunity blindness",
+          "description": "Missing opportunities in disliked sectors/companies",
+          "real_world_case": "Value investors missing tech because they disliked the sector.",
+          "warning_signs": ["Categorical rejection", "Emotional language about sectors", "No analysis"],
+          "safeguards": ["Analyze all opportunities", "Separate emotion from analysis", "Follow the data"],
+          "quantitative_threshold": "Disliked sectors can outperform for decades"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Doubt-Avoidance Tendency",
+      "failure_modes": [
+        {
+          "mode": "Premature closure",
+          "description": "Deciding too quickly to avoid uncertainty",
+          "real_world_case": "Snap judgments in hiring leading to poor fits.",
+          "warning_signs": ["Quick decisions", "Discomfort with ambiguity", "Rushing to judgment"],
+          "safeguards": ["Mandatory waiting periods", "Multiple evaluation rounds", "Sleep on decisions"],
+          "quantitative_threshold": "Important decisions should have minimum 24-hour delay"
+        },
+        {
+          "mode": "False certainty",
+          "description": "Claiming certainty that doesn't exist",
+          "real_world_case": "Financial forecasts presented as certain when highly uncertain.",
+          "warning_signs": ["No ranges given", "Overconfident language", "Ignoring uncertainty"],
+          "safeguards": ["Use probability ranges", "Acknowledge uncertainty", "Scenario planning"],
+          "quantitative_threshold": "Most forecasts should have ±20% uncertainty ranges"
+        },
+        {
+          "mode": "Commitment to bad decisions",
+          "description": "Sticking with decisions to avoid doubt",
+          "real_world_case": "Sunk cost fallacy - continuing failing projects to avoid admitting error.",
+          "warning_signs": ["Defending past decisions", "Ignoring new information", "Escalating commitment"],
+          "safeguards": ["Regular decision reviews", "Kill criteria", "Fresh eyes reviews"],
+          "quantitative_threshold": "Review major decisions quarterly with kill criteria"
+        },
+        {
+          "mode": "Expert deference",
+          "description": "Accepting expert opinion to avoid own doubt",
+          "real_world_case": "Following analyst recommendations without own analysis.",
+          "warning_signs": ["Outsourcing thinking", "No independent analysis", "Expert worship"],
+          "safeguards": ["Do own analysis", "Understand expert reasoning", "Seek multiple experts"],
+          "quantitative_threshold": "Expert consensus is wrong 30-40% of the time on complex issues"
+        },
+        {
+          "mode": "Binary thinking",
+          "description": "Forcing complex issues into yes/no to avoid doubt",
+          "real_world_case": "Investment decisions as all-in or nothing, missing position sizing.",
+          "warning_signs": ["Black/white framing", "No nuance", "Forced choices"],
+          "safeguards": ["Consider spectrum of options", "Position sizing", "Probabilistic thinking"],
+          "quantitative_threshold": "Most decisions have 5+ reasonable options, not just 2"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Inconsistency-Avoidance Tendency",
+      "failure_modes": [
+        {
+          "mode": "Resistance to updating beliefs",
+          "description": "Refusing to change views despite new evidence",
+          "real_world_case": "Kodak leadership refusing to accept digital photography threat.",
+          "warning_signs": ["Dismissing new information", "Defending old views", "Rationalizing"],
+          "safeguards": ["Pre-commit to update triggers", "Track prediction accuracy", "Reward updating"],
+          "quantitative_threshold": "If you haven't changed a major view in 2 years, you're not learning"
+        },
+        {
+          "mode": "Foot-in-the-door escalation",
+          "description": "Small commitments leading to large ones",
+          "real_world_case": "Gradual ethical compromises leading to fraud.",
+          "warning_signs": ["Incremental commitments", "Slippery slope", "Normalization of deviation"],
+          "safeguards": ["Set bright lines", "Regular ethics reviews", "Fresh perspective checks"],
+          "quantitative_threshold": "Small compromises compound - review trajectory quarterly"
+        },
+        {
+          "mode": "Identity-based rigidity",
+          "description": "Views become part of identity, impossible to change",
+          "real_world_case": "Political identity preventing objective policy evaluation.",
+          "warning_signs": ["Views as identity", "Tribal thinking", "Emotional defense of positions"],
+          "safeguards": ["Separate identity from views", "Hold views loosely", "Scout mindset"],
+          "quantitative_threshold": "If changing view would feel like betrayal, it's identity-based"
+        },
+        {
+          "mode": "Consistency theater",
+          "description": "Appearing consistent even when wrong",
+          "real_world_case": "Leaders doubling down on bad strategies to appear consistent.",
+          "warning_signs": ["Defending indefensible", "Spin over substance", "Image management"],
+          "safeguards": ["Reward honest updating", "Celebrate learning", "Model changing mind"],
+          "quantitative_threshold": "Changing mind on evidence is strength, not weakness"
+        },
+        {
+          "mode": "Path dependence",
+          "description": "Past decisions constraining future options unnecessarily",
+          "real_world_case": "QWERTY keyboard - suboptimal but locked in by consistency.",
+          "warning_signs": ["We've always done it this way", "Sunk cost reasoning", "Legacy constraints"],
+          "safeguards": ["Zero-based thinking", "Fresh start analysis", "Question all constraints"],
+          "quantitative_threshold": "Review 'constraints' annually - many are self-imposed"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Curiosity Tendency",
+      "failure_modes": [
+        {
+          "mode": "Analysis paralysis from curiosity",
+          "description": "Endless research preventing action",
+          "real_world_case": "Academics who research forever but never publish or act.",
+          "warning_signs": ["Always more to learn", "Delayed decisions", "Perfect information seeking"],
+          "safeguards": ["Set research deadlines", "Good enough thresholds", "Bias toward action"],
+          "quantitative_threshold": "80% of value comes from first 20% of research"
+        },
+        {
+          "mode": "Curiosity without application",
+          "description": "Learning that doesn't translate to action",
+          "real_world_case": "Reading business books without implementing anything.",
+          "warning_signs": ["Knowledge accumulation", "No behavior change", "Learning as entertainment"],
+          "safeguards": ["Implementation requirements", "Teach to learn", "Apply immediately"],
+          "quantitative_threshold": "Learning without application has < 10% retention"
+        },
+        {
+          "mode": "Distraction by interesting but irrelevant",
+          "description": "Curiosity pulling attention from priorities",
+          "real_world_case": "Entrepreneurs distracted by new ideas instead of executing current ones.",
+          "warning_signs": ["Shiny object syndrome", "Incomplete projects", "Scattered focus"],
+          "safeguards": ["Idea parking lot", "Commitment devices", "Focus periods"],
+          "quantitative_threshold": "Switching costs are 20-30 minutes per context switch"
+        },
+        {
+          "mode": "Curiosity about wrong things",
+          "description": "Investigating trivia instead of important questions",
+          "real_world_case": "Investors researching company trivia instead of key drivers.",
+          "warning_signs": ["Detail focus", "Missing big picture", "Irrelevant expertise"],
+          "safeguards": ["Prioritize questions", "Focus on what matters", "80/20 analysis"],
+          "quantitative_threshold": "5 key questions drive 80% of decision quality"
+        },
+        {
+          "mode": "Curiosity as procrastination",
+          "description": "Using research to avoid difficult action",
+          "real_world_case": "Researching investments instead of making them.",
+          "warning_signs": ["Endless preparation", "Fear of commitment", "Perfect timing seeking"],
+          "safeguards": ["Action deadlines", "Minimum viable decisions", "Start before ready"],
+          "quantitative_threshold": "Time in market beats timing the market over 10+ years"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Kantian Fairness Tendency",
+      "failure_modes": [
+        {
+          "mode": "Fairness over effectiveness",
+          "description": "Choosing fair but suboptimal outcomes",
+          "real_world_case": "Equal pay regardless of performance destroying incentives.",
+          "warning_signs": ["Equality over equity", "Ignoring performance", "Lowest common denominator"],
+          "safeguards": ["Balance fairness with effectiveness", "Reward performance", "Transparent criteria"],
+          "quantitative_threshold": "Performance-based systems outperform equal systems by 20-40%"
+        },
+        {
+          "mode": "Ultimatum game irrationality",
+          "description": "Rejecting unfair but beneficial offers",
+          "real_world_case": "Rejecting acquisition offers because terms feel unfair.",
+          "warning_signs": ["Spite-based decisions", "Cutting nose to spite face", "Emotional rejection"],
+          "safeguards": ["Focus on absolute gains", "Separate fairness from value", "Cool-off periods"],
+          "quantitative_threshold": "Any gain > 0 is better than no gain from spite"
+        },
+        {
+          "mode": "Fairness manipulation",
+          "description": "Being exploited through fairness appeals",
+          "real_world_case": "Negotiations lost by anchoring on 'fair' split instead of value.",
+          "warning_signs": ["Fairness framing by counterparty", "Arbitrary anchors", "Guilt appeals"],
+          "safeguards": ["Focus on value not fairness", "Reject arbitrary anchors", "Know your BATNA"],
+          "quantitative_threshold": "Fair is often defined by whoever speaks first"
+        },
+        {
+          "mode": "False equivalence",
+          "description": "Treating unequal things as equal for fairness",
+          "real_world_case": "Giving equal time to unequal arguments in debates.",
+          "warning_signs": ["Both sides framing", "Ignoring evidence quality", "False balance"],
+          "safeguards": ["Weight by evidence", "Proportional treatment", "Quality over equality"],
+          "quantitative_threshold": "Equal treatment of unequal things is unfair"
+        },
+        {
+          "mode": "Process fairness over outcome fairness",
+          "description": "Fair process producing unfair outcomes",
+          "real_world_case": "Meritocracy that ignores starting point inequality.",
+          "warning_signs": ["Process focus", "Ignoring outcomes", "Systemic effects"],
+          "safeguards": ["Measure outcomes", "Adjust for starting points", "Holistic fairness"],
+          "quantitative_threshold": "Fair process with unfair outcomes is still unfair"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "name": "Envy/Jealousy Tendency",
+      "failure_modes": [
+        {
+          "mode": "Keeping up with the Joneses",
+          "description": "Spending based on others' consumption",
+          "real_world_case": "Lifestyle inflation destroying wealth accumulation.",
+          "warning_signs": ["Comparison-based spending", "Status purchases", "Financial stress"],
+          "safeguards": ["Focus on own goals", "Stealth wealth", "Comparison to past self"],
+          "quantitative_threshold": "Comparison spending can reduce savings rate by 50%+"
+        },
+        {
+          "mode": "Envy-driven investment decisions",
+          "description": "Chasing returns others have achieved",
+          "real_world_case": "FOMO buying at market tops after seeing others' gains.",
+          "warning_signs": ["Chasing performance", "Regret over missed gains", "Abandoning strategy"],
+          "safeguards": ["Stick to strategy", "Ignore others' returns", "Focus on process"],
+          "quantitative_threshold": "Performance chasing reduces returns by 2-4% annually"
+        },
+        {
+          "mode": "Sabotaging others' success",
+          "description": "Undermining others due to envy",
+          "real_world_case": "Workplace politics destroying team performance.",
+          "warning_signs": ["Negative comments about successful others", "Undermining behavior", "Zero-sum thinking"],
+          "safeguards": ["Abundance mindset", "Celebrate others' success", "Focus on own growth"],
+          "quantitative_threshold": "Toxic envy can reduce team performance by 30-50%"
+        },
+        {
+          "mode": "Envy blindness to own advantages",
+          "description": "Focusing on what others have, ignoring own blessings",
+          "real_world_case": "Wealthy people unhappy because others are wealthier.",
+          "warning_signs": ["Upward comparison only", "Ignoring own advantages", "Chronic dissatisfaction"],
+          "safeguards": ["Gratitude practice", "Downward comparison", "Absolute vs relative thinking"],
+          "quantitative_threshold": "Hedonic adaptation means more never feels like enough"
+        },
+        {
+          "mode": "Envy-driven career choices",
+          "description": "Choosing careers based on others' success",
+          "real_world_case": "Following hot careers without fit, leading to burnout.",
+          "warning_signs": ["Prestige-seeking", "Ignoring own strengths", "External validation focus"],
+          "safeguards": ["Know yourself", "Intrinsic motivation", "Long-term fit"],
+          "quantitative_threshold": "Career fit matters more than prestige for long-term success"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "name": "Reciprocation Tendency",
+      "failure_modes": [
+        {
+          "mode": "Manipulation through gifts",
+          "description": "Being influenced by gifts or favors",
+          "real_world_case": "Pharmaceutical company gifts influencing doctor prescriptions.",
+          "warning_signs": ["Gifts from interested parties", "Feeling obligated", "Quid pro quo"],
+          "safeguards": ["Refuse gifts", "Disclose conflicts", "Decision firewalls"],
+          "quantitative_threshold": "Even small gifts ($10) measurably influence decisions"
+        },
+        {
+          "mode": "Negative reciprocation escalation",
+          "description": "Revenge cycles destroying value",
+          "real_world_case": "Business feuds escalating to mutual destruction.",
+          "warning_signs": ["Tit-for-tat negativity", "Escalation", "Grudges"],
+          "safeguards": ["Break cycles", "Forgive strategically", "Focus on future"],
+          "quantitative_threshold": "Revenge typically costs more than the original harm"
+        },
+        {
+          "mode": "Reciprocation exploitation",
+          "description": "Others exploiting your reciprocation tendency",
+          "real_world_case": "Free samples creating purchase obligation.",
+          "warning_signs": ["Unsolicited favors", "Pressure to reciprocate", "Manufactured obligations"],
+          "safeguards": ["Recognize manipulation", "Decline unwanted favors", "No obligation from unsolicited"],
+          "quantitative_threshold": "Unsolicited favors create no genuine obligation"
+        },
+        {
+          "mode": "Over-reciprocation",
+          "description": "Returning more than received",
+          "real_world_case": "Giving expensive gifts in response to small favors.",
+          "warning_signs": ["Disproportionate returns", "Guilt-driven giving", "Exploitation"],
+          "safeguards": ["Proportional reciprocation", "Recognize asymmetry", "Set boundaries"],
+          "quantitative_threshold": "Reciprocation should be roughly proportional"
+        },
+        {
+          "mode": "Reciprocation debt accumulation",
+          "description": "Building up obligations that constrain future action",
+          "real_world_case": "Political favors creating compromising obligations.",
+          "warning_signs": ["Favor accumulation", "Feeling trapped", "Compromised independence"],
+          "safeguards": ["Minimize obligations", "Pay debts quickly", "Maintain independence"],
+          "quantitative_threshold": "Favor debts compound - clear them quickly"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Influence-from-Mere-Association Tendency",
+      "failure_modes": [
+        {
+          "mode": "Shooting the messenger",
+          "description": "Blaming bearer of bad news",
+          "real_world_case": "Executives punishing those who report problems, hiding issues.",
+          "warning_signs": ["Fear of reporting problems", "Suppressed bad news", "Yes-men culture"],
+          "safeguards": ["Reward problem reporting", "Separate message from messenger", "Safe channels"],
+          "quantitative_threshold": "Organizations that shoot messengers fail 3x more often"
+        },
+        {
+          "mode": "Halo from association",
+          "description": "Positive view of things associated with liked things",
+          "real_world_case": "Stanford dropout founders getting funded based on school association.",
+          "warning_signs": ["Credential worship", "Association-based decisions", "No independent evaluation"],
+          "safeguards": ["Evaluate independently", "Ignore associations", "Focus on fundamentals"],
+          "quantitative_threshold": "Prestigious associations add noise, not signal"
+        },
+        {
+          "mode": "Guilt by association",
+          "description": "Negative view based on associations",
+          "real_world_case": "Good companies avoided because of industry association.",
+          "warning_signs": ["Category rejection", "Guilt by association", "No individual analysis"],
+          "safeguards": ["Evaluate individually", "Separate from associations", "Independent analysis"],
+          "quantitative_threshold": "Individual quality varies widely within any category"
+        },
+        {
+          "mode": "Pavlovian business responses",
+          "description": "Automatic responses to associated stimuli",
+          "real_world_case": "Buying on good news, selling on bad news without analysis.",
+          "warning_signs": ["Automatic reactions", "No analysis", "Stimulus-response patterns"],
+          "safeguards": ["Pause before reacting", "Analyze before acting", "Break automatic patterns"],
+          "quantitative_threshold": "Automatic responses are wrong 40-60% of the time"
+        },
+        {
+          "mode": "Past association bias",
+          "description": "Judging based on past associations that no longer apply",
+          "real_world_case": "Avoiding reformed companies based on past problems.",
+          "warning_signs": ["Outdated associations", "No reassessment", "Stale views"],
+          "safeguards": ["Regular reassessment", "Update associations", "Current state focus"],
+          "quantitative_threshold": "Reassess associations every 2-3 years"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "name": "Pain-Avoiding Psychological Denial",
+      "failure_modes": [
+        {
+          "mode": "Denial of terminal business decline",
+          "description": "Refusing to accept business is dying",
+          "real_world_case": "Blockbuster denying streaming threat until bankruptcy.",
+          "warning_signs": ["Dismissing threats", "Rationalizing decline", "Hope as strategy"],
+          "safeguards": ["Face brutal facts", "Scenario planning", "External reality checks"],
+          "quantitative_threshold": "3 years of decline is pattern, not anomaly"
+        },
+        {
+          "mode": "Denial of personal limitations",
+          "description": "Refusing to accept own weaknesses",
+          "real_world_case": "Founders refusing to hire professional management.",
+          "warning_signs": ["Defensiveness about weaknesses", "No delegation", "Control issues"],
+          "safeguards": ["Self-awareness practices", "360 feedback", "Complementary hiring"],
+          "quantitative_threshold": "Everyone has 3-5 major weaknesses - know yours"
+        },
+        {
+          "mode": "Denial of sunk costs",
+          "description": "Refusing to accept past investments are lost",
+          "real_world_case": "Continuing failed projects because of past investment.",
+          "warning_signs": ["Sunk cost reasoning", "Throwing good money after bad", "Emotional attachment"],
+          "safeguards": ["Zero-based decisions", "Fresh eyes reviews", "Kill criteria"],
+          "quantitative_threshold": "Sunk costs are sunk - only future costs and benefits matter"
+        },
+        {
+          "mode": "Denial of relationship problems",
+          "description": "Ignoring partnership or team dysfunction",
+          "real_world_case": "Co-founder conflicts ignored until company fails.",
+          "warning_signs": ["Avoiding difficult conversations", "Hoping problems resolve", "Conflict avoidance"],
+          "safeguards": ["Regular check-ins", "Address issues early", "External mediation"],
+          "quantitative_threshold": "Unaddressed conflicts grow 10x worse over time"
+        },
+        {
+          "mode": "Denial of market feedback",
+          "description": "Ignoring customer/market signals",
+          "real_world_case": "Products failing because founders denied negative feedback.",
+          "warning_signs": ["Dismissing criticism", "Blaming customers", "Confirmation bias"],
+          "safeguards": ["Seek negative feedback", "Listen to churned customers", "Data over opinion"],
+          "quantitative_threshold": "If customers leave, there's a real problem to address"
+        }
+      ]
+    }
+  ]
+}

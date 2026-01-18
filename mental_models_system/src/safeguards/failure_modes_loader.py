@@ -183,7 +183,10 @@ class FailureModesLoader:
             'failure_modes_economics.json',
             'failure_modes_economics_2.json',
             'failure_modes_moats.json',
-            'failure_modes_thinking.json'
+            'failure_modes_thinking.json',
+            'failure_modes_psychology.json',
+            'failure_modes_math_physics_bio.json',
+            'failure_modes_organizational.json'
         ]
         
         for filename in simple_files:
