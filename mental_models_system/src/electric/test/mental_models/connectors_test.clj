@@ -1074,3 +1074,117 @@
       (is (= 30000 (:socket-timeout opts)))
       (is (= 10000 (:connection-timeout opts)))
       (is (false? (:throw-exceptions opts))))))
+
+;; ============================================
+;; Event Hooks Tests
+;; ============================================
+
+(deftest test-event-hooks-atom
+  (testing "Event hooks atom is initialized with all event types"
+    (is (instance? clojure.lang.Atom conn/event-hooks))
+    (is (map? @conn/event-hooks))
+    (is (contains? @conn/event-hooks :request-start))
+    (is (contains? @conn/event-hooks :request-complete))
+    (is (contains? @conn/event-hooks :request-error))
+    (is (contains? @conn/event-hooks :circuit-open))
+    (is (contains? @conn/event-hooks :circuit-close))
+    (is (contains? @conn/event-hooks :rate-limit-hit))
+    (is (contains? @conn/event-hooks :cache-hit))
+    (is (contains? @conn/event-hooks :cache-miss))))
+
+(deftest test-register-hook
+  (testing "Register hook adds hook and returns ID"
+    (conn/clear-hooks)
+    (let [received-events (atom [])
+          hook-fn (fn [event] (swap! received-events conj event))
+          hook-id (conn/register-hook :request-start hook-fn)]
+      (is (uuid? hook-id))
+      (is (= 1 (count (conn/list-hooks :request-start))))
+      ;; Clean up
+      (conn/clear-hooks))))
+
+(deftest test-unregister-hook
+  (testing "Unregister hook removes hook by ID"
+    (conn/clear-hooks)
+    (let [hook-fn (fn [_] nil)
+          hook-id (conn/register-hook :request-start hook-fn)]
+      (is (= 1 (count (conn/list-hooks :request-start))))
+      (conn/unregister-hook :request-start hook-id)
+      (is (= 0 (count (conn/list-hooks :request-start)))))))
+
+(deftest test-clear-hooks
+  (testing "Clear hooks removes all hooks"
+    (conn/register-hook :request-start (fn [_] nil))
+    (conn/register-hook :request-complete (fn [_] nil))
+    (conn/register-hook :request-error (fn [_] nil))
+    
+    ;; Clear specific event type
+    (conn/clear-hooks :request-start)
+    (is (= 0 (count (conn/list-hooks :request-start))))
+    (is (= 1 (count (conn/list-hooks :request-complete))))
+    
+    ;; Clear all hooks
+    (conn/clear-hooks)
+    (is (= 0 (count (conn/list-hooks :request-complete))))
+    (is (= 0 (count (conn/list-hooks :request-error))))))
+
+(deftest test-emit-event
+  (testing "Emit event calls all registered hooks"
+    (conn/clear-hooks)
+    (let [received-events (atom [])
+          hook-fn1 (fn [event] (swap! received-events conj {:hook 1 :event event}))
+          hook-fn2 (fn [event] (swap! received-events conj {:hook 2 :event event}))]
+      (conn/register-hook :request-start hook-fn1)
+      (conn/register-hook :request-start hook-fn2)
+      
+      (conn/emit-event :request-start {:connector-type :github :url "https://api.github.com"})
+      
+      ;; Both hooks should have been called
+      (is (= 2 (count @received-events)))
+      (is (some #(= 1 (:hook %)) @received-events))
+      (is (some #(= 2 (:hook %)) @received-events))
+      
+      ;; Event data should include timestamp and event-type
+      (let [event (:event (first @received-events))]
+        (is (= :request-start (:event-type event)))
+        (is (contains? event :timestamp))
+        (is (= :github (:connector-type event))))
+      
+      ;; Clean up
+      (conn/clear-hooks))))
+
+(deftest test-emit-event-handles-hook-errors
+  (testing "Emit event continues even if a hook throws"
+    (conn/clear-hooks)
+    (let [received-events (atom [])
+          failing-hook (fn [_] (throw (Exception. "Hook error")))
+          working-hook (fn [event] (swap! received-events conj event))]
+      (conn/register-hook :request-start failing-hook)
+      (conn/register-hook :request-start working-hook)
+      
+      ;; Should not throw, and working hook should still be called
+      (conn/emit-event :request-start {:test true})
+      (is (= 1 (count @received-events)))
+      
+      ;; Clean up
+      (conn/clear-hooks))))
+
+(deftest test-list-hooks
+  (testing "List hooks returns registered hooks"
+    (conn/clear-hooks)
+    (conn/register-hook :request-start (fn [_] nil))
+    (conn/register-hook :request-complete (fn [_] nil))
+    
+    ;; List all hooks
+    (let [all-hooks (conn/list-hooks)]
+      (is (map? all-hooks))
+      (is (= 1 (count (:request-start all-hooks))))
+      (is (= 1 (count (:request-complete all-hooks)))))
+    
+    ;; List hooks for specific event type
+    (let [start-hooks (conn/list-hooks :request-start)]
+      (is (vector? start-hooks))
+      (is (= 1 (count start-hooks))))
+    
+    ;; Clean up
+    (conn/clear-hooks)))
