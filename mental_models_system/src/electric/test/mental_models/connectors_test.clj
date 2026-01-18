@@ -1537,3 +1537,133 @@
         (is (= "Test error" (:error result))))
       ;; Clean up
       (swap! conn/async-tasks dissoc task-id))))
+
+;; ============================================
+;; Configuration Validation Tests
+;; ============================================
+
+(deftest test-config-schemas-atom
+  (testing "Config schemas atom is initialized with built-in schemas"
+    (is (instance? clojure.lang.Atom conn/config-schemas))
+    (is (map? @conn/config-schemas))
+    (is (contains? @conn/config-schemas :github))
+    (is (contains? @conn/config-schemas :slack))
+    (is (contains? @conn/config-schemas :huggingface))
+    (is (contains? @conn/config-schemas :lm-studio))
+    (is (contains? @conn/config-schemas :zapier))
+    (is (contains? @conn/config-schemas :web-scraper))
+    (is (contains? @conn/config-schemas :file))))
+
+(deftest test-validate-field-required
+  (testing "Validate field catches missing required fields"
+    (let [result (conn/validate-field "token" nil {:type :string :required true})]
+      (is (false? (:valid result)))
+      (is (str/includes? (:error result) "required")))))
+
+(deftest test-validate-field-type-string
+  (testing "Validate field catches wrong type for string"
+    (let [result (conn/validate-field "token" 123 {:type :string :required true})]
+      (is (false? (:valid result)))
+      (is (str/includes? (:error result) "string")))))
+
+(deftest test-validate-field-type-integer
+  (testing "Validate field catches wrong type for integer"
+    (let [result (conn/validate-field "timeout" "not-a-number" {:type :integer :required true})]
+      (is (false? (:valid result)))
+      (is (str/includes? (:error result) "integer")))))
+
+(deftest test-validate-field-min-length
+  (testing "Validate field catches string too short"
+    (let [result (conn/validate-field "token" "" {:type :string :required true :min-length 1})]
+      (is (false? (:valid result)))
+      (is (str/includes? (:error result) "at least")))))
+
+(deftest test-validate-field-min-max-integer
+  (testing "Validate field catches integer out of range"
+    (let [result-min (conn/validate-field "timeout" 500 {:type :integer :min 1000})
+          result-max (conn/validate-field "timeout" 700000 {:type :integer :max 600000})]
+      (is (false? (:valid result-min)))
+      (is (false? (:valid result-max))))))
+
+(deftest test-validate-field-pattern
+  (testing "Validate field catches pattern mismatch"
+    (let [result (conn/validate-field "webhook-url" "https://example.com/hook"
+                                      {:type :string :pattern #"^https://hooks\.zapier\.com/.*"})]
+      (is (false? (:valid result)))
+      (is (str/includes? (:error result) "pattern")))))
+
+(deftest test-validate-field-valid
+  (testing "Validate field passes valid values"
+    (let [result (conn/validate-field "token" "valid-token" {:type :string :required true :min-length 1})]
+      (is (true? (:valid result))))))
+
+(deftest test-validate-config-valid
+  (testing "Validate config passes valid configuration"
+    (let [result (conn/validate-config :github {:token "ghp_valid_token"})]
+      (is (true? (:valid result)))
+      (is (= :github (:connector-type result))))))
+
+(deftest test-validate-config-invalid
+  (testing "Validate config catches invalid configuration"
+    (let [result (conn/validate-config :github {})]
+      (is (false? (:valid result)))
+      (is (seq (:errors result))))))
+
+(deftest test-validate-config-unknown-type
+  (testing "Validate config handles unknown connector type"
+    (let [result (conn/validate-config :unknown-connector {:foo "bar"})]
+      (is (true? (:valid result)))
+      (is (contains? result :warning)))))
+
+(deftest test-apply-defaults
+  (testing "Apply defaults adds missing default values"
+    (let [config (conn/apply-defaults :lm-studio {})]
+      (is (= "http://localhost:1234" (:base-url config)))
+      (is (= 120000 (:timeout-ms config))))))
+
+(deftest test-apply-defaults-preserves-existing
+  (testing "Apply defaults preserves existing values"
+    (let [config (conn/apply-defaults :lm-studio {:base-url "http://custom:5000"})]
+      (is (= "http://custom:5000" (:base-url config))))))
+
+(deftest test-get-config-schema
+  (testing "Get config schema returns schema for known type"
+    (let [schema (conn/get-config-schema :github)]
+      (is (map? schema))
+      (is (contains? schema :token)))))
+
+(deftest test-get-config-schema-unknown
+  (testing "Get config schema returns nil for unknown type"
+    (let [schema (conn/get-config-schema :unknown-type)]
+      (is (nil? schema)))))
+
+(deftest test-register-config-schema
+  (testing "Register config schema adds new schema"
+    (conn/register-config-schema :custom-connector
+                                 {:api-key {:type :string :required true}})
+    (let [schema (conn/get-config-schema :custom-connector)]
+      (is (map? schema))
+      (is (contains? schema :api-key)))
+    ;; Clean up
+    (swap! conn/config-schemas dissoc :custom-connector)))
+
+(deftest test-list-config-schemas
+  (testing "List config schemas returns all schemas"
+    (let [schemas (conn/list-config-schemas)]
+      (is (vector? schemas))
+      (is (>= (count schemas) 7))
+      (is (every? #(contains? % :type) schemas))
+      (is (every? #(contains? % :fields) schemas)))))
+
+(deftest test-redact-sensitive-config
+  (testing "Redact sensitive config redacts sensitive fields"
+    (let [config {:token "secret-token" :base-url "https://api.github.com"}
+          redacted (conn/redact-sensitive-config :github config)]
+      (is (= "[REDACTED]" (:token redacted)))
+      (is (= "https://api.github.com" (:base-url redacted))))))
+
+(deftest test-redact-sensitive-config-unknown-type
+  (testing "Redact sensitive config returns original for unknown type"
+    (let [config {:secret "value"}
+          redacted (conn/redact-sensitive-config :unknown-type config)]
+      (is (= config redacted)))))
