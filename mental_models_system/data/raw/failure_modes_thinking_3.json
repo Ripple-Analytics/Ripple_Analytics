@@ -1,0 +1,93 @@
+{
+  "category": "Thinking Tools",
+  "models": [
+    {
+      "id": 45,
+      "name": "Bayesian Updating",
+      "failure_modes": [
+        {"mode": "Wrong priors", "description": "Starting with incorrect base assumptions", "real_world_case": "Overconfident priors leading to slow updating.", "warning_signs": ["Stubborn beliefs", "Slow to change", "Ignoring evidence"], "safeguards": ["Humble priors", "Wide distributions", "Openness to change"], "quantitative_threshold": "Start with wider priors than you think"},
+        {"mode": "Insufficient updating", "description": "Not updating enough on new evidence", "real_world_case": "Anchoring on initial beliefs.", "warning_signs": ["Sticky beliefs", "Ignoring new data", "Anchoring"], "safeguards": ["Force updates", "Track evidence", "Quantify changes"], "quantitative_threshold": "Update proportional to evidence strength"},
+        {"mode": "Over-updating", "description": "Changing too much on weak evidence", "real_world_case": "Overreacting to noise.", "warning_signs": ["Volatile beliefs", "Overreaction", "Noise sensitivity"], "safeguards": ["Weight evidence properly", "Distinguish signal from noise", "Stable priors"], "quantitative_threshold": "Update magnitude should match evidence quality"},
+        {"mode": "Ignoring base rates", "description": "Not incorporating prior probabilities", "real_world_case": "Ignoring that most startups fail.", "warning_signs": ["Base rate neglect", "Special case thinking", "Overconfidence"], "safeguards": ["Start with base rates", "Adjust from there", "Reference class forecasting"], "quantitative_threshold": "Base rate is your anchor"},
+        {"mode": "Confirmation bias in updating", "description": "Only updating on confirming evidence", "real_world_case": "Seeking evidence that supports existing beliefs.", "warning_signs": ["Selective evidence", "One-way updates", "Strengthening beliefs only"], "safeguards": ["Seek disconfirming evidence", "Update both ways", "Devil's advocate"], "quantitative_threshold": "Disconfirming evidence should update more"}
+      ]
+    },
+    {
+      "id": 46,
+      "name": "Counterfactual Thinking",
+      "failure_modes": [
+        {"mode": "Hindsight bias in counterfactuals", "description": "Counterfactuals colored by knowing outcome", "real_world_case": "Thinking you would have known to sell before crash.", "warning_signs": ["Obvious in hindsight", "Ignoring uncertainty", "Overconfidence"], "safeguards": ["Reconstruct uncertainty", "What did you know then", "Honest assessment"], "quantitative_threshold": "Judge by information available at time"},
+        {"mode": "Unrealistic counterfactuals", "description": "Imagining impossible alternatives", "real_world_case": "If only I had known the future.", "warning_signs": ["Impossible alternatives", "Magic thinking", "Unrealistic"], "safeguards": ["Realistic alternatives", "What was actually possible", "Constraints"], "quantitative_threshold": "Counterfactuals must be possible"},
+        {"mode": "Counterfactual regret spirals", "description": "Endless rumination on what could have been", "real_world_case": "Obsessing over past decisions.", "warning_signs": ["Rumination", "Regret", "Stuck in past"], "safeguards": ["Learn and move on", "Action focus", "Present orientation"], "quantitative_threshold": "Extract lesson, then stop"},
+        {"mode": "Single counterfactual focus", "description": "Only considering one alternative", "real_world_case": "If only I had done X (ignoring Y, Z).", "warning_signs": ["Single alternative", "Narrow focus", "Missing options"], "safeguards": ["Multiple counterfactuals", "Broad consideration", "Option space"], "quantitative_threshold": "Consider 3+ counterfactuals"},
+        {"mode": "Counterfactual as excuse", "description": "Using counterfactuals to avoid responsibility", "real_world_case": "Blaming circumstances instead of decisions.", "warning_signs": ["External blame", "No accountability", "Victim mentality"], "safeguards": ["Own decisions", "Internal locus", "Accountability"], "quantitative_threshold": "Focus on what you controlled"}
+      ]
+    },
+    {
+      "id": 47,
+      "name": "Pre-Mortem Analysis",
+      "failure_modes": [
+        {"mode": "Superficial pre-mortem", "description": "Not going deep enough on failure modes", "real_world_case": "Listing obvious failures, missing real risks.", "warning_signs": ["Surface analysis", "Obvious risks only", "No depth"], "safeguards": ["Deep analysis", "Second-order failures", "Uncomfortable truths"], "quantitative_threshold": "Pre-mortem should be uncomfortable"},
+        {"mode": "Pre-mortem without action", "description": "Identifying risks but not mitigating", "real_world_case": "Risk register that gathers dust.", "warning_signs": ["No mitigation", "Documentation only", "Checkbox exercise"], "safeguards": ["Action for each risk", "Mitigation plans", "Follow through"], "quantitative_threshold": "Every identified risk needs mitigation"},
+        {"mode": "Group-think in pre-mortem", "description": "Team agreeing on same failures", "real_world_case": "Everyone identifying same risks, missing others.", "warning_signs": ["Consensus", "No diversity", "Blind spots"], "safeguards": ["Independent input first", "Diverse perspectives", "Devil's advocate"], "quantitative_threshold": "Pre-mortem needs diverse perspectives"},
+        {"mode": "Pre-mortem fatigue", "description": "Doing it so often it becomes routine", "real_world_case": "Going through motions without real analysis.", "warning_signs": ["Routine exercise", "No new insights", "Copy-paste"], "safeguards": ["Fresh approach", "New perspectives", "Real engagement"], "quantitative_threshold": "Each pre-mortem should surface new risks"},
+        {"mode": "Pre-mortem overconfidence", "description": "Thinking pre-mortem found all risks", "real_world_case": "Surprise failures not in pre-mortem.", "warning_signs": ["Overconfidence", "Complete list thinking", "No unknown unknowns"], "safeguards": ["Assume incompleteness", "Margin of safety", "Continuous monitoring"], "quantitative_threshold": "Pre-mortem is incomplete by definition"}
+      ]
+    },
+    {
+      "id": 48,
+      "name": "Steel Man Arguments",
+      "failure_modes": [
+        {"mode": "Weak steel man", "description": "Not making opponent's argument strong enough", "real_world_case": "Strawman disguised as steel man.", "warning_signs": ["Easy to defeat", "Not strongest version", "Strawman elements"], "safeguards": ["Make it stronger", "Opponent would agree", "Best version"], "quantitative_threshold": "Opponent should say 'yes, that's my argument'"},
+        {"mode": "Steel man as delay", "description": "Endlessly improving opponent's argument", "real_world_case": "Never getting to your own argument.", "warning_signs": ["Endless refinement", "No counter", "Avoidance"], "safeguards": ["Time limit", "Good enough steel man", "Move to response"], "quantitative_threshold": "Steel man should take 20% of time, not 80%"},
+        {"mode": "Steel man without engagement", "description": "Building steel man but not engaging with it", "real_world_case": "Acknowledging argument but not addressing.", "warning_signs": ["No engagement", "Dismissal after", "Lip service"], "safeguards": ["Engage with steel man", "Address strongest points", "Real response"], "quantitative_threshold": "Steel man requires genuine engagement"},
+        {"mode": "Steel man bias", "description": "Only steel-manning views you like", "real_world_case": "Steel man for allies, straw man for opponents.", "warning_signs": ["Selective application", "Bias", "Inconsistent"], "safeguards": ["Apply consistently", "Especially to opponents", "Fairness"], "quantitative_threshold": "Steel man your opponents most"},
+        {"mode": "Steel man as capitulation", "description": "Making opponent's argument so strong you can't counter", "real_world_case": "Convincing yourself of opponent's view.", "warning_signs": ["No counter", "Persuaded by steel man", "Lost position"], "safeguards": ["Maintain your view", "Counter the steel man", "Balance"], "quantitative_threshold": "Steel man to understand, not to adopt"}
+      ]
+    },
+    {
+      "id": 49,
+      "name": "Devil's Advocate",
+      "failure_modes": [
+        {"mode": "Weak devil's advocate", "description": "Not arguing strongly enough against", "real_world_case": "Token opposition that's easily dismissed.", "warning_signs": ["Weak arguments", "Easy dismissal", "Going through motions"], "safeguards": ["Argue to win", "Strong opposition", "Real challenge"], "quantitative_threshold": "Devil's advocate should be uncomfortable"},
+        {"mode": "Devil's advocate fatigue", "description": "Role becomes routine and ignored", "real_world_case": "Everyone knows it's just a role.", "warning_signs": ["Routine", "Ignored", "No impact"], "safeguards": ["Rotate role", "Real stakes", "Fresh perspectives"], "quantitative_threshold": "If it's comfortable, it's not working"},
+        {"mode": "Devil's advocate as obstruction", "description": "Using role to block rather than improve", "real_world_case": "Endless objections preventing progress.", "warning_signs": ["No constructive input", "Only criticism", "Blocking"], "safeguards": ["Constructive criticism", "Alternatives required", "Time limits"], "quantitative_threshold": "Devil's advocate should improve, not block"},
+        {"mode": "Shooting the devil's advocate", "description": "Punishing those who play the role", "real_world_case": "Career damage from challenging consensus.", "warning_signs": ["Punishment for dissent", "Silence after", "Fear"], "safeguards": ["Protect dissenters", "Reward challenge", "Safe environment"], "quantitative_threshold": "Devil's advocate should be rewarded"},
+        {"mode": "Devil's advocate without resolution", "description": "Raising objections without addressing them", "real_world_case": "Objections raised but never resolved.", "warning_signs": ["Unresolved objections", "No closure", "Lingering doubts"], "safeguards": ["Address each objection", "Resolution required", "Clear outcomes"], "quantitative_threshold": "Every objection needs resolution"}
+      ]
+    },
+    {
+      "id": 50,
+      "name": "Scenario Planning",
+      "failure_modes": [
+        {"mode": "Too few scenarios", "description": "Not considering enough possibilities", "real_world_case": "Best case and worst case only.", "warning_signs": ["Binary thinking", "Missing middle", "Limited scenarios"], "safeguards": ["Multiple scenarios", "Range of outcomes", "Diverse possibilities"], "quantitative_threshold": "Consider 4-6 scenarios minimum"},
+        {"mode": "Scenarios too similar", "description": "All scenarios variations of same theme", "real_world_case": "All scenarios assume growth, just different rates.", "warning_signs": ["Similar assumptions", "No diversity", "Same direction"], "safeguards": ["Diverse scenarios", "Opposite assumptions", "Wild cards"], "quantitative_threshold": "Include scenarios that challenge assumptions"},
+        {"mode": "Scenario planning without action", "description": "Creating scenarios but not preparing", "real_world_case": "Scenarios documented but no contingency plans.", "warning_signs": ["No preparation", "Documentation only", "Surprise when scenarios occur"], "safeguards": ["Action for each scenario", "Contingency plans", "Triggers defined"], "quantitative_threshold": "Each scenario needs response plan"},
+        {"mode": "Probability assignment overconfidence", "description": "Assigning precise probabilities to scenarios", "real_world_case": "Saying scenario A is 30% likely.", "warning_signs": ["False precision", "Overconfident probabilities", "Ignoring uncertainty"], "safeguards": ["Ranges not points", "Acknowledge uncertainty", "Robust strategies"], "quantitative_threshold": "Scenario probabilities are highly uncertain"},
+        {"mode": "Missing the actual scenario", "description": "Reality doesn't match any planned scenario", "real_world_case": "Black swan events not in any scenario.", "warning_signs": ["Surprise events", "No matching scenario", "Unprepared"], "safeguards": ["Flexible response capability", "General resilience", "Adaptation skills"], "quantitative_threshold": "Reality will differ from all scenarios"}
+      ]
+    },
+    {
+      "id": 51,
+      "name": "Red Team/Blue Team",
+      "failure_modes": [
+        {"mode": "Weak red team", "description": "Red team not trying hard enough", "real_world_case": "Red team that doesn't really attack.", "warning_signs": ["Easy wins for blue", "No real challenge", "Friendly fire"], "safeguards": ["Incentivize red team", "Real stakes", "External red team"], "quantitative_threshold": "Red team should win sometimes"},
+        {"mode": "Red team constraints", "description": "Red team limited by unrealistic rules", "real_world_case": "Red team can't use tactics real attackers would.", "warning_signs": ["Artificial constraints", "Unrealistic rules", "Handicapped"], "safeguards": ["Realistic constraints", "Real-world tactics", "No artificial limits"], "quantitative_threshold": "Red team should operate like real adversary"},
+        {"mode": "Blue team defensiveness", "description": "Blue team taking attacks personally", "real_world_case": "Defensive reactions to red team findings.", "warning_signs": ["Defensiveness", "Excuses", "Dismissing findings"], "safeguards": ["Learning mindset", "Gratitude for findings", "Improvement focus"], "quantitative_threshold": "Blue team should thank red team"},
+        {"mode": "Red team findings ignored", "description": "Not acting on red team discoveries", "real_world_case": "Vulnerabilities found but not fixed.", "warning_signs": ["No remediation", "Ignored findings", "Repeated vulnerabilities"], "safeguards": ["Mandatory remediation", "Track fixes", "Accountability"], "quantitative_threshold": "Every finding needs remediation"},
+        {"mode": "Red team as checkbox", "description": "Doing it for compliance, not improvement", "real_world_case": "Annual red team that's just a formality.", "warning_signs": ["Routine exercise", "No surprises", "Compliance focus"], "safeguards": ["Real stakes", "Continuous red teaming", "Improvement focus"], "quantitative_threshold": "Red team should always find something"}
+      ]
+    },
+    {
+      "id": 52,
+      "name": "Fermi Estimation",
+      "failure_modes": [
+        {"mode": "Wrong decomposition", "description": "Breaking problem into wrong components", "real_world_case": "Estimating with wrong factors.", "warning_signs": ["Missing factors", "Wrong factors", "Poor estimates"], "safeguards": ["Multiple decompositions", "Sanity check", "Cross-validate"], "quantitative_threshold": "Try 2-3 different decompositions"},
+        {"mode": "Compounding errors", "description": "Errors in each estimate multiplying", "real_world_case": "Small errors in each factor creating large total error.", "warning_signs": ["Large uncertainty", "Sensitive to inputs", "Wide ranges"], "safeguards": ["Conservative estimates", "Sensitivity analysis", "Bound errors"], "quantitative_threshold": "Errors compound - be conservative"},
+        {"mode": "False precision from calculation", "description": "Precise calculation from imprecise inputs", "real_world_case": "Calculating to decimal places from guesses.", "warning_signs": ["False precision", "Decimal places", "Overconfident"], "safeguards": ["Round appropriately", "Express uncertainty", "Order of magnitude"], "quantitative_threshold": "Answer precision ≤ input precision"},
+        {"mode": "Anchoring on first estimate", "description": "First decomposition anchoring subsequent", "real_world_case": "All estimates clustering around first.", "warning_signs": ["Similar estimates", "Anchoring", "No diversity"], "safeguards": ["Independent estimates", "Different approaches", "Avoid anchoring"], "quantitative_threshold": "Do estimates independently first"},
+        {"mode": "Fermi as substitute for data", "description": "Estimating when data is available", "real_world_case": "Guessing instead of looking up.", "warning_signs": ["Unnecessary estimation", "Available data ignored", "Lazy"], "safeguards": ["Check for data first", "Estimate only when needed", "Validate against data"], "quantitative_threshold": "Use data when available, estimate when not"}
+      ]
+    }
+  ]
+}

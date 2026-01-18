@@ -286,6 +286,159 @@ knowledge_graph_edges = Gauge(
     "Number of edges in knowledge graph"
 )
 
+# Improvement Tracking Metrics
+improvement_suggestions_pending = Gauge(
+    "improvement_suggestions_pending_total",
+    "Total number of pending improvement suggestions"
+)
+
+improvement_suggestions_completed = Counter(
+    "improvement_suggestions_completed_total",
+    "Total number of completed improvement suggestions"
+)
+
+improvement_suggestions_generated = Counter(
+    "improvement_suggestions_generated_total",
+    "Total number of improvement suggestions generated"
+)
+
+improvement_suggestions_by_priority = Gauge(
+    "improvement_suggestions_by_priority",
+    "Improvement suggestions by priority level",
+    labels=["priority"]
+)
+
+improvement_suggestions_by_category = Gauge(
+    "improvement_suggestions_by_category",
+    "Improvement suggestions by category",
+    labels=["category"]
+)
+
+failure_mode_coverage = Gauge(
+    "failure_mode_coverage_ratio",
+    "Ratio of models with adequate failure modes (5+)"
+)
+
+failure_modes_per_model = Gauge(
+    "failure_modes_per_model",
+    "Number of failure modes per model",
+    labels=["model"]
+)
+
+decisions_recorded = Counter(
+    "decisions_recorded_total",
+    "Total number of decisions recorded"
+)
+
+decisions_with_outcomes = Counter(
+    "decisions_with_outcomes_total",
+    "Total number of decisions with recorded outcomes"
+)
+
+mental_models_total = Gauge(
+    "mental_models_total",
+    "Total number of mental models in the system"
+)
+
+improvement_suggestion_impact = Gauge(
+    "improvement_suggestion_impact",
+    "Estimated impact of improvement suggestions",
+    labels=["suggestion_id", "title"]
+)
+
+# Audit Event Metrics
+audit_events_total = Counter(
+    "audit_events_total",
+    "Total audit events logged",
+    labels=["event_type", "outcome"]
+)
+
+audit_events_by_actor = Counter(
+    "audit_events_by_actor_total",
+    "Audit events by actor",
+    labels=["actor", "event_type"]
+)
+
+audit_events_by_resource = Counter(
+    "audit_events_by_resource_total",
+    "Audit events by resource type",
+    labels=["resource_type", "action"]
+)
+
+audit_api_requests_total = Counter(
+    "audit_api_requests_total",
+    "Total API requests logged in audit",
+    labels=["method", "path", "status_code"]
+)
+
+audit_api_request_duration = Histogram(
+    "audit_api_request_duration_seconds",
+    "API request duration from audit logs",
+    labels=["method", "path"],
+    buckets=(0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10)
+)
+
+audit_security_events_total = Counter(
+    "audit_security_events_total",
+    "Security-related audit events",
+    labels=["event_type", "severity"]
+)
+
+audit_failed_operations_total = Counter(
+    "audit_failed_operations_total",
+    "Failed operations logged in audit",
+    labels=["operation", "error_type"]
+)
+
+audit_buffer_size = Gauge(
+    "audit_buffer_size",
+    "Current size of audit event buffer"
+)
+
+audit_events_flushed_total = Counter(
+    "audit_events_flushed_total",
+    "Total audit events flushed to disk"
+)
+
+# Security Metrics
+rate_limit_hits_total = Counter(
+    "rate_limit_hits_total",
+    "Total rate limit hits",
+    labels=["identifier", "endpoint"]
+)
+
+rate_limit_blocked_total = Counter(
+    "rate_limit_blocked_total",
+    "Total requests blocked by rate limiting",
+    labels=["identifier", "endpoint"]
+)
+
+api_key_validations_total = Counter(
+    "api_key_validations_total",
+    "Total API key validations",
+    labels=["status"]  # success, invalid, expired, revoked
+)
+
+api_key_creations_total = Counter(
+    "api_key_creations_total",
+    "Total API keys created"
+)
+
+api_key_revocations_total = Counter(
+    "api_key_revocations_total",
+    "Total API keys revoked"
+)
+
+blocked_ips_total = Gauge(
+    "blocked_ips_total",
+    "Total number of blocked IPs"
+)
+
+active_api_keys_total = Gauge(
+    "active_api_keys_total",
+    "Total number of active API keys"
+)
+
 
 # =============================================================================
 # METRICS REGISTRY
@@ -360,6 +513,37 @@ registry.register(signal_priority)
 registry.register(harvester_errors_total)
 registry.register(knowledge_graph_nodes)
 registry.register(knowledge_graph_edges)
+registry.register(improvement_suggestions_pending)
+registry.register(improvement_suggestions_completed)
+registry.register(improvement_suggestions_generated)
+registry.register(improvement_suggestions_by_priority)
+registry.register(improvement_suggestions_by_category)
+registry.register(failure_mode_coverage)
+registry.register(failure_modes_per_model)
+registry.register(decisions_recorded)
+registry.register(decisions_with_outcomes)
+registry.register(mental_models_total)
+registry.register(improvement_suggestion_impact)
+
+# Register audit metrics
+registry.register(audit_events_total)
+registry.register(audit_events_by_actor)
+registry.register(audit_events_by_resource)
+registry.register(audit_api_requests_total)
+registry.register(audit_api_request_duration)
+registry.register(audit_security_events_total)
+registry.register(audit_failed_operations_total)
+registry.register(audit_buffer_size)
+registry.register(audit_events_flushed_total)
+
+# Register security metrics
+registry.register(rate_limit_hits_total)
+registry.register(rate_limit_blocked_total)
+registry.register(api_key_validations_total)
+registry.register(api_key_creations_total)
+registry.register(api_key_revocations_total)
+registry.register(blocked_ips_total)
+registry.register(active_api_keys_total)
 
 
 # =============================================================================

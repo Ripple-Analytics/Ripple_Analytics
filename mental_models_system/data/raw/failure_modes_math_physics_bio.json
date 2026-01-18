@@ -1,0 +1,334 @@
+{
+  "categories": ["Mathematics", "Physics", "Biology"],
+  "models": [
+    {
+      "id": 92,
+      "name": "Compounding",
+      "category": "Mathematics",
+      "failure_modes": [
+        {
+          "mode": "Underestimating compound growth",
+          "description": "Human brains think linearly, miss exponential effects",
+          "real_world_case": "COVID-19 early spread - people couldn't grasp exponential growth.",
+          "warning_signs": ["Linear projections", "Surprise at growth", "Late recognition"],
+          "safeguards": ["Use compound calculators", "Visualize exponentials", "Rule of 72"],
+          "quantitative_threshold": "7% growth doubles in 10 years, 10% in 7 years"
+        },
+        {
+          "mode": "Ignoring negative compounding",
+          "description": "Costs and fees compound too",
+          "real_world_case": "2% annual fees reducing retirement wealth by 40% over 30 years.",
+          "warning_signs": ["Ignoring small fees", "Not calculating long-term impact", "Fee blindness"],
+          "safeguards": ["Calculate total cost of ownership", "Minimize friction", "Long-term projections"],
+          "quantitative_threshold": "1% annual fee = 26% less wealth over 30 years"
+        },
+        {
+          "mode": "Interrupting compounding",
+          "description": "Breaking compound chains through impatience",
+          "real_world_case": "Selling investments during downturns, missing recovery.",
+          "warning_signs": ["Short-term thinking", "Panic selling", "Frequent trading"],
+          "safeguards": ["Long-term commitment", "Automatic investing", "Ignore short-term"],
+          "quantitative_threshold": "Missing best 10 days in 20 years cuts returns by 50%"
+        },
+        {
+          "mode": "Starting too late",
+          "description": "Delaying compounding start",
+          "real_world_case": "Starting retirement savings at 40 vs 25 requires 3x contributions.",
+          "warning_signs": ["Procrastination", "Waiting for perfect time", "Small amount dismissal"],
+          "safeguards": ["Start immediately", "Automate early", "Time > amount"],
+          "quantitative_threshold": "10 years earlier start = 2x final wealth"
+        },
+        {
+          "mode": "Confusing arithmetic and geometric returns",
+          "description": "Average returns ≠ compound returns",
+          "real_world_case": "+50% then -50% = -25%, not 0%.",
+          "warning_signs": ["Using arithmetic averages", "Ignoring volatility drag", "Misleading return claims"],
+          "safeguards": ["Use geometric returns", "Account for volatility", "CAGR over average"],
+          "quantitative_threshold": "Volatility drag = (standard deviation)² / 2"
+        }
+      ]
+    },
+    {
+      "id": 93,
+      "name": "Permutations and Combinations",
+      "category": "Mathematics",
+      "failure_modes": [
+        {
+          "mode": "Underestimating complexity explosion",
+          "description": "Combinations grow faster than intuition",
+          "real_world_case": "Software testing - can't test all input combinations.",
+          "warning_signs": ["Assuming complete coverage", "Underestimating edge cases", "Combinatorial blindness"],
+          "safeguards": ["Calculate actual combinations", "Prioritize testing", "Accept incompleteness"],
+          "quantitative_threshold": "10 binary choices = 1,024 combinations"
+        },
+        {
+          "mode": "Birthday paradox blindness",
+          "description": "Underestimating collision probability",
+          "real_world_case": "Security systems with insufficient key space.",
+          "warning_signs": ["Assuming uniqueness", "Ignoring collision risk", "Small sample assumptions"],
+          "safeguards": ["Calculate collision probability", "Larger key spaces", "Expect duplicates"],
+          "quantitative_threshold": "23 people = 50% chance of shared birthday"
+        },
+        {
+          "mode": "Order sensitivity confusion",
+          "description": "Confusing when order matters",
+          "real_world_case": "Misunderstanding probability in sequential events.",
+          "warning_signs": ["Wrong formula application", "Order confusion", "Probability errors"],
+          "safeguards": ["Clarify if order matters", "Use correct formula", "Verify with examples"],
+          "quantitative_threshold": "Permutations can be n! times larger than combinations"
+        },
+        {
+          "mode": "Selection bias in combinations",
+          "description": "Not all combinations equally likely",
+          "real_world_case": "Survivorship bias - only seeing successful combinations.",
+          "warning_signs": ["Equal probability assumption", "Ignoring selection effects", "Visible subset bias"],
+          "safeguards": ["Consider selection process", "Include failures", "Base rates"],
+          "quantitative_threshold": "Visible successes may be < 1% of attempts"
+        },
+        {
+          "mode": "Combinatorial optimization failure",
+          "description": "Trying to optimize over too many combinations",
+          "real_world_case": "Overfitting in machine learning - optimizing noise.",
+          "warning_signs": ["Too many parameters", "Perfect in-sample fit", "Poor out-of-sample"],
+          "safeguards": ["Regularization", "Cross-validation", "Simplicity preference"],
+          "quantitative_threshold": "Parameters should be < 10% of data points"
+        }
+      ]
+    },
+    {
+      "id": 94,
+      "name": "Inversion",
+      "category": "Mathematics",
+      "failure_modes": [
+        {
+          "mode": "Only forward thinking",
+          "description": "Not thinking about what to avoid",
+          "real_world_case": "Planning for success without planning to avoid failure.",
+          "warning_signs": ["Only positive goals", "No risk analysis", "Optimism bias"],
+          "safeguards": ["Pre-mortem analysis", "Invert all goals", "Avoid stupidity first"],
+          "quantitative_threshold": "Avoiding mistakes often more valuable than seeking wins"
+        },
+        {
+          "mode": "Incomplete inversion",
+          "description": "Inverting only partially",
+          "real_world_case": "Asking 'how to succeed' but not 'how would I fail'.",
+          "warning_signs": ["Partial analysis", "Missing failure modes", "Incomplete thinking"],
+          "safeguards": ["Full inversion", "List all failure modes", "Systematic approach"],
+          "quantitative_threshold": "Invert every major goal and decision"
+        },
+        {
+          "mode": "Inversion without action",
+          "description": "Identifying risks but not mitigating",
+          "real_world_case": "Knowing what could go wrong but not preventing it.",
+          "warning_signs": ["Risk awareness without action", "Analysis paralysis", "No safeguards"],
+          "safeguards": ["Action for each risk", "Mitigation plans", "Prevention focus"],
+          "quantitative_threshold": "Each identified risk needs a mitigation action"
+        },
+        {
+          "mode": "Over-inversion pessimism",
+          "description": "Focusing so much on failure that you don't act",
+          "real_world_case": "Paralysis from seeing too many ways to fail.",
+          "warning_signs": ["Excessive caution", "No action", "Fear-based decisions"],
+          "safeguards": ["Balance inversion with action", "Prioritize risks", "Accept some risk"],
+          "quantitative_threshold": "Mitigate top 5 risks, accept the rest"
+        },
+        {
+          "mode": "Static inversion",
+          "description": "Not updating inversion as situation changes",
+          "real_world_case": "Old risk analysis no longer relevant.",
+          "warning_signs": ["Outdated risk list", "Changed circumstances", "Stale analysis"],
+          "safeguards": ["Regular risk reviews", "Dynamic updating", "Continuous inversion"],
+          "quantitative_threshold": "Update inversion analysis quarterly"
+        }
+      ]
+    },
+    {
+      "id": 103,
+      "name": "Critical Mass",
+      "category": "Physics",
+      "failure_modes": [
+        {
+          "mode": "Stopping before critical mass",
+          "description": "Giving up just before tipping point",
+          "real_world_case": "Startups failing at 80% of needed traction.",
+          "warning_signs": ["Slow progress", "Impatience", "Resource exhaustion"],
+          "safeguards": ["Estimate critical mass", "Reserve resources", "Patience"],
+          "quantitative_threshold": "Many successes happen just after most give up"
+        },
+        {
+          "mode": "Misidentifying critical mass threshold",
+          "description": "Wrong estimate of what's needed",
+          "real_world_case": "Underestimating users needed for network effects.",
+          "warning_signs": ["Premature scaling", "Wrong metrics", "Optimistic estimates"],
+          "safeguards": ["Study comparable cases", "Conservative estimates", "Multiple metrics"],
+          "quantitative_threshold": "Critical mass often 2-3x initial estimates"
+        },
+        {
+          "mode": "Assuming critical mass is permanent",
+          "description": "Thinking once reached, always maintained",
+          "real_world_case": "Social networks losing critical mass (MySpace).",
+          "warning_signs": ["Complacency", "Ignoring churn", "No maintenance"],
+          "safeguards": ["Monitor continuously", "Maintain engagement", "Never complacent"],
+          "quantitative_threshold": "Critical mass requires ongoing maintenance"
+        },
+        {
+          "mode": "Wrong type of mass",
+          "description": "Quantity without quality",
+          "real_world_case": "Fake users not creating real network effects.",
+          "warning_signs": ["Vanity metrics", "Low engagement", "Hollow growth"],
+          "safeguards": ["Quality metrics", "Engagement focus", "Real value creation"],
+          "quantitative_threshold": "1,000 engaged users > 100,000 inactive users"
+        },
+        {
+          "mode": "Critical mass in wrong market",
+          "description": "Achieving mass in non-valuable segment",
+          "real_world_case": "Dominant in dying market.",
+          "warning_signs": ["Shrinking market", "Wrong segment", "Pyrrhic victory"],
+          "safeguards": ["Market selection", "Growth potential", "Value creation"],
+          "quantitative_threshold": "Critical mass in growing market > dominance in shrinking"
+        }
+      ]
+    },
+    {
+      "id": 104,
+      "name": "Equilibrium",
+      "category": "Physics",
+      "failure_modes": [
+        {
+          "mode": "Assuming stable equilibrium",
+          "description": "Thinking current state will persist",
+          "real_world_case": "Assuming market share will remain stable.",
+          "warning_signs": ["Stability assumption", "No contingency", "Complacency"],
+          "safeguards": ["Expect disruption", "Scenario planning", "Continuous adaptation"],
+          "quantitative_threshold": "Average S&P 500 company lifespan: 20 years and declining"
+        },
+        {
+          "mode": "Ignoring unstable equilibria",
+          "description": "Not recognizing precarious balance",
+          "real_world_case": "Financial systems that look stable until they collapse.",
+          "warning_signs": ["Hidden fragility", "Small perturbation sensitivity", "Complexity"],
+          "safeguards": ["Stress testing", "Margin of safety", "Antifragility"],
+          "quantitative_threshold": "Stable-looking systems can collapse in days"
+        },
+        {
+          "mode": "Fighting equilibrium",
+          "description": "Trying to maintain unsustainable state",
+          "real_world_case": "Currency pegs that eventually break.",
+          "warning_signs": ["Increasing effort to maintain", "Growing pressure", "Unsustainability"],
+          "safeguards": ["Recognize natural equilibrium", "Adapt don't fight", "Sustainable positions"],
+          "quantitative_threshold": "Fighting equilibrium eventually fails"
+        },
+        {
+          "mode": "Single equilibrium thinking",
+          "description": "Not seeing multiple possible equilibria",
+          "real_world_case": "Assuming only one market outcome possible.",
+          "warning_signs": ["Single scenario planning", "Path dependence ignored", "Deterministic thinking"],
+          "safeguards": ["Multiple scenarios", "Path analysis", "Probabilistic thinking"],
+          "quantitative_threshold": "Most systems have multiple possible equilibria"
+        },
+        {
+          "mode": "Equilibrium timing error",
+          "description": "Right about equilibrium, wrong about timing",
+          "real_world_case": "Shorting bubbles too early.",
+          "warning_signs": ["Being early", "Timing assumptions", "Impatience"],
+          "safeguards": ["Timing uncertainty", "Position sizing", "Patience"],
+          "quantitative_threshold": "Markets can stay irrational longer than you can stay solvent"
+        }
+      ]
+    },
+    {
+      "id": 115,
+      "name": "Evolution/Natural Selection",
+      "category": "Biology",
+      "failure_modes": [
+        {
+          "mode": "Survival of the fittest misunderstanding",
+          "description": "Thinking 'fittest' means strongest",
+          "real_world_case": "Large companies failing to adapt while nimble ones survive.",
+          "warning_signs": ["Size = safety assumption", "Adaptation neglect", "Rigidity"],
+          "safeguards": ["Adaptability focus", "Environmental scanning", "Flexibility"],
+          "quantitative_threshold": "Adaptability > strength for long-term survival"
+        },
+        {
+          "mode": "Local maximum trap",
+          "description": "Optimizing for current environment, missing global maximum",
+          "real_world_case": "Kodak optimized for film, missed digital.",
+          "warning_signs": ["Incremental optimization", "No exploration", "Exploitation only"],
+          "safeguards": ["Explore/exploit balance", "Horizon scanning", "Disruption awareness"],
+          "quantitative_threshold": "Allocate 10-20% to exploration beyond current optimum"
+        },
+        {
+          "mode": "Red Queen effect blindness",
+          "description": "Running fast just to stay in place",
+          "real_world_case": "Competitive industries where everyone improves but no one gains.",
+          "warning_signs": ["Increasing effort, same results", "Arms race", "Exhaustion"],
+          "safeguards": ["Find non-competitive niches", "Differentiation", "Blue ocean strategy"],
+          "quantitative_threshold": "If everyone's improving equally, no one gains advantage"
+        },
+        {
+          "mode": "Extinction event blindness",
+          "description": "Not preparing for rare catastrophic events",
+          "real_world_case": "Businesses unprepared for pandemic.",
+          "warning_signs": ["No contingency", "Optimized for normal", "Fragility"],
+          "safeguards": ["Scenario planning", "Reserves", "Antifragility"],
+          "quantitative_threshold": "Extinction events happen every 50-100 years in business"
+        },
+        {
+          "mode": "Vestigial structure maintenance",
+          "description": "Keeping outdated structures that no longer serve purpose",
+          "real_world_case": "Legacy systems and processes that waste resources.",
+          "warning_signs": ["We've always done it this way", "No purpose clarity", "Resource drain"],
+          "safeguards": ["Regular audits", "Zero-based budgeting", "Purpose review"],
+          "quantitative_threshold": "10-20% of activities typically vestigial"
+        }
+      ]
+    },
+    {
+      "id": 116,
+      "name": "Ecosystem Thinking",
+      "category": "Biology",
+      "failure_modes": [
+        {
+          "mode": "Ignoring ecosystem dependencies",
+          "description": "Not seeing how parts depend on each other",
+          "real_world_case": "Killing predators causing prey overpopulation and ecosystem collapse.",
+          "warning_signs": ["Isolated thinking", "Ignoring connections", "Unintended consequences"],
+          "safeguards": ["Map dependencies", "Second-order thinking", "Holistic view"],
+          "quantitative_threshold": "Every action has 5-10 second-order effects"
+        },
+        {
+          "mode": "Keystone species blindness",
+          "description": "Not identifying critical ecosystem components",
+          "real_world_case": "Losing key supplier that entire industry depends on.",
+          "warning_signs": ["Single points of failure", "Concentration risk", "Dependency blindness"],
+          "safeguards": ["Identify keystones", "Redundancy", "Diversification"],
+          "quantitative_threshold": "Keystone failure can collapse entire ecosystem"
+        },
+        {
+          "mode": "Monoculture risk",
+          "description": "Lack of diversity creating systemic risk",
+          "real_world_case": "Irish potato famine - single crop variety.",
+          "warning_signs": ["Homogeneity", "Single approach", "No diversity"],
+          "safeguards": ["Diversification", "Multiple approaches", "Redundancy"],
+          "quantitative_threshold": "Monocultures are 10x more vulnerable to shocks"
+        },
+        {
+          "mode": "Invasive species blindness",
+          "description": "Not recognizing disruptive new entrants",
+          "real_world_case": "Incumbents ignoring disruptive startups.",
+          "warning_signs": ["Dismissing new entrants", "Complacency", "Niche blindness"],
+          "safeguards": ["Monitor new entrants", "Take threats seriously", "Adapt quickly"],
+          "quantitative_threshold": "Disruptors often start in ignored niches"
+        },
+        {
+          "mode": "Carrying capacity ignorance",
+          "description": "Not recognizing ecosystem limits",
+          "real_world_case": "Overfishing depleting fish stocks.",
+          "warning_signs": ["Unsustainable growth", "Resource depletion", "Ignoring limits"],
+          "safeguards": ["Understand limits", "Sustainable practices", "Long-term thinking"],
+          "quantitative_threshold": "Exceeding carrying capacity leads to collapse"
+        }
+      ]
+    }
+  ]
+}

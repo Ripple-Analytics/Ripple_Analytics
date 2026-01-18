@@ -1,0 +1,607 @@
+{
+  "metadata": {
+    "version": "2.0",
+    "total_models": 129,
+    "total_failure_modes": 645,
+    "last_updated": "2026-01-18",
+    "principle": "Inversion - Avoid stupidity rather than seeking brilliance"
+  },
+  "failure_modes": {
+    "1": {
+      "model_name": "Incentive-Caused Bias",
+      "category": "Psychology",
+      "failure_modes": [
+        {
+          "id": "1_F1",
+          "name": "Misaligned Incentive Blindness",
+          "description": "Failing to recognize when incentives are misaligned with desired outcomes",
+          "mechanism": "The brain rationalizes behavior that serves self-interest, making it invisible to conscious awareness",
+          "psychological_root": "Self-serving bias combined with motivated reasoning",
+          "real_world_cases": [
+            {
+              "name": "Wells Fargo Fake Accounts Scandal (2016)",
+              "what_happened": "Employees created 3.5 million fake accounts to meet aggressive sales quotas",
+              "incentive_structure": "Cross-selling quotas tied to bonuses and job security",
+              "failure_point": "Management assumed employees would meet targets ethically",
+              "outcome": "$3B in fines, CEO resignation, massive reputation damage",
+              "lesson": "When you pay people to hit numbers, they will hit numbers - by any means"
+            },
+            {
+              "name": "Enron Energy Trading",
+              "what_happened": "Traders manipulated California energy markets causing blackouts",
+              "incentive_structure": "Bonuses tied to trading profits with no downside",
+              "failure_point": "Asymmetric risk/reward created moral hazard",
+              "outcome": "Company bankruptcy, criminal convictions",
+              "lesson": "Unlimited upside with limited downside guarantees bad behavior"
+            },
+            {
+              "name": "Subprime Mortgage Crisis (2008)",
+              "what_happened": "Mortgage brokers sold loans to people who couldn't afford them",
+              "incentive_structure": "Commissions on loan volume, not loan quality",
+              "failure_point": "Originators had no skin in the game for loan performance",
+              "outcome": "Global financial crisis, $10T+ in losses",
+              "lesson": "Separate the risk-taker from the risk-bearer and disaster follows"
+            }
+          ],
+          "quantitative_thresholds": {
+            "warning_signs": [
+              "Commission > 20% of base salary",
+              "Bonus tied to single metric",
+              "No clawback provisions",
+              "Short measurement periods (< 1 year)"
+            ],
+            "critical_thresholds": [
+              "Variable pay > 50% of total compensation",
+              "Targets increased > 20% YoY without resource increase",
+              "Zero accountability for downstream effects"
+            ]
+          },
+          "behavioral_signals": [
+            "Employees gaming metrics rather than improving outcomes",
+            "High turnover in roles with aggressive targets",
+            "Customer complaints rising while metrics look good",
+            "Middle managers hiding problems from senior leadership"
+          ],
+          "safeguards": [
+            {
+              "type": "structural",
+              "action": "Align incentives with long-term outcomes",
+              "implementation": "3-year vesting on bonuses, clawback provisions"
+            },
+            {
+              "type": "cognitive",
+              "action": "Ask: 'How could someone game this?'",
+              "implementation": "Red team every incentive structure before launch"
+            },
+            {
+              "type": "social",
+              "action": "Create whistleblower protections",
+              "implementation": "Anonymous reporting, guaranteed non-retaliation"
+            }
+          ]
+        },
+        {
+          "id": "1_F2",
+          "name": "Professional Advice Corruption",
+          "description": "Trusting advice from those who profit from your decisions",
+          "mechanism": "Advisors unconsciously skew recommendations toward higher-commission products",
+          "psychological_root": "Even honest people rationalize self-serving advice as 'best for client'",
+          "real_world_cases": [
+            {
+              "name": "Financial Advisor Churning",
+              "what_happened": "Advisors excessively trade client accounts to generate commissions",
+              "incentive_structure": "Commission per trade, not portfolio performance",
+              "failure_point": "Client trusted advisor's 'expertise'",
+              "outcome": "Billions in unnecessary fees, poor returns",
+              "lesson": "Ask how your advisor gets paid before taking advice"
+            },
+            {
+              "name": "Pharmaceutical Sales to Doctors",
+              "what_happened": "Drug companies paid doctors to prescribe specific medications",
+              "incentive_structure": "Speaking fees, consulting payments, free samples",
+              "failure_point": "Patients assumed doctors prescribed based on efficacy alone",
+              "outcome": "Opioid epidemic, overprescription of expensive drugs",
+              "lesson": "Even highly educated professionals are influenced by incentives"
+            }
+          ],
+          "quantitative_thresholds": {
+            "warning_signs": [
+              "Advisor compensation not disclosed",
+              "Recommended products have higher fees than alternatives",
+              "Advisor pushes proprietary products"
+            ],
+            "critical_thresholds": [
+              "Advisor earns > 3x on recommended vs alternative products",
+              "No fiduciary duty requirement"
+            ]
+          },
+          "behavioral_signals": [
+            "Advisor dismisses lower-cost alternatives without explanation",
+            "Urgency to act before 'opportunity closes'",
+            "Complex products when simple ones would suffice"
+          ],
+          "safeguards": [
+            {
+              "type": "structural",
+              "action": "Use fee-only advisors with fiduciary duty",
+              "implementation": "Verify fiduciary status in writing"
+            },
+            {
+              "type": "cognitive",
+              "action": "Always ask: 'How do you get paid?'",
+              "implementation": "Require written disclosure of all compensation"
+            }
+          ]
+        },
+        {
+          "id": "1_F3",
+          "name": "Self-Deception Under Incentives",
+          "description": "Believing your own biased reasoning when incentives are involved",
+          "mechanism": "The unconscious mind constructs elaborate justifications for self-serving conclusions",
+          "psychological_root": "Cognitive dissonance resolution favors self-interest",
+          "real_world_cases": [
+            {
+              "name": "Theranos",
+              "what_happened": "Elizabeth Holmes convinced herself faulty technology worked",
+              "incentive_structure": "$9B valuation, fame, revolutionary legacy",
+              "failure_point": "Incentives so large they corrupted perception of reality",
+              "outcome": "Criminal conviction, company collapse",
+              "lesson": "The bigger the prize, the stronger the self-deception"
+            }
+          ],
+          "safeguards": [
+            {
+              "type": "cognitive",
+              "action": "Assume you are biased when you have skin in the game",
+              "implementation": "Seek disconfirming evidence from disinterested parties"
+            }
+          ]
+        },
+        {
+          "id": "1_F4",
+          "name": "Incentive Cascade Failure",
+          "description": "Misaligned incentives at one level cascade through entire organizations",
+          "mechanism": "Each layer optimizes for their incentives, compounding misalignment",
+          "real_world_cases": [
+            {
+              "name": "Boeing 737 MAX",
+              "what_happened": "Safety compromised to meet delivery schedules and compete with Airbus",
+              "incentive_structure": "Executive bonuses tied to delivery numbers and stock price",
+              "failure_point": "Safety engineers overruled by schedule pressure",
+              "outcome": "346 deaths, $20B+ in losses",
+              "lesson": "When incentives conflict with safety, safety loses without structural protection"
+            }
+          ],
+          "safeguards": [
+            {
+              "type": "structural",
+              "action": "Create independent safety/quality functions with veto power",
+              "implementation": "Safety officers report to board, not CEO"
+            }
+          ]
+        },
+        {
+          "id": "1_F5",
+          "name": "Delayed Consequence Blindness",
+          "description": "Incentives for short-term gains blind us to long-term consequences",
+          "mechanism": "Immediate rewards activate dopamine; distant consequences don't",
+          "real_world_cases": [
+            {
+              "name": "Quarterly Earnings Pressure",
+              "what_happened": "Companies cut R&D to meet quarterly targets",
+              "incentive_structure": "Executive comp tied to quarterly EPS",
+              "failure_point": "Market rewards short-term, punishes long-term investment",
+              "outcome": "Declining innovation, eventual competitive failure",
+              "lesson": "What gets measured gets managed - even when it shouldn't be"
+            }
+          ],
+          "safeguards": [
+            {
+              "type": "structural",
+              "action": "Extend measurement periods",
+              "implementation": "5-year rolling metrics, deferred compensation"
+            }
+          ]
+        }
+      ]
+    },
+    "2": {
+      "model_name": "Social Proof",
+      "category": "Psychology",
+      "failure_modes": [
+        {
+          "id": "2_F1",
+          "name": "Herd Behavior in Markets",
+          "description": "Following the crowd into bubbles and panics",
+          "mechanism": "Uncertainty triggers reliance on others' behavior as information",
+          "real_world_cases": [
+            {
+              "name": "Dot-com Bubble (1999-2000)",
+              "what_happened": "Investors piled into unprofitable tech stocks because everyone else was",
+              "failure_point": "Social proof overrode fundamental analysis",
+              "outcome": "NASDAQ fell 78%, $5T in losses",
+              "lesson": "When everyone agrees, everyone is probably wrong"
+            },
+            {
+              "name": "GameStop Short Squeeze (2021)",
+              "what_happened": "Retail investors bought GME because Reddit said to",
+              "failure_point": "Social proof from anonymous strangers",
+              "outcome": "Many retail investors bought at peak and lost 80%+",
+              "lesson": "Social proof from crowds with no skin in the game is dangerous"
+            }
+          ],
+          "quantitative_thresholds": {
+            "warning_signs": [
+              "Asset price > 2 standard deviations from historical mean",
+              "Trading volume > 3x normal",
+              "Media coverage intensity spike"
+            ]
+          },
+          "safeguards": [
+            {
+              "type": "cognitive",
+              "action": "Invert: What would I do if no one else was doing this?",
+              "implementation": "Write investment thesis before checking what others think"
+            }
+          ]
+        },
+        {
+          "id": "2_F2",
+          "name": "Expert Social Proof Failure",
+          "description": "Following experts who are themselves following each other",
+          "mechanism": "Experts reference each other, creating circular validation",
+          "real_world_cases": [
+            {
+              "name": "Rating Agency Failures (2008)",
+              "what_happened": "All rating agencies gave AAA to toxic mortgage securities",
+              "failure_point": "Agencies copied each other's methodologies",
+              "outcome": "Systemic risk hidden behind false consensus",
+              "lesson": "Expert consensus can be expert groupthink"
+            }
+          ],
+          "safeguards": [
+            {
+              "type": "cognitive",
+              "action": "Trace expert opinions to primary sources",
+              "implementation": "Ask: 'What is the original evidence, not the consensus?'"
+            }
+          ]
+        },
+        {
+          "id": "2_F3",
+          "name": "Manufactured Social Proof",
+          "description": "Falling for artificially created appearance of consensus",
+          "mechanism": "Fake reviews, bot followers, paid endorsements create false signals",
+          "real_world_cases": [
+            {
+              "name": "Fyre Festival",
+              "what_happened": "Influencer marketing created illusion of legitimate event",
+              "failure_point": "Attendees trusted influencer social proof",
+              "outcome": "Fraud, stranded attendees, criminal charges",
+              "lesson": "Social proof can be purchased"
+            }
+          ],
+          "safeguards": [
+            {
+              "type": "cognitive",
+              "action": "Verify social proof sources independently",
+              "implementation": "Check for paid promotions, fake reviews"
+            }
+          ]
+        },
+        {
+          "id": "2_F4",
+          "name": "Pluralistic Ignorance",
+          "description": "Everyone privately disagrees but publicly conforms",
+          "mechanism": "Each person assumes others' silence means agreement",
+          "real_world_cases": [
+            {
+              "name": "Emperor's New Clothes in Corporations",
+              "what_happened": "Bad strategies continue because no one speaks up",
+              "failure_point": "Each person thinks they're the only one with doubts",
+              "outcome": "Preventable failures from suppressed dissent",
+              "lesson": "Silence is not agreement"
+            }
+          ],
+          "safeguards": [
+            {
+              "type": "social",
+              "action": "Create anonymous feedback channels",
+              "implementation": "Regular anonymous surveys, designated devil's advocate"
+            }
+          ]
+        },
+        {
+          "id": "2_F5",
+          "name": "Social Proof Velocity Trap",
+          "description": "Rapid adoption signals quality when it signals only virality",
+          "mechanism": "Fast growth triggers FOMO and assumption of value",
+          "real_world_cases": [
+            {
+              "name": "WeWork",
+              "what_happened": "Rapid growth and celebrity investors created illusion of value",
+              "failure_point": "Growth rate used as proxy for business quality",
+              "outcome": "$47B to $8B valuation collapse",
+              "lesson": "Viral growth ≠ sustainable business"
+            }
+          ],
+          "safeguards": [
+            {
+              "type": "cognitive",
+              "action": "Separate growth metrics from unit economics",
+              "implementation": "Always calculate: profitable at scale?"
+            }
+          ]
+        }
+      ]
+    },
+    "3": {
+      "model_name": "Confirmation Bias",
+      "category": "Psychology",
+      "failure_modes": [
+        {
+          "id": "3_F1",
+          "name": "Selective Evidence Gathering",
+          "description": "Only seeking information that confirms existing beliefs",
+          "mechanism": "Brain rewards finding confirming evidence with dopamine",
+          "real_world_cases": [
+            {
+              "name": "Kodak Digital Camera Denial",
+              "what_happened": "Kodak invented digital camera but dismissed its potential",
+              "failure_point": "Leadership sought evidence film would persist",
+              "outcome": "Bankruptcy despite inventing the disrupting technology",
+              "lesson": "You can have the answer and still miss it through confirmation bias"
+            }
+          ],
+          "safeguards": [
+            {
+              "type": "cognitive",
+              "action": "Actively seek disconfirming evidence",
+              "implementation": "Before deciding, list 3 reasons you might be wrong"
+            }
+          ]
+        },
+        {
+          "id": "3_F2",
+          "name": "Interpretation Bias",
+          "description": "Interpreting ambiguous evidence as confirming",
+          "mechanism": "Same data seen differently based on prior beliefs",
+          "real_world_cases": [
+            {
+              "name": "Value Investor Holding Losers",
+              "what_happened": "Investors interpret falling prices as 'better value'",
+              "failure_point": "Price drop could signal new information, not opportunity",
+              "outcome": "Averaging down into permanent losses",
+              "lesson": "Cheap can always get cheaper for good reason"
+            }
+          ],
+          "safeguards": [
+            {
+              "type": "cognitive",
+              "action": "Pre-commit to interpretation rules",
+              "implementation": "Define in advance what evidence would change your mind"
+            }
+          ]
+        },
+        {
+          "id": "3_F3",
+          "name": "Memory Bias",
+          "description": "Better recall of confirming than disconfirming evidence",
+          "mechanism": "Confirming memories are emotionally tagged for easier retrieval",
+          "safeguards": [
+            {
+              "type": "structural",
+              "action": "Keep written records of all predictions and outcomes",
+              "implementation": "Decision journal with pre-mortems"
+            }
+          ]
+        },
+        {
+          "id": "3_F4",
+          "name": "Source Credibility Bias",
+          "description": "Trusting sources that confirm, dismissing those that don't",
+          "mechanism": "We attribute credibility based on agreement, not accuracy",
+          "safeguards": [
+            {
+              "type": "cognitive",
+              "action": "Evaluate source credibility before knowing their conclusion",
+              "implementation": "Blind evaluation of methodology"
+            }
+          ]
+        },
+        {
+          "id": "3_F5",
+          "name": "Hypothesis Persistence",
+          "description": "Maintaining beliefs even after evidence is discredited",
+          "mechanism": "Initial belief creates mental framework that persists",
+          "safeguards": [
+            {
+              "type": "cognitive",
+              "action": "Practice belief updating with Bayesian thinking",
+              "implementation": "Assign probabilities, update with new evidence"
+            }
+          ]
+        }
+      ]
+    },
+    "4": {
+      "model_name": "Reciprocity",
+      "category": "Psychology", 
+      "failure_modes": [
+        {
+          "id": "4_F1",
+          "name": "Obligation Exploitation",
+          "description": "Being manipulated through unsolicited gifts or favors",
+          "mechanism": "Deep evolutionary programming to repay debts",
+          "real_world_cases": [
+            {
+              "name": "Pharmaceutical Industry Gifts to Doctors",
+              "what_happened": "Free lunches, conference trips, samples influenced prescribing",
+              "failure_point": "Doctors believed they were immune to influence",
+              "outcome": "Overprescription of expensive/inappropriate drugs",
+              "lesson": "No one is immune to reciprocity - not even experts"
+            }
+          ],
+          "safeguards": [
+            {
+              "type": "structural",
+              "action": "Refuse gifts from those who want something",
+              "implementation": "Zero-gift policy from vendors/salespeople"
+            }
+          ]
+        },
+        {
+          "id": "4_F2",
+          "name": "Disproportionate Reciprocity",
+          "description": "Returning large favors for small ones",
+          "mechanism": "Desire to discharge obligation exceeds rational calculation",
+          "safeguards": [
+            {
+              "type": "cognitive",
+              "action": "Evaluate favors independently of who gave them",
+              "implementation": "Would I do this if a stranger asked?"
+            }
+          ]
+        },
+        {
+          "id": "4_F3",
+          "name": "Reciprocity in Negotiations",
+          "description": "Making concessions because the other side did",
+          "mechanism": "Concession triggers obligation to reciprocate",
+          "real_world_cases": [
+            {
+              "name": "Door-in-the-Face Technique",
+              "what_happened": "Salespeople make extreme request, then 'concede' to real ask",
+              "failure_point": "Buyer feels obligated to accept 'compromise'",
+              "outcome": "Agreeing to things you wouldn't otherwise",
+              "lesson": "Manufactured concessions aren't real concessions"
+            }
+          ],
+          "safeguards": [
+            {
+              "type": "cognitive",
+              "action": "Evaluate offers on absolute merit, not relative to anchors",
+              "implementation": "Ignore their first offer entirely"
+            }
+          ]
+        },
+        {
+          "id": "4_F4",
+          "name": "Reciprocity Chains",
+          "description": "Getting trapped in escalating exchange of favors",
+          "mechanism": "Each exchange creates new obligation",
+          "safeguards": [
+            {
+              "type": "structural",
+              "action": "Set clear boundaries on favor exchanges",
+              "implementation": "Explicit agreements, not implicit obligations"
+            }
+          ]
+        },
+        {
+          "id": "4_F5",
+          "name": "Negative Reciprocity Spiral",
+          "description": "Retaliating against perceived slights, escalating conflict",
+          "mechanism": "Negative actions trigger stronger negative responses",
+          "safeguards": [
+            {
+              "type": "cognitive",
+              "action": "Pause before retaliating",
+              "implementation": "24-hour rule before responding to perceived slights"
+            }
+          ]
+        }
+      ]
+    },
+    "5": {
+      "model_name": "Availability Heuristic",
+      "category": "Psychology",
+      "failure_modes": [
+        {
+          "id": "5_F1",
+          "name": "Recency Bias",
+          "description": "Overweighting recent events in probability estimates",
+          "mechanism": "Recent memories are more vivid and accessible",
+          "real_world_cases": [
+            {
+              "name": "Post-Crash Risk Aversion",
+              "what_happened": "Investors stay out of markets for years after crashes",
+              "failure_point": "Recent crash dominates probability estimates",
+              "outcome": "Missing recovery gains",
+              "lesson": "The best time to invest is often when it feels worst"
+            }
+          ],
+          "safeguards": [
+            {
+              "type": "cognitive",
+              "action": "Use base rates, not recent events",
+              "implementation": "Look at 50+ year data, not last 5 years"
+            }
+          ]
+        },
+        {
+          "id": "5_F2",
+          "name": "Vividness Bias",
+          "description": "Overweighting dramatic events vs mundane ones",
+          "mechanism": "Emotional events create stronger memories",
+          "real_world_cases": [
+            {
+              "name": "Fear of Flying vs Driving",
+              "what_happened": "People fear flying but not driving despite statistics",
+              "failure_point": "Plane crashes are vivid; car crashes are routine",
+              "outcome": "Irrational risk assessment",
+              "lesson": "Dramatic ≠ probable"
+            }
+          ],
+          "safeguards": [
+            {
+              "type": "cognitive",
+              "action": "Always check actual statistics",
+              "implementation": "Base rate before gut feel"
+            }
+          ]
+        },
+        {
+          "id": "5_F3",
+          "name": "Media Availability Distortion",
+          "description": "Believing what's reported is what's common",
+          "mechanism": "News reports unusual events, creating false frequency perception",
+          "safeguards": [
+            {
+              "type": "cognitive",
+              "action": "Recognize news selection bias",
+              "implementation": "If it's news, it's probably rare"
+            }
+          ]
+        },
+        {
+          "id": "5_F4",
+          "name": "Personal Experience Overgeneralization",
+          "description": "Treating personal experience as representative",
+          "mechanism": "Own experiences are most available",
+          "safeguards": [
+            {
+              "type": "cognitive",
+              "action": "Seek statistical data over anecdotes",
+              "implementation": "N=1 is not evidence"
+            }
+          ]
+        },
+        {
+          "id": "5_F5",
+          "name": "Availability Cascade",
+          "description": "Repeated exposure makes things seem more true/likely",
+          "mechanism": "Familiarity breeds perceived validity",
+          "safeguards": [
+            {
+              "type": "cognitive",
+              "action": "Distinguish familiarity from truth",
+              "implementation": "Ask: 'Do I believe this because it's true or because I've heard it often?'"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
+

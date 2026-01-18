@@ -96,6 +96,22 @@ class MentalModel:
             keywords=data.get("keywords", []),
             related_models=data.get("related_models", [])
         )
+    
+    def to_dict(self) -> Dict:
+        """Convert to dictionary for backward compatibility."""
+        return {
+            "id": self.id,
+            "name": self.name,
+            "category": self.category,
+            "description": self.description,
+            "how_to_apply": self.how_to_apply,
+            "keywords": self.keywords,
+            "related_models": self.related_models
+        }
+    
+    def __getitem__(self, key: str):
+        """Allow dictionary-style access for backward compatibility."""
+        return getattr(self, key)
 
 
 @dataclass
@@ -191,6 +207,14 @@ class MentalModelLoader:
     """Load and manage the 129 mental models."""
     
     def __init__(self, models_path: str = None):
+        # If models_path is a directory, look for the file inside it
+        if models_path and os.path.isdir(models_path):
+            # Check if it already contains 'raw' subdirectory
+            raw_path = os.path.join(models_path, "mental_models_complete.json")
+            if os.path.exists(raw_path):
+                models_path = raw_path
+            else:
+                models_path = os.path.join(models_path, "raw", "mental_models_complete.json")
         self.models_path = models_path or self._find_models_file()
         self.models: Dict[str, MentalModel] = {}
         self.models_by_category: Dict[str, List[MentalModel]] = {}
@@ -245,6 +269,21 @@ class MentalModelLoader:
     def get_models_by_category(self, category: str) -> List[MentalModel]:
         """Get models in a category."""
         return self.models_by_category.get(category, [])
+    
+    def get_by_category(self, category: str) -> List[MentalModel]:
+        """Alias for get_models_by_category for backward compatibility."""
+        return self.get_models_by_category(category)
+    
+    def search(self, query: str) -> List[MentalModel]:
+        """Search models by name, description, or keywords."""
+        query_lower = query.lower()
+        results = []
+        for model in self.models.values():
+            if (query_lower in model.name.lower() or 
+                query_lower in model.description.lower() or
+                any(query_lower in kw.lower() for kw in model.keywords)):
+                results.append(model)
+        return results
     
     def get_model_summary(self) -> str:
         """Get a summary of all models for LLM prompt."""
@@ -407,13 +446,26 @@ class MentalModelAnalyzer:
     
     def _parse_json_response(self, response: str) -> Any:
         """Parse JSON from LLM response."""
+        # Handle mock objects in tests
+        if not isinstance(response, str):
+            return None
+        
         try:
             # Find JSON in response
             start = response.find('[') if '[' in response else response.find('{')
-            end = max(response.rfind(']'), response.rfind('}')) + 1
+            end_bracket = response.rfind(']')
+            end_brace = response.rfind('}')
+            
+            # Handle case where neither bracket nor brace is found
+            if end_bracket == -1 and end_brace == -1:
+                return None
+            
+            # Get the maximum valid end position
+            end = max(end_bracket, end_brace) + 1
+            
             if start >= 0 and end > start:
                 return json.loads(response[start:end])
-        except json.JSONDecodeError:
+        except (json.JSONDecodeError, TypeError, AttributeError):
             pass
         return None
     

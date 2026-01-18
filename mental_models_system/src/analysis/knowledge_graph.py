@@ -360,7 +360,11 @@ class KnowledgeGraph:
     
     def find_similar_documents(self, document_name: str, min_similarity: float = 0.3) -> List[Dict]:
         """Find documents similar to a given document."""
-        doc_id = self._generate_id("document", document_name)
+        # Try direct doc_id first (for test compatibility), then generate from name
+        if document_name in self._document_nodes:
+            doc_id = document_name
+        else:
+            doc_id = self._generate_id("document", document_name)
         
         results = []
         
@@ -370,6 +374,7 @@ class KnowledgeGraph:
                 other_doc = self._document_nodes.get(edge.target_id)
                 if other_doc:
                     results.append({
+                        "doc_id": edge.target_id,
                         "document": other_doc.name,
                         "similarity": edge.weight,
                         "shared_models": edge.properties.get("shared_models", [])
@@ -381,10 +386,31 @@ class KnowledgeGraph:
                 other_doc = self._document_nodes.get(edge.source_id)
                 if other_doc:
                     results.append({
+                        "doc_id": edge.source_id,
                         "document": other_doc.name,
                         "similarity": edge.weight,
                         "shared_models": edge.properties.get("shared_models", [])
                     })
+        
+        # If no SIMILAR_TO edges, compute similarity on the fly based on shared models
+        if not results:
+            my_models = self._doc_models.get(doc_id, set())
+            if my_models:
+                for other_doc_id, other_models in self._doc_models.items():
+                    if other_doc_id != doc_id and other_models:
+                        intersection = len(my_models & other_models)
+                        union = len(my_models | other_models)
+                        if union > 0:
+                            similarity = intersection / union
+                            if similarity >= min_similarity:
+                                other_doc = self._document_nodes.get(other_doc_id)
+                                if other_doc:
+                                    results.append({
+                                        "doc_id": other_doc_id,
+                                        "document": other_doc.name,
+                                        "similarity": similarity,
+                                        "shared_models": list(my_models & other_models)
+                                    })
         
         return sorted(results, key=lambda x: x["similarity"], reverse=True)
     
@@ -458,6 +484,7 @@ class KnowledgeGraph:
                 results.append({
                     "type": node.type,
                     "name": node.name,
+                    "title": node.name,  # Alias for test compatibility
                     "match_field": "name",
                     "properties": node.properties
                 })
@@ -469,6 +496,7 @@ class KnowledgeGraph:
                     results.append({
                         "type": node.type,
                         "name": node.name,
+                        "title": node.name,  # Alias for test compatibility
                         "match_field": key,
                         "match_value": value[:200],
                         "properties": node.properties
@@ -587,6 +615,206 @@ class KnowledgeGraph:
         for edge in self.edges:
             counts[edge.type] += 1
         return dict(counts)
+    
+    # =========================================================================
+    # CONVENIENCE METHODS (for test compatibility)
+    # =========================================================================
+    
+    def node_count(self) -> int:
+        """Return the number of nodes in the graph."""
+        return len(self.nodes)
+    
+    def edge_count(self) -> int:
+        """Return the number of edges in the graph."""
+        return len(self.edges)
+    
+    def has_node(self, node_id: str) -> bool:
+        """Check if a node exists in the graph."""
+        return node_id in self.nodes
+    
+    def add_document(self, doc_id: str, title: str, path: str, metadata: Dict = None) -> Node:
+        """Add a document node to the graph."""
+        node = Node(
+            id=doc_id,
+            type="document",
+            name=title,
+            properties={"path": path, **(metadata or {})}
+        )
+        self.nodes[doc_id] = node
+        self._document_nodes[doc_id] = node
+        return node
+    
+    def add_model(self, model_id: int, name: str, category: str) -> Node:
+        """Add a model node to the graph."""
+        node_id = f"model_{model_id}"
+        node = Node(
+            id=node_id,
+            type="model",
+            name=name,
+            properties={"model_id": model_id, "category": category}
+        )
+        self.nodes[node_id] = node
+        self._model_nodes[node_id] = node
+        return node
+    
+    def link_document_to_model(self, doc_id: str, model_id: int, relevance: float = 1.0) -> Edge:
+        """Link a document to a model with a relevance score."""
+        model_node_id = f"model_{model_id}"
+        edge = self.add_edge(
+            source_id=doc_id,
+            target_id=model_node_id,
+            type="APPLIES",
+            weight=relevance
+        )
+        self._doc_models[doc_id].add(model_node_id)
+        self._model_docs[model_node_id].add(doc_id)
+        return edge
+    
+    def get_documents_by_model(self, model_id: int) -> List[Dict]:
+        """Get all documents that reference a model."""
+        model_node_id = f"model_{model_id}"
+        results = []
+        for doc_id in self._model_docs.get(model_node_id, set()):
+            doc_node = self._document_nodes.get(doc_id)
+            if doc_node:
+                relevance = 0.0
+                for edge in self._outgoing.get(doc_id, []):
+                    if edge.target_id == model_node_id:
+                        relevance = edge.weight
+                        break
+                results.append({
+                    "doc_id": doc_id,
+                    "title": doc_node.name,
+                    "path": doc_node.properties.get("path", ""),
+                    "relevance": relevance
+                })
+        return sorted(results, key=lambda x: x["relevance"], reverse=True)
+    
+    def get_models_by_document(self, doc_id: str) -> List[Dict]:
+        """Get all models referenced by a document."""
+        results = []
+        for model_node_id in self._doc_models.get(doc_id, set()):
+            model_node = self._model_nodes.get(model_node_id)
+            if model_node:
+                relevance = 0.0
+                for edge in self._outgoing.get(doc_id, []):
+                    if edge.target_id == model_node_id:
+                        relevance = edge.weight
+                        break
+                results.append({
+                    "model_id": model_node.properties.get("model_id"),
+                    "name": model_node.name,
+                    "category": model_node.properties.get("category", ""),
+                    "relevance": relevance
+                })
+        return sorted(results, key=lambda x: x["relevance"], reverse=True)
+    
+    def detect_lollapalooza_clusters(self, min_models: int = 3) -> List[Dict]:
+        """Detect documents with multiple models (Lollapalooza effect)."""
+        clusters = []
+        for doc_id, model_ids in self._doc_models.items():
+            if len(model_ids) >= min_models:
+                doc_node = self._document_nodes.get(doc_id)
+                if doc_node:
+                    models = []
+                    for model_id in model_ids:
+                        model_node = self._model_nodes.get(model_id)
+                        if model_node:
+                            models.append(model_node.name)
+                    clusters.append({
+                        "document": doc_id,
+                        "title": doc_node.name,
+                        "model_count": len(model_ids),
+                        "models": models
+                    })
+        return sorted(clusters, key=lambda x: x["model_count"], reverse=True)
+    
+    def get_statistics(self) -> Dict:
+        """Get graph statistics."""
+        return {
+            "total_nodes": len(self.nodes),
+            "total_edges": len(self.edges),
+            "document_count": len(self._document_nodes),
+            "model_count": len(self._model_nodes),
+            "category_count": len(self._category_nodes),
+            "tag_count": len(self._tag_nodes)
+        }
+    
+    def save(self, path: str) -> None:
+        """Save graph to JSON file."""
+        self.export_json(path)
+    
+    def load(self, path: str) -> None:
+        """Load graph from JSON file."""
+        with open(path, 'r') as f:
+            data = json.load(f)
+        
+        # Clear existing data
+        self.nodes.clear()
+        self.edges.clear()
+        self._document_nodes.clear()
+        self._model_nodes.clear()
+        self._category_nodes.clear()
+        self._tag_nodes.clear()
+        self._outgoing.clear()
+        self._incoming.clear()
+        self._doc_models.clear()
+        self._model_docs.clear()
+        
+        # Load nodes
+        for node_data in data.get("nodes", []):
+            node = Node(
+                id=node_data["id"],
+                type=node_data["type"],
+                name=node_data["name"],
+                properties=node_data.get("properties", {})
+            )
+            self.nodes[node.id] = node
+            if node.type == "document":
+                self._document_nodes[node.id] = node
+            elif node.type == "model":
+                self._model_nodes[node.id] = node
+            elif node.type == "category":
+                self._category_nodes[node.id] = node
+            elif node.type == "tag":
+                self._tag_nodes[node.id] = node
+        
+        # Load edges
+        for edge_data in data.get("edges", []):
+            edge = Edge(
+                source_id=edge_data["source"],
+                target_id=edge_data["target"],
+                type=edge_data["type"],
+                weight=edge_data.get("weight", 1.0),
+                properties=edge_data.get("properties", {})
+            )
+            self.edges.append(edge)
+            self._outgoing[edge.source_id].append(edge)
+            self._incoming[edge.target_id].append(edge)
+            
+            # Rebuild doc-model mappings
+            if edge.type == "APPLIES":
+                self._doc_models[edge.source_id].add(edge.target_id)
+                self._model_docs[edge.target_id].add(edge.source_id)
+    
+    def get_model_frequency(self) -> Dict[int, int]:
+        """Get frequency of each model across documents."""
+        freq = {}
+        for model_node_id, doc_ids in self._model_docs.items():
+            model_node = self._model_nodes.get(model_node_id)
+            if model_node:
+                model_id = model_node.properties.get("model_id")
+                if model_id is not None:
+                    freq[model_id] = len(doc_ids)
+        return freq
+    
+    def get_category_distribution(self) -> Dict[str, int]:
+        """Get distribution of models by category."""
+        dist = defaultdict(int)
+        for model_node in self._model_nodes.values():
+            category = model_node.properties.get("category", "Unknown")
+            dist[category] += 1
+        return dict(dist)
 
 
 # =============================================================================

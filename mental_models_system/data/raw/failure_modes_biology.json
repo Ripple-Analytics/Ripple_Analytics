@@ -1,0 +1,115 @@
+{
+  "category": "Biology",
+  "models": [
+    {
+      "id": 111,
+      "name": "Evolution",
+      "failure_modes": [
+        {"mode": "Teleological thinking", "description": "Assuming evolution has a goal", "real_world_case": "Thinking markets evolve toward efficiency.", "warning_signs": ["Purpose attribution", "Goal assumption", "Design thinking"], "safeguards": ["Understand selection", "No goal", "Emergent outcomes"], "quantitative_threshold": "Evolution has no goal, only selection"},
+        {"mode": "Ignoring selection pressure", "description": "Not recognizing what's being selected for", "real_world_case": "Optimizing wrong metrics.", "warning_signs": ["Wrong optimization", "Misaligned incentives", "Unexpected outcomes"], "safeguards": ["Identify selection pressure", "Align incentives", "Measure what matters"], "quantitative_threshold": "You get what you select for"},
+        {"mode": "Evolution speed blindness", "description": "Not recognizing evolution timescales", "real_world_case": "Expecting quick evolutionary change.", "warning_signs": ["Impatience", "Wrong timescale", "Expecting quick change"], "safeguards": ["Long-term thinking", "Patience", "Generational change"], "quantitative_threshold": "Evolution is slow but relentless"},
+        {"mode": "Local optima traps", "description": "Evolution getting stuck at local maximum", "real_world_case": "Industry stuck at suboptimal equilibrium.", "warning_signs": ["Stuck", "No improvement", "Local maximum"], "safeguards": ["Exploration", "Disruption", "Jump to new peaks"], "quantitative_threshold": "Evolution can get stuck at local optima"},
+        {"mode": "Survival of the fittest misunderstanding", "description": "Thinking fittest means strongest", "real_world_case": "Assuming dominant players will survive.", "warning_signs": ["Strength focus", "Ignoring adaptation", "Wrong fitness"], "safeguards": ["Fitness = adaptation", "Environment matters", "Flexibility"], "quantitative_threshold": "Fittest = best adapted to environment"}
+      ]
+    },
+    {
+      "id": 112,
+      "name": "Natural Selection",
+      "failure_modes": [
+        {"mode": "Selection without variation", "description": "No variation to select from", "real_world_case": "Homogeneous portfolio.", "warning_signs": ["No diversity", "Monoculture", "Single approach"], "safeguards": ["Create variation", "Diversity", "Multiple approaches"], "quantitative_threshold": "Selection requires variation"},
+        {"mode": "Wrong selection criteria", "description": "Selecting for wrong traits", "real_world_case": "Hiring for credentials not ability.", "warning_signs": ["Wrong criteria", "Poor outcomes", "Misaligned selection"], "safeguards": ["Right criteria", "Outcome focus", "Validate selection"], "quantitative_threshold": "Selection criteria determine outcomes"},
+        {"mode": "Selection pressure too weak", "description": "Not enough pressure to drive selection", "real_world_case": "No consequences for poor performance.", "warning_signs": ["No differentiation", "Mediocrity", "No improvement"], "safeguards": ["Meaningful selection", "Consequences", "Differentiation"], "quantitative_threshold": "Selection needs meaningful pressure"},
+        {"mode": "Selection pressure too strong", "description": "Pressure so strong it eliminates variation", "real_world_case": "Extreme cost cutting eliminating innovation.", "warning_signs": ["No variation left", "Fragility", "Monoculture"], "safeguards": ["Preserve variation", "Balance pressure", "Maintain diversity"], "quantitative_threshold": "Too much pressure reduces adaptability"},
+        {"mode": "Artificial selection blindness", "description": "Not recognizing human selection effects", "real_world_case": "Unintended consequences of incentives.", "warning_signs": ["Unexpected behaviors", "Gaming", "Unintended selection"], "safeguards": ["Anticipate selection effects", "Monitor outcomes", "Adjust criteria"], "quantitative_threshold": "Incentives create selection pressure"}
+      ]
+    },
+    {
+      "id": 113,
+      "name": "Adaptation",
+      "failure_modes": [
+        {"mode": "Adaptation lag", "description": "Adapting too slowly to change", "real_world_case": "Kodak's slow digital adaptation.", "warning_signs": ["Slow response", "Behind competitors", "Outdated"], "safeguards": ["Early adaptation", "Sensing systems", "Agility"], "quantitative_threshold": "Adapt faster than environment changes"},
+        {"mode": "Over-adaptation", "description": "Adapting too specifically to current environment", "real_world_case": "Over-optimization for current market.", "warning_signs": ["Fragility", "Narrow fit", "Vulnerability to change"], "safeguards": ["Maintain flexibility", "General capabilities", "Optionality"], "quantitative_threshold": "Over-adaptation creates fragility"},
+        {"mode": "Adaptation to wrong environment", "description": "Adapting to environment that's changing", "real_world_case": "Optimizing for yesterday's market.", "warning_signs": ["Misfit", "Declining performance", "Wrong optimization"], "safeguards": ["Future orientation", "Trend awareness", "Anticipate change"], "quantitative_threshold": "Adapt to future environment, not past"},
+        {"mode": "Adaptation cost blindness", "description": "Not recognizing cost of adaptation", "real_world_case": "Constant pivoting exhausting resources.", "warning_signs": ["High adaptation cost", "Exhaustion", "Resource drain"], "safeguards": ["Balance adaptation cost", "Strategic patience", "Selective adaptation"], "quantitative_threshold": "Adaptation has costs"},
+        {"mode": "Maladaptation", "description": "Adaptation that makes things worse", "real_world_case": "Defensive behaviors that increase risk.", "warning_signs": ["Worse outcomes", "Counterproductive", "Self-defeating"], "safeguards": ["Evaluate adaptation outcomes", "Course correct", "Honest assessment"], "quantitative_threshold": "Not all adaptation is beneficial"}
+      ]
+    },
+    {
+      "id": 114,
+      "name": "Red Queen Effect",
+      "failure_modes": [
+        {"mode": "Standing still", "description": "Not running to stay in place", "real_world_case": "Not innovating while competitors do.", "warning_signs": ["Falling behind", "Relative decline", "Complacency"], "safeguards": ["Continuous improvement", "Competitive awareness", "Never stop"], "quantitative_threshold": "Must run to stay in place"},
+        {"mode": "Running in wrong direction", "description": "Improving wrong things", "real_world_case": "Optimizing features customers don't want.", "warning_signs": ["Wasted effort", "No competitive gain", "Wrong focus"], "safeguards": ["Customer focus", "Competitive analysis", "Right improvements"], "quantitative_threshold": "Run in the right direction"},
+        {"mode": "Exhaustion from running", "description": "Burning out from constant competition", "real_world_case": "Unsustainable competitive intensity.", "warning_signs": ["Exhaustion", "Declining returns", "Burnout"], "safeguards": ["Sustainable pace", "Strategic rest", "Efficiency"], "quantitative_threshold": "Sustainable running speed"},
+        {"mode": "Red Queen trap", "description": "Stuck in zero-sum competition", "real_world_case": "Price wars with no winner.", "warning_signs": ["Zero-sum", "No profit", "Mutual destruction"], "safeguards": ["Differentiation", "Blue ocean", "Change the game"], "quantitative_threshold": "Sometimes better to change the race"},
+        {"mode": "Red Queen blindness", "description": "Not seeing the race you're in", "real_world_case": "Ignoring competitive dynamics.", "warning_signs": ["Competitive blindness", "Surprise losses", "Market share decline"], "safeguards": ["Competitive awareness", "Market monitoring", "Relative position"], "quantitative_threshold": "Know what race you're in"}
+      ]
+    },
+    {
+      "id": 115,
+      "name": "Ecosystem Thinking",
+      "failure_modes": [
+        {"mode": "Ignoring ecosystem effects", "description": "Not seeing system-wide impacts", "real_world_case": "Killing a supplier and hurting yourself.", "warning_signs": ["Unintended consequences", "System damage", "Ecosystem harm"], "safeguards": ["System thinking", "Stakeholder analysis", "Long-term view"], "quantitative_threshold": "Actions affect the whole ecosystem"},
+        {"mode": "Ecosystem dependence blindness", "description": "Not recognizing dependencies", "real_world_case": "Single supplier risk.", "warning_signs": ["Hidden dependencies", "Concentration risk", "Fragility"], "safeguards": ["Map dependencies", "Diversify", "Reduce concentration"], "quantitative_threshold": "Know your ecosystem dependencies"},
+        {"mode": "Ecosystem extraction", "description": "Taking more than ecosystem can sustain", "real_world_case": "Overfishing destroying fishery.", "warning_signs": ["Declining ecosystem health", "Unsustainable extraction", "System stress"], "safeguards": ["Sustainable extraction", "Ecosystem health", "Long-term thinking"], "quantitative_threshold": "Don't extract more than ecosystem regenerates"},
+        {"mode": "Ecosystem position blindness", "description": "Not understanding your role in ecosystem", "real_world_case": "Not knowing if you're predator or prey.", "warning_signs": ["Wrong strategy", "Misunderstood position", "Vulnerability"], "safeguards": ["Understand position", "Role clarity", "Strategic fit"], "quantitative_threshold": "Know your ecosystem position"},
+        {"mode": "Ecosystem change blindness", "description": "Not seeing ecosystem evolution", "real_world_case": "Platform shift changing ecosystem.", "warning_signs": ["Ecosystem shift", "New players", "Changed dynamics"], "safeguards": ["Monitor ecosystem", "Anticipate changes", "Adapt position"], "quantitative_threshold": "Ecosystems evolve"}
+      ]
+    },
+    {
+      "id": 116,
+      "name": "Symbiosis",
+      "failure_modes": [
+        {"mode": "Parasitism disguised as symbiosis", "description": "One-sided relationship appearing mutual", "real_world_case": "Partner extracting more value than providing.", "warning_signs": ["Unequal value", "One-sided benefits", "Extraction"], "safeguards": ["Measure value exchange", "Fair partnerships", "Regular review"], "quantitative_threshold": "True symbiosis benefits both parties"},
+        {"mode": "Symbiosis dependence", "description": "Over-relying on symbiotic partner", "real_world_case": "Business dependent on single platform.", "warning_signs": ["High dependence", "No alternatives", "Vulnerability"], "safeguards": ["Diversify partnerships", "Maintain independence", "Alternatives"], "quantitative_threshold": "Don't over-depend on any partner"},
+        {"mode": "Symbiosis breakdown", "description": "Partner relationship deteriorating", "real_world_case": "Platform changing terms unfavorably.", "warning_signs": ["Changing terms", "Declining value", "Relationship stress"], "safeguards": ["Monitor relationship", "Early warning", "Exit options"], "quantitative_threshold": "Symbiotic relationships can break down"},
+        {"mode": "Missing symbiosis opportunities", "description": "Not finding mutually beneficial partnerships", "real_world_case": "Going alone when partnership would help.", "warning_signs": ["Isolation", "Missed opportunities", "Struggling alone"], "safeguards": ["Seek partnerships", "Value creation", "Mutual benefit"], "quantitative_threshold": "Look for symbiotic opportunities"},
+        {"mode": "Symbiosis lock-in", "description": "Partnership creating switching costs", "real_world_case": "Integration creating dependency.", "warning_signs": ["High switching costs", "Lock-in", "Reduced options"], "safeguards": ["Maintain flexibility", "Standard interfaces", "Exit capability"], "quantitative_threshold": "Symbiosis shouldn't create lock-in"}
+      ]
+    },
+    {
+      "id": 117,
+      "name": "Carrying Capacity",
+      "failure_modes": [
+        {"mode": "Exceeding carrying capacity", "description": "Growing beyond sustainable limits", "real_world_case": "Market saturation.", "warning_signs": ["Declining growth", "Resource strain", "Diminishing returns"], "safeguards": ["Know limits", "Sustainable growth", "Diversify"], "quantitative_threshold": "Every market has carrying capacity"},
+        {"mode": "Underestimating carrying capacity", "description": "Thinking market is smaller than it is", "real_world_case": "Not capturing full market potential.", "warning_signs": ["Leaving money on table", "Competitors growing", "Untapped potential"], "safeguards": ["Market sizing", "Growth ambition", "Full potential"], "quantitative_threshold": "Know your market's true size"},
+        {"mode": "Carrying capacity change blindness", "description": "Not seeing capacity changes", "real_world_case": "Technology expanding market size.", "warning_signs": ["Static thinking", "Missing expansion", "Old assumptions"], "safeguards": ["Monitor capacity changes", "Technology impact", "Dynamic sizing"], "quantitative_threshold": "Carrying capacity can change"},
+        {"mode": "Competing for fixed capacity", "description": "Zero-sum competition for limited capacity", "real_world_case": "Market share wars in mature market.", "warning_signs": ["Zero-sum", "Price wars", "Margin compression"], "safeguards": ["Expand capacity", "Differentiation", "New markets"], "quantitative_threshold": "Better to expand capacity than fight for share"},
+        {"mode": "Carrying capacity collapse", "description": "Overshooting causing capacity crash", "real_world_case": "Bubble burst destroying market.", "warning_signs": ["Overshoot", "Unsustainable growth", "Bubble dynamics"], "safeguards": ["Sustainable growth", "Avoid bubbles", "Long-term thinking"], "quantitative_threshold": "Overshoot can cause collapse"}
+      ]
+    },
+    {
+      "id": 118,
+      "name": "Niche Strategy",
+      "failure_modes": [
+        {"mode": "Niche too small", "description": "Niche can't support viable business", "real_world_case": "Market too small to be profitable.", "warning_signs": ["Insufficient revenue", "Can't scale", "Limited growth"], "safeguards": ["Market size validation", "Viable niche", "Expansion path"], "quantitative_threshold": "Niche must be large enough to sustain business"},
+        {"mode": "Niche erosion", "description": "Niche shrinking or disappearing", "real_world_case": "Technology making niche obsolete.", "warning_signs": ["Declining niche", "Changing needs", "Obsolescence"], "safeguards": ["Monitor niche health", "Adaptation", "Adjacent niches"], "quantitative_threshold": "Niches can disappear"},
+        {"mode": "Niche invasion", "description": "Larger players entering your niche", "real_world_case": "Big tech entering specialized markets.", "warning_signs": ["New entrants", "Competitive pressure", "Margin compression"], "safeguards": ["Defensible niche", "Deep specialization", "Customer relationships"], "quantitative_threshold": "Attractive niches get invaded"},
+        {"mode": "Niche trap", "description": "Stuck in niche, can't expand", "real_world_case": "Specialized company can't grow beyond niche.", "warning_signs": ["Growth ceiling", "Limited expansion", "Stuck"], "safeguards": ["Adjacent expansion", "Platform potential", "Growth path"], "quantitative_threshold": "Plan expansion beyond initial niche"},
+        {"mode": "Wrong niche selection", "description": "Choosing niche that doesn't fit capabilities", "real_world_case": "Entering niche without competitive advantage.", "warning_signs": ["Poor fit", "No advantage", "Struggling"], "safeguards": ["Capability match", "Competitive advantage", "Right fit"], "quantitative_threshold": "Niche must match capabilities"}
+      ]
+    },
+    {
+      "id": 119,
+      "name": "Antifragility",
+      "failure_modes": [
+        {"mode": "Confusing robust with antifragile", "description": "Thinking surviving stress = benefiting from it", "real_world_case": "System that survives but doesn't improve.", "warning_signs": ["No improvement from stress", "Just surviving", "Static"], "safeguards": ["Design for improvement", "Learn from stress", "Grow stronger"], "quantitative_threshold": "Antifragile = gets better from stress"},
+        {"mode": "Too much stress", "description": "Stress exceeding antifragile capacity", "real_world_case": "Stress breaking instead of strengthening.", "warning_signs": ["Breaking point", "Damage", "Overwhelm"], "safeguards": ["Appropriate stress levels", "Recovery time", "Gradual increase"], "quantitative_threshold": "Antifragility has limits"},
+        {"mode": "No stress", "description": "Avoiding all stress, becoming fragile", "real_world_case": "Overprotected systems becoming weak.", "warning_signs": ["Fragility", "Weakness", "No resilience"], "safeguards": ["Controlled stress", "Challenge", "Growth pressure"], "quantitative_threshold": "Some stress is necessary for strength"},
+        {"mode": "Wrong type of stress", "description": "Stress that damages rather than strengthens", "real_world_case": "Chronic stress vs acute stress.", "warning_signs": ["Wrong stress type", "Damage", "No benefit"], "safeguards": ["Right stress type", "Acute not chronic", "Recovery"], "quantitative_threshold": "Not all stress is beneficial"},
+        {"mode": "Antifragility at wrong level", "description": "System antifragile but components fragile", "real_world_case": "Market antifragile, individual firms fragile.", "warning_signs": ["Level confusion", "Component failure", "System vs part"], "safeguards": ["Understand levels", "Component protection", "System design"], "quantitative_threshold": "Antifragility can exist at different levels"}
+      ]
+    },
+    {
+      "id": 120,
+      "name": "Survivorship Bias",
+      "failure_modes": [
+        {"mode": "Learning only from survivors", "description": "Ignoring lessons from failures", "real_world_case": "Studying successful companies, ignoring failures.", "warning_signs": ["Success focus only", "Missing failures", "Incomplete data"], "safeguards": ["Study failures", "Complete data", "Base rates"], "quantitative_threshold": "Failures often more instructive than successes"},
+        {"mode": "Survivor advice", "description": "Following advice from survivors", "real_world_case": "Following billionaire advice that worked by luck.", "warning_signs": ["Survivor advice", "Luck attribution", "Non-replicable"], "safeguards": ["Consider luck", "Base rates", "Replicability"], "quantitative_threshold": "Survivor advice may not be replicable"},
+        {"mode": "Survivorship in data", "description": "Data only includes survivors", "real_world_case": "Mutual fund performance data excluding closed funds.", "warning_signs": ["Biased data", "Missing failures", "Inflated performance"], "safeguards": ["Complete data", "Include failures", "Adjust for bias"], "quantitative_threshold": "Always ask what's missing from data"},
+        {"mode": "Survivorship in history", "description": "History written by survivors", "real_world_case": "Historical lessons from winners only.", "warning_signs": ["Winner's history", "Missing losers", "Biased lessons"], "safeguards": ["Seek loser's perspective", "Complete history", "Multiple sources"], "quantitative_threshold": "History is biased toward survivors"},
+        {"mode": "Personal survivorship bias", "description": "Overweighting your own survival", "real_world_case": "Thinking your success was skill, not luck.", "warning_signs": ["Overconfidence", "Skill attribution", "Ignoring luck"], "safeguards": ["Acknowledge luck", "Humility", "Base rates"], "quantitative_threshold": "Your survival may include luck"}
+      ]
+    }
+  ]
+}

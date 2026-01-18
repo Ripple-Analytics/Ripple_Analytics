@@ -839,8 +839,29 @@ class FailurePreventionEngine:
         self.failure_modes = FAILURE_MODES_DATABASE
         self.failure_history: List[Dict] = []
         
-    def get_failure_modes(self, model_id: int) -> Optional[ModelFailureAnalysis]:
-        """Get failure modes for a specific model."""
+    def get_failure_modes(self, model_id: int) -> List[Dict]:
+        """Get failure modes for a specific model as list of dicts."""
+        analysis = self.failure_modes.get(model_id)
+        if not analysis:
+            return []
+        
+        return [
+            {
+                "id": fm.id,
+                "name": fm.description.split('.')[0] if fm.description else fm.id,
+                "description": fm.description,
+                "category": fm.category.value,
+                "severity": fm.severity.value,
+                "example": fm.example,
+                "detection_signals": fm.detection_signals,
+                "safeguards": fm.safeguards,
+                "recovery_actions": fm.recovery_actions
+            }
+            for fm in analysis.failure_modes
+        ]
+    
+    def get_failure_analysis(self, model_id: int) -> Optional[ModelFailureAnalysis]:
+        """Get full failure analysis object for a specific model."""
         return self.failure_modes.get(model_id)
     
     def get_all_safeguards(self, model_ids: List[int]) -> Dict[int, List[str]]:
@@ -990,6 +1011,200 @@ class FailurePreventionEngine:
             json.dump(export_data, f, indent=2)
         
         return output_path
+    
+    # =========================================================================
+    # ADDITIONAL METHODS (for test compatibility)
+    # =========================================================================
+    
+    def get_safeguards(self, model_id: int) -> List[str]:
+        """Get safeguards for a specific model."""
+        analysis = self.failure_modes.get(model_id)
+        if not analysis:
+            return []
+        
+        safeguards = analysis.meta_safeguards.copy()
+        for fm in analysis.failure_modes:
+            safeguards.extend(fm.safeguards)
+        return list(set(safeguards))
+    
+    def check_decision(self, decision: Dict) -> List[Dict]:
+        """Check a decision for potential failures."""
+        warnings = []
+        model_ids = decision.get("models_applied", [])
+        
+        # Check each model for relevant failure modes
+        for model_id in model_ids:
+            analysis = self.failure_modes.get(model_id)
+            if analysis:
+                for fm in analysis.failure_modes:
+                    warnings.append({
+                        "model_id": model_id,
+                        "model_name": analysis.model_name,
+                        "failure_mode": fm.id,
+                        "description": fm.description,
+                        "severity": fm.severity.value,
+                        "safeguards": fm.safeguards
+                    })
+        
+        # Add interaction warnings
+        warnings.extend(self.check_for_interactions(model_ids))
+        
+        return warnings
+    
+    def generate_checklist(self, model_ids: List[int]) -> Dict:
+        """Generate a safeguard checklist for given models."""
+        items = self.generate_pre_decision_checklist(model_ids)
+        return {
+            "items": items,
+            "model_count": len(model_ids),
+            "total_items": len(items)
+        }
+    
+    def calculate_risk_score(self, model_ids: List[int]) -> float:
+        """Calculate risk score for a combination of models."""
+        if not model_ids:
+            return 0.0
+        
+        # Base risk from number of models
+        base_risk = min(len(model_ids) / 10.0, 0.5)
+        
+        # Add risk from psychology biases
+        psychology_count = sum(1 for m in model_ids if m <= 34)
+        psychology_risk = min(psychology_count / 10.0, 0.3)
+        
+        # Add risk from antagonistic interactions
+        interaction_risk = 0.0
+        for model_id in model_ids:
+            analysis = self.failure_modes.get(model_id)
+            if analysis:
+                for antagonist in analysis.antagonistic_models:
+                    if antagonist in model_ids:
+                        interaction_risk += 0.1
+        interaction_risk = min(interaction_risk, 0.2)
+        
+        return min(base_risk + psychology_risk + interaction_risk, 1.0)
+    
+    def get_amplifying_biases(self, model_id: int) -> List[int]:
+        """Get biases that amplify a model's failure modes."""
+        analysis = self.failure_modes.get(model_id)
+        if not analysis:
+            return []
+        return analysis.antagonistic_models
+    
+    def get_mitigating_models(self, model_id: int) -> List[int]:
+        """Get models that mitigate failure modes."""
+        analysis = self.failure_modes.get(model_id)
+        if not analysis:
+            return []
+        return analysis.complementary_models
+    
+    def generate_structural_safeguards(self, model_ids: List[int]) -> List[str]:
+        """Generate structural safeguards for given models."""
+        safeguards = [
+            "Implement independent review processes",
+            "Create separation of duties",
+            "Establish clear decision criteria before analysis",
+            "Document assumptions and reasoning"
+        ]
+        for model_id in model_ids:
+            analysis = self.failure_modes.get(model_id)
+            if analysis:
+                safeguards.extend([s for s in analysis.meta_safeguards if "structure" in s.lower() or "process" in s.lower()])
+        return list(set(safeguards))
+    
+    def generate_cognitive_safeguards(self, model_ids: List[int]) -> List[str]:
+        """Generate cognitive safeguards for given models."""
+        safeguards = [
+            "Actively seek disconfirming evidence",
+            "Consider the opposite hypothesis",
+            "Sleep on major decisions",
+            "Write down reasoning before deciding"
+        ]
+        for model_id in model_ids:
+            analysis = self.failure_modes.get(model_id)
+            if analysis:
+                safeguards.extend([s for s in analysis.meta_safeguards if "think" in s.lower() or "consider" in s.lower()])
+        return list(set(safeguards))
+    
+    def generate_social_safeguards(self, model_ids: List[int]) -> List[str]:
+        """Generate social safeguards for given models."""
+        safeguards = [
+            "Consult with devil's advocate",
+            "Seek input from diverse perspectives",
+            "Create psychological safety for dissent",
+            "Establish anonymous feedback channels"
+        ]
+        return safeguards
+    
+    def generate_recovery_protocol(self, model_id: int, failure_mode_id: str) -> Dict:
+        """Generate recovery protocol for a failure mode."""
+        actions = self.get_recovery_actions(failure_mode_id)
+        return {
+            "model_id": model_id,
+            "failure_mode_id": failure_mode_id,
+            "immediate_actions": actions[:2] if len(actions) >= 2 else actions,
+            "follow_up_actions": actions[2:] if len(actions) > 2 else [],
+            "prevention_measures": self.get_safeguards(model_id)[:3]
+        }
+    
+    def calculate_lollapalooza_risk(self, model_ids: List[int]) -> float:
+        """Calculate Lollapalooza risk for converging models."""
+        if len(model_ids) < 3:
+            return 0.0
+        
+        # Risk increases with number of converging models
+        base_risk = min((len(model_ids) - 2) / 5.0, 0.6)
+        
+        # Higher risk if many are from same category (psychology)
+        psychology_count = sum(1 for m in model_ids if m <= 34)
+        category_risk = min(psychology_count / 8.0, 0.4)
+        
+        return min(base_risk + category_risk, 1.0)
+    
+    def get_high_risk_combinations(self) -> List[Dict]:
+        """Get known high-risk model combinations."""
+        return [
+            {
+                "models": [1, 2, 3],
+                "names": ["Incentive-Caused Bias", "Social Proof", "Denial"],
+                "risk": "Groupthink in compensation decisions",
+                "mitigation": "Independent compensation committee"
+            },
+            {
+                "models": [4, 5, 6],
+                "names": ["Inconsistency-Avoidance", "Curiosity", "Kantian Fairness"],
+                "risk": "Confirmation bias in research",
+                "mitigation": "Pre-registration of hypotheses"
+            },
+            {
+                "models": [1, 7, 8],
+                "names": ["Incentive-Caused Bias", "Envy/Jealousy", "Reciprocation"],
+                "risk": "Corrupt business relationships",
+                "mitigation": "Transparent procurement processes"
+            }
+        ]
+    
+    def get_mitigation_suggestions(self, model_ids: List[int]) -> List[str]:
+        """Get mitigation suggestions for a set of models."""
+        suggestions = []
+        
+        # Get safeguards from all models
+        for model_id in model_ids:
+            safeguards = self.get_safeguards(model_id)
+            suggestions.extend(safeguards[:2])  # Top 2 from each
+        
+        # Add general mitigations
+        suggestions.extend([
+            "Document decision rationale",
+            "Establish pre-commitment criteria",
+            "Seek external review"
+        ])
+        
+        return list(set(suggestions))
+    
+    def export_json(self, output_path: str):
+        """Export failure modes to JSON (alias for export_failure_modes_json)."""
+        return self.export_failure_modes_json(output_path)
 
 
 # =============================================================================

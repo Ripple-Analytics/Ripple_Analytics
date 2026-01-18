@@ -1,0 +1,73 @@
+{
+  "targets": [
+    {
+      "id": "slack_alerts",
+      "name": "Slack Alerts",
+      "type": "slack",
+      "url": "https://hooks.slack.com/services/test",
+      "enabled": true,
+      "events": [
+        "lollapalooza_detected",
+        "high_risk_decision"
+      ],
+      "min_priority": 2,
+      "secret": null,
+      "headers": {},
+      "rate_limit_per_minute": 60,
+      "retry_count": 3
+    },
+    {
+      "id": "discord_all",
+      "name": "Discord All Events",
+      "type": "discord",
+      "url": "https://discord.com/api/webhooks/test",
+      "enabled": true,
+      "events": [],
+      "min_priority": 1,
+      "secret": null,
+      "headers": {},
+      "rate_limit_per_minute": 60,
+      "retry_count": 3
+    },
+    {
+      "id": "test_target_1",
+      "name": "Test Target",
+      "type": "generic",
+      "url": "https://example.com/webhook",
+      "enabled": true,
+      "events": [],
+      "min_priority": 1,
+      "secret": null,
+      "headers": {},
+      "rate_limit_per_minute": 60,
+      "retry_count": 3
+    },
+    {
+      "id": "test_high_priority",
+      "name": "High Priority Target",
+      "type": "generic",
+      "url": "https://example.com/webhook",
+      "enabled": true,
+      "events": [],
+      "min_priority": 3,
+      "secret": null,
+      "headers": {},
+      "rate_limit_per_minute": 60,
+      "retry_count": 3
+    },
+    {
+      "id": "test_rate_limit",
+      "name": "Rate Limited Target",
+      "type": "generic",
+      "url": "https://example.com/webhook",
+      "enabled": true,
+      "events": [],
+      "min_priority": 1,
+      "secret": null,
+      "headers": {},
+      "rate_limit_per_minute": 5,
+      "retry_count": 3
+    }
+  ],
+  "updated_at": "2026-01-18T01:19:27.281462"
+}

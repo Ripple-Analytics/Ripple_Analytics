@@ -1,0 +1,373 @@
+{
+  "category": "Thinking Tools",
+  "models": [
+    {
+      "id": 35,
+      "name": "Inversion",
+      "failure_modes": [
+        {
+          "mode": "Incomplete inversion",
+          "description": "Only inverting part of the problem",
+          "real_world_case": "Kodak inverted 'how to sell more film' but not 'how to avoid obsolescence'.",
+          "warning_signs": ["Narrow problem framing", "Missing existential threats", "Optimizing wrong metric"],
+          "safeguards": ["Invert at multiple levels", "Ask 'what could kill us?'", "Include existential risks"],
+          "quantitative_threshold": "Invert at least 3 levels: tactical, strategic, existential"
+        },
+        {
+          "mode": "Inversion paralysis",
+          "description": "Seeing so many ways to fail that action stops",
+          "real_world_case": "Analysis paralysis in startups - seeing all failure modes prevents launching.",
+          "warning_signs": ["Endless analysis", "No decisions", "Fear of failure"],
+          "safeguards": ["Time-box inversion", "Prioritize risks", "Accept some risk"],
+          "quantitative_threshold": "Inversion should take 10-20% of planning time, not 80%"
+        },
+        {
+          "mode": "Pessimism bias from inversion",
+          "description": "Inversion creates excessive negativity",
+          "real_world_case": "VCs who only see failure modes miss breakthrough opportunities.",
+          "warning_signs": ["Rejecting everything", "Missing upside", "Defensive thinking only"],
+          "safeguards": ["Balance inversion with opportunity seeking", "Separate risk assessment from decision", "Consider upside too"],
+          "quantitative_threshold": "Inversion should inform, not dominate, decisions"
+        },
+        {
+          "mode": "False inversion",
+          "description": "Inverting to wrong opposite",
+          "real_world_case": "Inverting 'how to succeed' to 'how to not fail' misses that not failing isn't succeeding.",
+          "warning_signs": ["Simplistic opposites", "Missing nuance", "Binary thinking"],
+          "safeguards": ["Consider multiple inversions", "Check inversion validity", "Avoid false dichotomies"],
+          "quantitative_threshold": "Most problems have 3+ valid inversions, not just one"
+        },
+        {
+          "mode": "Inversion without action",
+          "description": "Identifying failure modes but not preventing them",
+          "real_world_case": "Risk registers that identify risks but don't drive mitigation.",
+          "warning_signs": ["Risk lists without owners", "No mitigation plans", "Check-box compliance"],
+          "safeguards": ["Assign owners to risks", "Create mitigation plans", "Track risk reduction"],
+          "quantitative_threshold": "Each identified risk needs owner and mitigation within 30 days"
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "name": "First Principles Thinking",
+      "failure_modes": [
+        {
+          "mode": "False first principles",
+          "description": "Assumptions masquerading as first principles",
+          "real_world_case": "Theranos - 'blood tests need small samples' wasn't actually a first principle, it was a constraint.",
+          "warning_signs": ["Unexamined assumptions", "Industry conventions", "Wishful thinking"],
+          "safeguards": ["Question every 'principle'", "Verify with physics/chemistry", "Test assumptions"],
+          "quantitative_threshold": "True first principles are provable from physics or mathematics"
+        },
+        {
+          "mode": "First principles without domain knowledge",
+          "description": "Reasoning from scratch without understanding why conventions exist",
+          "real_world_case": "Tech disruption of healthcare - ignored regulatory reasons for existing practices.",
+          "warning_signs": ["Dismissing all conventions", "Ignoring history", "Arrogance about domain"],
+          "safeguards": ["Understand why conventions exist", "Respect accumulated wisdom", "Learn domain deeply"],
+          "quantitative_threshold": "Spend 100+ hours learning domain before first-principles redesign"
+        },
+        {
+          "mode": "First principles as excuse for reinventing wheel",
+          "description": "Rebuilding what already works well",
+          "real_world_case": "Companies rebuilding standard software instead of using proven solutions.",
+          "warning_signs": ["NIH syndrome", "Ignoring existing solutions", "Wasted effort"],
+          "safeguards": ["Check for existing solutions first", "Only reinvent when necessary", "Build on proven foundations"],
+          "quantitative_threshold": "Reinvention should provide 10x improvement to justify cost"
+        },
+        {
+          "mode": "Analysis paralysis from first principles",
+          "description": "Breaking everything down prevents action",
+          "real_world_case": "Philosophers who can't make decisions because everything needs examination.",
+          "warning_signs": ["Endless decomposition", "No decisions", "Perfectionism"],
+          "safeguards": ["Set analysis time limits", "Accept good enough", "Bias toward action"],
+          "quantitative_threshold": "First principles analysis should take hours to days, not weeks"
+        },
+        {
+          "mode": "First principles ignoring emergence",
+          "description": "Reductionism misses emergent properties",
+          "real_world_case": "Understanding neurons doesn't explain consciousness - emergence matters.",
+          "warning_signs": ["Pure reductionism", "Missing system effects", "Ignoring complexity"],
+          "safeguards": ["Consider emergent properties", "Test at system level", "Respect complexity"],
+          "quantitative_threshold": "Complex systems have emergent properties not predictable from components"
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "name": "Second-Order Thinking",
+      "failure_modes": [
+        {
+          "mode": "Stopping at second order",
+          "description": "Not thinking far enough ahead",
+          "real_world_case": "Rent control - second order is lower supply, third order is housing crisis, fourth order is homelessness.",
+          "warning_signs": ["Simple cause-effect", "Missing long-term effects", "Unintended consequences"],
+          "safeguards": ["Think to third and fourth order", "Consider long time horizons", "Map full causal chains"],
+          "quantitative_threshold": "Important decisions need analysis to at least 4th order effects"
+        },
+        {
+          "mode": "Second-order thinking without probability",
+          "description": "Considering effects without likelihood weighting",
+          "real_world_case": "Worrying about asteroid impact while ignoring car accidents.",
+          "warning_signs": ["All effects treated equally", "No probability weighting", "Dramatic over likely"],
+          "safeguards": ["Weight by probability", "Focus on likely effects", "Expected value thinking"],
+          "quantitative_threshold": "Weight effects by probability × magnitude"
+        },
+        {
+          "mode": "Paralysis from complexity",
+          "description": "Too many second-order effects to process",
+          "real_world_case": "Policy makers unable to act because every action has countless effects.",
+          "warning_signs": ["Decision avoidance", "Endless analysis", "Complexity overwhelm"],
+          "safeguards": ["Focus on major effects", "Accept uncertainty", "Iterate and adjust"],
+          "quantitative_threshold": "Focus on effects > 10% probability and > 10% impact"
+        },
+        {
+          "mode": "Confident prediction of unpredictable",
+          "description": "Claiming to know second-order effects that are unknowable",
+          "real_world_case": "Economic forecasts - second-order effects are largely unpredictable.",
+          "warning_signs": ["Precise predictions", "Overconfidence", "Ignoring uncertainty"],
+          "safeguards": ["Acknowledge uncertainty", "Use scenarios not predictions", "Build optionality"],
+          "quantitative_threshold": "Second-order predictions beyond 1 year have < 50% accuracy"
+        },
+        {
+          "mode": "Ignoring feedback loops",
+          "description": "Linear thinking when effects loop back",
+          "real_world_case": "Social media algorithms - second-order effects feed back to change first-order behavior.",
+          "warning_signs": ["Linear models", "Ignoring dynamics", "Static analysis"],
+          "safeguards": ["Map feedback loops", "Use dynamic models", "Consider reflexivity"],
+          "quantitative_threshold": "Most social/economic systems have feedback loops within 3 orders"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "name": "Probabilistic Thinking",
+      "failure_modes": [
+        {
+          "mode": "False precision",
+          "description": "Precise probabilities for uncertain events",
+          "real_world_case": "Financial models with precise default probabilities that were wildly wrong in 2008.",
+          "warning_signs": ["Many decimal places", "Model dependence", "Ignoring uncertainty"],
+          "safeguards": ["Use ranges not points", "Acknowledge model uncertainty", "Stress test assumptions"],
+          "quantitative_threshold": "Probability estimates should have ±20% uncertainty at minimum"
+        },
+        {
+          "mode": "Base rate neglect",
+          "description": "Ignoring prior probabilities",
+          "real_world_case": "Medical testing - ignoring base rate of disease leads to misinterpreting positive tests.",
+          "warning_signs": ["No base rate consideration", "Focusing only on test results", "Ignoring priors"],
+          "safeguards": ["Always start with base rate", "Use Bayes' theorem", "Update from priors"],
+          "quantitative_threshold": "Base rate should be first number considered in any probability estimate"
+        },
+        {
+          "mode": "Probability vs frequency confusion",
+          "description": "Applying frequency logic to unique events",
+          "real_world_case": "Estimating probability of nuclear war - no frequency data exists.",
+          "warning_signs": ["Unique events", "No historical frequency", "Forcing frequency framing"],
+          "safeguards": ["Use subjective probability for unique events", "Reference class carefully", "Acknowledge uncertainty"],
+          "quantitative_threshold": "Unique events require subjective probability, not frequency"
+        },
+        {
+          "mode": "Ignoring fat tails",
+          "description": "Using normal distribution when extremes matter",
+          "real_world_case": "LTCM collapse - models assumed normal distribution, reality had fat tails.",
+          "warning_signs": ["Normal distribution assumption", "Ignoring outliers", "Historical data only"],
+          "safeguards": ["Test for fat tails", "Use appropriate distributions", "Stress test extremes"],
+          "quantitative_threshold": "Financial and social data typically have kurtosis > 3 (fat tails)"
+        },
+        {
+          "mode": "Correlation vs causation",
+          "description": "Treating correlation as causal probability",
+          "real_world_case": "Spurious correlations - ice cream sales and drowning both rise in summer.",
+          "warning_signs": ["Correlation without mechanism", "No causal model", "Data mining"],
+          "safeguards": ["Require causal mechanism", "Test causation", "Beware spurious correlation"],
+          "quantitative_threshold": "Correlation without causal mechanism has < 20% predictive value"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "name": "Occam's Razor",
+      "failure_modes": [
+        {
+          "mode": "Oversimplification",
+          "description": "Choosing too simple an explanation",
+          "real_world_case": "Attributing market moves to single causes when multiple factors interact.",
+          "warning_signs": ["Single cause explanations", "Ignoring complexity", "Neat narratives"],
+          "safeguards": ["Consider multiple causes", "Test simple explanation", "Accept necessary complexity"],
+          "quantitative_threshold": "Simple explanation should explain > 80% of variance to be preferred"
+        },
+        {
+          "mode": "Simplicity bias in complex systems",
+          "description": "Applying Occam's Razor where complexity is real",
+          "real_world_case": "Climate models - simple models miss critical interactions.",
+          "warning_signs": ["Complex systems", "Many interacting parts", "Emergent behavior"],
+          "safeguards": ["Accept necessary complexity", "Don't force simplicity", "Model at appropriate level"],
+          "quantitative_threshold": "Complex systems may require complex models - simplicity isn't always better"
+        },
+        {
+          "mode": "Confusing simplicity with familiarity",
+          "description": "Preferring familiar explanations over simpler ones",
+          "real_world_case": "Geocentric model was familiar but more complex than heliocentric.",
+          "warning_signs": ["Preferring known explanations", "Resisting new ideas", "Complexity in familiar"],
+          "safeguards": ["Measure actual complexity", "Consider unfamiliar explanations", "Count assumptions"],
+          "quantitative_threshold": "Count assumptions and entities, not familiarity"
+        },
+        {
+          "mode": "Premature simplification",
+          "description": "Simplifying before understanding",
+          "real_world_case": "Early disease theories - miasma theory was simple but wrong.",
+          "warning_signs": ["Insufficient data", "Rushing to explain", "Ignoring anomalies"],
+          "safeguards": ["Gather sufficient data first", "Explain anomalies", "Iterate on explanations"],
+          "quantitative_threshold": "Need data explaining > 90% of observations before simplifying"
+        },
+        {
+          "mode": "Occam's Razor as excuse for ignorance",
+          "description": "Using simplicity to avoid learning complexity",
+          "real_world_case": "Dismissing quantum mechanics as 'too complex' when it's necessary.",
+          "warning_signs": ["Avoiding learning", "Dismissing complexity", "Intellectual laziness"],
+          "safeguards": ["Learn necessary complexity", "Don't use Occam's as excuse", "Accept reality's complexity"],
+          "quantitative_threshold": "Simplicity preference shouldn't override explanatory power"
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "name": "Hanlon's Razor",
+      "failure_modes": [
+        {
+          "mode": "Ignoring actual malice",
+          "description": "Attributing to stupidity what is actually malicious",
+          "real_world_case": "Enron - what looked like incompetence was deliberate fraud.",
+          "warning_signs": ["Pattern of 'mistakes'", "Benefiting from errors", "Covering tracks"],
+          "safeguards": ["Look for patterns", "Consider who benefits", "Verify incompetence"],
+          "quantitative_threshold": "3+ 'mistakes' benefiting same party suggests malice"
+        },
+        {
+          "mode": "Enabling bad actors",
+          "description": "Giving benefit of doubt to those who don't deserve it",
+          "real_world_case": "Repeated fraud by same actors excused as mistakes.",
+          "warning_signs": ["Repeat offenders", "No learning", "Convenient errors"],
+          "safeguards": ["Track history", "Limit second chances", "Verify claims"],
+          "quantitative_threshold": "Same 'mistake' twice is pattern, not accident"
+        },
+        {
+          "mode": "Underestimating systemic malice",
+          "description": "Missing institutional bad behavior",
+          "real_world_case": "Tobacco industry - decades of deliberate deception, not incompetence.",
+          "warning_signs": ["Industry-wide patterns", "Coordinated behavior", "Suppressed information"],
+          "safeguards": ["Consider institutional incentives", "Look for coordination", "Follow the money"],
+          "quantitative_threshold": "Industry-wide 'mistakes' suggest systemic issues"
+        },
+        {
+          "mode": "Cultural blindness to malice",
+          "description": "Culture makes malice invisible",
+          "real_world_case": "Financial industry pre-2008 - predatory lending normalized.",
+          "warning_signs": ["Normalized bad behavior", "Industry culture", "Rationalized harm"],
+          "safeguards": ["Outside perspective", "Victim impact analysis", "Ethical review"],
+          "quantitative_threshold": "If victims consistently harmed, malice or negligence distinction matters less"
+        },
+        {
+          "mode": "Hanlon's Razor as naivety",
+          "description": "Being taken advantage of through excessive charity",
+          "real_world_case": "Ponzi scheme victims who kept believing despite red flags.",
+          "warning_signs": ["Repeated trust despite evidence", "Ignoring warnings", "Wishful thinking"],
+          "safeguards": ["Verify trust", "Heed warnings", "Protect yourself"],
+          "quantitative_threshold": "Trust but verify - Hanlon's doesn't mean ignore evidence"
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "name": "Circle of Competence",
+      "failure_modes": [
+        {
+          "mode": "Overestimating competence boundaries",
+          "description": "Thinking you know more than you do",
+          "real_world_case": "Doctors investing in restaurants - medical expertise doesn't transfer.",
+          "warning_signs": ["Success in one field", "Confidence in another", "No domain learning"],
+          "safeguards": ["Honestly assess boundaries", "Get outside feedback", "Test knowledge"],
+          "quantitative_threshold": "10,000 hours in domain to claim competence"
+        },
+        {
+          "mode": "Static circle",
+          "description": "Not expanding competence over time",
+          "real_world_case": "Investors who never learn new industries miss opportunities.",
+          "warning_signs": ["Same investments for decades", "Avoiding new learning", "Comfort zone"],
+          "safeguards": ["Deliberately expand", "Learn adjacent areas", "Stay curious"],
+          "quantitative_threshold": "Expand circle 10% annually through deliberate learning"
+        },
+        {
+          "mode": "Circle shrinkage",
+          "description": "Competence eroding without maintenance",
+          "real_world_case": "Technology skills becoming obsolete without continuous learning.",
+          "warning_signs": ["Industry changes", "No recent learning", "Outdated knowledge"],
+          "safeguards": ["Continuous learning", "Stay current", "Refresh knowledge"],
+          "quantitative_threshold": "Technical competence half-life is 5-7 years"
+        },
+        {
+          "mode": "False competence from luck",
+          "description": "Luck mistaken for skill expands perceived circle",
+          "real_world_case": "Bull market investors thinking they're skilled.",
+          "warning_signs": ["Untested in adversity", "Short track record", "Favorable conditions"],
+          "safeguards": ["Test across conditions", "Long track record", "Attribute luck properly"],
+          "quantitative_threshold": "Need 10+ year track record across cycles to verify competence"
+        },
+        {
+          "mode": "Competence without edge",
+          "description": "Knowing area but not better than competition",
+          "real_world_case": "Retail investors 'knowing' stocks but competing against professionals.",
+          "warning_signs": ["Crowded area", "Professional competition", "No unique insight"],
+          "safeguards": ["Assess competition", "Find unique edge", "Compete where you can win"],
+          "quantitative_threshold": "Need top-decile knowledge to have edge in competitive areas"
+        }
+      ]
+    },
+    {
+      "id": 42,
+      "name": "Map vs Territory",
+      "failure_modes": [
+        {
+          "mode": "Map worship",
+          "description": "Trusting model over reality",
+          "real_world_case": "LTCM - trusted models over market reality, catastrophic failure.",
+          "warning_signs": ["Model dependence", "Ignoring anomalies", "Dismissing contradictory data"],
+          "safeguards": ["Reality check models", "Update with new data", "Respect anomalies"],
+          "quantitative_threshold": "Models should be updated when reality diverges > 2 standard deviations"
+        },
+        {
+          "mode": "Outdated maps",
+          "description": "Using models that no longer reflect reality",
+          "real_world_case": "Retail models based on pre-internet shopping behavior.",
+          "warning_signs": ["Old models", "Changed reality", "Poor predictions"],
+          "safeguards": ["Regularly update models", "Test against current data", "Rebuild when needed"],
+          "quantitative_threshold": "Models need refresh every 3-5 years in dynamic environments"
+        },
+        {
+          "mode": "Map resolution mismatch",
+          "description": "Wrong level of detail for decision",
+          "real_world_case": "Using macro models for micro decisions or vice versa.",
+          "warning_signs": ["Scale mismatch", "Missing relevant detail", "Inappropriate abstraction"],
+          "safeguards": ["Match model to decision", "Use appropriate resolution", "Multiple scales"],
+          "quantitative_threshold": "Model resolution should match decision granularity"
+        },
+        {
+          "mode": "Single map dependence",
+          "description": "Relying on one model of reality",
+          "real_world_case": "Economists using only equilibrium models, missing dynamics.",
+          "warning_signs": ["One framework", "Dismissing alternatives", "Paradigm lock-in"],
+          "safeguards": ["Multiple models", "Different perspectives", "Triangulate"],
+          "quantitative_threshold": "Use 3+ models for important decisions"
+        },
+        {
+          "mode": "Confusing map features with territory features",
+          "description": "Artifacts of model mistaken for reality",
+          "real_world_case": "Quarterly earnings focus - artifact of reporting, not business reality.",
+          "warning_signs": ["Measurement artifacts", "Reporting conventions", "Model-induced behavior"],
+          "safeguards": ["Distinguish model from reality", "Question conventions", "Look at underlying reality"],
+          "quantitative_threshold": "Always ask 'is this real or artifact of measurement?'"
+        }
+      ]
+    }
+  ]
+}

@@ -91,6 +91,9 @@ class ProcessedSignal:
     priority: SignalPriority
     insights: List[str]
     processed_at: datetime
+    # Failure mode integration
+    failure_modes_detected: List[Dict[str, Any]] = field(default_factory=list)  # [{mode_name, model_name, risk_score, warning_signs}]
+    risk_assessment: Dict[str, Any] = field(default_factory=dict)  # {overall_risk, safeguards, warnings}
     
     def to_dict(self) -> Dict:
         return {
@@ -103,7 +106,9 @@ class ProcessedSignal:
             "priority": self.priority.value,
             "insights": self.insights,
             "processed_at": self.processed_at.isoformat(),
-            "timestamp": self.raw_signal.timestamp.isoformat()
+            "timestamp": self.raw_signal.timestamp.isoformat(),
+            "failure_modes_detected": self.failure_modes_detected,
+            "risk_assessment": self.risk_assessment
         }
 
 
@@ -516,13 +521,56 @@ Respond in JSON format:
         else:
             priority = SignalPriority.LOW
         
+        # Get failure mode analysis for detected models
+        failure_modes = []
+        risk_assessment = {}
+        
+        try:
+            from ..safeguards.failure_search import FailureModeSearchEngine
+            fm_engine = FailureModeSearchEngine()
+            
+            # Get failure modes for detected models
+            detected_model_names = [m.get('name', '') for m in analysis.get('models', [])]
+            
+            # Assess risk based on content and models
+            assessment = fm_engine.assess_risk(signal.content[:2000], detected_model_names)
+            
+            failure_modes = [
+                {
+                    'mode_name': fm.mode_name,
+                    'model_name': fm.model_name,
+                    'risk_score': fm.relevance_score,
+                    'warning_signs': fm.warning_signs[:3],
+                    'safeguards': fm.safeguards[:3]
+                }
+                for fm in assessment.top_failure_modes[:5]
+            ]
+            
+            risk_assessment = {
+                'overall_risk': assessment.overall_risk_score,
+                'risk_by_category': assessment.risk_by_category,
+                'top_safeguards': assessment.recommended_safeguards[:5],
+                'warning_signs': assessment.warning_signs_to_watch[:5]
+            }
+            
+            # Adjust priority based on risk
+            if assessment.overall_risk_score >= 0.7:
+                priority = SignalPriority.CRITICAL
+            elif assessment.overall_risk_score >= 0.5 and priority.value < SignalPriority.HIGH.value:
+                priority = SignalPriority.HIGH
+                
+        except Exception as e:
+            logger.warning(f"Failure mode analysis failed: {e}")
+        
         return ProcessedSignal(
             raw_signal=signal,
             models_detected=analysis.get("models", []),
             lollapalooza_score=lollapalooza_score,
             priority=priority,
             insights=analysis.get("insights", []),
-            processed_at=datetime.now()
+            processed_at=datetime.now(),
+            failure_modes_detected=failure_modes,
+            risk_assessment=risk_assessment
         )
 
 
