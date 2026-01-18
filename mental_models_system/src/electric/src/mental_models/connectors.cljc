@@ -3029,6 +3029,406 @@
 ;; Connector Registry
 ;; ============================================
 
+;; ============================================
+;; Request Prioritization
+;; ============================================
+
+(def priority-queue
+  "Priority queue for request scheduling."
+  (atom {:high []
+         :normal []
+         :low []
+         :background []}))
+
+(def priority-config
+  "Configuration for request prioritization."
+  (atom {:enabled true
+         :high-weight 4
+         :normal-weight 2
+         :low-weight 1
+         :background-weight 0.5
+         :max-queue-size 1000}))
+
+(defn get-priority-config
+  "Get current priority configuration."
+  []
+  @priority-config)
+
+(defn set-priority-config
+  "Update priority configuration."
+  [config]
+  (swap! priority-config merge config))
+
+(defn enqueue-request
+  "Add a request to the priority queue."
+  [priority request-fn & {:keys [id metadata] :or {id (str (random-uuid)) metadata {}}}]
+  (let [entry {:id id
+               :fn request-fn
+               :priority priority
+               :metadata metadata
+               :enqueued-at (System/currentTimeMillis)}]
+    (swap! priority-queue update priority conj entry)
+    id))
+
+(defn dequeue-request
+  "Get the next request to process based on priority weights."
+  []
+  (let [queue @priority-queue
+        config @priority-config
+        weighted-selection (fn []
+                            (let [weights {:high (:high-weight config)
+                                          :normal (:normal-weight config)
+                                          :low (:low-weight config)
+                                          :background (:background-weight config)}
+                                  available (filter #(seq (get queue %)) (keys weights))
+                                  total-weight (reduce + (map #(get weights %) available))]
+                              (when (pos? total-weight)
+                                (let [r (* (rand) total-weight)]
+                                  (loop [remaining r
+                                         [p & ps] available]
+                                    (if p
+                                      (let [w (get weights p)]
+                                        (if (< remaining w)
+                                          p
+                                          (recur (- remaining w) ps)))
+                                      (first available)))))))]
+    (when-let [priority (weighted-selection)]
+      (let [entries (get queue priority)]
+        (when (seq entries)
+          (let [entry (first entries)]
+            (swap! priority-queue update priority rest)
+            entry))))))
+
+(defn process-priority-queue
+  "Process requests from the priority queue."
+  [& {:keys [max-concurrent] :or {max-concurrent 4}}]
+  (let [results (atom [])]
+    (dotimes [_ max-concurrent]
+      (when-let [entry (dequeue-request)]
+        (try
+          (let [result ((:fn entry))]
+            (swap! results conj {:id (:id entry)
+                                :success true
+                                :result result}))
+          (catch Exception e
+            (swap! results conj {:id (:id entry)
+                                :success false
+                                :error (.getMessage e)})))))
+    @results))
+
+(defn get-queue-stats
+  "Get statistics about the priority queue."
+  []
+  (let [queue @priority-queue]
+    {:high-count (count (:high queue))
+     :normal-count (count (:normal queue))
+     :low-count (count (:low queue))
+     :background-count (count (:background queue))
+     :total-count (reduce + (map count (vals queue)))}))
+
+(defn clear-priority-queue
+  "Clear all requests from the priority queue."
+  []
+  (reset! priority-queue {:high [] :normal [] :low [] :background []}))
+
+;; ============================================
+;; Request Timeout Escalation
+;; ============================================
+
+(def timeout-escalation-config
+  "Configuration for timeout escalation."
+  (atom {:enabled true
+         :initial-timeout-ms 5000
+         :max-timeout-ms 60000
+         :escalation-factor 1.5
+         :max-escalations 3}))
+
+(def timeout-history
+  "History of timeout escalations per connector."
+  (atom {}))
+
+(defn get-timeout-escalation-config
+  "Get current timeout escalation configuration."
+  []
+  @timeout-escalation-config)
+
+(defn set-timeout-escalation-config
+  "Update timeout escalation configuration."
+  [config]
+  (swap! timeout-escalation-config merge config))
+
+(defn calculate-escalated-timeout
+  "Calculate the escalated timeout based on history."
+  [connector-type]
+  (let [config @timeout-escalation-config
+        history (get @timeout-history connector-type {:escalation-count 0})
+        escalation-count (min (:escalation-count history) (:max-escalations config))
+        factor (Math/pow (:escalation-factor config) escalation-count)
+        timeout (* (:initial-timeout-ms config) factor)]
+    (min timeout (:max-timeout-ms config))))
+
+(defn record-timeout
+  "Record a timeout event for a connector."
+  [connector-type]
+  (swap! timeout-history update connector-type
+         (fn [h]
+           (let [current (or h {:escalation-count 0 :timeouts []})]
+             {:escalation-count (inc (:escalation-count current))
+              :timeouts (conj (:timeouts current)
+                             {:timestamp (System/currentTimeMillis)})}))))
+
+(defn record-success-timeout
+  "Record a successful request (resets escalation)."
+  [connector-type]
+  (swap! timeout-history update connector-type
+         (fn [h]
+           (let [current (or h {:escalation-count 0 :timeouts []})]
+             {:escalation-count (max 0 (dec (:escalation-count current)))
+              :timeouts (:timeouts current)}))))
+
+(defn with-timeout-escalation
+  "Execute a function with timeout escalation support."
+  [connector-type f]
+  (let [timeout-ms (calculate-escalated-timeout connector-type)
+        future-result (future (f))
+        result (deref future-result timeout-ms {:timeout true})]
+    (if (:timeout result)
+      (do
+        (record-timeout connector-type)
+        (future-cancel future-result)
+        {:error "Request timed out"
+         :timeout-ms timeout-ms
+         :escalation-count (get-in @timeout-history [connector-type :escalation-count])})
+      (do
+        (record-success-timeout connector-type)
+        result))))
+
+(defn get-timeout-stats
+  "Get timeout statistics for all connectors."
+  []
+  {:config @timeout-escalation-config
+   :history (into {}
+                  (map (fn [[k v]]
+                         [k {:escalation-count (:escalation-count v)
+                             :total-timeouts (count (:timeouts v))
+                             :current-timeout-ms (calculate-escalated-timeout k)}])
+                       @timeout-history))})
+
+;; ============================================
+;; Connector Health Scoring
+;; ============================================
+
+(def health-scores
+  "Health scores for each connector."
+  (atom {}))
+
+(def health-score-config
+  "Configuration for health scoring."
+  (atom {:enabled true
+         :success-weight 1.0
+         :failure-weight -2.0
+         :timeout-weight -1.5
+         :latency-weight -0.01
+         :decay-factor 0.95
+         :min-score 0.0
+         :max-score 100.0
+         :initial-score 50.0}))
+
+(defn get-health-score-config
+  "Get current health score configuration."
+  []
+  @health-score-config)
+
+(defn set-health-score-config
+  "Update health score configuration."
+  [config]
+  (swap! health-score-config merge config))
+
+(defn get-connector-health-score
+  "Get the health score for a connector."
+  [connector-type]
+  (let [config @health-score-config]
+    (get @health-scores connector-type (:initial-score config))))
+
+(defn update-health-score
+  "Update the health score for a connector based on an event."
+  [connector-type event-type & {:keys [latency-ms] :or {latency-ms 0}}]
+  (let [config @health-score-config
+        current-score (get-connector-health-score connector-type)
+        decayed-score (* current-score (:decay-factor config))
+        delta (case event-type
+                :success (:success-weight config)
+                :failure (:failure-weight config)
+                :timeout (:timeout-weight config)
+                0)
+        latency-penalty (if (pos? latency-ms)
+                         (* (:latency-weight config) (/ latency-ms 1000.0))
+                         0)
+        new-score (-> (+ decayed-score delta latency-penalty)
+                      (max (:min-score config))
+                      (min (:max-score config)))]
+    (swap! health-scores assoc connector-type new-score)
+    new-score))
+
+(defn get-healthiest-connector
+  "Get the connector type with the highest health score from a list."
+  [connector-types]
+  (let [scores (map (fn [t] {:type t :score (get-connector-health-score t)}) connector-types)]
+    (:type (apply max-key :score scores))))
+
+(defn get-all-health-scores
+  "Get health scores for all connectors."
+  []
+  (let [config @health-score-config]
+    {:config config
+     :scores @health-scores
+     :summary (into {}
+                    (map (fn [[k v]]
+                           [k {:score v
+                               :status (cond
+                                        (>= v 80) :healthy
+                                        (>= v 50) :degraded
+                                        (>= v 20) :unhealthy
+                                        :else :critical)}])
+                         @health-scores))}))
+
+;; ============================================
+;; Request Tracing / Correlation IDs
+;; ============================================
+
+(def trace-store
+  "Store for request traces."
+  (atom {}))
+
+(def trace-config
+  "Configuration for request tracing."
+  (atom {:enabled true
+         :max-traces 10000
+         :retention-ms 3600000
+         :include-headers false
+         :include-body false}))
+
+(defn get-trace-config
+  "Get current trace configuration."
+  []
+  @trace-config)
+
+(defn set-trace-config
+  "Update trace configuration."
+  [config]
+  (swap! trace-config merge config))
+
+(defn generate-trace-id
+  "Generate a unique trace ID."
+  []
+  (str "trace-" (System/currentTimeMillis) "-" (random-uuid)))
+
+(defn generate-span-id
+  "Generate a unique span ID."
+  []
+  (str "span-" (random-uuid)))
+
+(defn start-trace
+  "Start a new trace."
+  [& {:keys [trace-id operation metadata] :or {trace-id (generate-trace-id) operation "unknown" metadata {}}}]
+  (let [trace {:trace-id trace-id
+               :operation operation
+               :metadata metadata
+               :started-at (System/currentTimeMillis)
+               :spans []
+               :status :in-progress}]
+    (swap! trace-store assoc trace-id trace)
+    trace-id))
+
+(defn start-span
+  "Start a new span within a trace."
+  [trace-id span-name & {:keys [parent-span-id metadata] :or {metadata {}}}]
+  (let [span-id (generate-span-id)
+        span {:span-id span-id
+              :name span-name
+              :parent-span-id parent-span-id
+              :metadata metadata
+              :started-at (System/currentTimeMillis)
+              :status :in-progress}]
+    (swap! trace-store update-in [trace-id :spans] conj span)
+    span-id))
+
+(defn end-span
+  "End a span within a trace."
+  [trace-id span-id & {:keys [status result error] :or {status :completed}}]
+  (swap! trace-store update-in [trace-id :spans]
+         (fn [spans]
+           (mapv (fn [span]
+                   (if (= (:span-id span) span-id)
+                     (assoc span
+                            :ended-at (System/currentTimeMillis)
+                            :duration-ms (- (System/currentTimeMillis) (:started-at span))
+                            :status status
+                            :result result
+                            :error error)
+                     span))
+                 spans))))
+
+(defn end-trace
+  "End a trace."
+  [trace-id & {:keys [status result error] :or {status :completed}}]
+  (swap! trace-store update trace-id
+         (fn [trace]
+           (assoc trace
+                  :ended-at (System/currentTimeMillis)
+                  :duration-ms (- (System/currentTimeMillis) (:started-at trace))
+                  :status status
+                  :result result
+                  :error error))))
+
+(defn get-trace
+  "Get a trace by ID."
+  [trace-id]
+  (get @trace-store trace-id))
+
+(defn with-tracing
+  "Execute a function with tracing."
+  [operation f & {:keys [metadata] :or {metadata {}}}]
+  (if-not (:enabled @trace-config)
+    (f)
+    (let [trace-id (start-trace :operation operation :metadata metadata)
+          span-id (start-span trace-id operation)]
+      (try
+        (let [result (f)]
+          (end-span trace-id span-id :status :completed :result (when (:include-body @trace-config) result))
+          (end-trace trace-id :status :completed)
+          result)
+        (catch Exception e
+          (end-span trace-id span-id :status :failed :error (.getMessage e))
+          (end-trace trace-id :status :failed :error (.getMessage e))
+          (throw e))))))
+
+(defn cleanup-old-traces
+  "Remove traces older than retention period."
+  []
+  (let [config @trace-config
+        cutoff (- (System/currentTimeMillis) (:retention-ms config))]
+    (swap! trace-store
+           (fn [store]
+             (into {}
+                   (filter (fn [[_ trace]]
+                            (> (:started-at trace) cutoff))
+                           store))))))
+
+(defn get-trace-stats
+  "Get statistics about traces."
+  []
+  (let [traces (vals @trace-store)
+        completed (filter #(= (:status %) :completed) traces)
+        failed (filter #(= (:status %) :failed) traces)]
+    {:total-traces (count traces)
+     :completed-traces (count completed)
+     :failed-traces (count failed)
+     :in-progress-traces (count (filter #(= (:status %) :in-progress) traces))
+     :avg-duration-ms (if (seq completed)
+                        (/ (reduce + (map :duration-ms completed)) (count completed))
+                        0)}))
+
 (def connector-registry
   "Registry of all available connectors."
   {:zapier {:create create-zapier-connector
