@@ -1,0 +1,28 @@
+{
+  "keys": [
+    {
+      "key_hash": "a99059dc20eb8017d5e256069a6eee956978bc814bbb926dfc2f28d3700ccbca",
+      "name": "test",
+      "created_at": "2026-01-18T00:44:21.468451",
+      "expires_at": null,
+      "rate_limit_multiplier": 1.0,
+      "scopes": [
+        "read"
+      ],
+      "enabled": true,
+      "usage_count": 0
+    },
+    {
+      "key_hash": "aa8dab689d8fbb77351599248f3906206f0b8cb9b84b264308f4213913168fdc",
+      "name": "test",
+      "created_at": "2026-01-18T00:45:10.504120",
+      "expires_at": null,
+      "rate_limit_multiplier": 1.0,
+      "scopes": [
+        "read"
+      ],
+      "enabled": true,
+      "usage_count": 1
+    }
+  ]
+}
