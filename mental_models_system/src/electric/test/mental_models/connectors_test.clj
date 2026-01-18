@@ -1818,3 +1818,112 @@
     (let [mock-logger {:type :mock}
           connector {:injected-logger mock-logger}]
       (is (= mock-logger (conn/get-injected-logger connector))))))
+
+;; ============================================
+;; Connector Pool Manager Tests
+;; ============================================
+
+(deftest test-connector-pool-atom
+  (testing "Connector pool atom is initialized"
+    (is (instance? clojure.lang.Atom conn/connector-pool))
+    (is (map? @conn/connector-pool))
+    (is (contains? @conn/connector-pool :pools))
+    (is (contains? @conn/connector-pool :config))))
+
+(deftest test-pool-config-defaults
+  (testing "Pool config has correct defaults"
+    (let [config (conn/get-pool-config)]
+      (is (= 10 (:max-pool-size config)))
+      (is (= 1 (:min-pool-size config)))
+      (is (= 300000 (:max-idle-time-ms config)))
+      (is (= 60000 (:validation-interval-ms config))))))
+
+(deftest test-set-pool-config
+  (testing "Set pool config updates values"
+    (let [original (conn/get-pool-config)]
+      (conn/set-pool-config {:max-pool-size 20})
+      (is (= 20 (:max-pool-size (conn/get-pool-config))))
+      ;; Restore
+      (conn/set-pool-config original))))
+
+(deftest test-acquire-from-pool
+  (testing "Acquire from pool creates new connector"
+    (conn/drain-pool)
+    (let [result (conn/acquire-from-pool :file {:base-path "/tmp"})]
+      (is (map? result))
+      (is (contains? result :connector))
+      (is (contains? result :pool-entry))
+      (is (false? (:from-pool result)))
+      ;; Release and clean up
+      (conn/release-to-pool (:pool-entry result))
+      (conn/drain-pool))))
+
+(deftest test-acquire-from-pool-reuses
+  (testing "Acquire from pool reuses existing connector"
+    (conn/drain-pool)
+    ;; First acquisition
+    (let [result1 (conn/acquire-from-pool :file {:base-path "/tmp"})]
+      (conn/release-to-pool (:pool-entry result1))
+      ;; Second acquisition should reuse
+      (let [result2 (conn/acquire-from-pool :file {:base-path "/tmp"})]
+        (is (true? (:from-pool result2)))
+        (conn/release-to-pool (:pool-entry result2))))
+    (conn/drain-pool)))
+
+(deftest test-release-to-pool
+  (testing "Release to pool marks connector as available"
+    (conn/drain-pool)
+    (let [result (conn/acquire-from-pool :file {:base-path "/tmp"})
+          entry (:pool-entry result)]
+      (is (true? @(:in-use entry)))
+      (conn/release-to-pool entry)
+      (is (false? @(:in-use entry))))
+    (conn/drain-pool)))
+
+(deftest test-with-pooled-connector
+  (testing "With pooled connector auto-releases"
+    (conn/drain-pool)
+    (let [connector-used (atom nil)]
+      (conn/with-pooled-connector :file {:base-path "/tmp"}
+        (fn [conn]
+          (reset! connector-used conn)
+          "result"))
+      ;; Connector should be released
+      (let [stats (conn/get-pool-stats)]
+        (is (= 1 (:total-connectors stats)))))
+    (conn/drain-pool)))
+
+(deftest test-get-pool-stats
+  (testing "Get pool stats returns correct information"
+    (conn/drain-pool)
+    (let [result (conn/acquire-from-pool :file {:base-path "/tmp"})
+          stats (conn/get-pool-stats)]
+      (is (= 1 (:total-pools stats)))
+      (is (= 1 (:total-connectors stats)))
+      (conn/release-to-pool (:pool-entry result)))
+    (conn/drain-pool)))
+
+(deftest test-drain-pool
+  (testing "Drain pool removes all connectors"
+    (let [result (conn/acquire-from-pool :file {:base-path "/tmp"})]
+      (conn/release-to-pool (:pool-entry result))
+      (conn/drain-pool)
+      (let [stats (conn/get-pool-stats)]
+        (is (= 0 (:total-pools stats)))
+        (is (= 0 (:total-connectors stats)))))))
+
+(deftest test-cleanup-idle-connectors
+  (testing "Cleanup removes idle connectors"
+    (conn/drain-pool)
+    ;; Set very short idle time for testing
+    (let [original-config (conn/get-pool-config)]
+      (conn/set-pool-config {:max-idle-time-ms 1 :min-pool-size 0})
+      (let [result (conn/acquire-from-pool :file {:base-path "/tmp"})]
+        (conn/release-to-pool (:pool-entry result))
+        (Thread/sleep 10)
+        (conn/cleanup-idle-connectors)
+        (let [stats (conn/get-pool-stats)]
+          (is (= 0 (:total-connectors stats)))))
+      ;; Restore config
+      (conn/set-pool-config original-config))
+    (conn/drain-pool)))
