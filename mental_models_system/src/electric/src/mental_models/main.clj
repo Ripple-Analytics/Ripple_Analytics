@@ -244,13 +244,42 @@
         /* Status indicators */
         .status-active { color: var(--accent-red); }
         .status-inactive { color: var(--gray-400); }
-        /* Progress bars */
-        .progress-bar { background: var(--gray-200); }
-        .progress-fill { background: var(--gray-700); }
-        .progress-fill.accent { background: var(--accent-red); }
-    </style>
+            /* Progress bars */
+            .progress-bar { background: var(--gray-200); }
+            .progress-fill { background: var(--gray-700); }
+            .progress-fill.accent { background: var(--accent-red); }
+            /* Clickable metrics with data provenance */
+            .metric-value.clickable { cursor: pointer; text-decoration: underline; text-decoration-style: dotted; }
+            .metric-value.clickable:hover { color: var(--accent-red); }
+            /* Data Provenance Modal */
+            .provenance-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+            .provenance-modal.active { display: flex; justify-content: center; align-items: center; }
+            .provenance-content { background: var(--white); border: 2px solid var(--gray-900); max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
+            .provenance-header { background: var(--gray-900); color: var(--white); padding: 12px 16px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+            .provenance-close { cursor: pointer; font-size: 18px; }
+            .provenance-body { padding: 16px; }
+            .provenance-row { display: flex; border-bottom: 1px solid var(--gray-200); padding: 8px 0; }
+            .provenance-label { font-weight: bold; width: 120px; color: var(--gray-600); font-size: 10px; text-transform: uppercase; }
+            .provenance-value { flex: 1; font-family: ui-monospace, monospace; font-size: 11px; word-break: break-all; }
+            .provenance-value.na { color: var(--accent-red); font-weight: bold; }
+            .provenance-value.real { color: #166534; }
+            .provenance-formula { background: var(--gray-100); padding: 8px; margin-top: 8px; font-family: ui-monospace, monospace; font-size: 10px; border-left: 3px solid var(--accent-red); }
+        </style>
 </head>
 <body class=\"bg-gray-50\">
+    <!-- Data Provenance Modal - Click any metric to see where the data comes from -->
+    <div id=\"provenance-modal\" class=\"provenance-modal\" onclick=\"if(event.target===this)closeProvenance()\">
+        <div class=\"provenance-content\">
+            <div class=\"provenance-header\">
+                <span id=\"provenance-title\">DATA PROVENANCE</span>
+                <span class=\"provenance-close\" onclick=\"closeProvenance()\">&times;</span>
+            </div>
+            <div class=\"provenance-body\" id=\"provenance-body\">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+    
     <div id=\"app\">
         <!-- Header with Beast Mode Toggle -->
         <div class=\"flex justify-between items-center\" style=\"background: var(--gray-900);\">
@@ -279,32 +308,32 @@
         
         <!-- Dashboard -->
         <div id=\"dashboard\" class=\"p-4\">
-                        <div class=\"grid grid-cols-6 gap-4 mb-4\">
-                            <div class=\"metric-card bg-white border rounded shadow-sm\">
-                                <div class=\"metric-value\" id=\"total-models\">NA</div>
-                                <div class=\"metric-label\">Models</div>
-                            </div>
-                            <div class=\"metric-card bg-white border rounded shadow-sm\">
-                                <div class=\"metric-value\" id=\"total-failures\">NA</div>
-                                <div class=\"metric-label\">Failure Modes</div>
-                            </div>
-                            <div class=\"metric-card bg-white border rounded shadow-sm\">
-                                <div class=\"metric-value\" id=\"total-categories\">NA</div>
-                                <div class=\"metric-label\">Categories</div>
-                            </div>
-                            <div class=\"metric-card bg-white border rounded shadow-sm\">
-                                <div class=\"metric-value\" id=\"avg-failures\">NA</div>
-                                <div class=\"metric-label\">Avg Failures/Model</div>
-                            </div>
-                            <div class=\"metric-card bg-white border rounded shadow-sm\">
-                                <div class=\"metric-value\" id=\"coverage\">NA</div>
-                                <div class=\"metric-label\">Coverage</div>
-                            </div>
-                            <div class=\"metric-card bg-white border rounded shadow-sm\">
-                                <div class=\"metric-value\" id=\"api-status\">NA</div>
-                                <div class=\"metric-label\">Status</div>
-                            </div>
-                        </div>
+                                                <div class=\"grid grid-cols-6 gap-4 mb-4\">
+                                                    <div class=\"metric-card bg-white border rounded shadow-sm\">
+                                                        <div class=\"metric-value clickable\" id=\"total-models\" onclick=\"showProvenance('total-models')\">NA</div>
+                                                        <div class=\"metric-label\">Models (click for source)</div>
+                                                    </div>
+                                                    <div class=\"metric-card bg-white border rounded shadow-sm\">
+                                                        <div class=\"metric-value clickable\" id=\"total-failures\" onclick=\"showProvenance('total-failures')\">NA</div>
+                                                        <div class=\"metric-label\">Failure Modes (click for source)</div>
+                                                    </div>
+                                                    <div class=\"metric-card bg-white border rounded shadow-sm\">
+                                                        <div class=\"metric-value clickable\" id=\"total-categories\" onclick=\"showProvenance('total-categories')\">NA</div>
+                                                        <div class=\"metric-label\">Categories (click for source)</div>
+                                                    </div>
+                                                    <div class=\"metric-card bg-white border rounded shadow-sm\">
+                                                        <div class=\"metric-value clickable\" id=\"avg-failures\" onclick=\"showProvenance('avg-failures')\">NA</div>
+                                                        <div class=\"metric-label\">Avg Failures/Model (click for source)</div>
+                                                    </div>
+                                                    <div class=\"metric-card bg-white border rounded shadow-sm\">
+                                                        <div class=\"metric-value clickable\" id=\"coverage\" onclick=\"showProvenance('coverage')\">NA</div>
+                                                        <div class=\"metric-label\">Coverage (click for source)</div>
+                                                    </div>
+                                                    <div class=\"metric-card bg-white border rounded shadow-sm\">
+                                                        <div class=\"metric-value clickable\" id=\"api-status\" onclick=\"showProvenance('api-status')\">NA</div>
+                                                        <div class=\"metric-label\">Status (click for source)</div>
+                                                    </div>
+                                                </div>
             
             <div class=\"grid grid-cols-2 gap-4\">
                 <!-- Categories -->
@@ -1072,57 +1101,243 @@
             }
         }
         
-        // Store models data globally for map dropdown
-        window.modelsData = {};
+                // Store models data globally for map dropdown
+                window.modelsData = {};
         
-                            // Modified loadData to store models - ALL REAL CHECKS, NO HARDCODED VALUES
-                            async function loadDataAndStore() {
-                                try {
-                                    const response = await fetch('/api/models');
-                                    const data = await response.json();
-                                    window.modelsData = data.models;
+                // DATA PROVENANCE SYSTEM - Track where every metric comes from
+                // This is CRITICAL for a life-critical system - no fake data allowed
+                window.dataProvenance = {
+                    'total-models': {
+                        label: 'Total Models',
+                        source: 'NA - Not yet loaded',
+                        endpoint: '/api/models',
+                        field: 'data.total_models',
+                        rawValue: null,
+                        timestamp: null,
+                        isReal: false
+                    },
+                    'total-failures': {
+                        label: 'Total Failure Modes',
+                        source: 'NA - Not yet loaded',
+                        endpoint: '/api/models',
+                        field: 'data.total_failure_modes',
+                        rawValue: null,
+                        timestamp: null,
+                        isReal: false
+                    },
+                    'total-categories': {
+                        label: 'Total Categories',
+                        source: 'NA - Not yet loaded',
+                        endpoint: '/api/models',
+                        field: 'Object.keys(data.categories).length',
+                        formula: 'Count of unique category keys from API response',
+                        rawValue: null,
+                        timestamp: null,
+                        isReal: false
+                    },
+                    'avg-failures': {
+                        label: 'Average Failures per Model',
+                        source: 'NA - Not yet loaded',
+                        endpoint: '/api/models',
+                        field: 'Calculated',
+                        formula: 'total_failure_modes / total_models',
+                        rawValue: null,
+                        numerator: null,
+                        denominator: null,
+                        timestamp: null,
+                        isReal: false
+                    },
+                    'coverage': {
+                        label: 'Coverage Percentage',
+                        source: 'NA - Not yet loaded',
+                        endpoint: '/api/models',
+                        field: 'Calculated',
+                        formula: '(models_with_failure_modes / total_models) * 100',
+                        rawValue: null,
+                        numerator: null,
+                        denominator: null,
+                        timestamp: null,
+                        isReal: false
+                    },
+                    'api-status': {
+                        label: 'API Status',
+                        source: 'NA - Not yet loaded',
+                        endpoint: '/api/models',
+                        field: 'HTTP response status',
+                        rawValue: null,
+                        timestamp: null,
+                        isReal: false
+                    }
+                };
+        
+                function showProvenance(metricId) {
+                    const prov = window.dataProvenance[metricId];
+                    if (!prov) {
+                        alert('No provenance data available for this metric');
+                        return;
+                    }
+            
+                    const modal = document.getElementById('provenance-modal');
+                    const title = document.getElementById('provenance-title');
+                    const body = document.getElementById('provenance-body');
+            
+                    title.textContent = 'DATA PROVENANCE: ' + prov.label;
+            
+                    let html = '';
+            
+                    // Data status
+                    html += '<div class=\"provenance-row\">';
+                    html += '<div class=\"provenance-label\">Data Status</div>';
+                    html += '<div class=\"provenance-value ' + (prov.isReal ? 'real' : 'na') + '\">' + (prov.isReal ? 'REAL DATA' : 'NO DATA AVAILABLE') + '</div>';
+                    html += '</div>';
+            
+                    // Current value
+                    html += '<div class=\"provenance-row\">';
+                    html += '<div class=\"provenance-label\">Current Value</div>';
+                    html += '<div class=\"provenance-value\">' + document.getElementById(metricId).textContent + '</div>';
+                    html += '</div>';
+            
+                    // Source
+                    html += '<div class=\"provenance-row\">';
+                    html += '<div class=\"provenance-label\">Source</div>';
+                    html += '<div class=\"provenance-value\">' + prov.source + '</div>';
+                    html += '</div>';
+            
+                    // API Endpoint
+                    html += '<div class=\"provenance-row\">';
+                    html += '<div class=\"provenance-label\">API Endpoint</div>';
+                    html += '<div class=\"provenance-value\">' + prov.endpoint + '</div>';
+                    html += '</div>';
+            
+                    // Field
+                    html += '<div class=\"provenance-row\">';
+                    html += '<div class=\"provenance-label\">Data Field</div>';
+                    html += '<div class=\"provenance-value\">' + prov.field + '</div>';
+                    html += '</div>';
+            
+                    // Raw value
+                    if (prov.rawValue !== null) {
+                        html += '<div class=\"provenance-row\">';
+                        html += '<div class=\"provenance-label\">Raw Value</div>';
+                        html += '<div class=\"provenance-value\">' + JSON.stringify(prov.rawValue) + '</div>';
+                        html += '</div>';
+                    }
+            
+                    // Formula (if calculated)
+                    if (prov.formula) {
+                        html += '<div class=\"provenance-formula\">';
+                        html += '<strong>Calculation:</strong> ' + prov.formula;
+                        if (prov.numerator !== null && prov.denominator !== null) {
+                            html += '<br><strong>Values:</strong> ' + prov.numerator + ' / ' + prov.denominator;
+                        }
+                        html += '</div>';
+                    }
+            
+                    // Timestamp
+                    html += '<div class=\"provenance-row\">';
+                    html += '<div class=\"provenance-label\">Last Updated</div>';
+                    html += '<div class=\"provenance-value\">' + (prov.timestamp || 'Never') + '</div>';
+                    html += '</div>';
+            
+                    body.innerHTML = html;
+                    modal.classList.add('active');
+                }
+        
+                function closeProvenance() {
+                    document.getElementById('provenance-modal').classList.remove('active');
+                }
+        
+                                                                // Modified loadData to store models - ALL REAL CHECKS, NO HARDCODED VALUES
+                                                        async function loadDataAndStore() {
+                                                            const timestamp = new Date().toISOString();
+                                                            try {
+                                                                const response = await fetch('/api/models');
+                                                                const data = await response.json();
+                                                                window.modelsData = data.models;
                 
-                                    // Calculate REAL metrics from actual data
-                                    const totalModels = data.total_models || 0;
-                                    const totalFailures = data.total_failure_modes || 0;
-                                    const totalCategories = Object.keys(data.categories || {}).length;
+                                                                // Calculate REAL metrics from actual data
+                                                                const totalModels = data.total_models || 0;
+                                                                const totalFailures = data.total_failure_modes || 0;
+                                                                const totalCategories = Object.keys(data.categories || {}).length;
                         
-                                    // Calculate REAL average failures per model
-                                    const avgFailures = totalModels > 0 ? (totalFailures / totalModels).toFixed(1) : 'NA';
+                                                                // Calculate REAL average failures per model
+                                                                const avgFailures = totalModels > 0 ? (totalFailures / totalModels).toFixed(1) : 'NA';
                         
-                                    // Calculate REAL coverage (models with at least one failure mode)
-                                    let modelsWithFailures = 0;
-                                    for (const [name, model] of Object.entries(data.models || {})) {
-                                        if (model.failure_modes && model.failure_modes.length > 0) {
-                                            modelsWithFailures++;
-                                        }
-                                    }
-                                    const coverage = totalModels > 0 ? Math.round((modelsWithFailures / totalModels) * 100) + '%' : 'NA';
+                                                                // Calculate REAL coverage (models with at least one failure mode)
+                                                                let modelsWithFailures = 0;
+                                                                for (const [name, model] of Object.entries(data.models || {})) {
+                                                                    if (model.failure_modes && model.failure_modes.length > 0) {
+                                                                        modelsWithFailures++;
+                                                                    }
+                                                                }
+                                                                const coverage = totalModels > 0 ? Math.round((modelsWithFailures / totalModels) * 100) + '%' : 'NA';
                         
-                                    // Update dashboard counts from REAL API data - show NA if no data
-                                    document.getElementById('total-models').textContent = totalModels > 0 ? totalModels : 'NA';
-                                    document.getElementById('total-failures').textContent = totalFailures > 0 ? totalFailures : 'NA';
-                                    document.getElementById('total-categories').textContent = totalCategories > 0 ? totalCategories : 'NA';
-                                    document.getElementById('avg-failures').textContent = avgFailures;
-                                    document.getElementById('coverage').textContent = coverage;
-                                    document.getElementById('api-status').textContent = 'Live';
+                                                                // UPDATE DATA PROVENANCE - Track where every metric comes from
+                                                                window.dataProvenance['total-models'].source = 'API Response: /api/models';
+                                                                window.dataProvenance['total-models'].rawValue = data.total_models;
+                                                                window.dataProvenance['total-models'].timestamp = timestamp;
+                                                                window.dataProvenance['total-models'].isReal = totalModels > 0;
+                                    
+                                                                window.dataProvenance['total-failures'].source = 'API Response: /api/models';
+                                                                window.dataProvenance['total-failures'].rawValue = data.total_failure_modes;
+                                                                window.dataProvenance['total-failures'].timestamp = timestamp;
+                                                                window.dataProvenance['total-failures'].isReal = totalFailures > 0;
+                                    
+                                                                window.dataProvenance['total-categories'].source = 'Calculated from API Response';
+                                                                window.dataProvenance['total-categories'].rawValue = Object.keys(data.categories || {});
+                                                                window.dataProvenance['total-categories'].timestamp = timestamp;
+                                                                window.dataProvenance['total-categories'].isReal = totalCategories > 0;
+                                    
+                                                                window.dataProvenance['avg-failures'].source = 'Calculated from API Response';
+                                                                window.dataProvenance['avg-failures'].rawValue = avgFailures;
+                                                                window.dataProvenance['avg-failures'].numerator = totalFailures;
+                                                                window.dataProvenance['avg-failures'].denominator = totalModels;
+                                                                window.dataProvenance['avg-failures'].timestamp = timestamp;
+                                                                window.dataProvenance['avg-failures'].isReal = totalModels > 0;
+                                    
+                                                                window.dataProvenance['coverage'].source = 'Calculated from API Response';
+                                                                window.dataProvenance['coverage'].rawValue = coverage;
+                                                                window.dataProvenance['coverage'].numerator = modelsWithFailures;
+                                                                window.dataProvenance['coverage'].denominator = totalModels;
+                                                                window.dataProvenance['coverage'].timestamp = timestamp;
+                                                                window.dataProvenance['coverage'].isReal = totalModels > 0;
+                                    
+                                                                window.dataProvenance['api-status'].source = 'HTTP Response Status';
+                                                                window.dataProvenance['api-status'].rawValue = response.status;
+                                                                window.dataProvenance['api-status'].timestamp = timestamp;
+                                                                window.dataProvenance['api-status'].isReal = true;
                         
-                                    // Update header counts dynamically from REAL data
-                                    document.getElementById('header-models').textContent = totalModels > 0 ? totalModels : 'NA';
-                                    document.getElementById('header-failures').textContent = totalFailures > 0 ? totalFailures : 'NA';
-                                } catch (error) {
-                                    console.error('Failed to load models:', error);
-                                    // Show NA for all metrics on error - NEVER show fake data
-                                    document.getElementById('total-models').textContent = 'NA';
-                                    document.getElementById('total-failures').textContent = 'NA';
-                                    document.getElementById('total-categories').textContent = 'NA';
-                                    document.getElementById('avg-failures').textContent = 'NA';
-                                    document.getElementById('coverage').textContent = 'NA';
-                                    document.getElementById('api-status').textContent = 'Error';
-                                    document.getElementById('header-models').textContent = 'NA';
-                                    document.getElementById('header-failures').textContent = 'NA';
-                                    return;
-                                }
+                                                                // Update dashboard counts from REAL API data - show NA if no data
+                                                                document.getElementById('total-models').textContent = totalModels > 0 ? totalModels : 'NA';
+                                                                document.getElementById('total-failures').textContent = totalFailures > 0 ? totalFailures : 'NA';
+                                                                document.getElementById('total-categories').textContent = totalCategories > 0 ? totalCategories : 'NA';
+                                                                document.getElementById('avg-failures').textContent = avgFailures;
+                                                                document.getElementById('coverage').textContent = coverage;
+                                                                document.getElementById('api-status').textContent = 'Live';
+                        
+                                                                // Update header counts dynamically from REAL data
+                                                                document.getElementById('header-models').textContent = totalModels > 0 ? totalModels : 'NA';
+                                                                document.getElementById('header-failures').textContent = totalFailures > 0 ? totalFailures : 'NA';
+                                                            } catch (error) {
+                                                                console.error('Failed to load models:', error);
+                                                                // Update provenance to show error state
+                                                                const errorTimestamp = new Date().toISOString();
+                                                                for (const key of Object.keys(window.dataProvenance)) {
+                                                                    window.dataProvenance[key].source = 'ERROR: API call failed - ' + error.message;
+                                                                    window.dataProvenance[key].timestamp = errorTimestamp;
+                                                                    window.dataProvenance[key].isReal = false;
+                                                                }
+                                                                // Show NA for all metrics on error - NEVER show fake data
+                                                                document.getElementById('total-models').textContent = 'NA';
+                                                                document.getElementById('total-failures').textContent = 'NA';
+                                                                document.getElementById('total-categories').textContent = 'NA';
+                                                                document.getElementById('avg-failures').textContent = 'NA';
+                                                                document.getElementById('coverage').textContent = 'NA';
+                                                                document.getElementById('api-status').textContent = 'Error';
+                                                                document.getElementById('header-models').textContent = 'NA';
+                                                                document.getElementById('header-failures').textContent = 'NA';
+                                                                return;
+                                                            }
             
                         // Populate categories table
             const categoriesTable = document.getElementById('categories-table');
