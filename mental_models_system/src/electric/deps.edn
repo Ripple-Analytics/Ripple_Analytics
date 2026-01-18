@@ -11,6 +11,9 @@
         ring/ring-jetty-adapter {:mvn/version "1.10.0"}
         ring/ring-defaults {:mvn/version "0.4.0"}
         
+        ;; HTTP Client (for headless web scraping)
+        clj-http/clj-http {:mvn/version "3.12.3"}
+        
         ;; JSON
         cheshire/cheshire {:mvn/version "5.12.0"}
         

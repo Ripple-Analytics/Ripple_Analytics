@@ -10,12 +10,15 @@
    All devices work at maximum capacity continuously."
   (:require [clojure.core.async :as async :refer [go go-loop <! >! chan close! timeout]]
             [clojure.tools.logging :as log]
+            [clojure.string :as str]
+            [clj-http.client :as http]
             [mental-models.distributed :as dist]
             [mental-models.analysis :as analysis]
             [mental-models.models :as models])
   (:import [java.util UUID]
            [java.time Instant LocalDateTime ZoneId]
-           [java.security MessageDigest]))
+           [java.security MessageDigest]
+           [java.util.regex Pattern]))
 
 ;; ============================================
 ;; Configuration
@@ -84,20 +87,65 @@
    :last-run nil
    :errors []})
 
+(defn extract-links
+  "Extract links from HTML content."
+  [html base-url]
+  (let [href-pattern (Pattern/compile "href=[\"']([^\"']+)[\"']")
+        matcher (.matcher href-pattern html)]
+    (loop [links []]
+      (if (.find matcher)
+        (let [href (.group matcher 1)
+              full-url (cond
+                         (str/starts-with? href "http") href
+                         (str/starts-with? href "//") (str "https:" href)
+                         (str/starts-with? href "/") (str base-url href)
+                         :else (str base-url "/" href))]
+          (recur (conj links full-url)))
+        (distinct links)))))
+
+(defn extract-text
+  "Extract text content from HTML, removing tags."
+  [html]
+  (-> html
+      (str/replace #"<script[^>]*>[\s\S]*?</script>" "")
+      (str/replace #"<style[^>]*>[\s\S]*?</style>" "")
+      (str/replace #"<[^>]+>" " ")
+      (str/replace #"\s+" " ")
+      str/trim))
+
 (defn scrape-url-headless
-  "Scrape a URL using headless HTTP client."
+  "Scrape a URL using headless HTTP client (clj-http).
+   Returns extracted content and links."
   [url & {:keys [depth] :or {depth 1}}]
-  ;; Uses clj-http or similar for headless scraping
-  ;; Returns extracted content and links
   (try
-    (log/debug "Scraping URL:" url)
-    ;; Simulate scraping - in production would use clj-http
-    {:url url
-     :status :success
-     :content-length 0
-     :links []
-     :text ""
-     :scraped-at (Instant/now)}
+    (log/info "Scraping URL:" url)
+    (let [user-agent (get-in config [:scraper :user-agent])
+          response (http/get url
+                            {:headers {"User-Agent" user-agent}
+                             :socket-timeout 30000
+                             :connection-timeout 10000
+                             :throw-exceptions false
+                             :as :auto})
+          status (:status response)
+          body (:body response)
+          content-type (get-in response [:headers "Content-Type"] "")]
+      (if (and (= 200 status) (str/includes? content-type "text/html"))
+        (let [base-url (str/replace url #"(https?://[^/]+).*" "$1")
+              links (extract-links body base-url)
+              text (extract-text body)]
+          {:url url
+           :status :success
+           :http-status status
+           :content-length (count body)
+           :content-type content-type
+           :links links
+           :text text
+           :scraped-at (Instant/now)})
+        {:url url
+         :status :error
+         :http-status status
+         :error (str "Non-HTML or error response: " status " " content-type)
+         :scraped-at (Instant/now)}))
     (catch Exception e
       {:url url
        :status :error
