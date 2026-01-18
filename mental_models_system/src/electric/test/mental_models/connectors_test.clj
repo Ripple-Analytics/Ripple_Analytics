@@ -1667,3 +1667,154 @@
     (let [config {:secret "value"}
           redacted (conn/redact-sensitive-config :unknown-type config)]
       (is (= config redacted)))))
+
+;; ============================================
+;; Dependency Injection Tests
+;; ============================================
+
+(deftest test-di-container-atom
+  (testing "DI container atom is initialized"
+    (is (instance? clojure.lang.Atom conn/di-container))
+    (is (map? @conn/di-container))
+    (is (contains? @conn/di-container :http-client))
+    (is (contains? @conn/di-container :cache))
+    (is (contains? @conn/di-container :metrics))
+    (is (contains? @conn/di-container :logger))
+    (is (contains? @conn/di-container :environment))))
+
+(deftest test-register-dependency
+  (testing "Register dependency adds to container"
+    (let [original (get @conn/di-container :test-dep)]
+      (conn/register-dependency :test-dep {:type :test})
+      (is (= {:type :test} (conn/get-dependency :test-dep)))
+      ;; Clean up
+      (swap! conn/di-container dissoc :test-dep))))
+
+(deftest test-get-dependency
+  (testing "Get dependency returns registered value"
+    (conn/register-dependency :test-dep "test-value")
+    (is (= "test-value" (conn/get-dependency :test-dep)))
+    ;; Clean up
+    (swap! conn/di-container dissoc :test-dep)))
+
+(deftest test-get-dependency-nil
+  (testing "Get dependency returns nil for unregistered key"
+    (is (nil? (conn/get-dependency :nonexistent-dep)))))
+
+(deftest test-set-environment
+  (testing "Set environment updates container"
+    (let [original (conn/get-environment)]
+      (conn/set-environment :test)
+      (is (= :test (conn/get-environment)))
+      ;; Restore
+      (conn/set-environment original))))
+
+(deftest test-get-environment
+  (testing "Get environment returns current environment"
+    (is (keyword? (conn/get-environment)))))
+
+(deftest test-with-test-dependencies
+  (testing "With test dependencies temporarily injects and restores"
+    (let [original-env (conn/get-environment)]
+      (conn/with-test-dependencies
+        {:custom-dep "test-value"}
+        (fn []
+          (is (= :test (conn/get-environment)))
+          (is (= "test-value" (conn/get-dependency :custom-dep)))))
+      ;; Verify restoration
+      (is (= original-env (conn/get-environment)))
+      (is (nil? (conn/get-dependency :custom-dep))))))
+
+(deftest test-create-mock-http-client
+  (testing "Create mock HTTP client returns mock structure"
+    (let [mock (conn/create-mock-http-client {"http://test.com" {:status 200 :body "OK"}})]
+      (is (= :mock (:type mock)))
+      (is (map? (:responses mock)))
+      (is (instance? clojure.lang.Atom (:request-log mock)))
+      (is (fn? (:make-request mock))))))
+
+(deftest test-create-mock-cache
+  (testing "Create mock cache returns mock structure"
+    (let [mock (conn/create-mock-cache)]
+      (is (= :mock (:type mock)))
+      (is (instance? clojure.lang.Atom (:store mock)))
+      (is (fn? (:get mock)))
+      (is (fn? (:put mock)))
+      (is (fn? (:invalidate mock)))
+      (is (fn? (:clear mock))))))
+
+(deftest test-mock-cache-operations
+  (testing "Mock cache operations work correctly"
+    (let [mock (conn/create-mock-cache)]
+      ;; Put and get
+      ((:put mock) "key1" "value1" 60000)
+      (is (= {:value "value1" :ttl 60000} ((:get mock) "key1")))
+      
+      ;; Invalidate
+      ((:invalidate mock) "key1")
+      (is (nil? ((:get mock) "key1")))
+      
+      ;; Clear
+      ((:put mock) "key2" "value2" 60000)
+      ((:clear mock))
+      (is (nil? ((:get mock) "key2"))))))
+
+(deftest test-create-mock-logger
+  (testing "Create mock logger returns mock structure"
+    (let [mock (conn/create-mock-logger)]
+      (is (= :mock (:type mock)))
+      (is (instance? clojure.lang.Atom (:logs mock)))
+      (is (fn? (:log mock)))
+      (is (fn? (:get-logs mock)))
+      (is (fn? (:clear mock))))))
+
+(deftest test-mock-logger-operations
+  (testing "Mock logger operations work correctly"
+    (let [mock (conn/create-mock-logger)]
+      ;; Log
+      ((:log mock) :info "Test message" {:extra "data"})
+      (let [logs ((:get-logs mock))]
+        (is (= 1 (count logs)))
+        (is (= :info (:level (first logs))))
+        (is (= "Test message" (:message (first logs)))))
+      
+      ;; Clear
+      ((:clear mock))
+      (is (empty? ((:get-logs mock)))))))
+
+(deftest test-inject-connector
+  (testing "Inject connector adds DI fields"
+    (let [connector (conn/inject-connector :file {:base-path "/tmp"})]
+      (is (true? (:di-enabled connector))))))
+
+(deftest test-inject-connector-with-custom-deps
+  (testing "Inject connector with custom dependencies"
+    (let [mock-cache (conn/create-mock-cache)
+          mock-logger (conn/create-mock-logger)
+          connector (conn/inject-connector :file {:base-path "/tmp"}
+                                           :cache mock-cache
+                                           :logger mock-logger)]
+      (is (= mock-cache (:injected-cache connector)))
+      (is (= mock-logger (:injected-logger connector))))))
+
+(deftest test-get-injected-http-client
+  (testing "Get injected HTTP client returns injected or default"
+    (let [mock-client {:type :mock}
+          connector {:injected-http-client mock-client}]
+      (is (= mock-client (conn/get-injected-http-client connector))))
+    
+    ;; Without injection, returns from container
+    (let [connector {}]
+      (is (nil? (conn/get-injected-http-client connector))))))
+
+(deftest test-get-injected-cache
+  (testing "Get injected cache returns injected or default"
+    (let [mock-cache {:type :mock}
+          connector {:injected-cache mock-cache}]
+      (is (= mock-cache (conn/get-injected-cache connector))))))
+
+(deftest test-get-injected-logger
+  (testing "Get injected logger returns injected or default"
+    (let [mock-logger {:type :mock}
+          connector {:injected-logger mock-logger}]
+      (is (= mock-logger (conn/get-injected-logger connector))))))
