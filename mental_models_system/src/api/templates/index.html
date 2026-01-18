@@ -211,102 +211,116 @@
                 <p class="text-gray-600 mb-6">Connect to various data sources to feed the Mental Models System.</p>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500">
+                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500" onclick="openConnectorModal('github')">
                         <div class="flex items-center mb-3">
                             <i data-lucide="github" class="w-8 h-8 text-gray-800 mr-3"></i>
                             <div>
                                 <h4 class="font-semibold">GitHub</h4>
-                                <span class="text-xs text-green-600">Available</span>
+                                <span id="github-status" class="text-xs text-gray-500">Not configured</span>
                             </div>
                         </div>
                         <p class="text-sm text-gray-600">Connect to repositories, issues, PRs, and commits for analysis.</p>
                         <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
                     </div>
                     
-                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500">
+                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500" onclick="openConnectorModal('slack')">
                         <div class="flex items-center mb-3">
                             <i data-lucide="slack" class="w-8 h-8 text-purple-600 mr-3"></i>
                             <div>
                                 <h4 class="font-semibold">Slack</h4>
-                                <span class="text-xs text-green-600">Available</span>
+                                <span id="slack-status" class="text-xs text-gray-500">Not configured</span>
                             </div>
                         </div>
                         <p class="text-sm text-gray-600">Analyze conversations and run commands via Slack bot.</p>
                         <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
                     </div>
                     
-                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500">
+                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500" onclick="openConnectorModal('gdrive')">
                         <div class="flex items-center mb-3">
                             <i data-lucide="hard-drive" class="w-8 h-8 text-blue-600 mr-3"></i>
                             <div>
                                 <h4 class="font-semibold">Google Drive</h4>
-                                <span class="text-xs text-green-600">Available</span>
+                                <span id="gdrive-status" class="text-xs text-gray-500">Not configured</span>
                             </div>
                         </div>
                         <p class="text-sm text-gray-600">Import documents and files from Google Drive.</p>
                         <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
                     </div>
                     
-                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500">
+                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500" onclick="openConnectorModal('database')">
                         <div class="flex items-center mb-3">
                             <i data-lucide="database" class="w-8 h-8 text-green-600 mr-3"></i>
                             <div>
                                 <h4 class="font-semibold">Database</h4>
-                                <span class="text-xs text-green-600">Available</span>
+                                <span id="database-status" class="text-xs text-gray-500">Not configured</span>
                             </div>
                         </div>
                         <p class="text-sm text-gray-600">Connect to PostgreSQL, MySQL, or SQLite databases.</p>
                         <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
                     </div>
                     
-                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500">
+                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500" onclick="openConnectorModal('webscraper')">
                         <div class="flex items-center mb-3">
                             <i data-lucide="globe" class="w-8 h-8 text-orange-600 mr-3"></i>
                             <div>
                                 <h4 class="font-semibold">Web Scraper</h4>
-                                <span class="text-xs text-green-600">Available</span>
+                                <span id="webscraper-status" class="text-xs text-gray-500">Not configured</span>
                             </div>
                         </div>
                         <p class="text-sm text-gray-600">Scrape web pages using BeautifulSoup, Scrapy, or Selenium.</p>
                         <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
                     </div>
                     
-                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500">
+                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500" onclick="openConnectorModal('files')">
                         <div class="flex items-center mb-3">
                             <i data-lucide="file-text" class="w-8 h-8 text-gray-600 mr-3"></i>
                             <div>
                                 <h4 class="font-semibold">Local Files</h4>
-                                <span class="text-xs text-green-600">Available</span>
+                                <span id="files-status" class="text-xs text-gray-500">Not configured</span>
                             </div>
                         </div>
                         <p class="text-sm text-gray-600">Process TXT, PDF, and DOCX files from local storage.</p>
                         <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
                     </div>
                     
-                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500">
+                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500" onclick="openConnectorModal('api')">
                         <div class="flex items-center mb-3">
                             <i data-lucide="link" class="w-8 h-8 text-indigo-600 mr-3"></i>
                             <div>
                                 <h4 class="font-semibold">REST API</h4>
-                                <span class="text-xs text-green-600">Available</span>
+                                <span id="api-status" class="text-xs text-gray-500">Not configured</span>
                             </div>
                         </div>
                         <p class="text-sm text-gray-600">Connect to any REST or GraphQL API endpoint.</p>
                         <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
                     </div>
                     
-                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500">
+                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500" onclick="openConnectorModal('lmstudio')">
                         <div class="flex items-center mb-3">
                             <i data-lucide="cpu" class="w-8 h-8 text-cyan-600 mr-3"></i>
                             <div>
                                 <h4 class="font-semibold">LM Studio</h4>
-                                <span class="text-xs text-yellow-600">Requires Local</span>
+                                <span id="lmstudio-status" class="text-xs text-yellow-600">Requires Local</span>
                             </div>
                         </div>
                         <p class="text-sm text-gray-600">Connect to local LLM via LM Studio at localhost:1234.</p>
                         <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="connector-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="modal-title" class="text-lg font-semibold">Configure Connector</h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div id="modal-content"></div>
             </div>
         </div>
     </div>
@@ -620,6 +634,184 @@
                 resultDiv.innerHTML = '<div class="bg-yellow-50 rounded-lg p-4 mt-3"><p class="text-yellow-700">Failure mode API not available. Consider these common failure modes:</p><ul class="list-disc list-inside text-sm mt-2"><li>Confirmation bias</li><li>Overconfidence</li><li>Incomplete analysis</li><li>Context blindness</li></ul></div>';
             }
         }
+
+        const connectorConfigs = {
+            github: {
+                title: 'GitHub Connector',
+                fields: [
+                    { name: 'token', label: 'Personal Access Token', type: 'password', placeholder: 'ghp_xxxxxxxxxxxx' },
+                    { name: 'owner', label: 'Repository Owner', type: 'text', placeholder: 'username or org' },
+                    { name: 'repo', label: 'Repository Name', type: 'text', placeholder: 'repository-name' }
+                ]
+            },
+            slack: {
+                title: 'Slack Connector',
+                fields: [
+                    { name: 'bot_token', label: 'Bot Token', type: 'password', placeholder: 'xoxb-xxxxxxxxxxxx' },
+                    { name: 'app_token', label: 'App Token (optional)', type: 'password', placeholder: 'xapp-xxxxxxxxxxxx' },
+                    { name: 'channel', label: 'Default Channel', type: 'text', placeholder: '#general' }
+                ]
+            },
+            gdrive: {
+                title: 'Google Drive Connector',
+                fields: [
+                    { name: 'credentials', label: 'Service Account JSON', type: 'textarea', placeholder: '{"type": "service_account", ...}' },
+                    { name: 'folder_id', label: 'Folder ID (optional)', type: 'text', placeholder: 'folder-id-from-url' }
+                ]
+            },
+            database: {
+                title: 'Database Connector',
+                fields: [
+                    { name: 'type', label: 'Database Type', type: 'select', options: ['PostgreSQL', 'MySQL', 'SQLite'] },
+                    { name: 'host', label: 'Host', type: 'text', placeholder: 'localhost' },
+                    { name: 'port', label: 'Port', type: 'text', placeholder: '5432' },
+                    { name: 'database', label: 'Database Name', type: 'text', placeholder: 'mental_models' },
+                    { name: 'username', label: 'Username', type: 'text', placeholder: 'postgres' },
+                    { name: 'password', label: 'Password', type: 'password', placeholder: '' }
+                ]
+            },
+            webscraper: {
+                title: 'Web Scraper Connector',
+                fields: [
+                    { name: 'engine', label: 'Scraping Engine', type: 'select', options: ['BeautifulSoup', 'Scrapy', 'Selenium (Headless)'] },
+                    { name: 'urls', label: 'URLs to Scrape (one per line)', type: 'textarea', placeholder: 'https://example.com\nhttps://example.org' },
+                    { name: 'selectors', label: 'CSS Selectors (optional)', type: 'text', placeholder: 'article, .content, #main' }
+                ]
+            },
+            files: {
+                title: 'Local Files Connector',
+                fields: [
+                    { name: 'paths', label: 'Watch Paths (one per line)', type: 'textarea', placeholder: '/path/to/documents\n/path/to/data' },
+                    { name: 'extensions', label: 'File Extensions', type: 'text', placeholder: '.txt, .pdf, .docx' },
+                    { name: 'recursive', label: 'Recursive Search', type: 'checkbox' }
+                ]
+            },
+            api: {
+                title: 'REST API Connector',
+                fields: [
+                    { name: 'base_url', label: 'Base URL', type: 'text', placeholder: 'https://api.example.com' },
+                    { name: 'auth_type', label: 'Authentication', type: 'select', options: ['None', 'API Key', 'Bearer Token', 'Basic Auth'] },
+                    { name: 'auth_value', label: 'Auth Value', type: 'password', placeholder: 'API key or token' },
+                    { name: 'headers', label: 'Custom Headers (JSON)', type: 'textarea', placeholder: '{"X-Custom-Header": "value"}' }
+                ]
+            },
+            lmstudio: {
+                title: 'LM Studio Connector',
+                fields: [
+                    { name: 'url', label: 'LM Studio URL', type: 'text', placeholder: 'http://localhost:1234' },
+                    { name: 'model', label: 'Model Name (optional)', type: 'text', placeholder: 'auto-detect' },
+                    { name: 'timeout', label: 'Timeout (seconds)', type: 'text', placeholder: '60' }
+                ]
+            }
+        };
+
+        let connectorSettings = JSON.parse(localStorage.getItem('connectorSettings') || '{}');
+
+        function openConnectorModal(connectorType) {
+            const config = connectorConfigs[connectorType];
+            if (!config) return;
+            
+            document.getElementById('modal-title').textContent = config.title;
+            const saved = connectorSettings[connectorType] || {};
+            
+            let html = '<form id="connector-form" class="space-y-4">';
+            config.fields.forEach(field => {
+                const value = saved[field.name] || '';
+                html += `<div>`;
+                html += `<label class="block text-sm font-medium text-gray-700 mb-1">${field.label}</label>`;
+                
+                if (field.type === 'select') {
+                    html += `<select name="${field.name}" class="w-full border rounded-lg px-3 py-2 text-sm">`;
+                    field.options.forEach(opt => {
+                        html += `<option value="${opt}" ${value === opt ? 'selected' : ''}>${opt}</option>`;
+                    });
+                    html += `</select>`;
+                } else if (field.type === 'textarea') {
+                    html += `<textarea name="${field.name}" class="w-full border rounded-lg px-3 py-2 text-sm h-24" placeholder="${field.placeholder || ''}">${value}</textarea>`;
+                } else if (field.type === 'checkbox') {
+                    html += `<input type="checkbox" name="${field.name}" class="rounded" ${value ? 'checked' : ''}>`;
+                } else {
+                    html += `<input type="${field.type}" name="${field.name}" value="${value}" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="${field.placeholder || ''}">`;
+                }
+                html += `</div>`;
+            });
+            
+            html += `<div class="flex space-x-3 pt-4">`;
+            html += `<button type="submit" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Save</button>`;
+            html += `<button type="button" onclick="testConnector('${connectorType}')" class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Test</button>`;
+            html += `</div>`;
+            html += `<div id="connector-status" class="text-sm mt-2"></div>`;
+            html += `</form>`;
+            
+            document.getElementById('modal-content').innerHTML = html;
+            document.getElementById('connector-modal').classList.remove('hidden');
+            lucide.createIcons();
+            
+            document.getElementById('connector-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveConnector(connectorType);
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('connector-modal').classList.add('hidden');
+        }
+
+        function saveConnector(connectorType) {
+            const form = document.getElementById('connector-form');
+            const formData = new FormData(form);
+            const settings = {};
+            
+            for (let [key, value] of formData.entries()) {
+                settings[key] = value;
+            }
+            
+            connectorSettings[connectorType] = settings;
+            localStorage.setItem('connectorSettings', JSON.stringify(connectorSettings));
+            
+            const statusEl = document.getElementById(`${connectorType}-status`);
+            if (statusEl) {
+                statusEl.textContent = 'Configured';
+                statusEl.className = 'text-xs text-green-600';
+            }
+            
+            document.getElementById('connector-status').innerHTML = '<span class="text-green-600">Settings saved!</span>';
+            setTimeout(closeModal, 1000);
+        }
+
+        async function testConnector(connectorType) {
+            const statusDiv = document.getElementById('connector-status');
+            statusDiv.innerHTML = '<span class="text-gray-500">Testing connection...</span>';
+            
+            try {
+                const resp = await fetch(`${API_BASE}/connectors/${connectorType}/test`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(connectorSettings[connectorType] || {})
+                });
+                
+                if (resp.ok) {
+                    statusDiv.innerHTML = '<span class="text-green-600">Connection successful!</span>';
+                } else {
+                    const data = await resp.json();
+                    statusDiv.innerHTML = `<span class="text-red-600">Connection failed: ${data.detail || 'Unknown error'}</span>`;
+                }
+            } catch (e) {
+                statusDiv.innerHTML = '<span class="text-yellow-600">Test endpoint not available. Settings saved locally.</span>';
+            }
+        }
+
+        function loadConnectorStatuses() {
+            Object.keys(connectorSettings).forEach(type => {
+                const statusEl = document.getElementById(`${type}-status`);
+                if (statusEl && Object.keys(connectorSettings[type]).length > 0) {
+                    statusEl.textContent = 'Configured';
+                    statusEl.className = 'text-xs text-green-600';
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadConnectorStatuses);
     </script>
 </body>
 </html>
