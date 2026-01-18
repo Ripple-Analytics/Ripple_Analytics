@@ -13,11 +13,199 @@
    - LM Studio (local LLM)
    - Database connectors
    - File connectors
-   - Web scraping"
+   - Web scraping
+   
+   Features:
+   - Connection pooling via clj-http
+   - Retry logic with exponential backoff
+   - Rate limiting support
+   - Response caching"
   (:require [clojure.string :as str]
             #?(:clj [clojure.java.io :as io])
             #?(:clj [clj-http.client :as http])
             #?(:clj [cheshire.core :as json])))
+
+;; ============================================
+;; HTTP Client Configuration & Connection Pooling
+;; ============================================
+
+#?(:clj
+   (def connection-manager
+     "Shared connection manager for HTTP connection pooling.
+      Reuses connections across requests for better performance."
+     (delay
+       (clj-http.conn-mgr/make-reusable-conn-manager
+        {:timeout 30
+         :threads 8
+         :default-per-route 4
+         :insecure? false}))))
+
+#?(:clj
+   (def default-http-opts
+     "Default HTTP options with connection pooling."
+     {:connection-manager @connection-manager
+      :socket-timeout 30000
+      :connection-timeout 10000
+      :throw-exceptions false}))
+
+;; ============================================
+;; Retry Logic with Exponential Backoff
+;; ============================================
+
+(def retry-config
+  "Default retry configuration."
+  {:max-retries 3
+   :initial-delay-ms 1000
+   :max-delay-ms 30000
+   :backoff-multiplier 2.0
+   :retryable-status-codes #{408 429 500 502 503 504}})
+
+#?(:clj
+   (defn calculate-backoff-delay
+     "Calculate delay for retry attempt using exponential backoff with jitter."
+     [attempt {:keys [initial-delay-ms max-delay-ms backoff-multiplier]}]
+     (let [base-delay (* initial-delay-ms (Math/pow backoff-multiplier attempt))
+           jitter (* base-delay (rand 0.3))
+           delay-with-jitter (+ base-delay jitter)]
+       (min delay-with-jitter max-delay-ms))))
+
+#?(:clj
+   (defn retryable-error?
+     "Check if an error or response is retryable."
+     [response-or-error config]
+     (cond
+       (instance? Exception response-or-error)
+       (let [msg (.getMessage response-or-error)]
+         (or (str/includes? (str msg) "timeout")
+             (str/includes? (str msg) "connection")
+             (str/includes? (str msg) "reset")))
+       
+       (map? response-or-error)
+       (contains? (:retryable-status-codes config) (:status response-or-error))
+       
+       :else false)))
+
+#?(:clj
+   (defn with-retry
+     "Execute a function with retry logic and exponential backoff.
+      Returns the result of f or the last error after max retries."
+     ([f] (with-retry f retry-config))
+     ([f config]
+      (loop [attempt 0]
+        (let [result (try
+                       {:success true :value (f)}
+                       (catch Exception e
+                         {:success false :error e}))]
+          (if (:success result)
+            (:value result)
+            (if (and (< attempt (:max-retries config))
+                     (retryable-error? (:error result) config))
+              (do
+                (Thread/sleep (long (calculate-backoff-delay attempt config)))
+                (recur (inc attempt)))
+              (throw (:error result)))))))))
+
+;; ============================================
+;; Rate Limiting
+;; ============================================
+
+(def rate-limiters
+  "Atom storing rate limiter state per connector type."
+  (atom {}))
+
+(def rate-limit-config
+  "Rate limits per connector type (requests per minute)."
+  {:github 60
+   :slack 60
+   :huggingface 30
+   :zapier 100
+   :web-scraper 10})
+
+#?(:clj
+   (defn check-rate-limit
+     "Check if a request is within rate limits. Returns true if allowed."
+     [connector-type]
+     (let [limit (get rate-limit-config connector-type 60)
+           now (System/currentTimeMillis)
+           window-ms 60000
+           state (get @rate-limiters connector-type {:requests [] :last-reset now})]
+       (if (> (- now (:last-reset state)) window-ms)
+         ;; Reset window
+         (do
+           (swap! rate-limiters assoc connector-type {:requests [now] :last-reset now})
+           true)
+         ;; Check if under limit
+         (let [recent-requests (filter #(> % (- now window-ms)) (:requests state))]
+           (if (< (count recent-requests) limit)
+             (do
+               (swap! rate-limiters assoc connector-type 
+                      {:requests (conj (vec recent-requests) now) :last-reset (:last-reset state)})
+               true)
+             false))))))
+
+#?(:clj
+   (defn wait-for-rate-limit
+     "Wait until rate limit allows a request. Returns after waiting."
+     [connector-type]
+     (loop [attempts 0]
+       (if (check-rate-limit connector-type)
+         true
+         (when (< attempts 60)
+           (Thread/sleep 1000)
+           (recur (inc attempts)))))))
+
+;; ============================================
+;; Response Caching
+;; ============================================
+
+(def response-cache
+  "Atom storing cached responses with TTL."
+  (atom {}))
+
+(def cache-config
+  "Cache TTL per connector type (milliseconds)."
+  {:github 300000      ;; 5 minutes
+   :huggingface 60000  ;; 1 minute
+   :web-scraper 600000 ;; 10 minutes
+   :lm-studio 0})      ;; No caching for LLM responses
+
+#?(:clj
+   (defn cache-key
+     "Generate a cache key from connector type and request params."
+     [connector-type & params]
+     (str connector-type "-" (hash params))))
+
+#?(:clj
+   (defn get-cached
+     "Get a cached response if valid, nil otherwise."
+     [connector-type & params]
+     (let [key (apply cache-key connector-type params)
+           entry (get @response-cache key)
+           ttl (get cache-config connector-type 0)]
+       (when (and entry 
+                  (> ttl 0)
+                  (< (- (System/currentTimeMillis) (:timestamp entry)) ttl))
+         (:value entry)))))
+
+#?(:clj
+   (defn set-cached
+     "Cache a response value."
+     [connector-type value & params]
+     (let [key (apply cache-key connector-type params)
+           ttl (get cache-config connector-type 0)]
+       (when (> ttl 0)
+         (swap! response-cache assoc key {:value value 
+                                          :timestamp (System/currentTimeMillis)}))
+       value)))
+
+#?(:clj
+   (defn clear-cache
+     "Clear all cached responses or for a specific connector type."
+     ([] (reset! response-cache {}))
+     ([connector-type]
+      (swap! response-cache 
+             (fn [cache]
+               (into {} (remove #(str/starts-with? (key %) (str connector-type "-")) cache)))))))
 
 ;; ============================================
 ;; Base Connector Protocol
