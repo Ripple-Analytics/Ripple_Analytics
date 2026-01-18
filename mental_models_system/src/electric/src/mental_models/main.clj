@@ -256,7 +256,7 @@
         <div class=\"flex justify-between items-center\" style=\"background: var(--gray-900);\">
             <div class=\"px-4 py-2\">
                 <h1 class=\"text-lg font-bold\" style=\"color: var(--white);\">MENTAL MODELS SYSTEM</h1>
-                <p class=\"text-xs\" style=\"color: var(--gray-400);\">Electric Clojure - Reactive Full-Stack | <span id=\"header-models\">...</span> Models | <span id=\"header-failures\">...</span> Failure Modes</p>
+                <p class=\"text-xs\" style=\"color: var(--gray-400);\">Electric Clojure - Reactive Full-Stack | <span id=\"header-models\">NA</span> Models | <span id=\"header-failures\">NA</span> Failure Modes</p>
             </div>
             <div class=\"beast-mode-toggle\" id=\"beast-mode-btn\" onclick=\"toggleBeastMode()\">
                 <span class=\"beast-mode-label\">BEAST MODE</span>
@@ -279,32 +279,32 @@
         
         <!-- Dashboard -->
         <div id=\"dashboard\" class=\"p-4\">
-            <div class=\"grid grid-cols-6 gap-4 mb-4\">
-                <div class=\"metric-card bg-white border rounded shadow-sm\">
-                    <div class=\"metric-value\" id=\"total-models\">0</div>
-                    <div class=\"metric-label\">Models</div>
-                </div>
-                <div class=\"metric-card bg-white border rounded shadow-sm\">
-                    <div class=\"metric-value\" id=\"total-failures\">0</div>
-                    <div class=\"metric-label\">Failure Modes</div>
-                </div>
-                <div class=\"metric-card bg-white border rounded shadow-sm\">
-                    <div class=\"metric-value\" id=\"total-categories\">0</div>
-                    <div class=\"metric-label\">Categories</div>
-                </div>
-                <div class=\"metric-card bg-white border rounded shadow-sm\">
-                    <div class=\"metric-value\">5.0</div>
-                    <div class=\"metric-label\">Avg Failures/Model</div>
-                </div>
-                <div class=\"metric-card bg-white border rounded shadow-sm\">
-                    <div class=\"metric-value\">100%</div>
-                    <div class=\"metric-label\">Coverage</div>
-                </div>
-                <div class=\"metric-card bg-white border rounded shadow-sm\">
-                    <div class=\"metric-value\">Live</div>
-                    <div class=\"metric-label\">Status</div>
-                </div>
-            </div>
+                        <div class=\"grid grid-cols-6 gap-4 mb-4\">
+                            <div class=\"metric-card bg-white border rounded shadow-sm\">
+                                <div class=\"metric-value\" id=\"total-models\">NA</div>
+                                <div class=\"metric-label\">Models</div>
+                            </div>
+                            <div class=\"metric-card bg-white border rounded shadow-sm\">
+                                <div class=\"metric-value\" id=\"total-failures\">NA</div>
+                                <div class=\"metric-label\">Failure Modes</div>
+                            </div>
+                            <div class=\"metric-card bg-white border rounded shadow-sm\">
+                                <div class=\"metric-value\" id=\"total-categories\">NA</div>
+                                <div class=\"metric-label\">Categories</div>
+                            </div>
+                            <div class=\"metric-card bg-white border rounded shadow-sm\">
+                                <div class=\"metric-value\" id=\"avg-failures\">NA</div>
+                                <div class=\"metric-label\">Avg Failures/Model</div>
+                            </div>
+                            <div class=\"metric-card bg-white border rounded shadow-sm\">
+                                <div class=\"metric-value\" id=\"coverage\">NA</div>
+                                <div class=\"metric-label\">Coverage</div>
+                            </div>
+                            <div class=\"metric-card bg-white border rounded shadow-sm\">
+                                <div class=\"metric-value\" id=\"api-status\">NA</div>
+                                <div class=\"metric-label\">Status</div>
+                            </div>
+                        </div>
             
             <div class=\"grid grid-cols-2 gap-4\">
                 <!-- Categories -->
@@ -552,24 +552,24 @@
         </div>
         <!-- Distributed Tab -->
         <div id=\"distributed\" class=\"p-4 hidden\">
-            <div class=\"grid grid-cols-4 gap-4 mb-4\">
-                <div class=\"metric-card rounded shadow-sm\">
-                    <div class=\"metric-value\" id=\"dist-workers\">0</div>
-                    <div class=\"metric-label\">Active Workers</div>
-                </div>
-                <div class=\"metric-card rounded shadow-sm\">
-                    <div class=\"metric-value\" id=\"dist-tasks\">0</div>
-                    <div class=\"metric-label\">Tasks Queued</div>
-                </div>
-                <div class=\"metric-card rounded shadow-sm\">
-                    <div class=\"metric-value accent\" id=\"dist-throughput\">0</div>
-                    <div class=\"metric-label\">Tasks/Second</div>
-                </div>
-                <div class=\"metric-card rounded shadow-sm\">
-                    <div class=\"metric-value\" id=\"dist-data\">0 TB</div>
-                    <div class=\"metric-label\">Data Processed</div>
-                </div>
-            </div>
+                        <div class=\"grid grid-cols-4 gap-4 mb-4\">
+                            <div class=\"metric-card rounded shadow-sm\">
+                                <div class=\"metric-value\" id=\"dist-workers\">NA</div>
+                                <div class=\"metric-label\">Active Workers</div>
+                            </div>
+                            <div class=\"metric-card rounded shadow-sm\">
+                                <div class=\"metric-value\" id=\"dist-tasks\">NA</div>
+                                <div class=\"metric-label\">Tasks Queued</div>
+                            </div>
+                            <div class=\"metric-card rounded shadow-sm\">
+                                <div class=\"metric-value accent\" id=\"dist-throughput\">NA</div>
+                                <div class=\"metric-label\">Tasks/Second</div>
+                            </div>
+                            <div class=\"metric-card rounded shadow-sm\">
+                                <div class=\"metric-value\" id=\"dist-data\">NA</div>
+                                <div class=\"metric-label\">Data Processed</div>
+                            </div>
+                        </div>
             
             <div class=\"grid grid-cols-2 gap-4\">
                 <div class=\"bg-white border rounded shadow-sm\">
@@ -667,15 +667,19 @@
         
         let continuousLearningInterval = null;
         
-        function startContinuousLearning() {
-            if (continuousLearningInterval) return;
-            continuousLearningInterval = setInterval(() => {
-                // Simulate continuous learning metrics
-                const throughput = Math.floor(Math.random() * 1000) + 500;
-                document.getElementById('dist-throughput').textContent = throughput;
-                addToLog('[LEARNING] Processed ' + throughput + ' data points');
-            }, 2000);
-        }
+                function startContinuousLearning() {
+                    if (continuousLearningInterval) return;
+                    // NOTE: This should be replaced with real API calls to get actual learning metrics
+                    // For now, show NA to indicate no real data is available
+                    document.getElementById('dist-throughput').textContent = 'NA';
+                    addToLog('[LEARNING] Waiting for real metrics from backend...');
+                    // TODO: Replace with real API polling
+                    // continuousLearningInterval = setInterval(async () => {
+                    //     const response = await fetch('/api/learning/status');
+                    //     const data = await response.json();
+                    //     document.getElementById('dist-throughput').textContent = data.throughput || 'NA';
+                    // }, 2000);
+                }
         
         function stopContinuousLearning() {
             if (continuousLearningInterval) {
@@ -1071,22 +1075,56 @@
         // Store models data globally for map dropdown
         window.modelsData = {};
         
-                // Modified loadData to store models
-                async function loadDataAndStore() {
-                    const response = await fetch('/api/models');
-                    const data = await response.json();
-                    window.modelsData = data.models;
+                            // Modified loadData to store models - ALL REAL CHECKS, NO HARDCODED VALUES
+                            async function loadDataAndStore() {
+                                try {
+                                    const response = await fetch('/api/models');
+                                    const data = await response.json();
+                                    window.modelsData = data.models;
+                
+                                    // Calculate REAL metrics from actual data
+                                    const totalModels = data.total_models || 0;
+                                    const totalFailures = data.total_failure_modes || 0;
+                                    const totalCategories = Object.keys(data.categories || {}).length;
+                        
+                                    // Calculate REAL average failures per model
+                                    const avgFailures = totalModels > 0 ? (totalFailures / totalModels).toFixed(1) : 'NA';
+                        
+                                    // Calculate REAL coverage (models with at least one failure mode)
+                                    let modelsWithFailures = 0;
+                                    for (const [name, model] of Object.entries(data.models || {})) {
+                                        if (model.failure_modes && model.failure_modes.length > 0) {
+                                            modelsWithFailures++;
+                                        }
+                                    }
+                                    const coverage = totalModels > 0 ? Math.round((modelsWithFailures / totalModels) * 100) + '%' : 'NA';
+                        
+                                    // Update dashboard counts from REAL API data - show NA if no data
+                                    document.getElementById('total-models').textContent = totalModels > 0 ? totalModels : 'NA';
+                                    document.getElementById('total-failures').textContent = totalFailures > 0 ? totalFailures : 'NA';
+                                    document.getElementById('total-categories').textContent = totalCategories > 0 ? totalCategories : 'NA';
+                                    document.getElementById('avg-failures').textContent = avgFailures;
+                                    document.getElementById('coverage').textContent = coverage;
+                                    document.getElementById('api-status').textContent = 'Live';
+                        
+                                    // Update header counts dynamically from REAL data
+                                    document.getElementById('header-models').textContent = totalModels > 0 ? totalModels : 'NA';
+                                    document.getElementById('header-failures').textContent = totalFailures > 0 ? totalFailures : 'NA';
+                                } catch (error) {
+                                    console.error('Failed to load models:', error);
+                                    // Show NA for all metrics on error - NEVER show fake data
+                                    document.getElementById('total-models').textContent = 'NA';
+                                    document.getElementById('total-failures').textContent = 'NA';
+                                    document.getElementById('total-categories').textContent = 'NA';
+                                    document.getElementById('avg-failures').textContent = 'NA';
+                                    document.getElementById('coverage').textContent = 'NA';
+                                    document.getElementById('api-status').textContent = 'Error';
+                                    document.getElementById('header-models').textContent = 'NA';
+                                    document.getElementById('header-failures').textContent = 'NA';
+                                    return;
+                                }
             
-                    // Update dashboard counts from REAL API data
-                    document.getElementById('total-models').textContent = data.total_models;
-                    document.getElementById('total-failures').textContent = data.total_failure_modes;
-                    document.getElementById('total-categories').textContent = Object.keys(data.categories).length;
-            
-                    // Update header counts dynamically from REAL data
-                    document.getElementById('header-models').textContent = data.total_models;
-                    document.getElementById('header-failures').textContent = data.total_failure_modes;
-            
-            // Populate categories table
+                        // Populate categories table
             const categoriesTable = document.getElementById('categories-table');
             categoriesTable.innerHTML = '';
             for (const [cat, models] of Object.entries(data.categories)) {
@@ -1143,23 +1181,23 @@
             addToLog('[START] Initializing distributed processing...');
             addToLog('[CONFIG] Path: ' + path + ', Workers: ' + workers + ', Batch: ' + batch + ', Mode: ' + mode);
             
-            // Update metrics
-            document.getElementById('dist-workers').textContent = workers;
-            document.getElementById('dist-tasks').textContent = Math.floor(Math.random() * 10000) + 1000;
+                        // Update metrics - show NA until real data available
+                        document.getElementById('dist-workers').textContent = workers;
+                        document.getElementById('dist-tasks').textContent = 'NA'; // Will be updated with real task count
             
-            // Simulate worker startup
-            const workerList = document.getElementById('worker-list');
-            workerList.innerHTML = '';
-            for (let i = 0; i < Math.min(workers, 10); i++) {
-                const div = document.createElement('div');
-                div.className = 'flex justify-between items-center py-1 border-b text-xs';
-                div.innerHTML = `
-                    <span>Worker-${i + 1}</span>
-                    <span style=\"color: var(--accent-red);\">ACTIVE</span>
-                    <span>${Math.floor(Math.random() * 100)}% CPU</span>
-                `;
-                workerList.appendChild(div);
-            }
+                        // Show worker status - CPU will show NA until real monitoring available
+                        const workerList = document.getElementById('worker-list');
+                        workerList.innerHTML = '';
+                        for (let i = 0; i < Math.min(workers, 10); i++) {
+                            const div = document.createElement('div');
+                            div.className = 'flex justify-between items-center py-1 border-b text-xs';
+                            div.innerHTML = `
+                                <span>Worker-${i + 1}</span>
+                                <span style=\"color: var(--accent-red);\">PENDING</span>
+                                <span>NA</span>
+                            `;
+                            workerList.appendChild(div);
+                        }
             if (workers > 10) {
                 const more = document.createElement('p');
                 more.className = 'text-xs text-gray-500 mt-2';
@@ -1173,13 +1211,13 @@
             simulateProcessing();
         }
         
-        function stopDistributed() {
-            distributedProcessing = false;
-            addToLog('[STOP] Distributed processing stopped');
-            document.getElementById('dist-workers').textContent = '0';
-            document.getElementById('dist-tasks').textContent = '0';
-            document.getElementById('dist-throughput').textContent = '0';
-        }
+                function stopDistributed() {
+                    distributedProcessing = false;
+                    addToLog('[STOP] Distributed processing stopped');
+                    document.getElementById('dist-workers').textContent = 'NA';
+                    document.getElementById('dist-tasks').textContent = 'NA';
+                    document.getElementById('dist-throughput').textContent = 'NA';
+                }
         
         function scaleWorkers() {
             const newCount = parseInt(document.getElementById('dist-workers-count').value);
@@ -1188,18 +1226,19 @@
             document.getElementById('dist-workers').textContent = newCount;
         }
         
-        function simulateProcessing() {
-            if (!distributedProcessing) return;
+                function simulateProcessing() {
+                    // NOTE: This function should be replaced with real API calls to get actual processing metrics
+                    // For now, show NA to indicate no real data is available
+                    if (!distributedProcessing) return;
             
-            const throughput = Math.floor(Math.random() * 5000) + 1000;
-            const tasks = Math.max(0, parseInt(document.getElementById('dist-tasks').textContent) - throughput);
+                    // TODO: Replace with real API call to /api/distributed/status
+                    // const response = await fetch('/api/distributed/status');
+                    // const data = await response.json();
             
-            document.getElementById('dist-throughput').textContent = throughput;
-            document.getElementById('dist-tasks').textContent = tasks;
-            
-            // Update data processed
-            const currentData = parseFloat(document.getElementById('dist-data').textContent) || 0;
-            document.getElementById('dist-data').textContent = (currentData + 0.01).toFixed(2) + ' TB';
+                    // Show NA until real metrics are available from the backend
+                    document.getElementById('dist-throughput').textContent = 'NA';
+                    document.getElementById('dist-tasks').textContent = 'NA';
+                    document.getElementById('dist-data').textContent = 'NA';
             
             // Add to task queue display
             const taskQueue = document.getElementById('task-queue');
@@ -1244,11 +1283,11 @@
                     if (match) {
                         const funcName = match[1];
                         const deps = match[2].split(',').map(d => d.trim()).filter(d => d);
-                        functions[funcName] = {
-                            name: funcName,
-                            type: 'function',
-                            complexity: Math.floor(Math.random() * 10) + 1
-                        };
+                                                functions[funcName] = {
+                                                    name: funcName,
+                                                    type: 'function',
+                                                    complexity: 'NA' // TODO: Calculate real complexity from code analysis
+                                                };
                         deps.forEach(dep => {
                             dependencies.push({ from: funcName, to: dep, type: 'calls' });
                         });
