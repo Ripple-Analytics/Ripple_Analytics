@@ -78,6 +78,52 @@ The system includes a FastAPI REST API for querying the database:
 | `GET /lollapalooza` | Get cases with multiple interacting models |
 | `GET /analysis/decade` | Decade-by-decade analysis |
 | `GET /analysis/model-frequency` | Model frequency from Planck matrix |
+| `GET /dashboard` | Web dashboard UI |
+| `POST /failure-modes/check` | Check content for failure modes |
+| `GET /failure-modes/stats` | Failure mode statistics |
+
+### Huggingface Integration
+
+| Endpoint | Description |
+|----------|-------------|
+| `POST /huggingface/embeddings` | Generate embeddings using Huggingface models |
+| `POST /huggingface/classify` | Zero-shot text classification |
+| `POST /huggingface/summarize` | Text summarization |
+| `POST /huggingface/classify-mental-models` | Classify by mental model categories |
+| `POST /huggingface/detect-biases` | Detect cognitive biases |
+| `GET /huggingface/search-models` | Search Huggingface Hub |
+
+## Connectors
+
+The system includes 10 connectors for integrating with external services:
+
+| Connector | Description |
+|-----------|-------------|
+| GitHub | Repository, PR, and issue integration |
+| Slack | Chat and command integration |
+| Google Drive | Document storage and retrieval |
+| Database | PostgreSQL, MySQL, SQLite support |
+| Web Scraper | BeautifulSoup, Scrapy, Selenium (headless) |
+| Local Files | Local filesystem access |
+| REST API | Generic REST/GraphQL API connector |
+| LM Studio | Local LLM inference |
+| Zapier | Automation workflows via webhooks |
+| Huggingface | Embeddings, classification, summarization |
+
+## Failure Modes
+
+The system documents 645 failure modes (5 per mental model) with detection signals and prevention strategies. Categories include:
+
+- Data Bias
+- Reasoning Error
+- Incomplete Analysis
+- Overconfidence
+- Context Blindness
+- Temporal Error
+- Scale Mismatch
+- Feedback Loop
+- Edge Case
+- Integration Failure
 
 ## Running Tests
 
