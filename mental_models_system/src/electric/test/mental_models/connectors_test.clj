@@ -2090,3 +2090,183 @@
       ;; Restore
       (conn/set-dedup-config original)))
   (conn/clear-dedup-cache))
+
+;; ============================================
+;; Request Batching Tests
+;; ============================================
+
+(deftest test-batch-queue-atom
+  (testing "Batch queue atom is initialized"
+    (is (instance? clojure.lang.Atom conn/batch-queue))
+    (is (map? @conn/batch-queue))))
+
+(deftest test-batch-config-atom
+  (testing "Batch config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/batch-config))
+    (let [config @conn/batch-config]
+      (is (contains? config :enabled))
+      (is (contains? config :max-batch-size))
+      (is (contains? config :max-wait-ms)))))
+
+(deftest test-get-batch-config
+  (testing "Get batch config returns config"
+    (let [config (conn/get-batch-config)]
+      (is (map? config))
+      (is (boolean? (:enabled config)))
+      (is (number? (:max-batch-size config)))
+      (is (number? (:max-wait-ms config))))))
+
+(deftest test-set-batch-config
+  (testing "Set batch config updates values"
+    (let [original (conn/get-batch-config)]
+      (conn/set-batch-config {:max-batch-size 20})
+      (is (= 20 (:max-batch-size (conn/get-batch-config))))
+      ;; Restore
+      (conn/set-batch-config original))))
+
+(deftest test-clear-batch-queue
+  (testing "Clear batch queue empties queue"
+    (conn/clear-batch-queue)
+    (is (empty? @conn/batch-queue))))
+
+(deftest test-get-batch-stats
+  (testing "Get batch stats returns statistics"
+    (conn/clear-batch-queue)
+    (let [stats (conn/get-batch-stats)]
+      (is (map? stats))
+      (is (contains? stats :total-batches))
+      (is (contains? stats :total-pending))
+      (is (contains? stats :batches))
+      (is (= 0 (:total-batches stats)))
+      (is (= 0 (:total-pending stats))))))
+
+(deftest test-with-batching
+  (testing "With batching executes function"
+    (conn/clear-batch-queue)
+    (let [call-count (atom 0)
+          result (conn/with-batching :test :op {:param 1}
+                   #(do (swap! call-count inc) "result"))]
+      (is (= "result" result))
+      (is (= 1 @call-count))))
+  (conn/clear-batch-queue))
+
+(deftest test-with-batching-disabled
+  (testing "With batching disabled executes immediately"
+    (conn/clear-batch-queue)
+    (let [original (conn/get-batch-config)
+          call-count (atom 0)
+          request-fn #(do (swap! call-count inc) "result")]
+      (conn/set-batch-config {:enabled false})
+      (conn/with-batching :test :op {:param 1} request-fn)
+      (is (= 1 @call-count))
+      ;; Restore
+      (conn/set-batch-config original)))
+  (conn/clear-batch-queue))
+
+(deftest test-flush-all-batches
+  (testing "Flush all batches processes pending"
+    (conn/clear-batch-queue)
+    (conn/flush-all-batches)
+    (is (empty? @conn/batch-queue))))
+
+;; ============================================
+;; Adaptive Retry Strategy Tests
+;; ============================================
+
+(deftest test-retry-history-atom
+  (testing "Retry history atom is initialized"
+    (is (instance? clojure.lang.Atom conn/retry-history))
+    (is (map? @conn/retry-history))))
+
+(deftest test-adaptive-retry-config-atom
+  (testing "Adaptive retry config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/adaptive-retry-config))
+    (let [config @conn/adaptive-retry-config]
+      (is (contains? config :enabled))
+      (is (contains? config :history-window-ms))
+      (is (contains? config :min-delay-ms))
+      (is (contains? config :max-delay-ms))
+      (is (contains? config :success-threshold))
+      (is (contains? config :failure-threshold)))))
+
+(deftest test-get-adaptive-retry-config
+  (testing "Get adaptive retry config returns config"
+    (let [config (conn/get-adaptive-retry-config)]
+      (is (map? config))
+      (is (boolean? (:enabled config)))
+      (is (number? (:history-window-ms config)))
+      (is (number? (:min-delay-ms config)))
+      (is (number? (:max-delay-ms config))))))
+
+(deftest test-set-adaptive-retry-config
+  (testing "Set adaptive retry config updates values"
+    (let [original (conn/get-adaptive-retry-config)]
+      (conn/set-adaptive-retry-config {:min-delay-ms 200})
+      (is (= 200 (:min-delay-ms (conn/get-adaptive-retry-config))))
+      ;; Restore
+      (conn/set-adaptive-retry-config original))))
+
+(deftest test-record-retry-result
+  (testing "Record retry result adds entry"
+    (reset! conn/retry-history {})
+    (conn/record-retry-result :test-connector true 0)
+    (is (= 1 (count (get @conn/retry-history :test-connector))))
+    (reset! conn/retry-history {})))
+
+(deftest test-calculate-success-rate
+  (testing "Calculate success rate returns correct rate"
+    (reset! conn/retry-history {})
+    ;; No history = 1.0
+    (is (= 1.0 (conn/calculate-success-rate :test-connector)))
+    ;; Add some history
+    (conn/record-retry-result :test-connector true 0)
+    (conn/record-retry-result :test-connector true 0)
+    (conn/record-retry-result :test-connector false 100)
+    (is (= 2/3 (conn/calculate-success-rate :test-connector)))
+    (reset! conn/retry-history {})))
+
+(deftest test-calculate-adaptive-delay
+  (testing "Calculate adaptive delay adjusts based on success rate"
+    (reset! conn/retry-history {})
+    (let [base-delay 1000]
+      ;; No history (100% success) - shorter delay
+      (is (< (conn/calculate-adaptive-delay :test-connector base-delay) base-delay))
+      ;; Add failures to lower success rate
+      (dotimes [_ 10]
+        (conn/record-retry-result :test-connector false 100))
+      ;; Low success rate - longer delay
+      (is (> (conn/calculate-adaptive-delay :test-connector base-delay) base-delay)))
+    (reset! conn/retry-history {})))
+
+(deftest test-with-adaptive-retry-success
+  (testing "With adaptive retry returns on success"
+    (reset! conn/retry-history {})
+    (let [call-count (atom 0)
+          result (conn/with-adaptive-retry :test-connector
+                   #(do (swap! call-count inc) "success"))]
+      (is (= "success" result))
+      (is (= 1 @call-count)))
+    (reset! conn/retry-history {})))
+
+(deftest test-with-adaptive-retry-disabled
+  (testing "With adaptive retry disabled executes once"
+    (reset! conn/retry-history {})
+    (let [original (conn/get-adaptive-retry-config)
+          call-count (atom 0)]
+      (conn/set-adaptive-retry-config {:enabled false})
+      (conn/with-adaptive-retry :test-connector
+        #(do (swap! call-count inc) "result"))
+      (is (= 1 @call-count))
+      ;; Restore
+      (conn/set-adaptive-retry-config original))
+    (reset! conn/retry-history {})))
+
+(deftest test-get-retry-stats
+  (testing "Get retry stats returns statistics"
+    (reset! conn/retry-history {})
+    (conn/record-retry-result :test-connector true 0)
+    (let [stats (conn/get-retry-stats)]
+      (is (map? stats))
+      (is (contains? stats :connector-stats))
+      (is (contains? (:connector-stats stats) :test-connector)))
+    (reset! conn/retry-history {})))
