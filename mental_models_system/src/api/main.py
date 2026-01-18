@@ -850,6 +850,306 @@ async def get_feedback_stats():
         raise HTTPException(status_code=500, detail=f"Failed to get stats: {str(e)}")
 
 
+class AnalyzeContentRequest(BaseModel):
+    content: str
+    document_id: Optional[str] = ""
+    document_path: Optional[str] = ""
+
+
+class ModelMatchResponse(BaseModel):
+    model_name: str
+    relevance_score: float
+    explanation: str
+    evidence: List[str]
+    category: str
+
+
+class BiasDetectionResponse(BaseModel):
+    bias_name: str
+    confidence: float
+    evidence: str
+    mitigation: str
+
+
+class DocumentAnalysisResponse(BaseModel):
+    document_id: str
+    document_path: str
+    content_preview: str
+    applicable_models: List[ModelMatchResponse]
+    detected_biases: List[BiasDetectionResponse]
+    patterns: List[str]
+    lollapalooza_score: float
+    lollapalooza_models: List[str]
+    key_insights: List[str]
+    inverted_perspective: str
+
+
+class ClassifyRequest(BaseModel):
+    content: str
+    target_models: Optional[List[str]] = None
+
+
+class BatchAnalyzeRequest(BaseModel):
+    documents: List[dict]
+    analysis_type: str = "classify"
+
+
+@app.post("/analyze/document", response_model=DocumentAnalysisResponse)
+async def analyze_document_with_models(request: AnalyzeContentRequest):
+    """Analyze a document using mental models via local LLM (LM Studio)."""
+    try:
+        from src.analysis.mental_model_analyzer import MentalModelAnalyzer
+        
+        analyzer = MentalModelAnalyzer()
+        analysis = analyzer.analyze_document(
+            content=request.content,
+            document_id=request.document_id or "",
+            document_path=request.document_path or "",
+        )
+        analyzer.close()
+        
+        return DocumentAnalysisResponse(
+            document_id=analysis.document_id,
+            document_path=analysis.document_path,
+            content_preview=analysis.content_preview,
+            applicable_models=[
+                ModelMatchResponse(
+                    model_name=m.model_name,
+                    relevance_score=m.relevance_score,
+                    explanation=m.explanation,
+                    evidence=m.evidence,
+                    category=m.category,
+                )
+                for m in analysis.applicable_models
+            ],
+            detected_biases=[
+                BiasDetectionResponse(
+                    bias_name=b.bias_name,
+                    confidence=b.confidence,
+                    evidence=b.evidence,
+                    mitigation=b.mitigation,
+                )
+                for b in analysis.detected_biases
+            ],
+            patterns=analysis.patterns,
+            lollapalooza_score=analysis.lollapalooza_score,
+            lollapalooza_models=analysis.lollapalooza_models,
+            key_insights=analysis.key_insights,
+            inverted_perspective=analysis.inverted_perspective,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+
+
+@app.post("/analyze/classify", response_model=List[ModelMatchResponse])
+async def classify_content(request: ClassifyRequest):
+    """Classify content by applicable mental models."""
+    try:
+        from src.analysis.mental_model_analyzer import MentalModelAnalyzer
+        
+        analyzer = MentalModelAnalyzer()
+        matches = analyzer.classify_by_model(
+            content=request.content,
+            target_models=request.target_models,
+        )
+        analyzer.close()
+        
+        return [
+            ModelMatchResponse(
+                model_name=m.model_name,
+                relevance_score=m.relevance_score,
+                explanation=m.explanation,
+                evidence=m.evidence,
+                category=m.category,
+            )
+            for m in matches
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Classification failed: {str(e)}")
+
+
+@app.post("/analyze/biases", response_model=List[BiasDetectionResponse])
+async def detect_biases_in_content(request: AnalyzeContentRequest):
+    """Detect cognitive biases in content using Munger's framework."""
+    try:
+        from src.analysis.mental_model_analyzer import MentalModelAnalyzer
+        
+        analyzer = MentalModelAnalyzer()
+        biases = analyzer.detect_biases(request.content)
+        analyzer.close()
+        
+        return [
+            BiasDetectionResponse(
+                bias_name=b.bias_name,
+                confidence=b.confidence,
+                evidence=b.evidence,
+                mitigation=b.mitigation,
+            )
+            for b in biases
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Bias detection failed: {str(e)}")
+
+
+@app.post("/analyze/lollapalooza")
+async def find_lollapalooza_effects(request: AnalyzeContentRequest):
+    """Find lollapalooza effects (multiple interacting mental models)."""
+    try:
+        from src.analysis.mental_model_analyzer import MentalModelAnalyzer
+        
+        analyzer = MentalModelAnalyzer()
+        result = analyzer.find_lollapalooza(request.content)
+        analyzer.close()
+        
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lollapalooza analysis failed: {str(e)}")
+
+
+@app.post("/analyze/invert")
+async def invert_analysis(request: AnalyzeContentRequest, question: Optional[str] = None):
+    """Apply Munger's inversion technique to analyze what could go wrong."""
+    try:
+        from src.analysis.mental_model_analyzer import MentalModelAnalyzer
+        
+        analyzer = MentalModelAnalyzer()
+        result = analyzer.invert_analysis(request.content, question or "")
+        analyzer.close()
+        
+        return {"inverted_analysis": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Inversion analysis failed: {str(e)}")
+
+
+@app.post("/analyze/batch")
+async def batch_analyze_documents(request: BatchAnalyzeRequest):
+    """Batch analyze multiple documents with mental models."""
+    try:
+        from src.analysis.mental_model_analyzer import MentalModelAnalyzer, AnalysisType
+        
+        analyzer = MentalModelAnalyzer()
+        
+        analysis_type_map = {
+            "classify": AnalysisType.CLASSIFY,
+            "detect_bias": AnalysisType.DETECT_BIAS,
+            "find_patterns": AnalysisType.FIND_PATTERNS,
+            "lollapalooza": AnalysisType.LOLLAPALOOZA,
+            "full": AnalysisType.FULL,
+        }
+        analysis_type = analysis_type_map.get(request.analysis_type, AnalysisType.CLASSIFY)
+        
+        results = analyzer.batch_analyze(request.documents, analysis_type)
+        analyzer.close()
+        
+        return {
+            "analyzed_count": len(results),
+            "results": [
+                {
+                    "document_id": r.document_id,
+                    "document_path": r.document_path,
+                    "applicable_models": [
+                        {"model_name": m.model_name, "relevance_score": m.relevance_score}
+                        for m in r.applicable_models
+                    ],
+                    "detected_biases": [
+                        {"bias_name": b.bias_name, "confidence": b.confidence}
+                        for b in r.detected_biases
+                    ],
+                    "lollapalooza_score": r.lollapalooza_score,
+                    "key_insights": r.key_insights,
+                }
+                for r in results
+            ],
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Batch analysis failed: {str(e)}")
+
+
+@app.get("/analyze/query-by-model")
+async def query_documents_by_model(
+    model_name: str = Query(..., description="Mental model name to search for"),
+    min_relevance: float = Query(0.5, ge=0, le=1),
+    limit: int = Query(50, ge=1, le=500),
+):
+    """Query analyzed documents by mental model."""
+    try:
+        from src.analysis.mental_model_analyzer import MentalModelAnalyzer
+        
+        analyzer = MentalModelAnalyzer()
+        results = analyzer.query_by_model(model_name, min_relevance, limit)
+        analyzer.close()
+        
+        return {"model_name": model_name, "results": results}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Query failed: {str(e)}")
+
+
+@app.get("/analyze/stats")
+async def get_analysis_stats():
+    """Get mental model analysis statistics."""
+    try:
+        from src.analysis.mental_model_analyzer import MentalModelAnalyzer
+        
+        analyzer = MentalModelAnalyzer()
+        stats = analyzer.get_analysis_stats()
+        analyzer.close()
+        
+        return stats
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get stats: {str(e)}")
+
+
+@app.post("/analyze/ingest-and-analyze")
+async def ingest_and_analyze_files(paths: List[str], analysis_type: str = "classify"):
+    """Ingest files and automatically analyze them with mental models."""
+    try:
+        from src.ingestion import DataIngestionPipeline
+        from src.analysis.mental_model_analyzer import MentalModelAnalyzer, AnalysisType
+        from pathlib import Path
+        
+        pipeline = DataIngestionPipeline()
+        pipeline.setup_database()
+        
+        file_paths = [Path(p) for p in paths]
+        chunks = pipeline.process_files(file_paths)
+        pipeline.close()
+        
+        analyzer = MentalModelAnalyzer()
+        
+        analysis_type_map = {
+            "classify": AnalysisType.CLASSIFY,
+            "detect_bias": AnalysisType.DETECT_BIAS,
+            "full": AnalysisType.FULL,
+        }
+        at = analysis_type_map.get(analysis_type, AnalysisType.CLASSIFY)
+        
+        documents = [
+            {
+                "id": chunk.document_id,
+                "path": chunk.document_path,
+                "chunk_id": chunk.id,
+                "content": chunk.content,
+            }
+            for chunk in chunks
+        ]
+        
+        analyses = analyzer.batch_analyze(documents, at)
+        
+        for analysis in analyses:
+            analyzer.store_analysis(analysis)
+        
+        analyzer.close()
+        
+        return {
+            "files_processed": len(paths),
+            "chunks_created": len(chunks),
+            "analyses_stored": len(analyses),
+            "status": "success",
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ingest and analyze failed: {str(e)}")
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host=settings.api.host, port=settings.api.port)
