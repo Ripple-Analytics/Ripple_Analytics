@@ -467,6 +467,11 @@ class HuggingfaceConnector(BaseConnector):
         return await self.classify_text(text, biases, multi_label=True)
 
 
+# Register the connector
+from .base import registry
+registry.register_class(HuggingfaceConnector)
+
+
 def create_huggingface_connector(api_token: str = None) -> HuggingfaceConnector:
     """
     Factory function to create a configured Huggingface connector.

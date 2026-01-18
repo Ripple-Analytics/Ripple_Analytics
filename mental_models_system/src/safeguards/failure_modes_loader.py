@@ -487,6 +487,43 @@ class FailureModesLoader:
             "total_safeguards": total_safeguards,
             "categories": categories
         }
+    
+    def get_safeguards_for_model(self, model_name: str) -> List[Dict[str, Any]]:
+        """
+        Get all safeguards for a specific mental model by name.
+        
+        Args:
+            model_name: Name of the mental model
+            
+        Returns:
+            List of safeguards for the model
+        """
+        safeguards = []
+        
+        # Check simple data format first
+        if model_name in self._simple_data:
+            for fm in self._simple_data[model_name]:
+                if 'safeguards' in fm:
+                    for sg in fm['safeguards']:
+                        safeguards.append({
+                            "model_name": model_name,
+                            "failure_mode": fm.get('name', ''),
+                            "safeguard": sg
+                        })
+        
+        # Check deep data format
+        for model_modes in self._data.values():
+            if model_modes.model_name == model_name:
+                for fm in model_modes.failure_modes:
+                    for sg in fm.safeguards:
+                        safeguards.append({
+                            "model_id": model_modes.model_id,
+                            "model_name": model_modes.model_name,
+                            "failure_mode": fm.name,
+                            "safeguard": sg
+                        })
+        
+        return safeguards
 
 
 # Convenience function

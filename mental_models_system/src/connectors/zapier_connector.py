@@ -197,6 +197,11 @@ class ZapierConnector(BaseConnector):
         return results
 
 
+# Register the connector
+from .base import registry
+registry.register_class(ZapierConnector)
+
+
 def create_zapier_connector(webhook_urls: Dict[str, str] = None) -> ZapierConnector:
     """
     Factory function to create a configured Zapier connector.
