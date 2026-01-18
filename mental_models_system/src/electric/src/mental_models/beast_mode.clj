@@ -60,7 +60,11 @@
                  :models-applied 0
                  :insights-generated 0
                  :learning-cycles 0
-                 :errors 0}
+                 :errors 0
+                 :bytes-processed 0
+                 :files-processed 0
+                 :directories-scanned 0
+                 :processing-time-ms 0}
          :config {:max-workers 8
                   :batch-size 100
                   :learning-interval-ms 5000
@@ -359,52 +363,159 @@
        :queue-size 0}))) ; Would need to track actual queue size
 
 (defn ingest-file!
-  "Ingest a file into the processing pipeline."
+  "Ingest a file into the processing pipeline - tracks REAL file metrics."
   [file-path]
   (try
-    (let [content (slurp file-path)]
+    (let [file (java.io.File. file-path)
+          start-time (System/currentTimeMillis)
+          content (slurp file-path)
+          read-time (- (System/currentTimeMillis) start-time)]
       (ingest-data! content)
-      {:success true :file file-path :size (count content)})
+      (swap! beast-mode-state update-in [:stats :bytes-processed] (fnil + 0) (.length file))
+      {:success true 
+       :file file-path 
+       :size-bytes (.length file)
+       :size-kb (/ (.length file) 1024.0)
+       :content-length (count content)
+       :read-time-ms read-time
+       :last-modified (.lastModified file)
+       :timestamp (System/currentTimeMillis)})
     (catch Exception e
-      {:success false :file file-path :error (.getMessage e)})))
+      (swap! beast-mode-state update-in [:stats :errors] inc)
+      {:success false :file file-path :error (.getMessage e) :timestamp (System/currentTimeMillis)})))
 
 (defn ingest-directory!
-  "Ingest all files from a directory."
-  [dir-path & {:keys [pattern] :or {pattern ".*\\.txt$"}}]
-  (let [dir (java.io.File. dir-path)
-        files (when (.exists dir)
-                (->> (.listFiles dir)
-                     (filter #(.isFile %))
-                     (filter #(re-matches (re-pattern pattern) (.getName %)))
-                     (map #(.getAbsolutePath %))))]
-    (doseq [file files]
-      (ingest-file! file))
-    {:directory dir-path
-     :files-ingested (count files)}))
+  "Ingest all files from a directory - tracks REAL directory metrics."
+  [dir-path & {:keys [pattern recursive] :or {pattern ".*\\.txt$" recursive false}}]
+  (let [start-time (System/currentTimeMillis)
+        dir (java.io.File. dir-path)]
+    (if (and (.exists dir) (.isDirectory dir))
+      (let [all-files (if recursive
+                        (filter #(.isFile %) (file-seq dir))
+                        (filter #(.isFile %) (.listFiles dir)))
+            matching-files (->> all-files
+                                (filter #(re-matches (re-pattern pattern) (.getName %)))
+                                (map #(.getAbsolutePath %)))
+            total-size (reduce + 0 (map #(.length (java.io.File. %)) matching-files))
+            results (doall (map ingest-file! matching-files))
+            successful (filter :success results)
+            failed (remove :success results)
+            elapsed-ms (- (System/currentTimeMillis) start-time)]
+        (swap! beast-mode-state update-in [:stats :directories-scanned] inc)
+        (swap! beast-mode-state update-in [:stats :files-processed] + (count successful))
+        {:success true
+         :directory dir-path
+         :files-found (count matching-files)
+         :files-ingested (count successful)
+         :files-failed (count failed)
+         :total-size-bytes total-size
+         :total-size-mb (/ total-size 1024.0 1024.0)
+         :elapsed-ms elapsed-ms
+         :throughput-mb-per-sec (when (pos? elapsed-ms)
+                                  (/ total-size 1024.0 1024.0 (/ elapsed-ms 1000.0)))
+         :timestamp (System/currentTimeMillis)})
+      {:success false
+       :directory dir-path
+       :error "Directory does not exist or is not a directory"
+       :timestamp (System/currentTimeMillis)})))
+
+;; ============================================
+;; Real System Metrics
+;; ============================================
+
+(defn get-real-system-metrics
+  "Get REAL system metrics - actual CPU, memory, disk usage."
+  []
+  (let [runtime (Runtime/getRuntime)
+        mb (/ 1024.0 1024.0)]
+    {:cpu
+     {:available-processors (.availableProcessors runtime)
+      :system-load (try 
+                     (let [os-bean (java.lang.management.ManagementFactory/getOperatingSystemMXBean)]
+                       (.getSystemLoadAverage os-bean))
+                     (catch Exception _ -1.0))}
+     :memory
+     {:max-mb (/ (.maxMemory runtime) mb)
+      :total-mb (/ (.totalMemory runtime) mb)
+      :free-mb (/ (.freeMemory runtime) mb)
+      :used-mb (/ (- (.totalMemory runtime) (.freeMemory runtime)) mb)
+      :usage-percent (* 100.0 (/ (- (.totalMemory runtime) (.freeMemory runtime))
+                                  (.totalMemory runtime)))}
+     :timestamp (System/currentTimeMillis)}))
+
+(defn get-real-file-metrics
+  "Get REAL file metrics for a path."
+  [path]
+  (try
+    (let [file (java.io.File. path)]
+      (if (.exists file)
+        {:exists true
+         :path (.getAbsolutePath file)
+         :size-bytes (.length file)
+         :size-kb (/ (.length file) 1024.0)
+         :size-mb (/ (.length file) 1024.0 1024.0)
+         :is-directory (.isDirectory file)
+         :is-file (.isFile file)
+         :can-read (.canRead file)
+         :can-write (.canWrite file)
+         :last-modified (.lastModified file)
+         :file-count (when (.isDirectory file)
+                       (count (.listFiles file)))}
+        {:exists false :path path}))
+    (catch Exception e
+      {:error (.getMessage e) :path path})))
+
+(defn get-real-directory-metrics
+  "Get REAL metrics for a directory - actual file counts and sizes."
+  [dir-path]
+  (try
+    (let [dir (java.io.File. dir-path)]
+      (if (and (.exists dir) (.isDirectory dir))
+        (let [files (file-seq dir)
+              regular-files (filter #(.isFile %) files)
+              total-size (reduce + 0 (map #(.length %) regular-files))]
+          {:exists true
+           :path (.getAbsolutePath dir)
+           :total-files (count regular-files)
+           :total-directories (count (filter #(.isDirectory %) files))
+           :total-size-bytes total-size
+           :total-size-mb (/ total-size 1024.0 1024.0)
+           :total-size-gb (/ total-size 1024.0 1024.0 1024.0)
+           :files-by-extension (->> regular-files
+                                    (map #(let [name (.getName %)]
+                                            (if (.contains name ".")
+                                              (subs name (inc (.lastIndexOf name ".")))
+                                              "no-extension")))
+                                    frequencies)})
+        {:exists false :path dir-path}))
+    (catch Exception e
+      {:error (.getMessage e) :path dir-path})))
 
 ;; ============================================
 ;; Metrics and Monitoring
 ;; ============================================
 
 (defn get-metrics
-  "Get current Beast Mode metrics."
+  "Get current Beast Mode metrics - ALL REAL MEASUREMENTS."
   []
   (let [state @beast-mode-state
         stats (:stats state)
         history @learning-history
-        recent-history (take-last 10 history)]
+        recent-history (take-last 10 history)
+        started-at (:started-at state)
+        now (System/currentTimeMillis)
+        uptime-ms (when started-at (- now started-at))]
     {:current-stats stats
-     :throughput (when (seq recent-history)
-                   (let [time-span (- (:timestamp (last recent-history))
-                                      (:timestamp (first recent-history)))]
-                     (when (pos? time-span)
-                       {:data-points-per-second (/ (* 1000 (:data-points-processed stats))
-                                                   time-span)
-                        :models-per-second (/ (* 1000 (:models-applied stats))
-                                              time-span)})))
+     :system (get-real-system-metrics)
+     :throughput (when (and (seq recent-history) uptime-ms (pos? uptime-ms))
+                   {:data-points-per-second (double (/ (* 1000 (:data-points-processed stats)) uptime-ms))
+                    :models-per-second (double (/ (* 1000 (:models-applied stats)) uptime-ms))
+                    :data-points-per-minute (double (/ (* 60000 (:data-points-processed stats)) uptime-ms))})
      :learning-cycles (:learning-cycles stats)
-     :uptime-ms (when (:started-at state)
-                  (- (System/currentTimeMillis) (:started-at state)))}))
+     :uptime-ms uptime-ms
+     :uptime-seconds (when uptime-ms (/ uptime-ms 1000.0))
+     :uptime-minutes (when uptime-ms (/ uptime-ms 60000.0))
+     :timestamp now}))
 
 (defn get-learning-history
   "Get learning history."
