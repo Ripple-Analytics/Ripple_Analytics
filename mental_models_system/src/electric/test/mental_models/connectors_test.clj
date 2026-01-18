@@ -885,3 +885,116 @@
       (is (= {} @conn/circuit-breakers))
       (is (= {} (:requests @conn/metrics)))
       (is (= {} @conn/response-cache)))))
+
+;; ============================================
+;; Request/Response Logging Tests
+;; ============================================
+
+(deftest test-request-log-atom
+  (testing "Request log atom is initialized"
+    (is (instance? clojure.lang.Atom conn/request-log))
+    (is (vector? @conn/request-log))))
+
+(deftest test-log-config
+  (testing "Log config is properly defined"
+    (is (map? conn/log-config))
+    (is (= 1000 (:max-entries conn/log-config)))
+    (is (true? (:log-request-body conn/log-config)))
+    (is (true? (:log-response-body conn/log-config)))
+    (is (set? (:redact-headers conn/log-config)))
+    (is (contains? (:redact-headers conn/log-config) "authorization"))))
+
+(deftest test-redact-sensitive
+  (testing "Redact sensitive headers"
+    (let [headers {"content-type" "application/json"
+                   "authorization" "Bearer secret-token"
+                   "x-api-key" "my-api-key"}
+          redacted (conn/redact-sensitive headers)]
+      (is (= "application/json" (get redacted "content-type")))
+      (is (= "[REDACTED]" (get redacted "authorization")))
+      (is (= "[REDACTED]" (get redacted "x-api-key"))))))
+
+(deftest test-log-request
+  (testing "Log request creates entry"
+    (conn/clear-request-log)
+    (let [request-id (conn/log-request :github :get "https://api.github.com/repos"
+                                       :headers {"accept" "application/json"}
+                                       :body nil)]
+      (is (uuid? request-id))
+      (is (= 1 (count @conn/request-log)))
+      (let [entry (first @conn/request-log)]
+        (is (= :request (:type entry)))
+        (is (= :github (:connector-type entry)))
+        (is (= :get (:method entry)))
+        (is (= "https://api.github.com/repos" (:url entry)))))))
+
+(deftest test-log-response
+  (testing "Log response creates entry"
+    (conn/clear-request-log)
+    (let [request-id (java.util.UUID/randomUUID)
+          response-id (conn/log-response request-id 200
+                                         :headers {"content-type" "application/json"}
+                                         :body "{\"data\": \"test\"}"
+                                         :latency-ms 150)]
+      (is (uuid? response-id))
+      (is (= 1 (count @conn/request-log)))
+      (let [entry (first @conn/request-log)]
+        (is (= :response (:type entry)))
+        (is (= request-id (:request-id entry)))
+        (is (= 200 (:status entry)))
+        (is (= 150 (:latency-ms entry)))))))
+
+(deftest test-get-request-log
+  (testing "Get request log with filtering"
+    (conn/clear-request-log)
+    (conn/log-request :github :get "https://api.github.com/repos")
+    (conn/log-request :slack :post "https://slack.com/api/chat.postMessage")
+    (conn/log-request :github :get "https://api.github.com/users")
+    
+    ;; Get all logs
+    (is (= 3 (count (conn/get-request-log))))
+    
+    ;; Filter by connector type
+    (is (= 2 (count (conn/get-request-log :connector-type :github))))
+    (is (= 1 (count (conn/get-request-log :connector-type :slack))))
+    
+    ;; Limit results
+    (is (= 2 (count (conn/get-request-log :limit 2))))))
+
+(deftest test-get-request-by-id
+  (testing "Get request by ID returns request and response"
+    (conn/clear-request-log)
+    (let [request-id (conn/log-request :github :get "https://api.github.com/repos")]
+      (conn/log-response request-id 200 :latency-ms 100)
+      (let [result (conn/get-request-by-id request-id)]
+        (is (map? result))
+        (is (contains? result :request))
+        (is (contains? result :response))
+        (is (= request-id (get-in result [:request :id])))
+        (is (= request-id (get-in result [:response :request-id])))))))
+
+(deftest test-clear-request-log
+  (testing "Clear request log removes all entries"
+    (conn/log-request :github :get "https://api.github.com/repos")
+    (conn/log-request :slack :post "https://slack.com/api/chat.postMessage")
+    (is (pos? (count @conn/request-log)))
+    (conn/clear-request-log)
+    (is (= 0 (count @conn/request-log)))))
+
+(deftest test-get-log-stats
+  (testing "Get log stats returns statistics"
+    (conn/clear-request-log)
+    (let [req1 (conn/log-request :github :get "https://api.github.com/repos")
+          req2 (conn/log-request :slack :post "https://slack.com/api/chat.postMessage")]
+      (conn/log-response req1 200 :latency-ms 100)
+      (conn/log-response req2 500 :latency-ms 200 :error "Server error")
+      
+      (let [stats (conn/get-log-stats)]
+        (is (map? stats))
+        (is (= 4 (:total-entries stats)))
+        (is (= 2 (:total-requests stats)))
+        (is (= 2 (:total-responses stats)))
+        (is (= 1 (:error-count stats)))
+        (is (= 1 (get-in stats [:by-connector :github])))
+        (is (= 1 (get-in stats [:by-connector :slack])))
+        (is (= 150 (:avg-latency-ms stats)))))))
