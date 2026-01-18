@@ -1,0 +1,93 @@
+{
+  "category": "Economics",
+  "models": [
+    {
+      "id": 53,
+      "name": "Supply and Demand",
+      "failure_modes": [
+        {"mode": "Ignoring demand elasticity", "description": "Not understanding how price affects demand", "real_world_case": "Raising prices on elastic goods.", "warning_signs": ["Volume drop", "Price sensitivity", "Customer loss"], "safeguards": ["Measure elasticity", "Test pricing", "Segment analysis"], "quantitative_threshold": "Know your price elasticity"},
+        {"mode": "Supply shock blindness", "description": "Not anticipating supply disruptions", "real_world_case": "COVID supply chain disruptions.", "warning_signs": ["Single source", "No buffer", "Fragile supply"], "safeguards": ["Diversify supply", "Buffer inventory", "Scenario planning"], "quantitative_threshold": "Plan for supply shocks"},
+        {"mode": "Demand forecasting errors", "description": "Misjudging future demand", "real_world_case": "Over-building capacity.", "warning_signs": ["Inventory buildup", "Capacity mismatch", "Wrong forecasts"], "safeguards": ["Multiple forecasts", "Flexible capacity", "Demand sensing"], "quantitative_threshold": "Forecasts are always wrong - plan for variance"},
+        {"mode": "Ignoring substitutes", "description": "Not seeing competitive alternatives", "real_world_case": "Pricing without considering alternatives.", "warning_signs": ["Customer switching", "New alternatives", "Declining share"], "safeguards": ["Monitor substitutes", "Competitive pricing", "Value differentiation"], "quantitative_threshold": "Substitutes cap your pricing power"},
+        {"mode": "Equilibrium assumption", "description": "Assuming market reaches equilibrium", "real_world_case": "Persistent shortages or surpluses.", "warning_signs": ["Persistent imbalance", "No clearing", "Sticky prices"], "safeguards": ["Dynamic analysis", "Friction awareness", "Intervention effects"], "quantitative_threshold": "Markets don't always clear"}
+      ]
+    },
+    {
+      "id": 54,
+      "name": "Opportunity Cost",
+      "failure_modes": [
+        {"mode": "Ignoring opportunity cost", "description": "Not considering alternatives foregone", "real_world_case": "Holding cash without considering returns.", "warning_signs": ["No alternative analysis", "Sunk cost focus", "Narrow view"], "safeguards": ["Always consider alternatives", "Explicit comparison", "Best alternative"], "quantitative_threshold": "Every choice has opportunity cost"},
+        {"mode": "Wrong opportunity cost calculation", "description": "Comparing to wrong alternative", "real_world_case": "Comparing to risk-free rate when equity is alternative.", "warning_signs": ["Wrong comparison", "Understated cost", "Poor decisions"], "safeguards": ["Identify best alternative", "Realistic comparison", "Risk-adjusted"], "quantitative_threshold": "Compare to realistic best alternative"},
+        {"mode": "Hidden opportunity costs", "description": "Not seeing non-obvious alternatives", "real_world_case": "Time spent on project vs other uses.", "warning_signs": ["Hidden costs", "Time blindness", "Resource blindness"], "safeguards": ["Comprehensive alternatives", "Time valuation", "Resource accounting"], "quantitative_threshold": "Time and attention have opportunity cost"},
+        {"mode": "Opportunity cost paralysis", "description": "Unable to decide due to opportunity costs", "real_world_case": "Analysis paralysis from too many options.", "warning_signs": ["No decision", "Endless comparison", "Paralysis"], "safeguards": ["Good enough decisions", "Time limits", "Satisficing"], "quantitative_threshold": "Deciding has value - don't over-analyze"},
+        {"mode": "Sunk cost confusion", "description": "Confusing sunk costs with opportunity costs", "real_world_case": "Continuing bad investment because of past spending.", "warning_signs": ["Sunk cost fallacy", "Past focus", "Throwing good after bad"], "safeguards": ["Ignore sunk costs", "Forward-looking", "Fresh evaluation"], "quantitative_threshold": "Sunk costs are irrelevant to future decisions"}
+      ]
+    },
+    {
+      "id": 55,
+      "name": "Comparative Advantage",
+      "failure_modes": [
+        {"mode": "Absolute vs comparative confusion", "description": "Focusing on absolute rather than comparative advantage", "real_world_case": "Doing everything yourself because you're good at it.", "warning_signs": ["Doing everything", "No delegation", "Opportunity cost"], "safeguards": ["Focus on comparative advantage", "Delegate rest", "Specialization"], "quantitative_threshold": "Do what you're relatively best at"},
+        {"mode": "Static comparative advantage", "description": "Assuming advantages don't change", "real_world_case": "Relying on advantages that erode.", "warning_signs": ["Eroding advantage", "Catching up", "Commoditization"], "safeguards": ["Dynamic analysis", "Advantage renewal", "Continuous improvement"], "quantitative_threshold": "Comparative advantages change over time"},
+        {"mode": "Ignoring transaction costs", "description": "Not accounting for costs of trade", "real_world_case": "Outsourcing with high coordination costs.", "warning_signs": ["High coordination costs", "Quality issues", "Hidden costs"], "safeguards": ["Include transaction costs", "Total cost analysis", "Make vs buy"], "quantitative_threshold": "Transaction costs can eliminate advantage"},
+        {"mode": "Comparative advantage in wrong dimension", "description": "Advantage in area that doesn't matter", "real_world_case": "Best at feature customers don't value.", "warning_signs": ["Irrelevant advantage", "No premium", "Customer indifference"], "safeguards": ["Customer-valued advantage", "Market alignment", "Value focus"], "quantitative_threshold": "Advantage must be in valued dimension"},
+        {"mode": "Over-specialization", "description": "Too narrow focus on comparative advantage", "real_world_case": "Single skill becoming obsolete.", "warning_signs": ["Narrow skills", "Vulnerability", "No diversification"], "safeguards": ["Adjacent capabilities", "Skill diversification", "Adaptability"], "quantitative_threshold": "Don't over-specialize"}
+      ]
+    },
+    {
+      "id": 56,
+      "name": "Marginal Thinking",
+      "failure_modes": [
+        {"mode": "Average vs marginal confusion", "description": "Using average cost when marginal matters", "real_world_case": "Pricing based on average cost.", "warning_signs": ["Wrong cost basis", "Pricing errors", "Missed opportunities"], "safeguards": ["Marginal analysis", "Incremental thinking", "Right cost basis"], "quantitative_threshold": "Decisions should be based on marginal, not average"},
+        {"mode": "Ignoring marginal utility", "description": "Not recognizing diminishing returns", "real_world_case": "Buying more when marginal value is low.", "warning_signs": ["Diminishing returns", "Over-consumption", "Waste"], "safeguards": ["Marginal utility analysis", "Diminishing returns awareness", "Optimal quantity"], "quantitative_threshold": "Marginal utility typically decreases"},
+        {"mode": "Marginal thinking at wrong margin", "description": "Analyzing wrong incremental decision", "real_world_case": "Optimizing small decisions, ignoring big ones.", "warning_signs": ["Wrong focus", "Small optimizations", "Missing big picture"], "safeguards": ["Right margin", "Big decisions first", "Prioritization"], "quantitative_threshold": "Focus on margins that matter"},
+        {"mode": "Marginal thinking ignoring fixed costs", "description": "Marginal analysis without considering fixed cost recovery", "real_world_case": "Pricing below average cost long-term.", "warning_signs": ["Not covering fixed costs", "Unsustainable pricing", "Losses"], "safeguards": ["Long-term sustainability", "Fixed cost recovery", "Full cost awareness"], "quantitative_threshold": "Marginal pricing must cover fixed costs over time"},
+        {"mode": "Marginal analysis paralysis", "description": "Over-analyzing every marginal decision", "real_world_case": "Spending more time analyzing than value of decision.", "warning_signs": ["Over-analysis", "Decision cost", "Diminishing returns on analysis"], "safeguards": ["Proportional analysis", "Decision rules", "Satisficing"], "quantitative_threshold": "Analysis cost should be proportional to decision value"}
+      ]
+    },
+    {
+      "id": 57,
+      "name": "Externalities",
+      "failure_modes": [
+        {"mode": "Ignoring negative externalities", "description": "Not accounting for costs imposed on others", "real_world_case": "Pollution without considering environmental cost.", "warning_signs": ["External costs", "Third-party harm", "Unaccounted impacts"], "safeguards": ["Full cost accounting", "Externality awareness", "Stakeholder analysis"], "quantitative_threshold": "Include all costs, not just private costs"},
+        {"mode": "Missing positive externalities", "description": "Not capturing value created for others", "real_world_case": "R&D benefiting competitors.", "warning_signs": ["Value leakage", "Free riders", "Underinvestment"], "safeguards": ["Capture externalities", "Appropriability", "Value capture"], "quantitative_threshold": "Find ways to capture positive externalities"},
+        {"mode": "Externality blindness", "description": "Not seeing external effects at all", "real_world_case": "Actions with unrecognized impacts.", "warning_signs": ["Surprise impacts", "Stakeholder complaints", "Unintended consequences"], "safeguards": ["Stakeholder mapping", "Impact analysis", "Broad thinking"], "quantitative_threshold": "Most actions have externalities"},
+        {"mode": "Externality timing", "description": "Externalities appearing later than expected", "real_world_case": "Long-term environmental damage.", "warning_signs": ["Delayed effects", "Accumulating impacts", "Future costs"], "safeguards": ["Long-term thinking", "Delayed effect awareness", "Precautionary principle"], "quantitative_threshold": "Externalities can be delayed"},
+        {"mode": "Externality measurement", "description": "Difficulty quantifying external effects", "real_world_case": "Valuing environmental damage.", "warning_signs": ["Unmeasured impacts", "Ignored because hard to measure", "Qualitative only"], "safeguards": ["Attempt quantification", "Range estimates", "Don't ignore because hard"], "quantitative_threshold": "Hard to measure ≠ unimportant"}
+      ]
+    },
+    {
+      "id": 58,
+      "name": "Tragedy of the Commons",
+      "failure_modes": [
+        {"mode": "Commons blindness", "description": "Not recognizing shared resource dynamics", "real_world_case": "Depleting shared resources.", "warning_signs": ["Resource depletion", "Overuse", "No ownership"], "safeguards": ["Identify commons", "Governance", "Sustainable use"], "quantitative_threshold": "Shared resources need governance"},
+        {"mode": "Free rider problem", "description": "Benefiting without contributing", "real_world_case": "Using public goods without paying.", "warning_signs": ["Free riding", "Underfunding", "Contributor resentment"], "safeguards": ["Contribution mechanisms", "Exclusion capability", "Incentive alignment"], "quantitative_threshold": "Free riding undermines commons"},
+        {"mode": "Tragedy acceleration", "description": "Race to deplete before others do", "real_world_case": "Overfishing as stocks decline.", "warning_signs": ["Accelerating depletion", "Race dynamics", "Collapse risk"], "safeguards": ["Coordination", "Limits", "Enforcement"], "quantitative_threshold": "Tragedy can accelerate as resource declines"},
+        {"mode": "Privatization failure", "description": "Private ownership not solving commons problem", "real_world_case": "Privatized resource still depleted.", "warning_signs": ["Short-term focus", "Externalities continue", "Incomplete solution"], "safeguards": ["Long-term incentives", "Externality management", "Appropriate governance"], "quantitative_threshold": "Privatization doesn't always solve commons"},
+        {"mode": "Commons creation", "description": "Creating new commons problems", "real_world_case": "Digital commons being depleted.", "warning_signs": ["New shared resources", "No governance", "Emerging tragedy"], "safeguards": ["Early governance", "Anticipate commons", "Proactive management"], "quantitative_threshold": "New commons need new governance"}
+      ]
+    },
+    {
+      "id": 59,
+      "name": "Moral Hazard",
+      "failure_modes": [
+        {"mode": "Creating moral hazard", "description": "Incentivizing risky behavior through protection", "real_world_case": "Bailout expectations encouraging risk.", "warning_signs": ["Increased risk-taking", "Reliance on protection", "Reckless behavior"], "safeguards": ["Skin in the game", "Consequences", "Aligned incentives"], "quantitative_threshold": "Protection can encourage risk"},
+        {"mode": "Moral hazard blindness", "description": "Not seeing how incentives change behavior", "real_world_case": "Insurance leading to carelessness.", "warning_signs": ["Behavior change after protection", "Increased claims", "Carelessness"], "safeguards": ["Monitor behavior", "Deductibles", "Incentive design"], "quantitative_threshold": "Protection changes behavior"},
+        {"mode": "Systemic moral hazard", "description": "Moral hazard at system level", "real_world_case": "Too big to fail banks.", "warning_signs": ["System-wide risk", "Implicit guarantees", "Concentrated risk"], "safeguards": ["No implicit guarantees", "Size limits", "System design"], "quantitative_threshold": "Systemic moral hazard is most dangerous"},
+        {"mode": "Moral hazard in contracts", "description": "Contracts creating perverse incentives", "real_world_case": "Cost-plus contracts encouraging waste.", "warning_signs": ["Perverse incentives", "Waste", "Gaming"], "safeguards": ["Incentive-aligned contracts", "Outcome focus", "Monitoring"], "quantitative_threshold": "Contract design affects behavior"},
+        {"mode": "Moral hazard cascades", "description": "Moral hazard spreading through system", "real_world_case": "Everyone taking risks because others are protected.", "warning_signs": ["Spreading risk-taking", "Cascade effects", "System fragility"], "safeguards": ["Contain moral hazard", "Clear boundaries", "System resilience"], "quantitative_threshold": "Moral hazard can spread"}
+      ]
+    },
+    {
+      "id": 60,
+      "name": "Adverse Selection",
+      "failure_modes": [
+        {"mode": "Information asymmetry blindness", "description": "Not recognizing information imbalance", "real_world_case": "Buying used car without knowing history.", "warning_signs": ["Hidden information", "Asymmetric knowledge", "Adverse outcomes"], "safeguards": ["Information gathering", "Signaling", "Warranties"], "quantitative_threshold": "Information asymmetry enables adverse selection"},
+        {"mode": "Market unraveling", "description": "Adverse selection destroying market", "real_world_case": "Health insurance death spiral.", "warning_signs": ["Good risks leaving", "Rising prices", "Market collapse"], "safeguards": ["Risk pooling", "Mandates", "Subsidies"], "quantitative_threshold": "Adverse selection can destroy markets"},
+        {"mode": "Adverse selection in hiring", "description": "Attracting wrong candidates", "real_world_case": "Low pay attracting low performers.", "warning_signs": ["Poor candidate quality", "High turnover", "Performance issues"], "safeguards": ["Competitive compensation", "Screening", "Signaling"], "quantitative_threshold": "Compensation affects candidate pool"},
+        {"mode": "Adverse selection in partnerships", "description": "Attracting wrong partners", "real_world_case": "Desperate partners seeking deals.", "warning_signs": ["Low-quality partners", "Desperation signals", "Poor fit"], "safeguards": ["Partner screening", "Due diligence", "Quality signals"], "quantitative_threshold": "Easy deals may have adverse selection"},
+        {"mode": "Creating adverse selection", "description": "Policies that cause adverse selection", "real_world_case": "Pricing that drives away good customers.", "warning_signs": ["Customer mix shift", "Quality decline", "Margin pressure"], "safeguards": ["Segment analysis", "Pricing strategy", "Customer retention"], "quantitative_threshold": "Policies can create adverse selection"}
+      ]
+    }
+  ]
+}

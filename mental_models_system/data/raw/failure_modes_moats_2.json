@@ -1,0 +1,93 @@
+{
+  "category": "Moats",
+  "models": [
+    {
+      "id": 73,
+      "name": "Brand Moat",
+      "failure_modes": [
+        {"mode": "Brand erosion", "description": "Brand value declining over time", "real_world_case": "Sears brand becoming irrelevant.", "warning_signs": ["Declining brand metrics", "Customer indifference", "Commoditization"], "safeguards": ["Brand investment", "Relevance maintenance", "Customer connection"], "quantitative_threshold": "Brands require continuous investment"},
+        {"mode": "Brand overextension", "description": "Extending brand too far", "real_world_case": "Luxury brand going mass market.", "warning_signs": ["Brand dilution", "Core customer loss", "Premium erosion"], "safeguards": ["Brand boundaries", "Sub-brands", "Discipline"], "quantitative_threshold": "Brand extension has limits"},
+        {"mode": "Brand crisis", "description": "Event damaging brand reputation", "real_world_case": "Product recall destroying trust.", "warning_signs": ["Negative press", "Customer complaints", "Trust erosion"], "safeguards": ["Crisis preparation", "Quick response", "Transparency"], "quantitative_threshold": "Brand crises can be fatal"},
+        {"mode": "Brand relevance loss", "description": "Brand becoming outdated", "real_world_case": "Legacy brand not connecting with new generations.", "warning_signs": ["Aging customer base", "Youth indifference", "Dated perception"], "safeguards": ["Brand evolution", "New audience connection", "Relevance refresh"], "quantitative_threshold": "Brands must evolve to stay relevant"},
+        {"mode": "Brand without substance", "description": "Brand not backed by real value", "real_world_case": "Marketing without product quality.", "warning_signs": ["Customer disappointment", "Reviews mismatch", "Churn"], "safeguards": ["Product quality", "Promise delivery", "Substance first"], "quantitative_threshold": "Brand must be backed by reality"}
+      ]
+    },
+    {
+      "id": 74,
+      "name": "Switching Costs",
+      "failure_modes": [
+        {"mode": "Switching cost erosion", "description": "Switching costs declining", "real_world_case": "Data portability reducing lock-in.", "warning_signs": ["Easier switching", "New tools", "Regulation"], "safeguards": ["Value-based retention", "Continuous improvement", "Real value"], "quantitative_threshold": "Switching costs can erode"},
+        {"mode": "Switching cost backlash", "description": "Customers resenting lock-in", "real_world_case": "Customers angry about artificial barriers.", "warning_signs": ["Customer complaints", "Negative sentiment", "Regulatory attention"], "safeguards": ["Value-based lock-in", "Fair practices", "Customer respect"], "quantitative_threshold": "Artificial switching costs create resentment"},
+        {"mode": "Switching cost overestimation", "description": "Thinking switching costs are higher than they are", "real_world_case": "Customers switching despite perceived barriers.", "warning_signs": ["Unexpected churn", "Competitor gains", "Overconfidence"], "safeguards": ["Measure actual switching", "Customer research", "Competitive monitoring"], "quantitative_threshold": "Test actual switching costs"},
+        {"mode": "Switching cost dependence", "description": "Relying on switching costs instead of value", "real_world_case": "Product quality declining while relying on lock-in.", "warning_signs": ["Quality decline", "Customer dissatisfaction", "Waiting to switch"], "safeguards": ["Value focus", "Continuous improvement", "Earn retention"], "quantitative_threshold": "Switching costs don't replace value"},
+        {"mode": "Switching cost competition", "description": "Competitors reducing your switching costs", "real_world_case": "Competitor offering migration tools.", "warning_signs": ["Migration tools", "Competitor targeting", "Switching assistance"], "safeguards": ["Monitor competitors", "Counter-strategies", "Value reinforcement"], "quantitative_threshold": "Competitors attack switching costs"}
+      ]
+    },
+    {
+      "id": 75,
+      "name": "Cost Advantages",
+      "failure_modes": [
+        {"mode": "Cost advantage erosion", "description": "Cost advantage declining", "real_world_case": "Competitors achieving similar costs.", "warning_signs": ["Narrowing gap", "Competitor efficiency", "Commoditization"], "safeguards": ["Continuous improvement", "New cost sources", "Innovation"], "quantitative_threshold": "Cost advantages erode over time"},
+        {"mode": "Cost focus blindness", "description": "Cost focus missing value opportunities", "real_world_case": "Cutting costs that customers value.", "warning_signs": ["Customer complaints", "Value erosion", "Penny wise pound foolish"], "safeguards": ["Value awareness", "Strategic costs", "Customer focus"], "quantitative_threshold": "Some costs create value"},
+        {"mode": "Cost advantage from scale loss", "description": "Losing scale that drives cost advantage", "real_world_case": "Market share loss increasing unit costs.", "warning_signs": ["Volume decline", "Rising unit costs", "Negative spiral"], "safeguards": ["Protect volume", "Flexible cost structure", "Scale alternatives"], "quantitative_threshold": "Scale-based cost advantages need volume"},
+        {"mode": "Cost advantage replication", "description": "Competitors copying cost structure", "real_world_case": "Process innovations being copied.", "warning_signs": ["Competitor copying", "Narrowing gap", "Knowledge leakage"], "safeguards": ["Continuous innovation", "Proprietary processes", "Complexity"], "quantitative_threshold": "Cost advantages can be copied"},
+        {"mode": "Cost advantage sustainability", "description": "Cost advantage not sustainable", "real_world_case": "Labor cost advantage disappearing.", "warning_signs": ["Rising costs", "Changing conditions", "Temporary advantage"], "safeguards": ["Multiple cost sources", "Sustainable advantages", "Continuous improvement"], "quantitative_threshold": "Ensure cost advantages are sustainable"}
+      ]
+    },
+    {
+      "id": 76,
+      "name": "Regulatory Moat",
+      "failure_modes": [
+        {"mode": "Regulatory change", "description": "Regulations changing unfavorably", "real_world_case": "Deregulation removing barriers.", "warning_signs": ["Political shifts", "Regulatory review", "New entrants lobbying"], "safeguards": ["Political monitoring", "Diversification", "Adaptation capability"], "quantitative_threshold": "Regulations can change"},
+        {"mode": "Regulatory capture reversal", "description": "Losing regulatory influence", "real_world_case": "New administration changing approach.", "warning_signs": ["Political change", "New regulators", "Shifting priorities"], "safeguards": ["Broad relationships", "Value demonstration", "Adaptability"], "quantitative_threshold": "Regulatory capture is not permanent"},
+        {"mode": "Regulatory moat complacency", "description": "Relying on regulation instead of competing", "real_world_case": "Protected company becoming inefficient.", "warning_signs": ["Declining competitiveness", "Inefficiency", "Complacency"], "safeguards": ["Maintain competitiveness", "Continuous improvement", "Prepare for change"], "quantitative_threshold": "Regulatory protection can breed complacency"},
+        {"mode": "Regulatory arbitrage", "description": "Competitors finding regulatory workarounds", "real_world_case": "Fintech avoiding banking regulations.", "warning_signs": ["New competitors", "Different rules", "Regulatory gaps"], "safeguards": ["Monitor arbitrage", "Level playing field advocacy", "Adaptation"], "quantitative_threshold": "Regulatory moats have gaps"},
+        {"mode": "Regulatory backlash", "description": "Regulation creating public backlash", "real_world_case": "Protected industry facing public anger.", "warning_signs": ["Public criticism", "Political attention", "Reform movements"], "safeguards": ["Public value", "Fair practices", "Stakeholder management"], "quantitative_threshold": "Regulatory protection can create backlash"}
+      ]
+    },
+    {
+      "id": 77,
+      "name": "Patents and IP",
+      "failure_modes": [
+        {"mode": "Patent expiration", "description": "Patents expiring and losing protection", "real_world_case": "Pharmaceutical patent cliffs.", "warning_signs": ["Approaching expiration", "Generic preparation", "Revenue cliff"], "safeguards": ["Pipeline development", "Patent extension strategies", "Diversification"], "quantitative_threshold": "Patents expire - plan for it"},
+        {"mode": "Patent workarounds", "description": "Competitors designing around patents", "real_world_case": "Alternative technologies avoiding patents.", "warning_signs": ["Competitor R&D", "Alternative approaches", "Narrowing advantage"], "safeguards": ["Broad patent coverage", "Continuous innovation", "Multiple patents"], "quantitative_threshold": "Patents can be designed around"},
+        {"mode": "Patent invalidity", "description": "Patents being invalidated", "real_world_case": "Prior art invalidating key patent.", "warning_signs": ["Legal challenges", "Prior art discovery", "Invalidity risk"], "safeguards": ["Strong patents", "Multiple patents", "Legal preparation"], "quantitative_threshold": "Patents can be invalidated"},
+        {"mode": "Patent enforcement cost", "description": "Cost of enforcing patents exceeding value", "real_world_case": "Small company unable to afford enforcement.", "warning_signs": ["Infringement", "High legal costs", "Enforcement challenges"], "safeguards": ["Enforcement capability", "Strategic litigation", "Licensing alternatives"], "quantitative_threshold": "Patents require enforcement capability"},
+        {"mode": "Patent obsolescence", "description": "Technology making patents irrelevant", "real_world_case": "New technology bypassing patented approach.", "warning_signs": ["Technology shifts", "Alternative approaches", "Declining relevance"], "safeguards": ["Technology monitoring", "Continuous innovation", "Adaptation"], "quantitative_threshold": "Technology can make patents obsolete"}
+      ]
+    },
+    {
+      "id": 78,
+      "name": "Distribution Moat",
+      "failure_modes": [
+        {"mode": "Distribution disruption", "description": "New channels disrupting existing distribution", "real_world_case": "E-commerce disrupting retail distribution.", "warning_signs": ["New channels", "Shifting volumes", "Channel conflict"], "safeguards": ["Multi-channel presence", "Channel adaptation", "Direct relationships"], "quantitative_threshold": "Distribution channels can be disrupted"},
+        {"mode": "Distribution dependence", "description": "Over-reliance on distribution partners", "real_world_case": "Retailer demanding better terms.", "warning_signs": ["Concentrated distribution", "Partner power", "Margin pressure"], "safeguards": ["Distribution diversification", "Direct channels", "Partner balance"], "quantitative_threshold": "Don't over-depend on distributors"},
+        {"mode": "Distribution cost escalation", "description": "Distribution costs rising", "real_world_case": "Shelf space fees increasing.", "warning_signs": ["Rising costs", "Partner demands", "Margin compression"], "safeguards": ["Cost monitoring", "Alternative channels", "Negotiation leverage"], "quantitative_threshold": "Distribution costs can escalate"},
+        {"mode": "Distribution exclusivity loss", "description": "Losing exclusive distribution arrangements", "real_world_case": "Distributor taking on competitors.", "warning_signs": ["Exclusivity pressure", "Competitor interest", "Relationship strain"], "safeguards": ["Value demonstration", "Relationship investment", "Alternatives"], "quantitative_threshold": "Exclusivity is hard to maintain"},
+        {"mode": "Distribution quality decline", "description": "Distribution quality deteriorating", "real_world_case": "Partner service levels declining.", "warning_signs": ["Service issues", "Customer complaints", "Quality problems"], "safeguards": ["Quality monitoring", "Standards enforcement", "Alternative options"], "quantitative_threshold": "Distribution quality affects brand"}
+      ]
+    },
+    {
+      "id": 79,
+      "name": "Data Moat",
+      "failure_modes": [
+        {"mode": "Data commoditization", "description": "Data becoming widely available", "real_world_case": "Alternative data sources emerging.", "warning_signs": ["New data sources", "Declining uniqueness", "Competitor access"], "safeguards": ["Unique data creation", "Data network effects", "Continuous collection"], "quantitative_threshold": "Data advantages can commoditize"},
+        {"mode": "Data privacy regulation", "description": "Regulations limiting data use", "real_world_case": "GDPR restricting data practices.", "warning_signs": ["New regulations", "Privacy concerns", "Compliance requirements"], "safeguards": ["Privacy compliance", "Consent-based data", "Ethical practices"], "quantitative_threshold": "Data regulation is increasing"},
+        {"mode": "Data quality decay", "description": "Data quality declining over time", "real_world_case": "Outdated customer information.", "warning_signs": ["Stale data", "Declining accuracy", "Poor outcomes"], "safeguards": ["Data refresh", "Quality monitoring", "Continuous collection"], "quantitative_threshold": "Data decays - keep it fresh"},
+        {"mode": "Data breach risk", "description": "Data security compromising moat", "real_world_case": "Breach destroying customer trust.", "warning_signs": ["Security vulnerabilities", "Breach attempts", "Compliance gaps"], "safeguards": ["Security investment", "Breach preparation", "Trust maintenance"], "quantitative_threshold": "Data moats require security"},
+        {"mode": "Data without insight", "description": "Having data but not extracting value", "real_world_case": "Data lake without analytics.", "warning_signs": ["Unused data", "No insights", "Analytics gaps"], "safeguards": ["Analytics capability", "Insight extraction", "Value realization"], "quantitative_threshold": "Data is only valuable if used"}
+      ]
+    },
+    {
+      "id": 80,
+      "name": "Culture Moat",
+      "failure_modes": [
+        {"mode": "Culture dilution", "description": "Culture weakening with growth", "real_world_case": "Startup culture lost as company scales.", "warning_signs": ["Culture complaints", "Value drift", "Hiring mismatches"], "safeguards": ["Culture investment", "Hiring for culture", "Leadership modeling"], "quantitative_threshold": "Culture requires active maintenance"},
+        {"mode": "Culture toxicity", "description": "Culture becoming harmful", "real_world_case": "Aggressive culture enabling misconduct.", "warning_signs": ["Misconduct", "Turnover", "Complaints"], "safeguards": ["Culture monitoring", "Values enforcement", "Safe reporting"], "quantitative_threshold": "Culture can become toxic"},
+        {"mode": "Culture copying", "description": "Competitors replicating culture", "real_world_case": "Competitors adopting similar values.", "warning_signs": ["Competitor mimicry", "Talent competition", "Differentiation loss"], "safeguards": ["Authentic culture", "Deep embedding", "Continuous evolution"], "quantitative_threshold": "Surface culture can be copied"},
+        {"mode": "Culture-strategy misalignment", "description": "Culture not supporting strategy", "real_world_case": "Innovation strategy with risk-averse culture.", "warning_signs": ["Strategy execution failure", "Cultural resistance", "Misalignment"], "safeguards": ["Culture-strategy alignment", "Culture change", "Strategy adaptation"], "quantitative_threshold": "Culture must support strategy"},
+        {"mode": "Culture rigidity", "description": "Culture preventing necessary change", "real_world_case": "Strong culture resisting adaptation.", "warning_signs": ["Change resistance", "Adaptation failure", "Rigidity"], "safeguards": ["Adaptive culture", "Change capability", "Balance stability and change"], "quantitative_threshold": "Culture shouldn't prevent adaptation"}
+      ]
+    }
+  ]
+}
