@@ -115,18 +115,42 @@ clj -M:dev
 
 ## Mental Models Included
 
-The system includes 129 mental models across categories:
+The system includes **91 mental models** with **455 failure modes** across 22 categories:
 
 - **Decision Making**: Circle of Competence, Margin of Safety, Second-Order Thinking, Inversion, Opportunity Cost
-- **Psychology**: Incentives, Social Proof, Commitment/Consistency, Availability Heuristic, Loss Aversion
+- **Psychology**: Incentives, Social Proof, Commitment/Consistency, Availability Heuristic, Loss Aversion, Confirmation Bias, Hindsight Bias, Dunning-Kruger, Status Quo Bias, Narrative Fallacy
 - **Systems**: Feedback Loops, Emergence, Network Effects
 - **Economics**: Supply/Demand, Comparative Advantage, Compound Interest
 - **Physics/Biology**: Critical Mass, Evolution, Red Queen
+- **Mathematics**: Bayes Theorem, Regression to Mean, Power Laws, Normal Distribution, Expected Value
+- **Strategy**: Competitive Advantage, Moats, First-Mover Advantage, Game Theory, Optionality
+- **Communication**: Hanlon's Razor, Occam's Razor, Map-Territory
+- **Learning**: Deliberate Practice, First Principles, Mental Models Meta
+- **Productivity**: Leverage, Parkinson's Law, Eisenhower Matrix
+- **Risk**: Black Swan, Antifragility, Fat Tails
+- **Innovation**: Creative Destruction, S-Curves, Innovator's Dilemma
+- **Human Nature**: Reciprocity, Scarcity, Authority
+- **Finance**: Time Value of Money, Asymmetric Information, Sunk Costs
+- **Negotiation**: BATNA, Anchoring, Win-Win
+- **Operations**: Bottleneck, Redundancy, Queuing Theory
+- **Investing**: Mr. Market, Circle of Competence, Margin of Safety
+- **Science**: Falsifiability, Replication, Survivorship Bias
+- **Technology**: Moore's Law, Network Topology, Technical Debt
+- **Ecology**: Carrying Capacity, Niche
+- **Philosophy**: Stoicism, Via Negativa, Skin in the Game
+- **Military**: Fog of War, Force Multiplier, Schwerpunkt
+- **Design**: Form Follows Function, Affordances, Constraints
+- **Management**: Principal-Agent, Span of Control, Peter Principle
+- **History**: Lindy Effect, Chesterton's Fence, Path Dependence
+- **Complexity**: Cynefin, Tight Coupling, Normal Accidents
 
 Each model includes:
 - Description and key insight
 - Application guidance
 - 5 failure modes with signals and safeguards
+
+**Last updated**: January 18, 2026 09:23 UTC
+**Lines of code**: 2,802 (models.cljc alone)
 
 ## Design Philosophy
 

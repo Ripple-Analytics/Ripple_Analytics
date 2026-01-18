@@ -627,6 +627,2153 @@
             :safeguards ["Know when to quit" "Find new games" "Strategic retreat"])]})
 
 ;; ============================================
+;; Category: Mathematics
+;; ============================================
+
+(register-model
+ {:name "bayes-theorem"
+  :category "mathematics"
+  :originator "Thomas Bayes"
+  :description "Update beliefs based on new evidence"
+  :key-insight "Prior probability × likelihood = posterior probability"
+  :application "Continuously update your beliefs as new information arrives"
+  :failure-modes
+  [(failure "prior-neglect" "high"
+            "Ignoring base rates when evaluating evidence"
+            :signals ["Overweighting new evidence" "Ignoring historical data"]
+            :safeguards ["Always start with base rates" "Research priors" "Calibrate"])
+   (failure "confirmation-bias" "high"
+            "Only updating on confirming evidence"
+            :signals ["Seeking confirming data" "Dismissing contrary evidence"]
+            :safeguards ["Seek disconfirming evidence" "Pre-commit to update rules"])
+   (failure "overconfidence-in-priors" "medium"
+            "Not updating enough on new evidence"
+            :signals ["Dismissing new data" "Anchoring on initial beliefs"]
+            :safeguards ["Track prediction accuracy" "Be willing to change"])
+   (failure "likelihood-ratio-errors" "high"
+            "Misjudging how diagnostic evidence is"
+            :signals ["Treating all evidence equally" "Not considering alternatives"]
+            :safeguards ["Calculate likelihood ratios" "Consider multiple hypotheses"])
+   (failure "binary-thinking" "medium"
+            "Not maintaining probability distributions"
+            :signals ["Certain/uncertain only" "No degrees of belief"]
+            :safeguards ["Think in probabilities" "Maintain uncertainty ranges"])]})
+
+(register-model
+ {:name "regression-to-mean"
+  :category "mathematics"
+  :originator "Francis Galton"
+  :description "Extreme outcomes tend to be followed by more average ones"
+  :key-insight "Luck and skill both contribute to outcomes"
+  :application "Don't overreact to extreme results"
+  :failure-modes
+  [(failure "hot-hand-fallacy" "high"
+            "Expecting streaks to continue"
+            :signals ["Chasing hot performers" "Extrapolating short-term trends"]
+            :safeguards ["Look at long-term averages" "Separate skill from luck"])
+   (failure "gambler-fallacy" "high"
+            "Expecting regression when events are independent"
+            :signals ["Due for a win" "Expecting balance"]
+            :safeguards ["Understand independence" "Each event is fresh"])
+   (failure "skill-luck-confusion" "high"
+            "Attributing luck to skill or vice versa"
+            :signals ["Praising/blaming for random outcomes"]
+            :safeguards ["Analyze process not outcome" "Large sample sizes"])
+   (failure "regression-blindness" "medium"
+            "Not expecting regression when you should"
+            :signals ["Surprised by return to average" "Overreacting to extremes"]
+            :safeguards ["Expect regression" "Wait for more data"])
+   (failure "intervention-illusion" "high"
+            "Thinking intervention caused regression"
+            :signals ["Crediting treatment for natural regression"]
+            :safeguards ["Control groups" "Baseline comparison"])]})
+
+(register-model
+ {:name "power-laws"
+  :category "mathematics"
+  :originator "Vilfredo Pareto"
+  :description "A few items account for most of the effect (80/20 rule)"
+  :key-insight "Distributions are often highly skewed"
+  :application "Focus on the vital few, not the trivial many"
+  :failure-modes
+  [(failure "average-thinking" "high"
+            "Assuming normal distributions when power laws apply"
+            :signals ["Using averages" "Ignoring outliers"]
+            :safeguards ["Check distribution shape" "Look for fat tails"])
+   (failure "equal-treatment" "high"
+            "Treating all items equally"
+            :signals ["Spreading effort evenly" "Not prioritizing"]
+            :safeguards ["Identify the vital few" "Ruthless prioritization"])
+   (failure "tail-blindness" "critical"
+            "Ignoring extreme events"
+            :signals ["Dismissing outliers" "Underestimating tail risk"]
+            :safeguards ["Study extremes" "Prepare for black swans"])
+   (failure "false-precision" "medium"
+            "Precise predictions in power law domains"
+            :signals ["Point estimates" "Narrow confidence intervals"]
+            :safeguards ["Wide ranges" "Scenario planning"])
+   (failure "static-pareto" "medium"
+            "Assuming the vital few never change"
+            :signals ["Not re-evaluating" "Stale priorities"]
+            :safeguards ["Regular review" "Monitor shifts"])]})
+
+(register-model
+ {:name "normal-distribution"
+  :category "mathematics"
+  :originator "Carl Friedrich Gauss"
+  :description "Many phenomena cluster around an average with predictable spread"
+  :key-insight "Most observations fall within a few standard deviations of the mean"
+  :application "Use when many independent factors combine additively"
+  :failure-modes
+  [(failure "false-normality" "critical"
+            "Assuming normal when distribution is different"
+            :signals ["Using normal stats on non-normal data" "Ignoring skewness"]
+            :safeguards ["Test for normality" "Check distribution shape"])
+   (failure "outlier-dismissal" "high"
+            "Dismissing outliers as errors"
+            :signals ["Removing extreme data" "Assuming measurement error"]
+            :safeguards ["Investigate outliers" "Consider fat tails"])
+   (failure "mean-obsession" "medium"
+            "Focusing only on average"
+            :signals ["Ignoring variance" "Not considering spread"]
+            :safeguards ["Report variance" "Consider full distribution"])
+   (failure "independence-assumption" "high"
+            "Assuming independence when correlated"
+            :signals ["Ignoring correlations" "Underestimating joint risk"]
+            :safeguards ["Test for correlation" "Model dependencies"])
+   (failure "sample-size-neglect" "high"
+            "Drawing conclusions from small samples"
+            :signals ["Overconfident with few data points"]
+            :safeguards ["Larger samples" "Report confidence intervals"])]})
+
+(register-model
+ {:name "expected-value"
+  :category "mathematics"
+  :originator "Blaise Pascal"
+  :description "Probability-weighted average of all possible outcomes"
+  :key-insight "Multiply probability by payoff to compare options"
+  :application "Make decisions based on expected value, not best/worst case"
+  :failure-modes
+  [(failure "probability-neglect" "high"
+            "Ignoring probabilities in decisions"
+            :signals ["Focusing on outcomes only" "Best case planning"]
+            :safeguards ["Estimate probabilities" "Weight by likelihood"])
+   (failure "payoff-neglect" "high"
+            "Ignoring magnitude of outcomes"
+            :signals ["Treating all outcomes equally" "Not sizing bets"]
+            :safeguards ["Estimate payoffs" "Consider magnitude"])
+   (failure "risk-of-ruin-blindness" "critical"
+            "Ignoring catastrophic outcomes"
+            :signals ["Positive EV but fatal downside" "Betting the farm"]
+            :safeguards ["Never risk ruin" "Kelly criterion" "Position sizing"])
+   (failure "utility-linearity" "medium"
+            "Assuming linear utility"
+            :signals ["Treating $1M same as 1000×$1K"]
+            :safeguards ["Consider diminishing returns" "Utility functions"])
+   (failure "single-play-fallacy" "medium"
+            "Applying EV to one-time decisions"
+            :signals ["No opportunity to average out"]
+            :safeguards ["Consider variance" "Downside protection"])]})
+
+;; ============================================
+;; Category: Strategy
+;; ============================================
+
+(register-model
+ {:name "competitive-advantage"
+  :category "strategy"
+  :originator "Michael Porter"
+  :description "Sustainable advantages that allow outperformance"
+  :key-insight "Without advantage, competition erodes profits to zero"
+  :application "Identify and protect sources of competitive advantage"
+  :failure-modes
+  [(failure "advantage-blindness" "high"
+            "Not knowing your actual advantages"
+            :signals ["Can't articulate why customers choose you"]
+            :safeguards ["Customer research" "Competitive analysis"])
+   (failure "temporary-advantage-confusion" "high"
+            "Mistaking temporary for sustainable advantage"
+            :signals ["Advantages being copied" "Eroding margins"]
+            :safeguards ["Test durability" "Build moats"])
+   (failure "advantage-erosion" "high"
+            "Not maintaining advantages"
+            :signals ["Competitors catching up" "Complacency"]
+            :safeguards ["Continuous investment" "Innovation"])
+   (failure "wrong-advantage" "medium"
+            "Building advantage customers don't value"
+            :signals ["Features nobody wants" "Overengineering"]
+            :safeguards ["Customer validation" "Willingness to pay"])
+   (failure "single-advantage-risk" "high"
+            "Relying on one source of advantage"
+            :signals ["Single point of failure"]
+            :safeguards ["Multiple moats" "Diversification"])]})
+
+(register-model
+ {:name "moats"
+  :category "strategy"
+  :originator "Warren Buffett"
+  :description "Structural barriers that protect competitive position"
+  :key-insight "Wide moats allow sustained high returns"
+  :application "Build and widen moats around your business"
+  :failure-modes
+  [(failure "moat-illusion" "high"
+            "Believing you have a moat when you don't"
+            :signals ["Easy competitor entry" "No pricing power"]
+            :safeguards ["Test moat strength" "Competitive analysis"])
+   (failure "moat-neglect" "high"
+            "Not investing in moat maintenance"
+            :signals ["Moat narrowing" "Competitors gaining"]
+            :safeguards ["Continuous investment" "Monitor moat width"])
+   (failure "wrong-moat-type" "medium"
+            "Building the wrong type of moat"
+            :signals ["Moat doesn't match business model"]
+            :safeguards ["Match moat to strategy" "Study successful moats"])
+   (failure "moat-obsolescence" "high"
+            "Moat becoming irrelevant"
+            :signals ["Technology shifts" "Market changes"]
+            :safeguards ["Monitor disruption" "Adapt moat"])
+   (failure "moat-overconfidence" "medium"
+            "Overestimating moat durability"
+            :signals ["Complacency" "Ignoring threats"]
+            :safeguards ["Stress test moat" "Paranoid planning"])]})
+
+(register-model
+ {:name "first-mover-advantage"
+  :category "strategy"
+  :originator "Business Strategy"
+  :description "Benefits from being first to market"
+  :key-insight "First mover advantage is real but often overestimated"
+  :application "Evaluate whether speed or learning matters more"
+  :failure-modes
+  [(failure "first-mover-obsession" "high"
+            "Overvaluing being first"
+            :signals ["Rushing to market" "Sacrificing quality for speed"]
+            :safeguards ["Evaluate actual advantage" "Consider fast follower"])
+   (failure "fast-follower-blindness" "medium"
+            "Not seeing fast follower advantages"
+            :signals ["Ignoring learning from pioneers" "Not studying failures"]
+            :safeguards ["Learn from first movers" "Improve on their mistakes"])
+   (failure "timing-errors" "high"
+            "Misjudging market timing"
+            :signals ["Too early" "Too late"]
+            :safeguards ["Market readiness research" "Timing analysis"])
+   (failure "resource-exhaustion" "high"
+            "Depleting resources before market matures"
+            :signals ["Running out of runway" "Market slower than expected"]
+            :safeguards ["Capital efficiency" "Staged investment"])
+   (failure "category-creation-cost" "medium"
+            "Underestimating cost of educating market"
+            :signals ["High customer acquisition cost" "Slow adoption"]
+            :safeguards ["Market education budget" "Patience"])]})
+
+(register-model
+ {:name "game-theory"
+  :category "strategy"
+  :originator "John von Neumann"
+  :description "Strategic interaction where outcomes depend on others' choices"
+  :key-insight "Consider how others will respond to your actions"
+  :application "Think through the game before making moves"
+  :failure-modes
+  [(failure "single-player-thinking" "high"
+            "Not considering others' responses"
+            :signals ["Surprised by reactions" "Ignoring competitors"]
+            :safeguards ["Map all players" "Anticipate responses"])
+   (failure "zero-sum-assumption" "medium"
+            "Assuming all games are zero-sum"
+            :signals ["Missing win-win opportunities" "Unnecessary conflict"]
+            :safeguards ["Look for positive-sum games" "Expand the pie"])
+   (failure "rationality-assumption" "high"
+            "Assuming all players are rational"
+            :signals ["Surprised by irrational behavior"]
+            :safeguards ["Model bounded rationality" "Consider emotions"])
+   (failure "one-shot-thinking" "high"
+            "Not considering repeated game dynamics"
+            :signals ["Defecting when cooperation better" "Short-term focus"]
+            :safeguards ["Consider reputation" "Long-term relationships"])
+   (failure "information-asymmetry-blindness" "medium"
+            "Ignoring differences in information"
+            :signals ["Assuming others know what you know"]
+            :safeguards ["Map information asymmetries" "Signal and screen"])]})
+
+(register-model
+ {:name "optionality"
+  :category "strategy"
+  :originator "Nassim Taleb"
+  :description "The value of having choices without obligation"
+  :key-insight "Options have value even if never exercised"
+  :application "Create and preserve options; avoid irreversible decisions"
+  :failure-modes
+  [(failure "option-blindness" "high"
+            "Not seeing embedded options"
+            :signals ["Undervaluing flexibility" "Ignoring optionality"]
+            :safeguards ["Identify all options" "Value flexibility"])
+   (failure "option-destruction" "high"
+            "Unnecessarily eliminating options"
+            :signals ["Premature commitment" "Burning bridges"]
+            :safeguards ["Preserve options" "Delay irreversible decisions"])
+   (failure "option-hoarding" "medium"
+            "Never exercising options"
+            :signals ["Paralysis" "Endless optionality seeking"]
+            :safeguards ["Set exercise criteria" "Time limits"])
+   (failure "option-cost-blindness" "medium"
+            "Ignoring the cost of maintaining options"
+            :signals ["Too many options" "Resource drain"]
+            :safeguards ["Prune options" "Cost-benefit analysis"])
+   (failure "false-optionality" "high"
+            "Believing you have options you don't"
+            :signals ["Options that can't be exercised"]
+            :safeguards ["Verify options are real" "Test exercisability"])]})
+
+;; ============================================
+;; Category: Communication
+;; ============================================
+
+(register-model
+ {:name "hanlon-razor"
+  :category "communication"
+  :originator "Robert Hanlon"
+  :description "Never attribute to malice what can be explained by incompetence"
+  :key-insight "Most bad outcomes are from mistakes, not evil intent"
+  :application "Assume good intent until proven otherwise"
+  :failure-modes
+  [(failure "paranoia" "high"
+            "Assuming malice when incompetence explains it"
+            :signals ["Conspiracy thinking" "Assuming bad intent"]
+            :safeguards ["Consider simpler explanations" "Assume good faith"])
+   (failure "naivete" "high"
+            "Ignoring actual malice"
+            :signals ["Being taken advantage of" "Ignoring red flags"]
+            :safeguards ["Verify trust" "Watch for patterns"])
+   (failure "incompetence-excuse" "medium"
+            "Excusing repeated incompetence"
+            :signals ["Same mistakes repeatedly" "No improvement"]
+            :safeguards ["Track patterns" "Accountability"])
+   (failure "self-serving-application" "medium"
+            "Applying differently to self vs others"
+            :signals ["Excusing own malice as incompetence"]
+            :safeguards ["Apply consistently" "Self-reflection"])
+   (failure "systemic-blindness" "medium"
+            "Missing systemic issues behind incompetence"
+            :signals ["Blaming individuals for system failures"]
+            :safeguards ["Look for root causes" "System analysis"])]})
+
+(register-model
+ {:name "occams-razor"
+  :category "communication"
+  :originator "William of Ockham"
+  :description "The simplest explanation is usually correct"
+  :key-insight "Don't multiply entities beyond necessity"
+  :application "Prefer simpler explanations over complex ones"
+  :failure-modes
+  [(failure "oversimplification" "high"
+            "Choosing too simple an explanation"
+            :signals ["Missing important factors" "Reductionism"]
+            :safeguards ["Test explanatory power" "Consider complexity"])
+   (failure "complexity-bias" "medium"
+            "Preferring complex explanations"
+            :signals ["Overcomplicating" "Missing obvious answers"]
+            :safeguards ["Start simple" "Add complexity only if needed"])
+   (failure "false-simplicity" "high"
+            "Mistaking familiar for simple"
+            :signals ["Choosing comfortable over correct"]
+            :safeguards ["Define simplicity carefully" "Test predictions"])
+   (failure "simplicity-as-truth" "medium"
+            "Assuming simple means true"
+            :signals ["Rejecting correct complex explanations"]
+            :safeguards ["Simplicity is heuristic not proof"])
+   (failure "domain-mismatch" "medium"
+            "Applying to domains where complexity is real"
+            :signals ["Oversimplifying complex systems"]
+            :safeguards ["Know when complexity is warranted"])]})
+
+(register-model
+ {:name "map-territory"
+  :category "communication"
+  :originator "Alfred Korzybski"
+  :description "The map is not the territory - models are not reality"
+  :key-insight "All models are wrong, some are useful"
+  :application "Remember that your mental models are simplifications"
+  :failure-modes
+  [(failure "map-reality-confusion" "critical"
+            "Confusing the model with reality"
+            :signals ["Defending model over evidence" "Model worship"]
+            :safeguards ["Test models against reality" "Update models"])
+   (failure "map-neglect" "medium"
+            "Not using maps at all"
+            :signals ["No frameworks" "Reinventing wheels"]
+            :safeguards ["Use models as tools" "Learn frameworks"])
+   (failure "single-map" "high"
+            "Using only one map"
+            :signals ["One framework for everything"]
+            :safeguards ["Multiple models" "Context-appropriate maps"])
+   (failure "outdated-map" "high"
+            "Using maps that no longer match territory"
+            :signals ["Surprised by reality" "Model failures"]
+            :safeguards ["Update maps regularly" "Reality checks"])
+   (failure "map-precision-illusion" "medium"
+            "Believing detailed maps are accurate"
+            :signals ["False precision" "Overconfident predictions"]
+            :safeguards ["Acknowledge uncertainty" "Rough maps often better"])]})
+
+;; ============================================
+;; Category: Learning
+;; ============================================
+
+(register-model
+ {:name "deliberate-practice"
+  :category "learning"
+  :originator "Anders Ericsson"
+  :description "Focused practice on weaknesses with immediate feedback"
+  :key-insight "10,000 hours of deliberate practice, not just any practice"
+  :application "Practice at the edge of your ability with feedback"
+  :failure-modes
+  [(failure "mindless-repetition" "high"
+            "Practicing without focus or feedback"
+            :signals ["No improvement" "Going through motions"]
+            :safeguards ["Focused attention" "Immediate feedback"])
+   (failure "comfort-zone-practice" "high"
+            "Practicing what you're already good at"
+            :signals ["No challenge" "Feeling comfortable"]
+            :safeguards ["Target weaknesses" "Increase difficulty"])
+   (failure "feedback-absence" "high"
+            "Practicing without feedback"
+            :signals ["No correction" "Reinforcing errors"]
+            :safeguards ["Get feedback" "Measure progress"])
+   (failure "burnout" "medium"
+            "Unsustainable practice intensity"
+            :signals ["Exhaustion" "Declining motivation"]
+            :safeguards ["Rest and recovery" "Sustainable schedule"])
+   (failure "transfer-failure" "medium"
+            "Practice not transferring to performance"
+            :signals ["Good in practice, poor in performance"]
+            :safeguards ["Realistic practice" "Performance simulation"])]})
+
+(register-model
+ {:name "first-principles"
+  :category "learning"
+  :originator "Aristotle / Elon Musk"
+  :description "Reason from fundamental truths rather than analogy"
+  :key-insight "Break down problems to their basic elements"
+  :application "Ask 'What do we know to be true?' and build from there"
+  :failure-modes
+  [(failure "analogy-dependence" "high"
+            "Always reasoning by analogy"
+            :signals ["This is how it's always done" "Copying others"]
+            :safeguards ["Question assumptions" "Start from scratch"])
+   (failure "false-first-principles" "high"
+            "Treating assumptions as first principles"
+            :signals ["Unexamined beliefs" "Hidden assumptions"]
+            :safeguards ["Question everything" "Verify fundamentals"])
+   (failure "analysis-paralysis" "medium"
+            "Getting stuck in first principles analysis"
+            :signals ["Never acting" "Endless decomposition"]
+            :safeguards ["Time limits" "Good enough analysis"])
+   (failure "reinventing-wheels" "medium"
+            "Ignoring valid existing solutions"
+            :signals ["Wasted effort" "Slower than necessary"]
+            :safeguards ["Learn from others" "Use analogy appropriately"])
+   (failure "physics-envy" "medium"
+            "Applying physics thinking to non-physics domains"
+            :signals ["Oversimplifying complex systems"]
+            :safeguards ["Domain-appropriate methods" "Respect complexity"])]})
+
+(register-model
+ {:name "mental-models-meta"
+  :category "learning"
+  :originator "Charlie Munger"
+  :description "Build a latticework of mental models from multiple disciplines"
+  :key-insight "The person with more models wins"
+  :application "Continuously add models and practice applying them"
+  :failure-modes
+  [(failure "model-collection" "medium"
+            "Collecting models without applying them"
+            :signals ["Know models but don't use them"]
+            :safeguards ["Practice application" "Use in decisions"])
+   (failure "hammer-nail" "high"
+            "Applying favorite model to everything"
+            :signals ["One model dominates" "Forcing fit"]
+            :safeguards ["Multiple models" "Match model to situation"])
+   (failure "model-overload" "medium"
+            "Too many models causing confusion"
+            :signals ["Paralysis" "Contradictory advice"]
+            :safeguards ["Prioritize models" "Context-appropriate selection"])
+   (failure "shallow-understanding" "high"
+            "Knowing models superficially"
+            :signals ["Can't apply in novel situations"]
+            :safeguards ["Deep study" "Practice application"])
+   (failure "model-rigidity" "medium"
+            "Not updating or discarding models"
+            :signals ["Outdated models" "Ignoring better models"]
+            :safeguards ["Regular review" "Update and prune"])]})
+
+;; ============================================
+;; Category: Productivity
+;; ============================================
+
+(register-model
+ {:name "leverage"
+  :category "productivity"
+  :originator "Archimedes"
+  :description "Small inputs can produce large outputs with the right lever"
+  :key-insight "Give me a lever long enough and I can move the world"
+  :application "Find and use leverage points in any system"
+  :failure-modes
+  [(failure "leverage-blindness" "high"
+            "Not seeing leverage opportunities"
+            :signals ["Brute force approaches" "Linear effort-result"]
+            :safeguards ["Look for leverage points" "Study system dynamics"])
+   (failure "wrong-lever" "high"
+            "Pulling the wrong lever"
+            :signals ["Effort without results" "Unintended consequences"]
+            :safeguards ["Test levers" "Understand system"])
+   (failure "over-leverage" "critical"
+            "Too much leverage creating fragility"
+            :signals ["Small changes cause big problems" "Instability"]
+            :safeguards ["Limit leverage" "Build in buffers"])
+   (failure "leverage-addiction" "medium"
+            "Always seeking leverage over direct action"
+            :signals ["Avoiding necessary work" "Shortcut seeking"]
+            :safeguards ["Sometimes direct action is best" "Balance"])
+   (failure "leverage-decay" "medium"
+            "Leverage points changing over time"
+            :signals ["Diminishing returns" "Old levers not working"]
+            :safeguards ["Monitor effectiveness" "Find new levers"])]})
+
+(register-model
+ {:name "parkinson-law"
+  :category "productivity"
+  :originator "Cyril Parkinson"
+  :description "Work expands to fill the time available"
+  :key-insight "Deadlines create focus; unlimited time creates waste"
+  :application "Set aggressive but realistic deadlines"
+  :failure-modes
+  [(failure "no-deadlines" "high"
+            "Not setting deadlines"
+            :signals ["Projects dragging on" "No urgency"]
+            :safeguards ["Set deadlines" "Time-box work"])
+   (failure "unrealistic-deadlines" "high"
+            "Setting impossible deadlines"
+            :signals ["Burnout" "Quality problems" "Missed deadlines"]
+            :safeguards ["Realistic estimation" "Buffer time"])
+   (failure "deadline-gaming" "medium"
+            "Padding estimates to meet deadlines"
+            :signals ["Sandbagging" "Slow delivery"]
+            :safeguards ["Track actual vs estimated" "Accountability"])
+   (failure "artificial-urgency" "medium"
+            "Creating false urgency"
+            :signals ["Everything is urgent" "Urgency fatigue"]
+            :safeguards ["Prioritize genuinely" "Protect focus time"])
+   (failure "quality-sacrifice" "high"
+            "Meeting deadlines by cutting quality"
+            :signals ["Technical debt" "Rework needed"]
+            :safeguards ["Quality standards" "Scope flexibility"])]})
+
+(register-model
+ {:name "eisenhower-matrix"
+  :category "productivity"
+  :originator "Dwight Eisenhower"
+  :description "Prioritize by urgency and importance"
+  :key-insight "What is important is seldom urgent; what is urgent is seldom important"
+  :application "Focus on important non-urgent; delegate or eliminate the rest"
+  :failure-modes
+  [(failure "urgency-addiction" "high"
+            "Always responding to urgent over important"
+            :signals ["Reactive mode" "No strategic work"]
+            :safeguards ["Schedule important work" "Protect time"])
+   (failure "importance-confusion" "high"
+            "Misjudging what's truly important"
+            :signals ["Busy but not productive" "Wrong priorities"]
+            :safeguards ["Clarify goals" "Regular review"])
+   (failure "delegation-failure" "medium"
+            "Not delegating delegatable tasks"
+            :signals ["Doing everything yourself" "Bottleneck"]
+            :safeguards ["Build team" "Trust others"])
+   (failure "elimination-fear" "medium"
+            "Not eliminating unimportant tasks"
+            :signals ["Overcommitment" "Saying yes to everything"]
+            :safeguards ["Say no" "Ruthless elimination"])
+   (failure "quadrant-rigidity" "low"
+            "Over-categorizing tasks"
+            :signals ["Analysis paralysis" "Categorization overhead"]
+            :safeguards ["Quick categorization" "Action bias"])]})
+
+;; ============================================
+;; Category: Risk
+;; ============================================
+
+(register-model
+ {:name "black-swan"
+  :category "risk"
+  :originator "Nassim Taleb"
+  :description "Rare, unpredictable events with massive impact"
+  :key-insight "We systematically underestimate the probability and impact of rare events"
+  :application "Build robustness to negative black swans; expose to positive ones"
+  :failure-modes
+  [(failure "prediction-obsession" "high"
+            "Trying to predict black swans"
+            :signals ["Forecasting rare events" "False confidence"]
+            :safeguards ["Focus on robustness" "Accept unpredictability"])
+   (failure "fragility" "critical"
+            "Building systems that break under stress"
+            :signals ["Single points of failure" "No redundancy"]
+            :safeguards ["Build redundancy" "Stress test"])
+   (failure "narrative-fallacy" "high"
+            "Creating stories to explain black swans after the fact"
+            :signals ["Hindsight bias" "False understanding"]
+            :safeguards ["Acknowledge randomness" "Avoid hindsight"])
+   (failure "turkey-problem" "critical"
+            "Mistaking absence of evidence for evidence of absence"
+            :signals ["Long track record of safety" "Complacency"]
+            :safeguards ["Consider hidden risks" "Stress scenarios"])
+   (failure "positive-swan-blindness" "medium"
+            "Only preparing for negative black swans"
+            :signals ["Missing upside opportunities"]
+            :safeguards ["Expose to positive randomness" "Optionality"])]})
+
+(register-model
+ {:name "antifragility"
+  :category "risk"
+  :originator "Nassim Taleb"
+  :description "Systems that gain from disorder and stress"
+  :key-insight "Some things benefit from shocks; they thrive on volatility"
+  :application "Build systems that get stronger from stress"
+  :failure-modes
+  [(failure "fragility-building" "high"
+            "Building fragile systems"
+            :signals ["Breaks under stress" "Requires stability"]
+            :safeguards ["Stress test" "Add redundancy"])
+   (failure "robustness-confusion" "medium"
+            "Confusing robustness with antifragility"
+            :signals ["Survives but doesn't improve"]
+            :safeguards ["Look for improvement from stress"])
+   (failure "over-optimization" "high"
+            "Optimizing away antifragility"
+            :signals ["Efficiency over resilience" "No slack"]
+            :safeguards ["Maintain slack" "Accept inefficiency"])
+   (failure "stress-avoidance" "medium"
+            "Avoiding all stress"
+            :signals ["Overprotection" "No challenge"]
+            :safeguards ["Embrace appropriate stress" "Hormesis"])
+   (failure "iatrogenics" "high"
+            "Interventions that cause more harm than good"
+            :signals ["Helping that hurts" "Unintended consequences"]
+            :safeguards ["First do no harm" "Minimal intervention"])]})
+
+(register-model
+ {:name "fat-tails"
+  :category "risk"
+  :originator "Statistics/Finance"
+  :description "Distributions with more extreme events than normal"
+  :key-insight "Extreme events are more common than we think"
+  :application "Don't use normal distribution assumptions for fat-tailed phenomena"
+  :failure-modes
+  [(failure "thin-tail-assumption" "critical"
+            "Assuming normal distribution when tails are fat"
+            :signals ["Surprised by extremes" "Risk models failing"]
+            :safeguards ["Test for fat tails" "Use appropriate distributions"])
+   (failure "var-reliance" "high"
+            "Relying on Value at Risk for fat-tailed risks"
+            :signals ["VaR breaches" "Tail losses"]
+            :safeguards ["Use tail risk measures" "Stress testing"])
+   (failure "correlation-breakdown" "high"
+            "Ignoring correlation changes in extremes"
+            :signals ["Diversification failing in crisis"]
+            :safeguards ["Stress test correlations" "Tail dependence"])
+   (failure "historical-extrapolation" "high"
+            "Assuming future extremes limited by past"
+            :signals ["Record-breaking events"]
+            :safeguards ["Consider unprecedented events" "Imagination"])
+   (failure "tail-hedging-cost" "medium"
+            "Overpaying for tail protection"
+            :signals ["Expensive hedges" "Drag on returns"]
+            :safeguards ["Cost-effective hedging" "Natural hedges"])]})
+
+;; ============================================
+;; Category: Innovation
+;; ============================================
+
+(register-model
+ {:name "creative-destruction"
+  :category "innovation"
+  :originator "Joseph Schumpeter"
+  :description "Innovation destroys old industries while creating new ones"
+  :key-insight "Capitalism's engine is the constant disruption of the status quo"
+  :application "Expect and prepare for disruption; be the disruptor"
+  :failure-modes
+  [(failure "disruption-denial" "high"
+            "Believing your industry won't be disrupted"
+            :signals ["Complacency" "Ignoring new entrants"]
+            :safeguards ["Monitor disruption" "Self-disrupt"])
+   (failure "disruption-panic" "medium"
+            "Overreacting to every potential disruption"
+            :signals ["Chasing every trend" "No focus"]
+            :safeguards ["Evaluate threats carefully" "Strategic patience"])
+   (failure "incumbent-blindness" "high"
+            "Not seeing threats from unexpected places"
+            :signals ["Watching wrong competitors"]
+            :safeguards ["Broad scanning" "Adjacent industries"])
+   (failure "destruction-only-focus" "medium"
+            "Focusing on destruction, not creation"
+            :signals ["Defensive posture" "No innovation"]
+            :safeguards ["Create new value" "Offensive strategy"])
+   (failure "timing-errors" "high"
+            "Misjudging disruption timing"
+            :signals ["Too early or too late"]
+            :safeguards ["Monitor adoption curves" "Staged response"])]})
+
+(register-model
+ {:name "s-curves"
+  :category "innovation"
+  :originator "Technology Adoption"
+  :description "Technologies follow S-shaped adoption curves"
+  :key-insight "Slow start, rapid growth, then saturation"
+  :application "Identify where on the S-curve you are"
+  :failure-modes
+  [(failure "linear-projection" "high"
+            "Projecting current growth rate forward"
+            :signals ["Overestimating mature tech" "Underestimating early tech"]
+            :safeguards ["S-curve awareness" "Inflection point identification"])
+   (failure "curve-jumping-failure" "high"
+            "Not jumping to next S-curve"
+            :signals ["Riding curve to saturation" "Missing next wave"]
+            :safeguards ["Monitor emerging curves" "Invest in next generation"])
+   (failure "premature-jumping" "medium"
+            "Jumping too early to new curve"
+            :signals ["Abandoning profitable business" "New tech not ready"]
+            :safeguards ["Timing analysis" "Staged transition"])
+   (failure "saturation-blindness" "high"
+            "Not seeing approaching saturation"
+            :signals ["Expecting continued growth" "Overinvestment"]
+            :safeguards ["Monitor growth rates" "Leading indicators"])
+   (failure "single-curve-thinking" "medium"
+            "Not seeing multiple overlapping curves"
+            :signals ["Missing complexity" "Oversimplification"]
+            :safeguards ["Map multiple curves" "System view"])]})
+
+(register-model
+ {:name "innovators-dilemma"
+  :category "innovation"
+  :originator "Clayton Christensen"
+  :description "Successful companies fail by doing what made them successful"
+  :key-insight "Listening to customers can lead to missing disruptive innovations"
+  :application "Balance serving current customers with exploring disruption"
+  :failure-modes
+  [(failure "customer-obsession" "high"
+            "Only listening to current customers"
+            :signals ["Incremental improvements only" "Missing disruption"]
+            :safeguards ["Study non-customers" "Explore low end"])
+   (failure "margin-focus" "high"
+            "Ignoring low-margin disruptive opportunities"
+            :signals ["Ceding low end" "Disruption from below"]
+            :safeguards ["Separate units" "Different metrics"])
+   (failure "sustaining-innovation-bias" "medium"
+            "Only investing in sustaining innovations"
+            :signals ["Better but not different" "Same trajectory"]
+            :safeguards ["Disruptive innovation portfolio" "Experimentation"])
+   (failure "disruption-everywhere" "medium"
+            "Seeing disruption where it isn't"
+            :signals ["Overreacting to every new entrant"]
+            :safeguards ["Evaluate disruption criteria" "Strategic patience"])
+   (failure "organizational-antibodies" "high"
+            "Organization killing disruptive efforts"
+            :signals ["New initiatives failing" "Resource starvation"]
+            :safeguards ["Separate organization" "Executive protection"])]})
+
+;; ============================================
+;; Category: Human Nature
+;; ============================================
+
+(register-model
+ {:name "reciprocity"
+  :category "human_nature"
+  :originator "Robert Cialdini"
+  :description "People feel obligated to return favors"
+  :key-insight "Give first to receive; the obligation to reciprocate is powerful"
+  :application "Give value first; be aware of reciprocity manipulation"
+  :failure-modes
+  [(failure "reciprocity-blindness" "medium"
+            "Not using reciprocity effectively"
+            :signals ["Asking before giving" "Transactional approach"]
+            :safeguards ["Give first" "Genuine generosity"])
+   (failure "reciprocity-manipulation" "high"
+            "Being manipulated through reciprocity"
+            :signals ["Feeling obligated" "Unwanted gifts"]
+            :safeguards ["Recognize the tactic" "Decline if manipulative"])
+   (failure "over-reciprocation" "medium"
+            "Reciprocating disproportionately"
+            :signals ["Small favor, big return" "Exploitation"]
+            :safeguards ["Proportional response" "Recognize imbalance"])
+   (failure "reciprocity-expectation" "medium"
+            "Giving with expectation of return"
+            :signals ["Keeping score" "Resentment when not reciprocated"]
+            :safeguards ["Give without expectation" "Genuine generosity"])
+   (failure "negative-reciprocity" "high"
+            "Escalating negative exchanges"
+            :signals ["Tit for tat" "Revenge cycles"]
+            :safeguards ["Break negative cycles" "Forgiveness"])]})
+
+(register-model
+ {:name "scarcity"
+  :category "human_nature"
+  :originator "Robert Cialdini"
+  :description "People value things more when they're scarce"
+  :key-insight "Limited availability increases perceived value"
+  :application "Create genuine scarcity; be aware of artificial scarcity"
+  :failure-modes
+  [(failure "scarcity-manipulation" "high"
+            "Being manipulated by artificial scarcity"
+            :signals ["Limited time offers" "Only 3 left"]
+            :safeguards ["Verify scarcity" "Decide on merits"])
+   (failure "scarcity-blindness" "medium"
+            "Not recognizing genuine scarcity"
+            :signals ["Missing opportunities" "Assuming abundance"]
+            :safeguards ["Assess true availability" "Act on genuine scarcity"])
+   (failure "hoarding" "medium"
+            "Overreacting to scarcity"
+            :signals ["Stockpiling" "Panic buying"]
+            :safeguards ["Rational assessment" "Avoid panic"])
+   (failure "false-scarcity-creation" "medium"
+            "Creating artificial scarcity unethically"
+            :signals ["Manipulation" "Trust erosion"]
+            :safeguards ["Genuine scarcity only" "Ethical marketing"])
+   (failure "abundance-blindness" "medium"
+            "Not seeing when scarcity has ended"
+            :signals ["Hoarding when abundant" "Outdated scarcity mindset"]
+            :safeguards ["Monitor conditions" "Update beliefs"])]})
+
+(register-model
+ {:name "authority"
+  :category "human_nature"
+  :originator "Stanley Milgram"
+  :description "People tend to obey authority figures"
+  :key-insight "Authority can override personal judgment"
+  :application "Use authority responsibly; question authority appropriately"
+  :failure-modes
+  [(failure "blind-obedience" "critical"
+            "Following authority without question"
+            :signals ["Not questioning orders" "Deferring judgment"]
+            :safeguards ["Question authority" "Independent thinking"])
+   (failure "authority-rejection" "medium"
+            "Rejecting all authority"
+            :signals ["Contrarian for its own sake" "Missing valid expertise"]
+            :safeguards ["Evaluate on merits" "Respect genuine expertise"])
+   (failure "false-authority" "high"
+            "Being fooled by false authority signals"
+            :signals ["Titles without substance" "Credentials without competence"]
+            :safeguards ["Verify expertise" "Look for track record"])
+   (failure "authority-abuse" "high"
+            "Misusing authority position"
+            :signals ["Demanding compliance" "Not earning respect"]
+            :safeguards ["Lead by example" "Earn authority"])
+   (failure "authority-transfer" "medium"
+            "Assuming authority in one domain transfers to another"
+            :signals ["Expert in X opining on Y"]
+            :safeguards ["Domain-specific expertise" "Stay in lane"])]})
+
+;; ============================================
+;; Category: Finance
+;; ============================================
+
+(register-model
+ {:name "time-value-of-money"
+  :category "finance"
+  :originator "Finance"
+  :description "Money today is worth more than money tomorrow"
+  :key-insight "Discount future cash flows to present value"
+  :application "Always consider when money is received, not just how much"
+  :failure-modes
+  [(failure "present-bias" "high"
+            "Overvaluing present over future"
+            :signals ["Excessive discounting" "Short-term focus"]
+            :safeguards ["Appropriate discount rates" "Long-term thinking"])
+   (failure "future-bias" "medium"
+            "Undervaluing present for future"
+            :signals ["Excessive saving" "Missing current opportunities"]
+            :safeguards ["Balance present and future" "Opportunity cost"])
+   (failure "discount-rate-errors" "high"
+            "Using wrong discount rate"
+            :signals ["Mispricing" "Bad investment decisions"]
+            :safeguards ["Appropriate risk adjustment" "Market rates"])
+   (failure "nominal-real-confusion" "high"
+            "Confusing nominal and real values"
+            :signals ["Ignoring inflation" "Money illusion"]
+            :safeguards ["Adjust for inflation" "Real returns focus"])
+   (failure "certainty-assumption" "medium"
+            "Treating future cash flows as certain"
+            :signals ["No risk adjustment" "Overconfident projections"]
+            :safeguards ["Risk-adjust" "Scenario analysis"])]})
+
+(register-model
+ {:name "asymmetric-information"
+  :category "finance"
+  :originator "George Akerlof"
+  :description "One party has more information than another"
+  :key-insight "Information asymmetry can cause market failures"
+  :application "Identify who knows what; signal and screen appropriately"
+  :failure-modes
+  [(failure "adverse-selection" "high"
+            "Bad actors driving out good due to information asymmetry"
+            :signals ["Quality decline" "Market for lemons"]
+            :safeguards ["Signaling" "Screening" "Warranties"])
+   (failure "moral-hazard" "high"
+            "Changed behavior when not observed"
+            :signals ["Risk-taking when insured" "Principal-agent problems"]
+            :safeguards ["Monitoring" "Incentive alignment" "Skin in game"])
+   (failure "information-blindness" "high"
+            "Not recognizing information asymmetry"
+            :signals ["Assuming equal information" "Being taken advantage of"]
+            :safeguards ["Map information gaps" "Due diligence"])
+   (failure "over-signaling" "medium"
+            "Costly signaling that destroys value"
+            :signals ["Arms race" "Wasteful signaling"]
+            :safeguards ["Efficient signals" "Pooling equilibria"])
+   (failure "screening-failure" "medium"
+            "Ineffective screening mechanisms"
+            :signals ["Bad selection" "Screening costs exceed benefits"]
+            :safeguards ["Effective screening" "Cost-benefit analysis"])]})
+
+(register-model
+ {:name "sunk-costs"
+  :category "finance"
+  :originator "Economics"
+  :description "Costs already incurred that cannot be recovered"
+  :key-insight "Sunk costs should not affect future decisions"
+  :application "Ignore sunk costs; decide based on future costs and benefits"
+  :failure-modes
+  [(failure "sunk-cost-fallacy" "critical"
+            "Letting sunk costs influence decisions"
+            :signals ["Throwing good money after bad" "Can't quit"]
+            :safeguards ["Ignore sunk costs" "Fresh evaluation"])
+   (failure "premature-abandonment" "medium"
+            "Quitting too early by ignoring sunk costs appropriately"
+            :signals ["Not finishing valuable projects"]
+            :safeguards ["Evaluate future value" "Completion benefits"])
+   (failure "sunk-cost-blindness" "medium"
+            "Not recognizing sunk costs"
+            :signals ["Including sunk costs in analysis"]
+            :safeguards ["Identify sunk costs" "Separate from future costs"])
+   (failure "emotional-attachment" "high"
+            "Emotional attachment to sunk investments"
+            :signals ["Can't let go" "Identity tied to investment"]
+            :safeguards ["Separate emotion from analysis" "Outside perspective"])
+   (failure "organizational-sunk-costs" "high"
+            "Organizations unable to abandon sunk costs"
+            :signals ["Zombie projects" "Political protection"]
+            :safeguards ["Kill criteria" "Regular portfolio review"])]})
+
+;; ============================================
+;; Category: Negotiation
+;; ============================================
+
+(register-model
+ {:name "batna"
+  :category "negotiation"
+  :originator "Roger Fisher"
+  :description "Best Alternative To Negotiated Agreement"
+  :key-insight "Your power in negotiation comes from your alternatives"
+  :application "Always know your BATNA before negotiating"
+  :failure-modes
+  [(failure "unknown-batna" "critical"
+            "Not knowing your alternatives"
+            :signals ["Accepting bad deals" "Desperation"]
+            :safeguards ["Research alternatives" "Develop options"])
+   (failure "weak-batna" "high"
+            "Having poor alternatives"
+            :signals ["No leverage" "Must accept terms"]
+            :safeguards ["Improve alternatives" "Create options"])
+   (failure "batna-overestimation" "high"
+            "Overestimating your alternatives"
+            :signals ["Walking away from good deals" "Overconfidence"]
+            :safeguards ["Realistic assessment" "Test alternatives"])
+   (failure "batna-revelation" "medium"
+            "Revealing your BATNA inappropriately"
+            :signals ["Losing leverage" "Opponent exploiting knowledge"]
+            :safeguards ["Strategic disclosure" "Protect information"])
+   (failure "static-batna" "medium"
+            "Not improving BATNA during negotiation"
+            :signals ["Weakening position" "No parallel development"]
+            :safeguards ["Continuous improvement" "Parallel negotiations"])]})
+
+(register-model
+ {:name "anchoring-negotiation"
+  :category "negotiation"
+  :originator "Negotiation Theory"
+  :description "First numbers strongly influence final outcomes"
+  :key-insight "Anchor aggressively but credibly"
+  :application "Make the first offer when you have information"
+  :failure-modes
+  [(failure "anchor-neglect" "high"
+            "Not anchoring when you should"
+            :signals ["Letting opponent anchor" "Reactive positioning"]
+            :safeguards ["Anchor first when informed" "Set the frame"])
+   (failure "extreme-anchor" "medium"
+            "Anchoring so aggressively you lose credibility"
+            :signals ["Opponent walks away" "Damaged relationship"]
+            :safeguards ["Credible anchors" "Justifiable positions"])
+   (failure "anchor-susceptibility" "high"
+            "Being overly influenced by opponent's anchor"
+            :signals ["Adjusting from their number" "Forgetting your analysis"]
+            :safeguards ["Prepare independently" "Ignore their anchor"])
+   (failure "single-issue-anchoring" "medium"
+            "Only anchoring on one dimension"
+            :signals ["Losing on other issues"]
+            :safeguards ["Multi-issue anchoring" "Package deals"])
+   (failure "anchor-rigidity" "medium"
+            "Unable to move from anchor"
+            :signals ["Stalemate" "No progress"]
+            :safeguards ["Planned concessions" "Flexibility"])]})
+
+(register-model
+ {:name "win-win"
+  :category "negotiation"
+  :originator "Negotiation Theory"
+  :description "Expand the pie before dividing it"
+  :key-insight "Most negotiations have integrative potential"
+  :application "Look for trades that create value for both parties"
+  :failure-modes
+  [(failure "zero-sum-assumption" "high"
+            "Assuming fixed pie when it can expand"
+            :signals ["Distributive only" "Missing value creation"]
+            :safeguards ["Look for trades" "Explore interests"])
+   (failure "naive-win-win" "medium"
+            "Assuming win-win when it's zero-sum"
+            :signals ["Being exploited" "Giving away value"]
+            :safeguards ["Verify integrative potential" "Protect interests"])
+   (failure "interest-blindness" "high"
+            "Not understanding underlying interests"
+            :signals ["Positional bargaining" "Missing creative solutions"]
+            :safeguards ["Ask why" "Explore interests"])
+   (failure "value-claiming-neglect" "medium"
+            "Creating value but not claiming fair share"
+            :signals ["Expanding pie but getting small slice"]
+            :safeguards ["Balance creation and claiming"])
+   (failure "relationship-sacrifice" "medium"
+            "Sacrificing relationship for deal"
+            :signals ["Winning battle, losing war"]
+            :safeguards ["Long-term view" "Relationship maintenance"])]})
+
+;; ============================================
+;; Category: Operations
+;; ============================================
+
+(register-model
+ {:name "bottleneck"
+  :category "operations"
+  :originator "Eliyahu Goldratt"
+  :description "System throughput is limited by its constraint"
+  :key-insight "Improving non-bottlenecks doesn't improve the system"
+  :application "Identify and focus on the constraint"
+  :failure-modes
+  [(failure "bottleneck-blindness" "high"
+            "Not identifying the true bottleneck"
+            :signals ["Improving wrong things" "No system improvement"]
+            :safeguards ["Map the system" "Measure throughput"])
+   (failure "local-optimization" "high"
+            "Optimizing non-bottlenecks"
+            :signals ["Wasted effort" "No overall improvement"]
+            :safeguards ["System view" "Focus on constraint"])
+   (failure "bottleneck-starvation" "high"
+            "Not feeding the bottleneck"
+            :signals ["Bottleneck idle" "Upstream problems"]
+            :safeguards ["Buffer before bottleneck" "Prioritize flow"])
+   (failure "bottleneck-shift" "medium"
+            "Not seeing when bottleneck moves"
+            :signals ["New constraint emerging" "Old solutions not working"]
+            :safeguards ["Monitor continuously" "Expect shifts"])
+   (failure "constraint-elevation-failure" "medium"
+            "Not elevating the constraint"
+            :signals ["Same bottleneck forever" "No capacity increase"]
+            :safeguards ["Invest in constraint" "Systematic improvement"])]})
+
+(register-model
+ {:name "redundancy"
+  :category "operations"
+  :originator "Engineering"
+  :description "Backup systems that activate when primary fails"
+  :key-insight "Redundancy trades efficiency for reliability"
+  :application "Build redundancy for critical systems"
+  :failure-modes
+  [(failure "single-point-of-failure" "critical"
+            "No redundancy for critical components"
+            :signals ["System down when one part fails"]
+            :safeguards ["Identify critical paths" "Add backups"])
+   (failure "correlated-failure" "critical"
+            "Redundant systems failing together"
+            :signals ["Common cause failures" "Simultaneous outages"]
+            :safeguards ["Independent systems" "Diverse redundancy"])
+   (failure "redundancy-neglect" "high"
+            "Not maintaining redundant systems"
+            :signals ["Backup systems not working when needed"]
+            :safeguards ["Regular testing" "Maintenance"])
+   (failure "over-redundancy" "medium"
+            "Too much redundancy creating complexity"
+            :signals ["High costs" "Complexity failures"]
+            :safeguards ["Right-size redundancy" "Cost-benefit analysis"])
+   (failure "false-redundancy" "high"
+            "Believing you have redundancy when you don't"
+            :signals ["Hidden dependencies" "Shared failure modes"]
+            :safeguards ["Test failures" "Map dependencies"])]})
+
+(register-model
+ {:name "queuing-theory"
+  :category "operations"
+  :originator "Agner Krarup Erlang"
+  :description "Mathematical study of waiting lines"
+  :key-insight "Utilization approaching 100% causes exponential wait times"
+  :application "Maintain slack capacity to avoid queue explosions"
+  :failure-modes
+  [(failure "high-utilization-target" "high"
+            "Targeting 100% utilization"
+            :signals ["Long queues" "Unpredictable delays"]
+            :safeguards ["Target 70-80% utilization" "Maintain slack"])
+   (failure "variability-blindness" "high"
+            "Ignoring variability in arrivals and service"
+            :signals ["Queues despite low average utilization"]
+            :safeguards ["Reduce variability" "Buffer for variation"])
+   (failure "queue-blindness" "medium"
+            "Not seeing hidden queues"
+            :signals ["Work in progress piling up" "Long lead times"]
+            :safeguards ["Visualize queues" "Measure WIP"])
+   (failure "batch-size-errors" "medium"
+            "Wrong batch sizes"
+            :signals ["Either too much WIP or too much setup"]
+            :safeguards ["Optimize batch size" "Reduce setup time"])
+   (failure "priority-inversion" "medium"
+            "Wrong prioritization in queues"
+            :signals ["Important items waiting" "Gaming the system"]
+            :safeguards ["Clear priority rules" "Regular review"])]})
+
+;; ============================================
+;; Category: Investing
+;; ============================================
+
+(register-model
+ {:name "mr-market"
+  :category "investing"
+  :originator "Benjamin Graham"
+  :description "The market is like an emotional partner offering prices"
+  :key-insight "Mr. Market is there to serve you, not guide you"
+  :application "Take advantage of Mr. Market's mood swings"
+  :failure-modes
+  [(failure "market-following" "high"
+            "Letting Mr. Market guide your decisions"
+            :signals ["Buying high, selling low" "Emotional trading"]
+            :safeguards ["Independent valuation" "Ignore daily prices"])
+   (failure "market-timing" "high"
+            "Trying to predict Mr. Market's moods"
+            :signals ["Waiting for perfect entry" "Missing opportunities"]
+            :safeguards ["Time in market" "Dollar cost averaging"])
+   (failure "market-ignoring" "medium"
+            "Completely ignoring market prices"
+            :signals ["Missing obvious mispricings"]
+            :safeguards ["Monitor for opportunities" "Be ready to act"])
+   (failure "overtrading" "high"
+            "Trading too much with Mr. Market"
+            :signals ["High transaction costs" "Tax inefficiency"]
+            :safeguards ["Trade rarely" "Long-term holding"])
+   (failure "market-rationality-assumption" "medium"
+            "Assuming Mr. Market is always right"
+            :signals ["Efficient market worship" "No independent thought"]
+            :safeguards ["Markets can be wrong" "Do your analysis"])]})
+
+(register-model
+ {:name "circle-of-competence-investing"
+  :category "investing"
+  :originator "Warren Buffett"
+  :description "Only invest in what you understand"
+  :key-insight "It's not about the size of your circle, but knowing its boundaries"
+  :application "Stay within your circle; expand it deliberately"
+  :failure-modes
+  [(failure "circle-expansion-greed" "high"
+            "Investing outside your circle for returns"
+            :signals ["Chasing hot sectors" "FOMO investing"]
+            :safeguards ["Stick to what you know" "Pass on unknowns"])
+   (failure "false-understanding" "high"
+            "Thinking you understand when you don't"
+            :signals ["Can't explain simply" "Surprised by outcomes"]
+            :safeguards ["Explain to others" "Test understanding"])
+   (failure "circle-stagnation" "medium"
+            "Not expanding circle over time"
+            :signals ["Same investments forever" "Missing opportunities"]
+            :safeguards ["Deliberate learning" "Adjacent expansion"])
+   (failure "over-diversification" "medium"
+            "Diversifying into areas you don't understand"
+            :signals ["Owning what you can't evaluate"]
+            :safeguards ["Concentrated in circle" "Index outside"])
+   (failure "competence-arrogance" "high"
+            "Overconfidence in your circle"
+            :signals ["Not seeking contrary views" "Dismissing risks"]
+            :safeguards ["Humility" "Seek disconfirmation"])]})
+
+(register-model
+ {:name "margin-of-safety-investing"
+  :category "investing"
+  :originator "Benjamin Graham"
+  :description "Buy at a significant discount to intrinsic value"
+  :key-insight "The margin of safety protects against errors and bad luck"
+  :application "Only buy when price is well below value"
+  :failure-modes
+  [(failure "no-margin" "critical"
+            "Buying without margin of safety"
+            :signals ["Paying fair value" "No room for error"]
+            :safeguards ["Require discount" "Walk away if not cheap"])
+   (failure "value-trap" "high"
+            "Buying cheap things that stay cheap"
+            :signals ["Permanent impairment" "Deteriorating business"]
+            :safeguards ["Quality matters" "Catalyst identification"])
+   (failure "margin-erosion" "high"
+            "Margin disappearing after purchase"
+            :signals ["Business deterioration" "Competitive damage"]
+            :safeguards ["Monitor continuously" "Sell if thesis breaks"])
+   (failure "opportunity-cost" "medium"
+            "Waiting for margin that never comes"
+            :signals ["Missing good investments" "Cash drag"]
+            :safeguards ["Reasonable thresholds" "Opportunity cost awareness"])
+   (failure "false-margin" "high"
+            "Margin based on wrong valuation"
+            :signals ["Valuation errors" "Optimistic assumptions"]
+            :safeguards ["Conservative valuation" "Multiple methods"])]})
+
+;; ============================================
+;; Category: Science
+;; ============================================
+
+(register-model
+ {:name "falsifiability"
+  :category "science"
+  :originator "Karl Popper"
+  :description "Scientific theories must be testable and potentially disprovable"
+  :key-insight "If nothing could prove it wrong, it's not scientific"
+  :application "Seek to disprove, not confirm, your hypotheses"
+  :failure-modes
+  [(failure "unfalsifiable-beliefs" "high"
+            "Holding beliefs that can't be tested"
+            :signals ["No possible disconfirmation" "Moving goalposts"]
+            :safeguards ["Define what would disprove" "Testable predictions"])
+   (failure "confirmation-seeking" "high"
+            "Only looking for confirming evidence"
+            :signals ["Cherry-picking data" "Ignoring disconfirmation"]
+            :safeguards ["Seek disconfirmation" "Pre-register predictions"])
+   (failure "ad-hoc-rescue" "medium"
+            "Adding exceptions to save theory"
+            :signals ["Increasingly complex explanations"]
+            :safeguards ["Occam's razor" "Accept falsification"])
+   (failure "over-falsification" "medium"
+            "Abandoning theories too quickly"
+            :signals ["No persistent beliefs" "Excessive skepticism"]
+            :safeguards ["Accumulate evidence" "Bayesian updating"])
+   (failure "practical-unfalsifiability" "medium"
+            "Theories that are technically but not practically testable"
+            :signals ["Tests too expensive or long"]
+            :safeguards ["Practical test design" "Proxy measures"])]})
+
+(register-model
+ {:name "replication"
+  :category "science"
+  :originator "Scientific Method"
+  :description "Results must be reproducible by others"
+  :key-insight "If it can't be replicated, it might not be real"
+  :application "Verify important findings through replication"
+  :failure-modes
+  [(failure "single-study-belief" "high"
+            "Believing results from one study"
+            :signals ["No replication" "Surprising findings accepted"]
+            :safeguards ["Wait for replication" "Meta-analyses"])
+   (failure "publication-bias" "high"
+            "Only positive results published"
+            :signals ["File drawer problem" "Inflated effect sizes"]
+            :safeguards ["Seek null results" "Pre-registration"])
+   (failure "replication-neglect" "medium"
+            "Not attempting replication"
+            :signals ["No verification" "Building on shaky foundations"]
+            :safeguards ["Replicate key findings" "Verify before building"])
+   (failure "exact-replication-fallacy" "medium"
+            "Expecting exact replication"
+            :signals ["Dismissing close replications"]
+            :safeguards ["Conceptual replication" "Effect size focus"])
+   (failure "replication-crisis-overreaction" "medium"
+            "Dismissing all research"
+            :signals ["Excessive skepticism" "Paralysis"]
+            :safeguards ["Calibrated trust" "Evidence accumulation"])]})
+
+(register-model
+ {:name "survivorship-bias"
+  :category "science"
+  :originator "Abraham Wald"
+  :description "Focusing on survivors while ignoring those who didn't make it"
+  :key-insight "The dead can't tell their stories"
+  :application "Always ask: What am I not seeing?"
+  :failure-modes
+  [(failure "success-only-analysis" "high"
+            "Only studying successes"
+            :signals ["Learning from winners only" "Ignoring failures"]
+            :safeguards ["Study failures" "Include non-survivors"])
+   (failure "visible-success-bias" "high"
+            "Overweighting visible successes"
+            :signals ["Media-driven beliefs" "Lottery winner focus"]
+            :safeguards ["Base rates" "Full population analysis"])
+   (failure "advice-from-survivors" "high"
+            "Taking advice only from survivors"
+            :signals ["Survivor tips" "Ignoring luck"]
+            :safeguards ["Consider luck" "Failure analysis"])
+   (failure "selection-blindness" "medium"
+            "Not seeing selection effects"
+            :signals ["Surprised by attrition" "Missing dropout patterns"]
+            :safeguards ["Track full cohort" "Intention to treat"])
+   (failure "reverse-survivorship" "medium"
+            "Overweighting failures"
+            :signals ["Excessive pessimism" "Missing success patterns"]
+            :safeguards ["Balance success and failure analysis"])]})
+
+;; ============================================
+;; Category: Technology
+;; ============================================
+
+(register-model
+ {:name "moores-law"
+  :category "technology"
+  :originator "Gordon Moore"
+  :description "Computing power doubles roughly every two years"
+  :key-insight "Exponential improvement changes what's possible"
+  :application "Plan for exponentially improving technology"
+  :failure-modes
+  [(failure "linear-tech-thinking" "high"
+            "Assuming linear technology progress"
+            :signals ["Underestimating future capabilities"]
+            :safeguards ["Exponential thinking" "Scenario planning"])
+   (failure "moores-law-everywhere" "medium"
+            "Assuming all technology follows Moore's Law"
+            :signals ["Expecting exponential in linear domains"]
+            :safeguards ["Domain-specific analysis" "Check actual trends"])
+   (failure "end-of-moores-law" "medium"
+            "Not seeing when exponential trends end"
+            :signals ["Physical limits" "Diminishing returns"]
+            :safeguards ["Monitor actual progress" "Alternative paths"])
+   (failure "waiting-for-tech" "medium"
+            "Waiting for technology that may not come"
+            :signals ["Paralysis" "Missing current opportunities"]
+            :safeguards ["Use current tech" "Hedge bets"])
+   (failure "tech-determinism" "medium"
+            "Assuming technology determines outcomes"
+            :signals ["Ignoring social factors" "Tech solutionism"]
+            :safeguards ["Sociotechnical view" "Human factors"])]})
+
+(register-model
+ {:name "network-topology"
+  :category "technology"
+  :originator "Network Science"
+  :description "The structure of connections determines system behavior"
+  :key-insight "Hub-and-spoke vs mesh vs hierarchical have different properties"
+  :application "Design network topology for desired properties"
+  :failure-modes
+  [(failure "topology-blindness" "high"
+            "Not considering network structure"
+            :signals ["Unexpected cascades" "Fragility"]
+            :safeguards ["Map topology" "Analyze structure"])
+   (failure "hub-vulnerability" "critical"
+            "Critical hubs that can fail"
+            :signals ["Single points of failure" "Cascade risk"]
+            :safeguards ["Redundant hubs" "Distributed architecture"])
+   (failure "over-connection" "medium"
+            "Too many connections creating complexity"
+            :signals ["Tight coupling" "Unexpected interactions"]
+            :safeguards ["Loose coupling" "Modular design"])
+   (failure "under-connection" "medium"
+            "Too few connections limiting capability"
+            :signals ["Isolated components" "No synergy"]
+            :safeguards ["Strategic connections" "Integration"])
+   (failure "static-topology-assumption" "medium"
+            "Assuming topology doesn't change"
+            :signals ["Outdated network maps" "Missing new connections"]
+            :safeguards ["Dynamic monitoring" "Adaptive design"])]})
+
+(register-model
+ {:name "technical-debt"
+  :category "technology"
+  :originator "Ward Cunningham"
+  :description "Shortcuts in code that must be paid back later"
+  :key-insight "Debt compounds; pay it down or it will crush you"
+  :application "Take on debt deliberately; pay it down systematically"
+  :failure-modes
+  [(failure "debt-accumulation" "high"
+            "Accumulating too much technical debt"
+            :signals ["Slowing velocity" "Increasing bugs"]
+            :safeguards ["Regular paydown" "Debt limits"])
+   (failure "debt-blindness" "high"
+            "Not tracking technical debt"
+            :signals ["Surprised by slowdowns" "Hidden complexity"]
+            :safeguards ["Track debt" "Make visible"])
+   (failure "no-debt-extremism" "medium"
+            "Never taking on any debt"
+            :signals ["Slow delivery" "Over-engineering"]
+            :safeguards ["Strategic debt" "Speed vs quality tradeoffs"])
+   (failure "wrong-debt" "high"
+            "Taking on debt in wrong places"
+            :signals ["Debt in critical paths" "High-interest debt"]
+            :safeguards ["Deliberate debt placement" "Low-risk areas"])
+   (failure "debt-denial" "high"
+            "Pretending debt doesn't exist"
+            :signals ["Velocity decline" "Team frustration"]
+            :safeguards ["Acknowledge debt" "Plan paydown"])]})
+
+;; ============================================
+;; Category: Ecology
+;; ============================================
+
+(register-model
+ {:name "carrying-capacity"
+  :category "ecology"
+  :originator "Ecology"
+  :description "Maximum population an environment can sustain"
+  :key-insight "Growth is limited by resources"
+  :application "Identify and respect carrying capacity limits"
+  :failure-modes
+  [(failure "overshoot" "critical"
+            "Exceeding carrying capacity"
+            :signals ["Resource depletion" "Population crash"]
+            :safeguards ["Monitor limits" "Sustainable growth"])
+   (failure "capacity-blindness" "high"
+            "Not seeing carrying capacity limits"
+            :signals ["Assuming unlimited growth" "Ignoring constraints"]
+            :safeguards ["Identify limits" "Plan for constraints"])
+   (failure "static-capacity-assumption" "medium"
+            "Assuming fixed carrying capacity"
+            :signals ["Missing technology improvements" "Underestimating potential"]
+            :safeguards ["Dynamic capacity" "Innovation"])
+   (failure "local-vs-global" "medium"
+            "Confusing local and global capacity"
+            :signals ["Exporting problems" "Shifting burdens"]
+            :safeguards ["System boundaries" "Full accounting"])
+   (failure "capacity-gaming" "medium"
+            "Manipulating capacity measures"
+            :signals ["Goodhart's law" "Metric gaming"]
+            :safeguards ["Multiple measures" "Outcome focus"])]})
+
+(register-model
+ {:name "niche"
+  :category "ecology"
+  :originator "Ecology"
+  :description "The role and position of a species in its environment"
+  :key-insight "Successful species find and defend their niche"
+  :application "Find your niche; avoid direct competition"
+  :failure-modes
+  [(failure "niche-blindness" "high"
+            "Not understanding your niche"
+            :signals ["Competing everywhere" "No differentiation"]
+            :safeguards ["Define niche clearly" "Specialize"])
+   (failure "niche-overlap" "high"
+            "Too much overlap with competitors"
+            :signals ["Price wars" "Commoditization"]
+            :safeguards ["Differentiate" "Find unique position"])
+   (failure "niche-rigidity" "medium"
+            "Unable to adapt niche"
+            :signals ["Environment changing" "Niche disappearing"]
+            :safeguards ["Monitor environment" "Adaptive capability"])
+   (failure "niche-expansion-failure" "medium"
+            "Unable to expand from niche"
+            :signals ["Stuck in small market" "No growth path"]
+            :safeguards ["Adjacent expansion" "Platform potential"])
+   (failure "generalist-trap" "medium"
+            "Trying to be everything to everyone"
+            :signals ["No clear positioning" "Mediocre at everything"]
+            :safeguards ["Focus" "Clear positioning"])]})
+
+;; ============================================
+;; Category: Philosophy
+;; ============================================
+
+(register-model
+ {:name "stoicism"
+  :category "philosophy"
+  :originator "Epictetus/Marcus Aurelius"
+  :description "Focus on what you can control; accept what you cannot"
+  :key-insight "Tranquility comes from accepting reality"
+  :application "Distinguish between what's in your control and what isn't"
+  :failure-modes
+  [(failure "control-confusion" "high"
+            "Trying to control the uncontrollable"
+            :signals ["Frustration" "Wasted effort"]
+            :safeguards ["Dichotomy of control" "Accept reality"])
+   (failure "passive-fatalism" "medium"
+            "Not acting on what you can control"
+            :signals ["Learned helplessness" "No agency"]
+            :safeguards ["Act on controllables" "Take responsibility"])
+   (failure "emotional-suppression" "medium"
+            "Suppressing rather than processing emotions"
+            :signals ["Emotional numbness" "Delayed reactions"]
+            :safeguards ["Feel then act" "Healthy processing"])
+   (failure "indifference-excess" "medium"
+            "Becoming indifferent to everything"
+            :signals ["Apathy" "No motivation"]
+            :safeguards ["Preferred indifferents" "Values-driven action"])
+   (failure "control-boundary-errors" "medium"
+            "Misidentifying control boundaries"
+            :signals ["Giving up too easily" "Overreaching"]
+            :safeguards ["Careful analysis" "Test boundaries"])]})
+
+(register-model
+ {:name "via-negativa"
+  :category "philosophy"
+  :originator "Nassim Taleb"
+  :description "Improvement through subtraction rather than addition"
+  :key-insight "What you don't do matters more than what you do"
+  :application "Remove negatives before adding positives"
+  :failure-modes
+  [(failure "addition-bias" "high"
+            "Always adding rather than subtracting"
+            :signals ["Complexity growth" "Feature bloat"]
+            :safeguards ["Subtract first" "Simplify"])
+   (failure "subtraction-paralysis" "medium"
+            "Unable to remove anything"
+            :signals ["Attachment to existing" "Fear of loss"]
+            :safeguards ["Regular pruning" "Sunset policies"])
+   (failure "wrong-subtraction" "medium"
+            "Removing the wrong things"
+            :signals ["Removing value" "Breaking systems"]
+            :safeguards ["Careful analysis" "Reversible removal"])
+   (failure "subtraction-extremism" "medium"
+            "Subtracting too much"
+            :signals ["Removing necessary elements" "Over-simplification"]
+            :safeguards ["Balance" "Minimum viable"])
+   (failure "addition-neglect" "medium"
+            "Never adding when you should"
+            :signals ["Missing opportunities" "Stagnation"]
+            :safeguards ["Strategic addition" "Growth mindset"])]})
+
+(register-model
+ {:name "skin-in-the-game"
+  :category "philosophy"
+  :originator "Nassim Taleb"
+  :description "Having personal stake in outcomes"
+  :key-insight "Those who take risks should bear consequences"
+  :application "Ensure decision-makers have skin in the game"
+  :failure-modes
+  [(failure "no-skin" "critical"
+            "Making decisions without consequences"
+            :signals ["Reckless advice" "Moral hazard"]
+            :safeguards ["Require skin" "Align incentives"])
+   (failure "asymmetric-skin" "high"
+            "Upside without downside"
+            :signals ["Heads I win, tails you lose"]
+            :safeguards ["Symmetric exposure" "Clawbacks"])
+   (failure "excessive-skin" "medium"
+            "Too much personal risk"
+            :signals ["Paralysis" "Excessive caution"]
+            :safeguards ["Appropriate exposure" "Risk limits"])
+   (failure "skin-measurement" "medium"
+            "Wrong measure of skin"
+            :signals ["Gaming metrics" "Wrong incentives"]
+            :safeguards ["Outcome-based" "Long-term measures"])
+   (failure "skin-transfer" "medium"
+            "Transferring skin inappropriately"
+            :signals ["Scapegoating" "Blame shifting"]
+            :safeguards ["Clear accountability" "Fair attribution"])]})
+
+;; ============================================
+;; Additional Models for Completeness
+;; ============================================
+
+(register-model
+ {:name "confirmation-bias"
+  :category "psychology"
+  :originator "Peter Wason"
+  :description "Tendency to search for information that confirms existing beliefs"
+  :key-insight "We see what we want to see"
+  :application "Actively seek disconfirming evidence"
+  :failure-modes
+  [(failure "echo-chambers" "high"
+            "Surrounding yourself with agreeing voices"
+            :signals ["No disagreement" "Homogeneous sources"]
+            :safeguards ["Diverse sources" "Seek disagreement"])
+   (failure "selective-attention" "high"
+            "Only noticing confirming information"
+            :signals ["Missing contrary data" "Surprised by outcomes"]
+            :safeguards ["Systematic data collection" "Pre-registration"])
+   (failure "biased-interpretation" "high"
+            "Interpreting ambiguous evidence as confirming"
+            :signals ["Everything supports your view"]
+            :safeguards ["Blind analysis" "Multiple interpretations"])
+   (failure "memory-bias" "medium"
+            "Remembering confirming evidence better"
+            :signals ["Selective recall" "Distorted history"]
+            :safeguards ["Written records" "Data over memory"])
+   (failure "over-correction" "medium"
+            "Overcorrecting and dismissing valid confirmation"
+            :signals ["Excessive contrarianism"]
+            :safeguards ["Calibrated skepticism" "Evidence-based"])]})
+
+(register-model
+ {:name "hindsight-bias"
+  :category "psychology"
+  :originator "Baruch Fischhoff"
+  :description "Believing past events were predictable after knowing the outcome"
+  :key-insight "We knew it all along - but we didn't"
+  :application "Judge decisions by process, not outcome"
+  :failure-modes
+  [(failure "outcome-bias" "high"
+            "Judging decisions by outcomes alone"
+            :signals ["Punishing bad luck" "Rewarding good luck"]
+            :safeguards ["Process evaluation" "Decision journals"])
+   (failure "false-learning" "high"
+            "Learning wrong lessons from outcomes"
+            :signals ["Superstitious learning" "Wrong causation"]
+            :safeguards ["Causal analysis" "Multiple cases"])
+   (failure "overconfidence-in-prediction" "high"
+            "Thinking future is as predictable as past seems"
+            :signals ["Precise forecasts" "Ignoring uncertainty"]
+            :safeguards ["Acknowledge uncertainty" "Scenario planning"])
+   (failure "blame-attribution" "medium"
+            "Unfairly blaming for unpredictable outcomes"
+            :signals ["Scapegoating" "Unfair criticism"]
+            :safeguards ["Fair evaluation" "Context consideration"])
+   (failure "history-rewriting" "medium"
+            "Rewriting history to match current beliefs"
+            :signals ["Changing stories" "Inconsistent narratives"]
+            :safeguards ["Written records" "Date-stamped predictions"])]})
+
+(register-model
+ {:name "dunning-kruger"
+  :category "psychology"
+  :originator "David Dunning & Justin Kruger"
+  :description "Unskilled people overestimate ability; skilled people underestimate"
+  :key-insight "You don't know what you don't know"
+  :application "Seek feedback; calibrate confidence to competence"
+  :failure-modes
+  [(failure "overconfidence-incompetence" "high"
+            "Confident despite lack of skill"
+            :signals ["No self-doubt" "Dismissing experts"]
+            :safeguards ["Seek feedback" "Track predictions"])
+   (failure "underconfidence-competence" "medium"
+            "Doubting despite high skill"
+            :signals ["Imposter syndrome" "Not sharing expertise"]
+            :safeguards ["Track successes" "External validation"])
+   (failure "meta-dunning-kruger" "medium"
+            "Thinking you're immune to the effect"
+            :signals ["Overconfidence about self-awareness"]
+            :safeguards ["Humility" "Continuous calibration"])
+   (failure "expertise-blindness" "medium"
+            "Experts forgetting what it's like to be a beginner"
+            :signals ["Poor teaching" "Assuming knowledge"]
+            :safeguards ["Beginner's mind" "Empathy"])
+   (failure "calibration-neglect" "high"
+            "Not calibrating confidence to accuracy"
+            :signals ["Consistently over/under confident"]
+            :safeguards ["Track predictions" "Feedback loops"])]})
+
+(register-model
+ {:name "status-quo-bias"
+  :category "psychology"
+  :originator "William Samuelson"
+  :description "Preference for the current state of affairs"
+  :key-insight "The default option has a powerful advantage"
+  :application "Question defaults; consider change on its merits"
+  :failure-modes
+  [(failure "change-resistance" "high"
+            "Resisting beneficial change"
+            :signals ["Sticking with inferior options" "Fear of change"]
+            :safeguards ["Evaluate options equally" "Consider opportunity cost"])
+   (failure "default-acceptance" "high"
+            "Accepting defaults without evaluation"
+            :signals ["Not questioning" "Passive acceptance"]
+            :safeguards ["Examine defaults" "Active choice"])
+   (failure "change-for-change-sake" "medium"
+            "Overcorrecting by always changing"
+            :signals ["Constant churn" "No stability"]
+            :safeguards ["Change when beneficial" "Stability value"])
+   (failure "omission-bias" "medium"
+            "Preferring harm from inaction over action"
+            :signals ["Not acting when you should"]
+            :safeguards ["Evaluate action and inaction equally"])
+   (failure "endowment-effect" "medium"
+            "Overvaluing what you have"
+            :signals ["Demanding more to give up than to acquire"]
+            :safeguards ["Ownership-blind evaluation"])]})
+
+(register-model
+ {:name "narrative-fallacy"
+  :category "psychology"
+  :originator "Nassim Taleb"
+  :description "Creating stories to explain random events"
+  :key-insight "We are storytelling animals, even when there's no story"
+  :application "Be skeptical of neat narratives; embrace randomness"
+  :failure-modes
+  [(failure "pattern-imposition" "high"
+            "Seeing patterns in randomness"
+            :signals ["Explaining noise" "Overconfident causation"]
+            :safeguards ["Statistical thinking" "Accept randomness"])
+   (failure "story-over-data" "high"
+            "Preferring good stories over good data"
+            :signals ["Anecdotes over statistics" "Compelling but wrong"]
+            :safeguards ["Data first" "Skepticism of stories"])
+   (failure "hindsight-narratives" "high"
+            "Creating stories after the fact"
+            :signals ["Everything makes sense in retrospect"]
+            :safeguards ["Pre-register predictions" "Acknowledge luck"])
+   (failure "narrative-blindness" "medium"
+            "Ignoring useful narratives"
+            :signals ["Missing real patterns" "Over-skepticism"]
+            :safeguards ["Balance" "Test narratives"])
+   (failure "self-narrative-distortion" "medium"
+            "Distorting personal history into neat story"
+            :signals ["Coherent but false life story"]
+            :safeguards ["Honest reflection" "Multiple perspectives"])]})
+
+;; ============================================
+;; Category: Military/Warfare
+;; ============================================
+
+(register-model
+ {:name "fog-of-war"
+  :category "military"
+  :originator "Carl von Clausewitz"
+  :description "Uncertainty and confusion in complex situations"
+  :key-insight "Information is always incomplete and often wrong"
+  :application "Plan for uncertainty; build adaptive systems"
+  :failure-modes
+  [(failure "certainty-illusion" "high"
+            "Believing you have complete information"
+            :signals ["Overconfident plans" "No contingencies"]
+            :safeguards ["Assume incomplete info" "Multiple scenarios"])
+   (failure "paralysis" "high"
+            "Unable to act due to uncertainty"
+            :signals ["Waiting for perfect information" "No decisions"]
+            :safeguards ["Act on best available" "Iterate"])
+   (failure "fog-denial" "high"
+            "Pretending uncertainty doesn't exist"
+            :signals ["Precise plans" "No buffers"]
+            :safeguards ["Acknowledge uncertainty" "Build slack"])
+   (failure "information-overload" "medium"
+            "Too much information creating more fog"
+            :signals ["Analysis paralysis" "Signal lost in noise"]
+            :safeguards ["Focus on key signals" "Filter ruthlessly"])
+   (failure "false-clarity" "high"
+            "Mistaking noise for signal"
+            :signals ["Acting on bad information" "Confident but wrong"]
+            :safeguards ["Verify critical info" "Multiple sources"])]})
+
+(register-model
+ {:name "force-multiplier"
+  :category "military"
+  :originator "Military Strategy"
+  :description "Factors that dramatically increase effectiveness"
+  :key-insight "Small advantages can create disproportionate outcomes"
+  :application "Identify and leverage force multipliers"
+  :failure-modes
+  [(failure "multiplier-blindness" "high"
+            "Not seeing force multipliers"
+            :signals ["Brute force approaches" "Linear thinking"]
+            :safeguards ["Look for leverage" "Study asymmetric advantages"])
+   (failure "multiplier-dependence" "high"
+            "Over-relying on single multiplier"
+            :signals ["Vulnerability if multiplier fails"]
+            :safeguards ["Multiple multipliers" "Backup plans"])
+   (failure "enemy-multipliers" "high"
+            "Ignoring opponent's force multipliers"
+            :signals ["Surprised by effectiveness"]
+            :safeguards ["Analyze opponent capabilities" "Counter-multipliers"])
+   (failure "multiplier-decay" "medium"
+            "Multipliers losing effectiveness"
+            :signals ["Diminishing returns" "Opponent adaptation"]
+            :safeguards ["Monitor effectiveness" "Develop new multipliers"])
+   (failure "false-multiplier" "medium"
+            "Believing something is a multiplier when it isn't"
+            :signals ["Investment without returns"]
+            :safeguards ["Test multiplier effect" "Measure impact"])]})
+
+(register-model
+ {:name "schwerpunkt"
+  :category "military"
+  :originator "German Military Doctrine"
+  :description "Concentration of force at the decisive point"
+  :key-insight "Mass resources at the point of maximum impact"
+  :application "Identify and concentrate on the decisive point"
+  :failure-modes
+  [(failure "diffusion" "high"
+            "Spreading resources too thin"
+            :signals ["Weak everywhere" "No decisive impact"]
+            :safeguards ["Concentrate force" "Accept weakness elsewhere"])
+   (failure "wrong-point" "critical"
+            "Concentrating at the wrong point"
+            :signals ["Wasted concentration" "Missing opportunity"]
+            :safeguards ["Careful analysis" "Flexibility to shift"])
+   (failure "static-schwerpunkt" "high"
+            "Not shifting focus as situation changes"
+            :signals ["Continuing past relevance"]
+            :safeguards ["Dynamic assessment" "Willingness to shift"])
+   (failure "over-concentration" "medium"
+            "Too much concentration creating vulnerability"
+            :signals ["Single point of failure" "Catastrophic if wrong"]
+            :safeguards ["Hedged concentration" "Reserve force"])
+   (failure "concentration-telegraph" "medium"
+            "Revealing concentration to opponent"
+            :signals ["Opponent counters" "Lost surprise"]
+            :safeguards ["Deception" "Speed of execution"])]})
+
+;; ============================================
+;; Category: Design
+;; ============================================
+
+(register-model
+ {:name "form-follows-function"
+  :category "design"
+  :originator "Louis Sullivan"
+  :description "Design should be determined by purpose"
+  :key-insight "Function should drive form, not the reverse"
+  :application "Start with purpose; let design emerge from requirements"
+  :failure-modes
+  [(failure "form-over-function" "high"
+            "Prioritizing aesthetics over utility"
+            :signals ["Beautiful but unusable" "Style over substance"]
+            :safeguards ["Function first" "User testing"])
+   (failure "function-only" "medium"
+            "Ignoring form entirely"
+            :signals ["Ugly but functional" "Poor user experience"]
+            :safeguards ["Balance form and function" "Design matters"])
+   (failure "wrong-function" "high"
+            "Designing for wrong function"
+            :signals ["Solving wrong problem" "Misunderstood requirements"]
+            :safeguards ["Validate requirements" "User research"])
+   (failure "function-creep" "medium"
+            "Adding functions that distort form"
+            :signals ["Feature bloat" "Confused design"]
+            :safeguards ["Scope discipline" "Core function focus"])
+   (failure "context-blindness" "medium"
+            "Ignoring context in form-function relationship"
+            :signals ["Works in isolation, fails in context"]
+            :safeguards ["Contextual design" "System thinking"])]})
+
+(register-model
+ {:name "affordances"
+  :category "design"
+  :originator "James Gibson / Don Norman"
+  :description "Properties that suggest how something should be used"
+  :key-insight "Good design makes correct use obvious"
+  :application "Design affordances that guide correct behavior"
+  :failure-modes
+  [(failure "hidden-affordances" "high"
+            "Affordances not visible or discoverable"
+            :signals ["Users can't figure out how to use" "Need instructions"]
+            :safeguards ["Make affordances visible" "User testing"])
+   (failure "false-affordances" "high"
+            "Suggesting wrong actions"
+            :signals ["Users do wrong thing" "Confusion"]
+            :safeguards ["Match affordance to function" "Test with users"])
+   (failure "conflicting-affordances" "medium"
+            "Multiple conflicting suggestions"
+            :signals ["User uncertainty" "Errors"]
+            :safeguards ["Clear single affordance" "Remove conflicts"])
+   (failure "cultural-blindness" "medium"
+            "Affordances that don't translate across cultures"
+            :signals ["Works in one culture, fails in another"]
+            :safeguards ["Cross-cultural testing" "Universal design"])
+   (failure "affordance-overload" "medium"
+            "Too many affordances"
+            :signals ["Overwhelming" "Choice paralysis"]
+            :safeguards ["Simplify" "Progressive disclosure"])]})
+
+(register-model
+ {:name "constraints"
+  :category "design"
+  :originator "Design Theory"
+  :description "Limitations that guide behavior and prevent errors"
+  :key-insight "Good constraints make wrong actions impossible"
+  :application "Design constraints that prevent errors"
+  :failure-modes
+  [(failure "insufficient-constraints" "high"
+            "Not enough constraints allowing errors"
+            :signals ["User errors" "Misuse"]
+            :safeguards ["Add appropriate constraints" "Error prevention"])
+   (failure "over-constraint" "medium"
+            "Too many constraints limiting useful actions"
+            :signals ["Frustration" "Workarounds"]
+            :safeguards ["Balance constraints" "Enable legitimate use"])
+   (failure "wrong-constraints" "high"
+            "Constraints that prevent right actions"
+            :signals ["Can't do what you need" "Forced errors"]
+            :safeguards ["Test constraints" "User feedback"])
+   (failure "constraint-workarounds" "medium"
+            "Users finding ways around constraints"
+            :signals ["Shadow systems" "Unsafe workarounds"]
+            :safeguards ["Understand why" "Better constraints"])
+   (failure "invisible-constraints" "medium"
+            "Constraints users don't understand"
+            :signals ["Confusion" "Frustration"]
+            :safeguards ["Make constraints visible" "Explain why"])]})
+
+;; ============================================
+;; Category: Management
+;; ============================================
+
+(register-model
+ {:name "principal-agent"
+  :category "management"
+  :originator "Economics"
+  :description "Conflicts between those who delegate and those who act"
+  :key-insight "Agents may not act in principals' best interests"
+  :application "Align incentives; monitor appropriately"
+  :failure-modes
+  [(failure "misaligned-incentives" "high"
+            "Agent incentives don't match principal goals"
+            :signals ["Agent self-dealing" "Suboptimal outcomes"]
+            :safeguards ["Align incentives" "Skin in game"])
+   (failure "information-asymmetry" "high"
+            "Agent knows more than principal"
+            :signals ["Hidden actions" "Adverse selection"]
+            :safeguards ["Monitoring" "Reporting requirements"])
+   (failure "over-monitoring" "medium"
+            "Too much oversight destroying trust"
+            :signals ["Micromanagement" "Demotivation"]
+            :safeguards ["Trust but verify" "Outcome focus"])
+   (failure "under-monitoring" "high"
+            "Insufficient oversight allowing abuse"
+            :signals ["Agent misconduct" "Principal losses"]
+            :safeguards ["Appropriate monitoring" "Audit"])
+   (failure "agency-cost-blindness" "medium"
+            "Not accounting for agency costs"
+            :signals ["Underestimating true costs"]
+            :safeguards ["Include agency costs" "Direct action when possible"])]})
+
+(register-model
+ {:name "span-of-control"
+  :category "management"
+  :originator "Management Theory"
+  :description "Number of direct reports one manager can effectively supervise"
+  :key-insight "There are limits to effective supervision"
+  :application "Right-size teams for effective management"
+  :failure-modes
+  [(failure "too-wide-span" "high"
+            "Too many direct reports"
+            :signals ["Manager overwhelmed" "Insufficient attention"]
+            :safeguards ["Limit direct reports" "Add management layers"])
+   (failure "too-narrow-span" "medium"
+            "Too few direct reports"
+            :signals ["Micromanagement" "Too many layers"]
+            :safeguards ["Expand span" "Flatten organization"])
+   (failure "uniform-span" "medium"
+            "Same span regardless of context"
+            :signals ["Ignoring task complexity" "One size fits all"]
+            :safeguards ["Context-appropriate span" "Vary by role"])
+   (failure "span-rigidity" "medium"
+            "Not adjusting span as needs change"
+            :signals ["Outdated structure" "Mismatched capacity"]
+            :safeguards ["Regular review" "Adaptive structure"])
+   (failure "informal-span-blindness" "medium"
+            "Ignoring informal reporting relationships"
+            :signals ["Hidden workload" "Unofficial reports"]
+            :safeguards ["Map actual relationships" "Formalize if needed"])]})
+
+(register-model
+ {:name "peter-principle"
+  :category "management"
+  :originator "Laurence Peter"
+  :description "People rise to their level of incompetence"
+  :key-insight "Promotion based on current role doesn't predict next role success"
+  :application "Promote based on next role requirements"
+  :failure-modes
+  [(failure "competence-promotion" "high"
+            "Promoting based only on current competence"
+            :signals ["Great individual contributors becoming poor managers"]
+            :safeguards ["Assess for next role" "Different tracks"])
+   (failure "no-demotion-path" "high"
+            "No way to recover from over-promotion"
+            :signals ["Stuck at incompetence" "No graceful exit"]
+            :safeguards ["Lateral moves" "Graceful demotion"])
+   (failure "promotion-as-reward" "medium"
+            "Using promotion as only reward"
+            :signals ["Forcing management on non-managers"]
+            :safeguards ["Multiple reward paths" "IC tracks"])
+   (failure "competence-ceiling-blindness" "medium"
+            "Not seeing when someone has peaked"
+            :signals ["Continued promotion attempts" "Repeated failures"]
+            :safeguards ["Honest assessment" "Right role matching"])
+   (failure "self-peter-principle" "medium"
+            "Seeking promotion beyond competence"
+            :signals ["Chasing title over fit"]
+            :safeguards ["Self-awareness" "Role fit focus"])]})
+
+;; ============================================
+;; Category: History
+;; ============================================
+
+(register-model
+ {:name "lindy-effect"
+  :category "history"
+  :originator "Nassim Taleb"
+  :description "The longer something has survived, the longer it's likely to survive"
+  :key-insight "Time is the ultimate test; old things have proven durability"
+  :application "Prefer time-tested over novel when durability matters"
+  :failure-modes
+  [(failure "novelty-bias" "high"
+            "Preferring new over time-tested"
+            :signals ["Chasing trends" "Ignoring classics"]
+            :safeguards ["Consider age" "Respect survival"])
+   (failure "lindy-worship" "medium"
+            "Assuming old is always better"
+            :signals ["Rejecting valid innovation" "Stagnation"]
+            :safeguards ["Evaluate on merits" "Innovation has place"])
+   (failure "wrong-domain" "medium"
+            "Applying Lindy where it doesn't apply"
+            :signals ["Perishables treated as non-perishable"]
+            :safeguards ["Domain appropriateness" "Perishable vs durable"])
+   (failure "survival-bias" "medium"
+            "Not seeing what didn't survive"
+            :signals ["Overestimating old things' quality"]
+            :safeguards ["Consider failures" "Full population"])
+   (failure "context-change" "medium"
+            "Old thing surviving in changed context"
+            :signals ["Outdated despite age"]
+            :safeguards ["Context relevance" "Adaptation check"])]})
+
+(register-model
+ {:name "chestertons-fence"
+  :category "history"
+  :originator "G.K. Chesterton"
+  :description "Don't remove something until you understand why it's there"
+  :key-insight "Things exist for reasons; understand before changing"
+  :application "Understand the purpose before removing or changing"
+  :failure-modes
+  [(failure "blind-removal" "high"
+            "Removing without understanding"
+            :signals ["Unintended consequences" "Breaking things"]
+            :safeguards ["Understand first" "Ask why it exists"])
+   (failure "fence-worship" "medium"
+            "Never removing anything"
+            :signals ["Accumulating cruft" "Outdated practices"]
+            :safeguards ["Understand then evaluate" "Remove if obsolete"])
+   (failure "false-understanding" "medium"
+            "Thinking you understand when you don't"
+            :signals ["Confident removal, bad outcomes"]
+            :safeguards ["Verify understanding" "Test removal"])
+   (failure "lost-knowledge" "high"
+            "Original reason forgotten"
+            :signals ["Nobody knows why" "Tribal knowledge lost"]
+            :safeguards ["Document reasons" "Institutional memory"])
+   (failure "changed-circumstances" "medium"
+            "Reason no longer applies"
+            :signals ["Fence for old problem"]
+            :safeguards ["Evaluate current relevance" "Update or remove"])]})
+
+(register-model
+ {:name "path-dependence"
+  :category "history"
+  :originator "Economics/History"
+  :description "Current options are constrained by past choices"
+  :key-insight "History matters; we can't always start fresh"
+  :application "Understand how past choices constrain present options"
+  :failure-modes
+  [(failure "path-blindness" "high"
+            "Ignoring how history constrains options"
+            :signals ["Proposing impossible changes" "Ignoring legacy"]
+            :safeguards ["Understand history" "Work within constraints"])
+   (failure "path-determinism" "medium"
+            "Assuming path is unchangeable"
+            :signals ["Fatalism" "Not trying to change"]
+            :safeguards ["Look for path breaks" "Strategic pivots"])
+   (failure "sunk-cost-path" "high"
+            "Staying on path due to sunk costs"
+            :signals ["Continuing bad path" "Throwing good after bad"]
+            :safeguards ["Evaluate future only" "Path switching"])
+   (failure "lock-in-blindness" "high"
+            "Not seeing lock-in until too late"
+            :signals ["Trapped in suboptimal path"]
+            :safeguards ["Early path evaluation" "Preserve optionality"])
+   (failure "path-creation-failure" "medium"
+            "Not creating new paths when possible"
+            :signals ["Accepting constraints unnecessarily"]
+            :safeguards ["Challenge constraints" "Create new paths"])]})
+
+;; ============================================
+;; Category: Complexity
+;; ============================================
+
+(register-model
+ {:name "cynefin"
+  :category "complexity"
+  :originator "Dave Snowden"
+  :description "Framework for understanding different types of problems"
+  :key-insight "Different problems require different approaches"
+  :application "Match your approach to the type of problem"
+  :failure-modes
+  [(failure "domain-misidentification" "high"
+            "Treating complex as complicated or vice versa"
+            :signals ["Wrong approach" "Unexpected outcomes"]
+            :safeguards ["Careful domain assessment" "Probe first"])
+   (failure "simple-solution-bias" "high"
+            "Wanting simple solutions for complex problems"
+            :signals ["Oversimplification" "Missing dynamics"]
+            :safeguards ["Accept complexity" "Appropriate methods"])
+   (failure "complexity-everywhere" "medium"
+            "Treating everything as complex"
+            :signals ["Overcomplicating simple problems"]
+            :safeguards ["Domain assessment" "Simple when appropriate"])
+   (failure "static-domain-thinking" "medium"
+            "Not seeing domain shifts"
+            :signals ["Approach no longer working"]
+            :safeguards ["Monitor for shifts" "Adaptive approach"])
+   (failure "chaos-panic" "high"
+            "Paralysis in chaotic domain"
+            :signals ["No action" "Waiting for clarity"]
+            :safeguards ["Act to stabilize" "Then assess"])]})
+
+(register-model
+ {:name "tight-coupling"
+  :category "complexity"
+  :originator "Charles Perrow"
+  :description "Systems where components are highly interdependent"
+  :key-insight "Tight coupling amplifies failures and reduces recovery time"
+  :application "Understand coupling; add slack where needed"
+  :failure-modes
+  [(failure "coupling-blindness" "high"
+            "Not seeing tight coupling"
+            :signals ["Cascade failures" "Unexpected propagation"]
+            :safeguards ["Map dependencies" "Analyze coupling"])
+   (failure "over-coupling" "high"
+            "Creating unnecessary tight coupling"
+            :signals ["Fragility" "No buffer"]
+            :safeguards ["Loose coupling" "Add buffers"])
+   (failure "under-coupling" "medium"
+            "Too loose coupling losing coordination"
+            :signals ["No coordination" "Duplication"]
+            :safeguards ["Appropriate coupling" "Integration points"])
+   (failure "coupling-rigidity" "medium"
+            "Unable to change coupling"
+            :signals ["Locked into architecture"]
+            :safeguards ["Modular design" "Coupling flexibility"])
+   (failure "hidden-coupling" "high"
+            "Coupling through unexpected channels"
+            :signals ["Surprising interactions"]
+            :safeguards ["Map all connections" "Test interactions"])]})
+
+(register-model
+ {:name "normal-accidents"
+  :category "complexity"
+  :originator "Charles Perrow"
+  :description "Accidents that are inevitable in complex, tightly-coupled systems"
+  :key-insight "Some systems will fail despite best efforts"
+  :application "Accept some failures; design for graceful degradation"
+  :failure-modes
+  [(failure "accident-denial" "high"
+            "Believing accidents can be eliminated"
+            :signals ["Zero defect goals" "Blame culture"]
+            :safeguards ["Accept inevitability" "Design for failure"])
+   (failure "over-engineering" "medium"
+            "Adding complexity to prevent accidents"
+            :signals ["More complexity, more failure modes"]
+            :safeguards ["Simplify" "Reduce coupling"])
+   (failure "blame-individuals" "high"
+            "Blaming people for system failures"
+            :signals ["Scapegoating" "Missing system issues"]
+            :safeguards ["System analysis" "Just culture"])
+   (failure "complacency" "high"
+            "Long accident-free period breeding complacency"
+            :signals ["Relaxed vigilance" "Drift"]
+            :safeguards ["Maintain vigilance" "Near-miss analysis"])
+   (failure "recovery-neglect" "high"
+            "Not preparing for recovery"
+            :signals ["No recovery plans" "Catastrophic failures"]
+            :safeguards ["Recovery planning" "Graceful degradation"])]})
+
+;; ============================================
 ;; Export Functions
 ;; ============================================
 
