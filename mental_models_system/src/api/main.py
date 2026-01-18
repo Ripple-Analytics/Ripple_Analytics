@@ -541,6 +541,315 @@ async def get_relevant_models(
         raise HTTPException(status_code=500, detail=f"Failed to get models: {str(e)}")
 
 
+class IngestRequest(BaseModel):
+    paths: List[str]
+
+
+class IngestResponse(BaseModel):
+    documents_processed: int
+    chunks_created: int
+    status: str
+
+
+class SearchRequest(BaseModel):
+    query: str
+    limit: int = 10
+    min_similarity: float = 0.5
+
+
+class SearchResult(BaseModel):
+    id: str
+    document_path: str
+    content: str
+    chunk_index: int
+    similarity: float
+    metadata: dict
+
+
+class KnowledgeQueryRequest(BaseModel):
+    query: str
+    context: Optional[str] = None
+    max_sources: int = 10
+
+
+class KnowledgeQueryResponse(BaseModel):
+    query: str
+    answer: str
+    sources: List[dict]
+    confidence: float
+
+
+class ImprovementRequest(BaseModel):
+    type: str
+    title: str
+    description: str
+    proposed_changes: dict
+    source_insights: Optional[List[str]] = None
+
+
+class ImprovementResponse(BaseModel):
+    id: str
+    type: str
+    title: str
+    status: str
+
+
+@app.post("/ingest/files", response_model=IngestResponse)
+async def ingest_files(request: IngestRequest):
+    """Ingest TXT files from specified paths."""
+    try:
+        from src.ingestion import DataIngestionPipeline
+        from pathlib import Path
+        
+        pipeline = DataIngestionPipeline()
+        pipeline.setup_database()
+        
+        paths = [Path(p) for p in request.paths]
+        chunks = pipeline.process_files(paths)
+        pipeline.close()
+        
+        return IngestResponse(
+            documents_processed=len(request.paths),
+            chunks_created=len(chunks),
+            status="success"
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ingestion failed: {str(e)}")
+
+
+@app.post("/ingest/watch")
+async def start_watching(paths: List[str]):
+    """Start watching folders for new TXT files."""
+    try:
+        from src.ingestion import DataIngestionPipeline
+        
+        pipeline = DataIngestionPipeline(watch_paths=paths)
+        pipeline.setup_database()
+        pipeline.start_watching()
+        
+        return {
+            "status": "watching",
+            "paths": paths,
+            "message": "Folder watcher started. New files will be automatically processed."
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to start watcher: {str(e)}")
+
+
+@app.get("/ingest/stats")
+async def get_ingestion_stats():
+    """Get data ingestion statistics."""
+    try:
+        from src.ingestion import DataIngestionPipeline
+        
+        pipeline = DataIngestionPipeline()
+        stats = pipeline.get_stats()
+        pipeline.close()
+        
+        return stats
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get stats: {str(e)}")
+
+
+@app.post("/ingest/search", response_model=List[SearchResult])
+async def search_documents(request: SearchRequest):
+    """Semantic search over ingested documents."""
+    try:
+        from src.ingestion import DataIngestionPipeline
+        
+        pipeline = DataIngestionPipeline()
+        results = pipeline.semantic_search(
+            query=request.query,
+            limit=request.limit,
+            min_similarity=request.min_similarity
+        )
+        pipeline.close()
+        
+        return [
+            SearchResult(
+                id=r["id"],
+                document_path=r["document_path"],
+                content=r["content"],
+                chunk_index=r["chunk_index"],
+                similarity=r["similarity"],
+                metadata=r.get("metadata", {})
+            )
+            for r in results
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
+
+
+@app.post("/feedback/query", response_model=KnowledgeQueryResponse)
+async def query_knowledge(request: KnowledgeQueryRequest):
+    """Query the knowledge base with natural language and get synthesized answers."""
+    try:
+        from src.ingestion import FeedbackLoop
+        
+        feedback = FeedbackLoop()
+        feedback.setup_database()
+        result = feedback.query_knowledge(
+            query=request.query,
+            context=request.context,
+            max_sources=request.max_sources
+        )
+        feedback.close()
+        
+        return KnowledgeQueryResponse(
+            query=result["query"],
+            answer=result["answer"],
+            sources=result["sources"],
+            confidence=result["confidence"]
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Query failed: {str(e)}")
+
+
+@app.post("/feedback/improve", response_model=ImprovementResponse)
+async def propose_improvement(request: ImprovementRequest):
+    """Propose an improvement based on insights from the knowledge base."""
+    try:
+        from src.ingestion import FeedbackLoop, ImprovementType
+        
+        feedback = FeedbackLoop()
+        feedback.setup_database()
+        
+        improvement_type = ImprovementType(request.type)
+        improvement = feedback.propose_improvement(
+            improvement_type=improvement_type,
+            title=request.title,
+            description=request.description,
+            proposed_changes=request.proposed_changes,
+            source_insights=request.source_insights
+        )
+        feedback.close()
+        
+        return ImprovementResponse(
+            id=improvement.id,
+            type=improvement.type.value,
+            title=improvement.title,
+            status=improvement.status.value
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to propose improvement: {str(e)}")
+
+
+@app.get("/feedback/improvements")
+async def get_pending_improvements():
+    """Get all pending improvements."""
+    try:
+        from src.ingestion import FeedbackLoop
+        
+        feedback = FeedbackLoop()
+        improvements = feedback.get_pending_improvements()
+        feedback.close()
+        
+        return [
+            {
+                "id": imp.id,
+                "type": imp.type.value,
+                "title": imp.title,
+                "description": imp.description,
+                "status": imp.status.value,
+                "created_at": imp.created_at.isoformat() if imp.created_at else None
+            }
+            for imp in improvements
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get improvements: {str(e)}")
+
+
+@app.post("/feedback/improvements/{improvement_id}/approve")
+async def approve_improvement(improvement_id: str):
+    """Approve a proposed improvement."""
+    try:
+        from src.ingestion import FeedbackLoop
+        
+        feedback = FeedbackLoop()
+        success = feedback.approve_improvement(improvement_id)
+        feedback.close()
+        
+        if success:
+            return {"status": "approved", "improvement_id": improvement_id}
+        else:
+            raise HTTPException(status_code=404, detail="Improvement not found or already processed")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to approve: {str(e)}")
+
+
+@app.post("/feedback/improvements/{improvement_id}/reject")
+async def reject_improvement(improvement_id: str, reason: Optional[str] = None):
+    """Reject a proposed improvement."""
+    try:
+        from src.ingestion import FeedbackLoop
+        
+        feedback = FeedbackLoop()
+        success = feedback.reject_improvement(improvement_id, reason)
+        feedback.close()
+        
+        if success:
+            return {"status": "rejected", "improvement_id": improvement_id}
+        else:
+            raise HTTPException(status_code=404, detail="Improvement not found or already processed")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to reject: {str(e)}")
+
+
+@app.post("/feedback/improvements/{improvement_id}/implemented")
+async def mark_improvement_implemented(improvement_id: str):
+    """Mark an approved improvement as implemented."""
+    try:
+        from src.ingestion import FeedbackLoop
+        
+        feedback = FeedbackLoop()
+        success = feedback.mark_implemented(improvement_id)
+        feedback.close()
+        
+        if success:
+            return {"status": "implemented", "improvement_id": improvement_id}
+        else:
+            raise HTTPException(status_code=404, detail="Improvement not found or not approved")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to mark implemented: {str(e)}")
+
+
+@app.get("/feedback/analyze")
+async def analyze_for_improvements(topic: Optional[str] = None):
+    """Analyze the knowledge base for potential improvements."""
+    try:
+        from src.ingestion import FeedbackLoop
+        
+        feedback = FeedbackLoop()
+        feedback.setup_database()
+        suggestions = feedback.analyze_for_improvements(topic)
+        feedback.close()
+        
+        return {"suggestions": suggestions}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+
+
+@app.get("/feedback/stats")
+async def get_feedback_stats():
+    """Get feedback loop statistics."""
+    try:
+        from src.ingestion import FeedbackLoop
+        
+        feedback = FeedbackLoop()
+        stats = feedback.get_stats()
+        feedback.close()
+        
+        return stats
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get stats: {str(e)}")
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host=settings.api.host, port=settings.api.port)
