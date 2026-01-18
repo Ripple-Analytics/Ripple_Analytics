@@ -21,11 +21,30 @@
         com.taoensso/timbre {:mvn/version "6.3.1"}
         environ/environ {:mvn/version "1.2.0"}
         
-        ;; Statistics
+        ;; Statistics & Analysis
         net.mikera/core.matrix {:mvn/version "0.63.0"}
-        net.mikera/vectorz-clj {:mvn/version "0.48.0"}}
+        net.mikera/vectorz-clj {:mvn/version "0.48.0"}
+        org.apache.commons/commons-math3 {:mvn/version "3.6.1"}
+        
+        ;; File Processing
+        org.apache.pdfbox/pdfbox {:mvn/version "3.0.0"}
+        org.apache.poi/poi-ooxml {:mvn/version "5.0.0"}
+        
+        ;; File Watching
+        hawk/hawk {:mvn/version "0.0.11"}
+        
+        ;; Async
+        org.clojure/core.async {:mvn/version "1.6.681"}}
  
  :aliases
  {:dev {:extra-paths ["dev"]
-        :extra-deps {nrepl/nrepl {:mvn/version "1.1.0"}}}
-  :prod {:main-opts ["-m" "mental-models.main"]}}}
+        :extra-deps {nrepl/nrepl {:mvn/version "1.1.0"}
+                     cider/cider-nrepl {:mvn/version "0.45.0"}}}
+  :prod {:main-opts ["-m" "mental-models.main"]}
+  :test {:extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1"
+                                                             :git/sha "dfb30dd"}}
+         :main-opts ["-m" "cognitect.test-runner"]}
+  :lint {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2024.01.01"}}
+         :main-opts ["-m" "clj-kondo.main" "--lint" "src"]}
+  :format {:extra-deps {cljfmt/cljfmt {:mvn/version "0.9.2"}}
+           :main-opts ["-m" "cljfmt.main" "fix" "src"]}}}}

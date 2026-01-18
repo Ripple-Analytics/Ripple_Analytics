@@ -1,0 +1,70 @@
+{
+  "name": "mental-models-system",
+  "version": "2.0.0",
+  "description": "Unified Mental Models System - Electric Clojure Stack (Desktop + Backend + Frontend)",
+  "main": "desktop/main.js",
+  "homepage": "./",
+  "private": true,
+  "scripts": {
+    "dev": "clj -M:dev",
+    "dev:web": "clj -M:dev:web",
+    "dev:desktop": "electron .",
+    "dev:all": "concurrently \"npm run dev\" \"npm run dev:desktop\"",
+    "build": "clj -M:build",
+    "build:web": "clj -M:build:web",
+    "build:desktop": "electron-builder",
+    "test": "clj -M:test",
+    "lint": "clj -M:lint",
+    "format": "clj -M:format",
+    "clean": "rm -rf target dist build",
+    "start": "node -e \"require('electron').app.quit()\" || npm run dev"
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0",
+    "electron-is-dev": "^2.0.0",
+    "chokidar": "^3.5.3",
+    "pdf-parse": "^1.1.1",
+    "docx": "^8.5.0",
+    "papaparse": "^5.4.1"
+  },
+  "devDependencies": {
+    "electron": "^latest",
+    "electron-builder": "^24.0.0",
+    "concurrently": "^7.0.0"
+  },
+  "build": {
+    "appId": "com.mentalmodels.desktop",
+    "productName": "Mental Models Desktop",
+    "files": [
+      "desktop/main.js",
+      "desktop/preload.js",
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
+    }
+  }
+}
