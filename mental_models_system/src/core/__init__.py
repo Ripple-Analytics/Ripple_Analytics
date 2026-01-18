@@ -38,6 +38,20 @@ from .desktop_service import (
     ServiceController,
 )
 
+from .continuous_learning import (
+    ContinuousLearningPipeline,
+    WebScraper,
+    ScraperConfig,
+    PatternDetector,
+    InsightGenerator,
+    DataPoint,
+    LearningResult,
+    DataSourceType,
+    LearningMode,
+    create_continuous_learning_pipeline,
+    create_default_scrapers,
+)
+
 __all__ = [
     "HotReloader",
     "ModuleWatcher",
@@ -70,4 +84,15 @@ __all__ = [
     "ServiceStatus",
     "ServiceInstaller",
     "ServiceController",
+    "ContinuousLearningPipeline",
+    "WebScraper",
+    "ScraperConfig",
+    "PatternDetector",
+    "InsightGenerator",
+    "DataPoint",
+    "LearningResult",
+    "DataSourceType",
+    "LearningMode",
+    "create_continuous_learning_pipeline",
+    "create_default_scrapers",
 ]

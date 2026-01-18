@@ -1354,6 +1354,202 @@ async def search_huggingface_models(
         return {"success": False, "error": str(e)}
 
 
+class StatisticalAnalysisRequest(BaseModel):
+    variables: dict
+    dependent_variable: Optional[str] = None
+
+
+class CorrelationRequest(BaseModel):
+    variables: dict
+    method: str = "pearson"
+
+
+class RegressionRequest(BaseModel):
+    dependent: str
+    independents: List[str]
+    data: dict
+
+
+class CovariateRequest(BaseModel):
+    target: str
+    covariates: List[str]
+    data: dict
+
+
+@app.post("/statistics/synthesize")
+async def synthesize_variables(request: StatisticalAnalysisRequest):
+    """Synthesize multiple variables with full statistical analysis."""
+    try:
+        from src.analysis.statistical_engine import create_statistical_engine
+        
+        engine = create_statistical_engine()
+        engine.add_variables_from_dict(request.variables)
+        
+        result = engine.synthesize_variables(
+            var_names=list(request.variables.keys()),
+            dependent=request.dependent_variable
+        )
+        
+        return {
+            "success": True,
+            "synthesis": result.to_dict()
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/statistics/correlations")
+async def calculate_correlations(request: CorrelationRequest):
+    """Calculate correlation matrix for multiple variables."""
+    try:
+        from src.analysis.statistical_engine import create_statistical_engine
+        
+        engine = create_statistical_engine()
+        engine.add_variables_from_dict(request.variables)
+        
+        correlations = engine.correlation_matrix(
+            var_names=list(request.variables.keys()),
+            method=request.method
+        )
+        
+        return {
+            "success": True,
+            "correlations": [c.to_dict() for c in correlations],
+            "method": request.method
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/statistics/regression")
+async def run_regression(request: RegressionRequest):
+    """Run multiple regression analysis."""
+    try:
+        from src.analysis.statistical_engine import create_statistical_engine
+        
+        engine = create_statistical_engine()
+        engine.add_variables_from_dict(request.data)
+        
+        if len(request.independents) == 1:
+            result = engine.simple_linear_regression(
+                request.dependent, 
+                request.independents[0]
+            )
+        else:
+            result = engine.multiple_regression(
+                request.dependent, 
+                request.independents
+            )
+        
+        return {
+            "success": True,
+            "regression": result.to_dict()
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/statistics/covariates")
+async def analyze_covariates(request: CovariateRequest):
+    """Analyze covariate effects on target variable."""
+    try:
+        from src.analysis.statistical_engine import create_mental_model_statistics
+        
+        stats = create_mental_model_statistics()
+        for var, values in request.data.items():
+            stats.add_model_scores(var, values)
+        
+        result = stats.get_covariate_effects(request.target, request.covariates)
+        
+        return {
+            "success": True,
+            "covariate_analysis": result
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/statistics/factor-analysis")
+async def run_factor_analysis(request: StatisticalAnalysisRequest):
+    """Run factor analysis on multiple variables."""
+    try:
+        from src.analysis.statistical_engine import create_statistical_engine
+        
+        engine = create_statistical_engine()
+        engine.add_variables_from_dict(request.variables)
+        
+        result = engine.factor_analysis(var_names=list(request.variables.keys()))
+        
+        return {
+            "success": True,
+            "factor_analysis": result.to_dict()
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/statistics/covariance-matrix")
+async def calculate_covariance_matrix(request: StatisticalAnalysisRequest):
+    """Calculate covariance matrix for multiple variables."""
+    try:
+        from src.analysis.statistical_engine import create_statistical_engine
+        
+        engine = create_statistical_engine()
+        engine.add_variables_from_dict(request.variables)
+        
+        result = engine.covariance_matrix(var_names=list(request.variables.keys()))
+        
+        return {
+            "success": True,
+            "covariance_matrix": result.to_dict()
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/statistics/descriptive/{variable_name}")
+async def get_descriptive_statistics(variable_name: str, values: str):
+    """Get descriptive statistics for a variable."""
+    try:
+        from src.analysis.statistical_engine import create_statistical_engine
+        
+        engine = create_statistical_engine()
+        value_list = [float(v.strip()) for v in values.split(",")]
+        engine.add_variable(variable_name, value_list)
+        
+        stats = engine.get_descriptive_stats(variable_name)
+        
+        return {
+            "success": True,
+            "variable": variable_name,
+            "statistics": stats
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/statistics/mental-model-correlations")
+async def analyze_mental_model_correlations(request: StatisticalAnalysisRequest):
+    """Analyze correlations between mental model scores across documents."""
+    try:
+        from src.analysis.statistical_engine import create_mental_model_statistics
+        
+        stats = create_mental_model_statistics()
+        for model, scores in request.variables.items():
+            stats.add_model_scores(model, scores)
+        
+        correlations = stats.analyze_model_correlations()
+        clusters = stats.find_model_clusters()
+        
+        return {
+            "success": True,
+            "correlations": [c.to_dict() for c in correlations],
+            "clusters": clusters
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
 TEMPLATES_DIR = Path(__file__).parent / "templates"
 
 

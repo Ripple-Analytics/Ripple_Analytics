@@ -6,6 +6,8 @@
     <title>Mental Models System - Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
         .tab-content { display: none; }
         .tab-content.active { display: block; }
@@ -14,6 +16,39 @@
         .loading { opacity: 0.6; pointer-events: none; }
         .fade-in { animation: fadeIn 0.3s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        /* Value Line Dense Styles */
+        .dense { font-size: 10px; line-height: 1.2; }
+        .dense-table { border-collapse: collapse; width: 100%; }
+        .dense-table th, .dense-table td { padding: 2px 4px; border: 1px solid #ddd; white-space: nowrap; }
+        .dense-table th { background: #1f2937; color: white; font-weight: 600; position: sticky; top: 0; }
+        .dense-table tr:nth-child(even) { background: #f9fafb; }
+        .dense-table tr:hover { background: #e5e7eb; }
+        .dense-grid { display: grid; gap: 1px; background: #ddd; }
+        .dense-cell { background: white; padding: 2px; text-align: center; cursor: pointer; }
+        .dense-cell:hover { background: #fef3c7; }
+        .cat-psychology { background: #fee2e2; }
+        .cat-thinking { background: #dbeafe; }
+        .cat-economics { background: #d1fae5; }
+        .cat-competitive { background: #fef3c7; }
+        .cat-math { background: #e0e7ff; }
+        .cat-physics { background: #f3e8ff; }
+        .cat-biology { background: #ccfbf1; }
+        .cat-org { background: #fce7f3; }
+        .severity-1 { background: #dcfce7; }
+        .severity-2 { background: #fef9c3; }
+        .severity-3 { background: #fed7aa; }
+        .severity-4 { background: #fecaca; }
+        .severity-5 { background: #f87171; color: white; }
+        .sparkline { display: inline-block; height: 12px; width: 40px; }
+        .sparkline-bar { display: inline-block; width: 3px; margin-right: 1px; background: #3b82f6; vertical-align: bottom; }
+        .mini-badge { display: inline-block; padding: 0 3px; border-radius: 2px; font-size: 8px; font-weight: 600; }
+        .stat-box { border: 1px solid #ddd; padding: 4px 8px; text-align: center; }
+        .stat-box .value { font-size: 18px; font-weight: 700; color: #1f2937; }
+        .stat-box .label { font-size: 8px; color: #6b7280; text-transform: uppercase; }
+        #world-map { height: 300px; width: 100%; }
+        .timeline-slider { width: 100%; }
+        .model-marker { border-radius: 50%; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -53,6 +88,9 @@
             </button>
             <button class="nav-tab px-4 py-2 rounded-md text-sm font-medium transition-all" data-tab="connectors">
                 <i data-lucide="plug" class="w-4 h-4 inline mr-1"></i> Connectors
+            </button>
+            <button class="nav-tab px-4 py-2 rounded-md text-sm font-medium transition-all" data-tab="dense">
+                <i data-lucide="table-2" class="w-4 h-4 inline mr-1"></i> Dense View
             </button>
         </div>
 
@@ -331,6 +369,238 @@
                         <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div id="dense" class="tab-content fade-in dense">
+            <!-- Trading Terminal Style Header -->
+            <div class="grid grid-cols-12 gap-1 mb-2">
+                <div class="stat-box col-span-1"><div class="value" id="dense-models">129</div><div class="label">Models</div></div>
+                <div class="stat-box col-span-1"><div class="value" id="dense-failures">645</div><div class="label">Failures</div></div>
+                <div class="stat-box col-span-1"><div class="value" id="dense-thinkers">17</div><div class="label">Thinkers</div></div>
+                <div class="stat-box col-span-1"><div class="value" id="dense-categories">8</div><div class="label">Categories</div></div>
+                <div class="stat-box col-span-1"><div class="value" id="dense-processed">0</div><div class="label">Processed</div></div>
+                <div class="stat-box col-span-1"><div class="value" id="dense-queue">0</div><div class="label">Queue</div></div>
+                <div class="stat-box col-span-1"><div class="value" id="dense-rate">0/s</div><div class="label">Rate</div></div>
+                <div class="stat-box col-span-1"><div class="value" id="dense-workers">4</div><div class="label">Workers</div></div>
+                <div class="stat-box col-span-1"><div class="value" id="dense-errors">0</div><div class="label">Errors</div></div>
+                <div class="stat-box col-span-1"><div class="value" id="dense-uptime">0h</div><div class="label">Uptime</div></div>
+                <div class="stat-box col-span-1"><div class="value" id="dense-lm">--</div><div class="label">LM Studio</div></div>
+                <div class="stat-box col-span-1"><div class="value" id="dense-sync">--</div><div class="label">Web Sync</div></div>
+            </div>
+
+            <div class="grid grid-cols-12 gap-2">
+                <!-- Left Column: Model Matrix (8 cols) -->
+                <div class="col-span-8 border bg-white" style="max-height: 600px; overflow-y: auto;">
+                    <div class="sticky top-0 bg-gray-900 text-white p-1 text-xs font-bold flex justify-between">
+                        <span>MODEL MATRIX (129 Models × 8 Categories)</span>
+                        <span>Click cell for details | Color = Category | Badge = Failure Count</span>
+                    </div>
+                    <table class="dense-table" id="model-matrix">
+                        <thead>
+                            <tr>
+                                <th style="width:25%">Model</th>
+                                <th style="width:12%">Category</th>
+                                <th style="width:10%">Thinker</th>
+                                <th style="width:8%">Fails</th>
+                                <th style="width:15%">Relevance</th>
+                                <th style="width:10%">Severity</th>
+                                <th style="width:10%">Uses</th>
+                                <th style="width:10%">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="model-matrix-body">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Right Column: World Map + Thinkers (4 cols) -->
+                <div class="col-span-4 space-y-2">
+                    <!-- World Map -->
+                    <div class="border bg-white">
+                        <div class="bg-gray-900 text-white p-1 text-xs font-bold">GEOSPATIAL VIEW - Mental Models by Region & Time</div>
+                        <div id="world-map"></div>
+                        <div class="p-1 border-t">
+                            <div class="flex items-center gap-2 text-xs">
+                                <span>Timeline:</span>
+                                <input type="range" id="timeline-slider" class="timeline-slider flex-1" min="1900" max="2026" value="2026">
+                                <span id="timeline-year">2026</span>
+                            </div>
+                            <div class="flex gap-1 mt-1 text-xs">
+                                <span class="mini-badge cat-psychology">Psychology</span>
+                                <span class="mini-badge cat-economics">Economics</span>
+                                <span class="mini-badge cat-physics">Physics</span>
+                                <span class="mini-badge cat-biology">Biology</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thinker Comparison -->
+                    <div class="border bg-white" style="max-height: 200px; overflow-y: auto;">
+                        <div class="sticky top-0 bg-gray-900 text-white p-1 text-xs font-bold">THINKER COMPARISON (17 Thinkers)</div>
+                        <table class="dense-table" id="thinker-table">
+                            <thead>
+                                <tr><th>Thinker</th><th>Models</th><th>Era</th><th>Focus</th></tr>
+                            </thead>
+                            <tbody id="thinker-table-body">
+                                <tr><td>Munger</td><td>25</td><td>1924-</td><td class="cat-psychology">Psych</td></tr>
+                                <tr><td>Soros</td><td>8</td><td>1930-</td><td class="cat-economics">Econ</td></tr>
+                                <tr><td>Dalio</td><td>12</td><td>1949-</td><td class="cat-economics">Econ</td></tr>
+                                <tr><td>Simons</td><td>6</td><td>1938-</td><td class="cat-math">Math</td></tr>
+                                <tr><td>Thiel</td><td>7</td><td>1967-</td><td class="cat-competitive">Comp</td></tr>
+                                <tr><td>Musk</td><td>5</td><td>1971-</td><td class="cat-physics">Phys</td></tr>
+                                <tr><td>Franklin</td><td>8</td><td>1706-90</td><td class="cat-thinking">Think</td></tr>
+                                <tr><td>Seneca</td><td>6</td><td>4BC-65</td><td class="cat-psychology">Psych</td></tr>
+                                <tr><td>LKY</td><td>7</td><td>1923-15</td><td class="cat-org">Org</td></tr>
+                                <tr><td>Rockefeller</td><td>5</td><td>1839-37</td><td class="cat-competitive">Comp</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Failure Mode Heatmap -->
+                    <div class="border bg-white">
+                        <div class="bg-gray-900 text-white p-1 text-xs font-bold">FAILURE MODE HEATMAP (Categories × Severity)</div>
+                        <div class="p-1">
+                            <div class="dense-grid" style="grid-template-columns: repeat(11, 1fr);">
+                                <div class="dense-cell font-bold">Cat/Sev</div>
+                                <div class="dense-cell font-bold">1</div>
+                                <div class="dense-cell font-bold">2</div>
+                                <div class="dense-cell font-bold">3</div>
+                                <div class="dense-cell font-bold">4</div>
+                                <div class="dense-cell font-bold">5</div>
+                                <div class="dense-cell font-bold">Tot</div>
+                                <div class="dense-cell font-bold">Avg</div>
+                                <div class="dense-cell font-bold">Max</div>
+                                <div class="dense-cell font-bold">Min</div>
+                                <div class="dense-cell font-bold">Trend</div>
+                                
+                                <div class="dense-cell cat-psychology">Psych</div>
+                                <div class="dense-cell severity-1">12</div>
+                                <div class="dense-cell severity-2">18</div>
+                                <div class="dense-cell severity-3">25</div>
+                                <div class="dense-cell severity-4">15</div>
+                                <div class="dense-cell severity-5">10</div>
+                                <div class="dense-cell">80</div>
+                                <div class="dense-cell">2.9</div>
+                                <div class="dense-cell">5</div>
+                                <div class="dense-cell">1</div>
+                                <div class="dense-cell"><span class="sparkline"><span class="sparkline-bar" style="height:4px"></span><span class="sparkline-bar" style="height:6px"></span><span class="sparkline-bar" style="height:8px"></span><span class="sparkline-bar" style="height:5px"></span><span class="sparkline-bar" style="height:3px"></span></span></div>
+                                
+                                <div class="dense-cell cat-thinking">Think</div>
+                                <div class="dense-cell severity-1">15</div>
+                                <div class="dense-cell severity-2">20</div>
+                                <div class="dense-cell severity-3">22</div>
+                                <div class="dense-cell severity-4">12</div>
+                                <div class="dense-cell severity-5">6</div>
+                                <div class="dense-cell">75</div>
+                                <div class="dense-cell">2.6</div>
+                                <div class="dense-cell">5</div>
+                                <div class="dense-cell">1</div>
+                                <div class="dense-cell"><span class="sparkline"><span class="sparkline-bar" style="height:5px"></span><span class="sparkline-bar" style="height:7px"></span><span class="sparkline-bar" style="height:8px"></span><span class="sparkline-bar" style="height:4px"></span><span class="sparkline-bar" style="height:2px"></span></span></div>
+                                
+                                <div class="dense-cell cat-economics">Econ</div>
+                                <div class="dense-cell severity-1">10</div>
+                                <div class="dense-cell severity-2">16</div>
+                                <div class="dense-cell severity-3">28</div>
+                                <div class="dense-cell severity-4">18</div>
+                                <div class="dense-cell severity-5">8</div>
+                                <div class="dense-cell">80</div>
+                                <div class="dense-cell">3.0</div>
+                                <div class="dense-cell">5</div>
+                                <div class="dense-cell">1</div>
+                                <div class="dense-cell"><span class="sparkline"><span class="sparkline-bar" style="height:3px"></span><span class="sparkline-bar" style="height:5px"></span><span class="sparkline-bar" style="height:9px"></span><span class="sparkline-bar" style="height:6px"></span><span class="sparkline-bar" style="height:3px"></span></span></div>
+                                
+                                <div class="dense-cell cat-competitive">Comp</div>
+                                <div class="dense-cell severity-1">8</div>
+                                <div class="dense-cell severity-2">14</div>
+                                <div class="dense-cell severity-3">30</div>
+                                <div class="dense-cell severity-4">20</div>
+                                <div class="dense-cell severity-5">13</div>
+                                <div class="dense-cell">85</div>
+                                <div class="dense-cell">3.2</div>
+                                <div class="dense-cell">5</div>
+                                <div class="dense-cell">1</div>
+                                <div class="dense-cell"><span class="sparkline"><span class="sparkline-bar" style="height:3px"></span><span class="sparkline-bar" style="height:5px"></span><span class="sparkline-bar" style="height:10px"></span><span class="sparkline-bar" style="height:7px"></span><span class="sparkline-bar" style="height:4px"></span></span></div>
+                                
+                                <div class="dense-cell cat-math">Math</div>
+                                <div class="dense-cell severity-1">18</div>
+                                <div class="dense-cell severity-2">22</div>
+                                <div class="dense-cell severity-3">20</div>
+                                <div class="dense-cell severity-4">10</div>
+                                <div class="dense-cell severity-5">5</div>
+                                <div class="dense-cell">75</div>
+                                <div class="dense-cell">2.4</div>
+                                <div class="dense-cell">5</div>
+                                <div class="dense-cell">1</div>
+                                <div class="dense-cell"><span class="sparkline"><span class="sparkline-bar" style="height:6px"></span><span class="sparkline-bar" style="height:7px"></span><span class="sparkline-bar" style="height:7px"></span><span class="sparkline-bar" style="height:3px"></span><span class="sparkline-bar" style="height:2px"></span></span></div>
+                                
+                                <div class="dense-cell cat-physics">Phys</div>
+                                <div class="dense-cell severity-1">14</div>
+                                <div class="dense-cell severity-2">19</div>
+                                <div class="dense-cell severity-3">24</div>
+                                <div class="dense-cell severity-4">13</div>
+                                <div class="dense-cell severity-5">5</div>
+                                <div class="dense-cell">75</div>
+                                <div class="dense-cell">2.7</div>
+                                <div class="dense-cell">5</div>
+                                <div class="dense-cell">1</div>
+                                <div class="dense-cell"><span class="sparkline"><span class="sparkline-bar" style="height:5px"></span><span class="sparkline-bar" style="height:6px"></span><span class="sparkline-bar" style="height:8px"></span><span class="sparkline-bar" style="height:4px"></span><span class="sparkline-bar" style="height:2px"></span></span></div>
+                                
+                                <div class="dense-cell cat-biology">Bio</div>
+                                <div class="dense-cell severity-1">11</div>
+                                <div class="dense-cell severity-2">17</div>
+                                <div class="dense-cell severity-3">26</div>
+                                <div class="dense-cell severity-4">16</div>
+                                <div class="dense-cell severity-5">10</div>
+                                <div class="dense-cell">80</div>
+                                <div class="dense-cell">2.9</div>
+                                <div class="dense-cell">5</div>
+                                <div class="dense-cell">1</div>
+                                <div class="dense-cell"><span class="sparkline"><span class="sparkline-bar" style="height:4px"></span><span class="sparkline-bar" style="height:6px"></span><span class="sparkline-bar" style="height:9px"></span><span class="sparkline-bar" style="height:5px"></span><span class="sparkline-bar" style="height:3px"></span></span></div>
+                                
+                                <div class="dense-cell cat-org">Org</div>
+                                <div class="dense-cell severity-1">12</div>
+                                <div class="dense-cell severity-2">18</div>
+                                <div class="dense-cell severity-3">25</div>
+                                <div class="dense-cell severity-4">16</div>
+                                <div class="dense-cell severity-5">9</div>
+                                <div class="dense-cell">80</div>
+                                <div class="dense-cell">2.9</div>
+                                <div class="dense-cell">5</div>
+                                <div class="dense-cell">1</div>
+                                <div class="dense-cell"><span class="sparkline"><span class="sparkline-bar" style="height:4px"></span><span class="sparkline-bar" style="height:6px"></span><span class="sparkline-bar" style="height:8px"></span><span class="sparkline-bar" style="height:5px"></span><span class="sparkline-bar" style="height:3px"></span></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom: Recent Analysis Results -->
+            <div class="mt-2 border bg-white" style="max-height: 150px; overflow-y: auto;">
+                <div class="sticky top-0 bg-gray-900 text-white p-1 text-xs font-bold flex justify-between">
+                    <span>RECENT ANALYSIS RESULTS</span>
+                    <span>Doc ID | Top Models | Biases | Lollapalooza | Time | Actions</span>
+                </div>
+                <table class="dense-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Document</th>
+                            <th>Top 3 Models</th>
+                            <th>Bias#</th>
+                            <th>Lollapalooza</th>
+                            <th>Confidence</th>
+                            <th>Time</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recent-analysis-body">
+                        <tr><td>001</td><td>earnings_q4.pdf</td><td>Incentives, Moat, FCF</td><td>3</td><td>0.72</td><td>87%</td><td>2.3s</td><td><button class="mini-badge cat-thinking">View</button></td></tr>
+                        <tr><td>002</td><td>strategy_memo.txt</td><td>Inversion, 2nd Order, Circle</td><td>1</td><td>0.45</td><td>92%</td><td>1.8s</td><td><button class="mini-badge cat-thinking">View</button></td></tr>
+                        <tr><td>003</td><td>market_analysis.pdf</td><td>Reflexivity, Margin, Regression</td><td>5</td><td>0.89</td><td>78%</td><td>4.1s</td><td><button class="mini-badge cat-thinking">View</button></td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -855,6 +1125,153 @@
         }
 
         document.addEventListener('DOMContentLoaded', loadConnectorStatuses);
+
+        // Dense View - World Map and Model Matrix
+        let worldMap = null;
+        let mapMarkers = [];
+        
+        const thinkerLocations = [
+            { name: 'Munger', lat: 34.0522, lng: -118.2437, models: 25, era: '1924-', category: 'psychology' },
+            { name: 'Soros', lat: 47.4979, lng: 19.0402, models: 8, era: '1930-', category: 'economics' },
+            { name: 'Dalio', lat: 41.0534, lng: -73.5387, models: 12, era: '1949-', category: 'economics' },
+            { name: 'Simons', lat: 40.7128, lng: -74.0060, models: 6, era: '1938-', category: 'math' },
+            { name: 'Thiel', lat: 37.7749, lng: -122.4194, models: 7, era: '1967-', category: 'competitive' },
+            { name: 'Musk', lat: -25.7461, lng: 28.1881, models: 5, era: '1971-', category: 'physics' },
+            { name: 'Franklin', lat: 39.9526, lng: -75.1652, models: 8, era: '1706-90', category: 'thinking' },
+            { name: 'Seneca', lat: 37.5665, lng: -5.9844, models: 6, era: '4BC-65', category: 'psychology' },
+            { name: 'LKY', lat: 1.3521, lng: 103.8198, models: 7, era: '1923-15', category: 'org' },
+            { name: 'Rockefeller', lat: 41.4993, lng: -81.6944, models: 5, era: '1839-37', category: 'competitive' },
+            { name: 'Buffett', lat: 41.2565, lng: -95.9345, models: 10, era: '1930-', category: 'economics' },
+            { name: 'Getty', lat: 34.0195, lng: -118.4912, models: 4, era: '1892-76', category: 'competitive' },
+            { name: 'Koch', lat: 37.6872, lng: -97.3301, models: 5, era: '1935-19', category: 'economics' },
+            { name: 'Polya', lat: 47.4979, lng: 19.0402, models: 6, era: '1887-85', category: 'math' },
+            { name: 'Smil', lat: 49.8951, lng: 17.8869, models: 4, era: '1943-', category: 'physics' },
+        ];
+
+        const categoryColors = {
+            psychology: '#ef4444',
+            thinking: '#3b82f6',
+            economics: '#10b981',
+            competitive: '#f59e0b',
+            math: '#6366f1',
+            physics: '#8b5cf6',
+            biology: '#14b8a6',
+            org: '#ec4899'
+        };
+
+        function initWorldMap() {
+            if (worldMap) return;
+            
+            const mapContainer = document.getElementById('world-map');
+            if (!mapContainer || mapContainer.offsetWidth === 0) return;
+            
+            worldMap = L.map('world-map', {
+                center: [30, 0],
+                zoom: 2,
+                zoomControl: false,
+                attributionControl: false
+            });
+            
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                maxZoom: 19
+            }).addTo(worldMap);
+            
+            updateMapMarkers(2026);
+            
+            document.getElementById('timeline-slider').addEventListener('input', (e) => {
+                const year = parseInt(e.target.value);
+                document.getElementById('timeline-year').textContent = year;
+                updateMapMarkers(year);
+            });
+        }
+
+        function updateMapMarkers(year) {
+            mapMarkers.forEach(m => worldMap.removeLayer(m));
+            mapMarkers = [];
+            
+            thinkerLocations.forEach(t => {
+                const eraStart = parseInt(t.era.match(/\d+/)[0]);
+                const adjustedStart = eraStart < 100 ? eraStart : (eraStart < 1000 ? 1000 + eraStart : eraStart);
+                
+                if (year >= adjustedStart) {
+                    const color = categoryColors[t.category] || '#6b7280';
+                    const size = Math.max(10, t.models * 2);
+                    
+                    const marker = L.circleMarker([t.lat, t.lng], {
+                        radius: size,
+                        fillColor: color,
+                        color: '#fff',
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.8
+                    }).addTo(worldMap);
+                    
+                    marker.bindPopup(`<b>${t.name}</b><br>Models: ${t.models}<br>Era: ${t.era}<br>Focus: ${t.category}`);
+                    mapMarkers.push(marker);
+                }
+            });
+        }
+
+        function loadModelMatrix() {
+            const tbody = document.getElementById('model-matrix-body');
+            if (!tbody) return;
+            
+            const sampleModels = [
+                { name: 'Circle of Competence', category: 'Psychology', thinker: 'Munger', fails: 5, severity: 3 },
+                { name: 'Inversion', category: 'Thinking', thinker: 'Munger', fails: 5, severity: 2 },
+                { name: 'Second-Order Thinking', category: 'Thinking', thinker: 'Dalio', fails: 5, severity: 3 },
+                { name: 'Reflexivity', category: 'Economics', thinker: 'Soros', fails: 5, severity: 4 },
+                { name: 'Margin of Safety', category: 'Economics', thinker: 'Buffett', fails: 5, severity: 2 },
+                { name: 'Moat Analysis', category: 'Competitive', thinker: 'Buffett', fails: 5, severity: 3 },
+                { name: 'Incentive Analysis', category: 'Psychology', thinker: 'Munger', fails: 5, severity: 4 },
+                { name: 'Regression to Mean', category: 'Math', thinker: 'Simons', fails: 5, severity: 2 },
+                { name: 'First Principles', category: 'Physics', thinker: 'Musk', fails: 5, severity: 3 },
+                { name: 'Antifragility', category: 'Biology', thinker: 'Taleb', fails: 5, severity: 3 },
+                { name: 'Network Effects', category: 'Competitive', thinker: 'Thiel', fails: 5, severity: 4 },
+                { name: 'Opportunity Cost', category: 'Economics', thinker: 'Munger', fails: 5, severity: 2 },
+                { name: 'Sunk Cost Fallacy', category: 'Psychology', thinker: 'Munger', fails: 5, severity: 3 },
+                { name: 'Confirmation Bias', category: 'Psychology', thinker: 'Munger', fails: 5, severity: 5 },
+                { name: 'Survivorship Bias', category: 'Math', thinker: 'Taleb', fails: 5, severity: 4 },
+            ];
+            
+            const catClass = {
+                'Psychology': 'cat-psychology',
+                'Thinking': 'cat-thinking',
+                'Economics': 'cat-economics',
+                'Competitive': 'cat-competitive',
+                'Math': 'cat-math',
+                'Physics': 'cat-physics',
+                'Biology': 'cat-biology',
+                'Organizational': 'cat-org'
+            };
+            
+            tbody.innerHTML = sampleModels.map((m, i) => `
+                <tr>
+                    <td class="${catClass[m.category] || ''}">${m.name}</td>
+                    <td>${m.category}</td>
+                    <td>${m.thinker}</td>
+                    <td><span class="mini-badge severity-${m.fails}">${m.fails}</span></td>
+                    <td><span class="sparkline">${[...Array(5)].map(() => `<span class="sparkline-bar" style="height:${Math.random()*10+2}px"></span>`).join('')}</span></td>
+                    <td><span class="mini-badge severity-${m.severity}">${m.severity}</span></td>
+                    <td>${Math.floor(Math.random()*100)}</td>
+                    <td><button class="mini-badge cat-thinking" onclick="alert('Analyzing with ${m.name}')">Use</button></td>
+                </tr>
+            `).join('');
+        }
+
+        // Initialize dense view when tab is clicked
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    if (tab.dataset.tab === 'dense') {
+                        setTimeout(() => {
+                            initWorldMap();
+                            loadModelMatrix();
+                        }, 100);
+                    }
+                });
+            });
+        });
     </script>
 </body>
 </html>
