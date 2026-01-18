@@ -65,7 +65,9 @@ class LollapaloozaDetector:
         avg_confidence = sum(s.confidence if hasattr(s, 'confidence') else 0.7 for s in signals) / len(signals)
         
         # Determine strength based on number of models and their confidence
-        strength = min(1.0, (len(signals) / 10.0) * avg_confidence)
+        # Use a more reasonable formula: base strength from model count + confidence boost
+        base_strength = min(0.7, len(signals) / 5.0)  # 3 models = 0.6, 5 models = 1.0 (capped at 0.7)
+        strength = min(1.0, base_strength + (avg_confidence * 0.3))  # Add confidence boost
         
         # Create effect if strength is significant
         if strength >= 0.5:

@@ -45,11 +45,12 @@ class TestEndToEndWorkflows:
         These models reinforce each other, creating an almost unassailable competitive position.
         """
         
-        # Mock LLM responses
+        # Mock LLM responses - use correct model IDs from database
+        # ID 77 = Network Effects, ID 78 = Scale Economies - Supply Side, ID 76 = Switching Costs
         mock_llm_client.generate.return_value = json.dumps([
-            {"model_id": "1", "model_name": "Network Effects", "relevance_score": 0.9, "confidence": 0.85, "evidence": "More sellers attract more buyers", "insights": ["Strong network effects"]},
-            {"model_id": "2", "model_name": "Economies of Scale", "relevance_score": 0.85, "confidence": 0.8, "evidence": "Massive volume allows lower prices", "insights": ["Scale advantages"]},
-            {"model_id": "3", "model_name": "Switching Costs", "relevance_score": 0.8, "confidence": 0.75, "evidence": "Prime membership lock-in", "insights": ["High switching costs"]}
+            {"model_id": "77", "model_name": "Network Effects", "relevance_score": 0.9, "confidence": 0.85, "evidence": "More sellers attract more buyers", "insights": ["Strong network effects"]},
+            {"model_id": "78", "model_name": "Scale Economies - Supply Side", "relevance_score": 0.85, "confidence": 0.8, "evidence": "Massive volume allows lower prices", "insights": ["Scale advantages"]},
+            {"model_id": "76", "model_name": "Switching Costs", "relevance_score": 0.8, "confidence": 0.75, "evidence": "Prime membership lock-in", "insights": ["High switching costs"]}
         ])
         
         # Step 1: Detect signals
@@ -59,7 +60,7 @@ class TestEndToEndWorkflows:
         
         assert len(signals) >= 3, "Should detect multiple mental model signals"
         assert any("Network Effects" in s.model_name for s in signals), "Should detect Network Effects"
-        assert any("Economies of Scale" in s.model_name for s in signals), "Should detect Economies of Scale"
+        assert any("Scale Economies" in s.model_name for s in signals), "Should detect Scale Economies"
         
         # Step 2: Detect Lollapalooza
         detector = LollapaloozaDetector()

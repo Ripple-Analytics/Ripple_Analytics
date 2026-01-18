@@ -129,11 +129,8 @@ def sample_document_text() -> str:
 def mock_llm_client():
     """Mock LLM client for testing without actual LLM calls."""
     client = AsyncMock()
-    client.generate = AsyncMock(return_value=MagicMock(
-        text='{"models": [1, 2], "confidence": 0.85}',
-        tokens_used=100,
-        latency_ms=500
-    ))
+    # Return JSON string directly (not wrapped in MagicMock)
+    client.generate = AsyncMock(return_value='{"models": [1, 2], "confidence": 0.85}')
     client.embed = AsyncMock(return_value=[0.1] * 384)
     return client
 

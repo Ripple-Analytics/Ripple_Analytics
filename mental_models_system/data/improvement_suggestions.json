@@ -23,7 +23,7 @@
       "Each failure mode has detection signals and safeguards",
       "Tests pass for all new failure modes"
     ],
-    "created_at": "2026-01-18T03:15:09.933573",
+    "created_at": "2026-01-18T03:51:41.216159",
     "status": "suggested",
     "source": "automated"
   },
@@ -51,7 +51,7 @@
       "Examples are searchable by domain and model",
       "Examples include source citations"
     ],
-    "created_at": "2026-01-18T03:15:09.933579",
+    "created_at": "2026-01-18T03:51:41.216173",
     "status": "suggested",
     "source": "automated"
   },
@@ -78,7 +78,7 @@
       "Integration tests run in CI/CD",
       "Performance benchmarks established"
     ],
-    "created_at": "2026-01-18T03:15:09.933583",
+    "created_at": "2026-01-18T03:51:41.216180",
     "status": "suggested",
     "source": "automated"
   },
@@ -104,7 +104,7 @@
       "Property tests for all analysis functions",
       "No failures found by fuzzing"
     ],
-    "created_at": "2026-01-18T03:15:09.933586",
+    "created_at": "2026-01-18T03:51:41.216185",
     "status": "suggested",
     "source": "automated"
   },
@@ -132,7 +132,7 @@
       "Getting started guide complete",
       "Documentation builds without errors"
     ],
-    "created_at": "2026-01-18T03:15:09.933589",
+    "created_at": "2026-01-18T03:51:41.216193",
     "status": "suggested",
     "source": "automated"
   },
@@ -158,7 +158,7 @@
       "All major components documented",
       "Design decisions recorded"
     ],
-    "created_at": "2026-01-18T03:15:09.933593",
+    "created_at": "2026-01-18T03:51:41.216200",
     "status": "suggested",
     "source": "automated"
   },
@@ -183,7 +183,7 @@
       "mypy passes with strict mode",
       "All public APIs have type hints"
     ],
-    "created_at": "2026-01-18T03:15:09.933596",
+    "created_at": "2026-01-18T03:51:41.216207",
     "status": "suggested",
     "source": "automated"
   },
@@ -210,7 +210,7 @@
       "All errors have meaningful messages",
       "Error handling is consistent across modules"
     ],
-    "created_at": "2026-01-18T03:15:09.933599",
+    "created_at": "2026-01-18T03:51:41.216214",
     "status": "suggested",
     "source": "automated"
   },
@@ -239,7 +239,7 @@
       "Outcomes can be tracked over time",
       "Analytics show decision patterns"
     ],
-    "created_at": "2026-01-18T03:15:09.933603",
+    "created_at": "2026-01-18T03:51:41.216220",
     "status": "suggested",
     "source": "automated"
   },
@@ -267,7 +267,7 @@
       "System learns from user feedback",
       "Recommendation accuracy > 70%"
     ],
-    "created_at": "2026-01-18T03:15:09.933606",
+    "created_at": "2026-01-18T03:51:41.216226",
     "status": "suggested",
     "source": "automated"
   },
@@ -294,7 +294,7 @@
       "Core features available offline",
       "Syncs with main system"
     ],
-    "created_at": "2026-01-18T03:15:09.933609",
+    "created_at": "2026-01-18T03:51:41.216233",
     "status": "suggested",
     "source": "automated"
   },
@@ -321,7 +321,7 @@
       "Decision journal syncs bidirectionally",
       "Conflicts handled gracefully"
     ],
-    "created_at": "2026-01-18T03:15:09.933612",
+    "created_at": "2026-01-18T03:51:41.216240",
     "status": "suggested",
     "source": "automated"
   },
@@ -347,7 +347,7 @@
       "Reminders sent before reviews",
       "Supports multiple calendar providers"
     ],
-    "created_at": "2026-01-18T03:15:09.933615",
+    "created_at": "2026-01-18T03:51:41.216246",
     "status": "suggested",
     "source": "automated"
   },
@@ -375,7 +375,7 @@
       "Each failure mode has detection signals and safeguards",
       "Tests pass for all new failure modes"
     ],
-    "created_at": "2026-01-18T03:15:09.933618",
+    "created_at": "2026-01-18T03:51:41.216253",
     "status": "suggested",
     "source": "automated"
   },
@@ -403,7 +403,7 @@
       "Examples are searchable by domain and model",
       "Examples include source citations"
     ],
-    "created_at": "2026-01-18T03:15:09.933621",
+    "created_at": "2026-01-18T03:51:41.216259",
     "status": "suggested",
     "source": "automated"
   },
@@ -430,7 +430,7 @@
       "Integration tests run in CI/CD",
       "Performance benchmarks established"
     ],
-    "created_at": "2026-01-18T03:15:09.933624",
+    "created_at": "2026-01-18T03:51:41.216266",
     "status": "suggested",
     "source": "automated"
   },
@@ -456,7 +456,7 @@
       "Property tests for all analysis functions",
       "No failures found by fuzzing"
     ],
-    "created_at": "2026-01-18T03:15:09.933628",
+    "created_at": "2026-01-18T03:51:41.216273",
     "status": "suggested",
     "source": "automated"
   },
@@ -484,7 +484,7 @@
       "Getting started guide complete",
       "Documentation builds without errors"
     ],
-    "created_at": "2026-01-18T03:15:09.933631",
+    "created_at": "2026-01-18T03:51:41.216279",
     "status": "suggested",
     "source": "automated"
   },
@@ -510,7 +510,7 @@
       "All major components documented",
       "Design decisions recorded"
     ],
-    "created_at": "2026-01-18T03:15:09.933634",
+    "created_at": "2026-01-18T03:51:41.216286",
     "status": "suggested",
     "source": "automated"
   },
@@ -535,7 +535,7 @@
       "mypy passes with strict mode",
       "All public APIs have type hints"
     ],
-    "created_at": "2026-01-18T03:15:09.933637",
+    "created_at": "2026-01-18T03:51:41.216293",
     "status": "suggested",
     "source": "automated"
   },
@@ -562,7 +562,7 @@
       "All errors have meaningful messages",
       "Error handling is consistent across modules"
     ],
-    "created_at": "2026-01-18T03:15:09.933640",
+    "created_at": "2026-01-18T03:51:41.216299",
     "status": "suggested",
     "source": "automated"
   },
@@ -591,7 +591,7 @@
       "Outcomes can be tracked over time",
       "Analytics show decision patterns"
     ],
-    "created_at": "2026-01-18T03:15:09.933643",
+    "created_at": "2026-01-18T03:51:41.216305",
     "status": "suggested",
     "source": "automated"
   },
@@ -619,7 +619,7 @@
       "System learns from user feedback",
       "Recommendation accuracy > 70%"
     ],
-    "created_at": "2026-01-18T03:15:09.933647",
+    "created_at": "2026-01-18T03:51:41.216312",
     "status": "suggested",
     "source": "automated"
   },
@@ -646,7 +646,7 @@
       "Core features available offline",
       "Syncs with main system"
     ],
-    "created_at": "2026-01-18T03:15:09.933650",
+    "created_at": "2026-01-18T03:51:41.216318",
     "status": "suggested",
     "source": "automated"
   },
@@ -673,7 +673,7 @@
       "Decision journal syncs bidirectionally",
       "Conflicts handled gracefully"
     ],
-    "created_at": "2026-01-18T03:15:09.933653",
+    "created_at": "2026-01-18T03:51:41.216324",
     "status": "suggested",
     "source": "automated"
   },
@@ -699,7 +699,7 @@
       "Reminders sent before reviews",
       "Supports multiple calendar providers"
     ],
-    "created_at": "2026-01-18T03:15:09.933656",
+    "created_at": "2026-01-18T03:51:41.216330",
     "status": "suggested",
     "source": "automated"
   },
@@ -727,7 +727,7 @@
       "Each failure mode has detection signals and safeguards",
       "Tests pass for all new failure modes"
     ],
-    "created_at": "2026-01-18T03:15:09.933659",
+    "created_at": "2026-01-18T03:51:41.216335",
     "status": "suggested",
     "source": "automated"
   },
@@ -755,7 +755,7 @@
       "Examples are searchable by domain and model",
       "Examples include source citations"
     ],
-    "created_at": "2026-01-18T03:15:09.933663",
+    "created_at": "2026-01-18T03:51:41.216341",
     "status": "suggested",
     "source": "automated"
   },
@@ -782,7 +782,7 @@
       "Integration tests run in CI/CD",
       "Performance benchmarks established"
     ],
-    "created_at": "2026-01-18T03:15:09.933666",
+    "created_at": "2026-01-18T03:51:41.216347",
     "status": "suggested",
     "source": "automated"
   },
@@ -808,7 +808,7 @@
       "Property tests for all analysis functions",
       "No failures found by fuzzing"
     ],
-    "created_at": "2026-01-18T03:15:09.933669",
+    "created_at": "2026-01-18T03:51:41.216353",
     "status": "suggested",
     "source": "automated"
   },
@@ -836,7 +836,7 @@
       "Getting started guide complete",
       "Documentation builds without errors"
     ],
-    "created_at": "2026-01-18T03:15:09.933672",
+    "created_at": "2026-01-18T03:51:41.216360",
     "status": "suggested",
     "source": "automated"
   },
@@ -862,7 +862,7 @@
       "All major components documented",
       "Design decisions recorded"
     ],
-    "created_at": "2026-01-18T03:15:09.933676",
+    "created_at": "2026-01-18T03:51:41.216367",
     "status": "suggested",
     "source": "automated"
   },
@@ -887,7 +887,7 @@
       "mypy passes with strict mode",
       "All public APIs have type hints"
     ],
-    "created_at": "2026-01-18T03:15:09.933679",
+    "created_at": "2026-01-18T03:51:41.216373",
     "status": "suggested",
     "source": "automated"
   },
@@ -914,7 +914,7 @@
       "All errors have meaningful messages",
       "Error handling is consistent across modules"
     ],
-    "created_at": "2026-01-18T03:15:09.933683",
+    "created_at": "2026-01-18T03:51:41.216379",
     "status": "suggested",
     "source": "automated"
   },
@@ -943,7 +943,7 @@
       "Outcomes can be tracked over time",
       "Analytics show decision patterns"
     ],
-    "created_at": "2026-01-18T03:15:09.933686",
+    "created_at": "2026-01-18T03:51:41.216385",
     "status": "suggested",
     "source": "automated"
   },
@@ -971,7 +971,7 @@
       "System learns from user feedback",
       "Recommendation accuracy > 70%"
     ],
-    "created_at": "2026-01-18T03:15:09.933689",
+    "created_at": "2026-01-18T03:51:41.216391",
     "status": "suggested",
     "source": "automated"
   },
@@ -998,7 +998,7 @@
       "Core features available offline",
       "Syncs with main system"
     ],
-    "created_at": "2026-01-18T03:15:09.933692",
+    "created_at": "2026-01-18T03:51:41.216397",
     "status": "suggested",
     "source": "automated"
   },
@@ -1025,7 +1025,7 @@
       "Decision journal syncs bidirectionally",
       "Conflicts handled gracefully"
     ],
-    "created_at": "2026-01-18T03:15:09.933695",
+    "created_at": "2026-01-18T03:51:41.216403",
     "status": "suggested",
     "source": "automated"
   },
@@ -1051,7 +1051,7 @@
       "Reminders sent before reviews",
       "Supports multiple calendar providers"
     ],
-    "created_at": "2026-01-18T03:15:09.933698",
+    "created_at": "2026-01-18T03:51:41.216410",
     "status": "suggested",
     "source": "automated"
   },
@@ -1079,7 +1079,7 @@
       "Each failure mode has detection signals and safeguards",
       "Tests pass for all new failure modes"
     ],
-    "created_at": "2026-01-18T03:15:09.933701",
+    "created_at": "2026-01-18T03:51:41.216416",
     "status": "suggested",
     "source": "automated"
   },
@@ -1107,7 +1107,7 @@
       "Examples are searchable by domain and model",
       "Examples include source citations"
     ],
-    "created_at": "2026-01-18T03:15:09.933704",
+    "created_at": "2026-01-18T03:51:41.216423",
     "status": "suggested",
     "source": "automated"
   },
@@ -1134,7 +1134,7 @@
       "Integration tests run in CI/CD",
       "Performance benchmarks established"
     ],
-    "created_at": "2026-01-18T03:15:09.933708",
+    "created_at": "2026-01-18T03:51:41.216429",
     "status": "suggested",
     "source": "automated"
   },
@@ -1160,7 +1160,7 @@
       "Property tests for all analysis functions",
       "No failures found by fuzzing"
     ],
-    "created_at": "2026-01-18T03:15:09.933711",
+    "created_at": "2026-01-18T03:51:41.216435",
     "status": "suggested",
     "source": "automated"
   },
@@ -1188,7 +1188,7 @@
       "Getting started guide complete",
       "Documentation builds without errors"
     ],
-    "created_at": "2026-01-18T03:15:09.933715",
+    "created_at": "2026-01-18T03:51:41.216443",
     "status": "suggested",
     "source": "automated"
   },
@@ -1214,7 +1214,7 @@
       "All major components documented",
       "Design decisions recorded"
     ],
-    "created_at": "2026-01-18T03:15:09.933718",
+    "created_at": "2026-01-18T03:51:41.216449",
     "status": "suggested",
     "source": "automated"
   },
@@ -1239,7 +1239,7 @@
       "mypy passes with strict mode",
       "All public APIs have type hints"
     ],
-    "created_at": "2026-01-18T03:15:09.933721",
+    "created_at": "2026-01-18T03:51:41.216456",
     "status": "suggested",
     "source": "automated"
   },
@@ -1266,7 +1266,7 @@
       "All errors have meaningful messages",
       "Error handling is consistent across modules"
     ],
-    "created_at": "2026-01-18T03:15:09.933724",
+    "created_at": "2026-01-18T03:51:41.216462",
     "status": "suggested",
     "source": "automated"
   },
@@ -1295,7 +1295,7 @@
       "Outcomes can be tracked over time",
       "Analytics show decision patterns"
     ],
-    "created_at": "2026-01-18T03:15:09.933727",
+    "created_at": "2026-01-18T03:51:41.216467",
     "status": "suggested",
     "source": "automated"
   },
@@ -1323,7 +1323,7 @@
       "System learns from user feedback",
       "Recommendation accuracy > 70%"
     ],
-    "created_at": "2026-01-18T03:15:09.933730",
+    "created_at": "2026-01-18T03:51:41.216472",
     "status": "suggested",
     "source": "automated"
   },
@@ -1350,7 +1350,7 @@
       "Core features available offline",
       "Syncs with main system"
     ],
-    "created_at": "2026-01-18T03:15:09.933733",
+    "created_at": "2026-01-18T03:51:41.216478",
     "status": "suggested",
     "source": "automated"
   },
@@ -1377,7 +1377,7 @@
       "Decision journal syncs bidirectionally",
       "Conflicts handled gracefully"
     ],
-    "created_at": "2026-01-18T03:15:09.933736",
+    "created_at": "2026-01-18T03:51:41.216483",
     "status": "suggested",
     "source": "automated"
   },
@@ -1403,7 +1403,7 @@
       "Reminders sent before reviews",
       "Supports multiple calendar providers"
     ],
-    "created_at": "2026-01-18T03:15:09.933739",
+    "created_at": "2026-01-18T03:51:41.216490",
     "status": "suggested",
     "source": "automated"
   },
@@ -1431,7 +1431,7 @@
       "Each failure mode has detection signals and safeguards",
       "Tests pass for all new failure modes"
     ],
-    "created_at": "2026-01-18T03:15:09.933742",
+    "created_at": "2026-01-18T03:51:41.216495",
     "status": "suggested",
     "source": "automated"
   },
@@ -1459,7 +1459,7 @@
       "Examples are searchable by domain and model",
       "Examples include source citations"
     ],
-    "created_at": "2026-01-18T03:15:09.933745",
+    "created_at": "2026-01-18T03:51:41.216500",
     "status": "suggested",
     "source": "automated"
   },
@@ -1486,7 +1486,7 @@
       "Integration tests run in CI/CD",
       "Performance benchmarks established"
     ],
-    "created_at": "2026-01-18T03:15:09.933748",
+    "created_at": "2026-01-18T03:51:41.216506",
     "status": "suggested",
     "source": "automated"
   },
@@ -1512,7 +1512,7 @@
       "Property tests for all analysis functions",
       "No failures found by fuzzing"
     ],
-    "created_at": "2026-01-18T03:15:09.933752",
+    "created_at": "2026-01-18T03:51:41.216510",
     "status": "suggested",
     "source": "automated"
   },
@@ -1540,7 +1540,7 @@
       "Getting started guide complete",
       "Documentation builds without errors"
     ],
-    "created_at": "2026-01-18T03:15:09.933755",
+    "created_at": "2026-01-18T03:51:41.216516",
     "status": "suggested",
     "source": "automated"
   },
@@ -1566,7 +1566,7 @@
       "All major components documented",
       "Design decisions recorded"
     ],
-    "created_at": "2026-01-18T03:15:09.933758",
+    "created_at": "2026-01-18T03:51:41.216521",
     "status": "suggested",
     "source": "automated"
   },
@@ -1591,7 +1591,7 @@
       "mypy passes with strict mode",
       "All public APIs have type hints"
     ],
-    "created_at": "2026-01-18T03:15:09.933761",
+    "created_at": "2026-01-18T03:51:41.216525",
     "status": "suggested",
     "source": "automated"
   },
@@ -1618,7 +1618,7 @@
       "All errors have meaningful messages",
       "Error handling is consistent across modules"
     ],
-    "created_at": "2026-01-18T03:15:09.933764",
+    "created_at": "2026-01-18T03:51:41.216531",
     "status": "suggested",
     "source": "automated"
   },
@@ -1647,7 +1647,7 @@
       "Outcomes can be tracked over time",
       "Analytics show decision patterns"
     ],
-    "created_at": "2026-01-18T03:15:09.933767",
+    "created_at": "2026-01-18T03:51:41.216535",
     "status": "suggested",
     "source": "automated"
   },
@@ -1675,7 +1675,7 @@
       "System learns from user feedback",
       "Recommendation accuracy > 70%"
     ],
-    "created_at": "2026-01-18T03:15:09.933770",
+    "created_at": "2026-01-18T03:51:41.216540",
     "status": "suggested",
     "source": "automated"
   },
@@ -1702,7 +1702,7 @@
       "Core features available offline",
       "Syncs with main system"
     ],
-    "created_at": "2026-01-18T03:15:09.933773",
+    "created_at": "2026-01-18T03:51:41.216545",
     "status": "suggested",
     "source": "automated"
   },
@@ -1729,7 +1729,7 @@
       "Decision journal syncs bidirectionally",
       "Conflicts handled gracefully"
     ],
-    "created_at": "2026-01-18T03:15:09.933775",
+    "created_at": "2026-01-18T03:51:41.216551",
     "status": "suggested",
     "source": "automated"
   },
@@ -1755,7 +1755,7 @@
       "Reminders sent before reviews",
       "Supports multiple calendar providers"
     ],
-    "created_at": "2026-01-18T03:15:09.933778",
+    "created_at": "2026-01-18T03:51:41.216556",
     "status": "suggested",
     "source": "automated"
   },
@@ -1783,7 +1783,7 @@
       "Each failure mode has detection signals and safeguards",
       "Tests pass for all new failure modes"
     ],
-    "created_at": "2026-01-18T03:15:09.933781",
+    "created_at": "2026-01-18T03:51:41.216563",
     "status": "suggested",
     "source": "automated"
   },
@@ -1811,7 +1811,7 @@
       "Examples are searchable by domain and model",
       "Examples include source citations"
     ],
-    "created_at": "2026-01-18T03:15:09.933784",
+    "created_at": "2026-01-18T03:51:41.216569",
     "status": "suggested",
     "source": "automated"
   },
@@ -1838,7 +1838,7 @@
       "Integration tests run in CI/CD",
       "Performance benchmarks established"
     ],
-    "created_at": "2026-01-18T03:15:09.933787",
+    "created_at": "2026-01-18T03:51:41.216574",
     "status": "suggested",
     "source": "automated"
   },
@@ -1864,7 +1864,7 @@
       "Property tests for all analysis functions",
       "No failures found by fuzzing"
     ],
-    "created_at": "2026-01-18T03:15:09.933790",
+    "created_at": "2026-01-18T03:51:41.216579",
     "status": "suggested",
     "source": "automated"
   },
@@ -1892,7 +1892,7 @@
       "Getting started guide complete",
       "Documentation builds without errors"
     ],
-    "created_at": "2026-01-18T03:15:09.933793",
+    "created_at": "2026-01-18T03:51:41.216584",
     "status": "suggested",
     "source": "automated"
   },
@@ -1918,7 +1918,7 @@
       "All major components documented",
       "Design decisions recorded"
     ],
-    "created_at": "2026-01-18T03:15:09.933796",
+    "created_at": "2026-01-18T03:51:41.216590",
     "status": "suggested",
     "source": "automated"
   },
@@ -1943,7 +1943,7 @@
       "mypy passes with strict mode",
       "All public APIs have type hints"
     ],
-    "created_at": "2026-01-18T03:15:09.933799",
+    "created_at": "2026-01-18T03:51:41.216596",
     "status": "suggested",
     "source": "automated"
   },
@@ -1970,7 +1970,7 @@
       "All errors have meaningful messages",
       "Error handling is consistent across modules"
     ],
-    "created_at": "2026-01-18T03:15:09.933802",
+    "created_at": "2026-01-18T03:51:41.216601",
     "status": "suggested",
     "source": "automated"
   },
@@ -1999,7 +1999,7 @@
       "Outcomes can be tracked over time",
       "Analytics show decision patterns"
     ],
-    "created_at": "2026-01-18T03:15:09.933805",
+    "created_at": "2026-01-18T03:51:41.216606",
     "status": "suggested",
     "source": "automated"
   },
@@ -2027,7 +2027,7 @@
       "System learns from user feedback",
       "Recommendation accuracy > 70%"
     ],
-    "created_at": "2026-01-18T03:15:09.933807",
+    "created_at": "2026-01-18T03:51:41.216611",
     "status": "suggested",
     "source": "automated"
   },
@@ -2054,7 +2054,7 @@
       "Core features available offline",
       "Syncs with main system"
     ],
-    "created_at": "2026-01-18T03:15:09.933810",
+    "created_at": "2026-01-18T03:51:41.216615",
     "status": "suggested",
     "source": "automated"
   },
@@ -2081,7 +2081,7 @@
       "Decision journal syncs bidirectionally",
       "Conflicts handled gracefully"
     ],
-    "created_at": "2026-01-18T03:15:09.933813",
+    "created_at": "2026-01-18T03:51:41.216620",
     "status": "suggested",
     "source": "automated"
   },
@@ -2107,7 +2107,7 @@
       "Reminders sent before reviews",
       "Supports multiple calendar providers"
     ],
-    "created_at": "2026-01-18T03:15:09.933816",
+    "created_at": "2026-01-18T03:51:41.216626",
     "status": "suggested",
     "source": "automated"
   },
@@ -2135,7 +2135,7 @@
       "Each failure mode has detection signals and safeguards",
       "Tests pass for all new failure modes"
     ],
-    "created_at": "2026-01-18T03:15:09.933819",
+    "created_at": "2026-01-18T03:51:41.216632",
     "status": "suggested",
     "source": "automated"
   },
@@ -2163,7 +2163,7 @@
       "Examples are searchable by domain and model",
       "Examples include source citations"
     ],
-    "created_at": "2026-01-18T03:15:09.933822",
+    "created_at": "2026-01-18T03:51:41.216638",
     "status": "suggested",
     "source": "automated"
   },
@@ -2190,7 +2190,7 @@
       "Integration tests run in CI/CD",
       "Performance benchmarks established"
     ],
-    "created_at": "2026-01-18T03:15:09.933825",
+    "created_at": "2026-01-18T03:51:41.216645",
     "status": "suggested",
     "source": "automated"
   },
@@ -2216,7 +2216,7 @@
       "Property tests for all analysis functions",
       "No failures found by fuzzing"
     ],
-    "created_at": "2026-01-18T03:15:09.933828",
+    "created_at": "2026-01-18T03:51:41.216652",
     "status": "suggested",
     "source": "automated"
   },
@@ -2244,7 +2244,7 @@
       "Getting started guide complete",
       "Documentation builds without errors"
     ],
-    "created_at": "2026-01-18T03:15:09.933831",
+    "created_at": "2026-01-18T03:51:41.216657",
     "status": "suggested",
     "source": "automated"
   },
@@ -2270,7 +2270,7 @@
       "All major components documented",
       "Design decisions recorded"
     ],
-    "created_at": "2026-01-18T03:15:09.933834",
+    "created_at": "2026-01-18T03:51:41.216663",
     "status": "suggested",
     "source": "automated"
   },
@@ -2295,7 +2295,7 @@
       "mypy passes with strict mode",
       "All public APIs have type hints"
     ],
-    "created_at": "2026-01-18T03:15:09.933837",
+    "created_at": "2026-01-18T03:51:41.216669",
     "status": "suggested",
     "source": "automated"
   },
@@ -2322,7 +2322,7 @@
       "All errors have meaningful messages",
       "Error handling is consistent across modules"
     ],
-    "created_at": "2026-01-18T03:15:09.933840",
+    "created_at": "2026-01-18T03:51:41.216675",
     "status": "suggested",
     "source": "automated"
   },
@@ -2351,7 +2351,7 @@
       "Outcomes can be tracked over time",
       "Analytics show decision patterns"
     ],
-    "created_at": "2026-01-18T03:15:09.933844",
+    "created_at": "2026-01-18T03:51:41.216683",
     "status": "suggested",
     "source": "automated"
   },
@@ -2379,7 +2379,7 @@
       "System learns from user feedback",
       "Recommendation accuracy > 70%"
     ],
-    "created_at": "2026-01-18T03:15:09.933848",
+    "created_at": "2026-01-18T03:51:41.216703",
     "status": "suggested",
     "source": "automated"
   },
@@ -2406,7 +2406,7 @@
       "Core features available offline",
       "Syncs with main system"
     ],
-    "created_at": "2026-01-18T03:15:09.933851",
+    "created_at": "2026-01-18T03:51:41.216710",
     "status": "suggested",
     "source": "automated"
   },
@@ -2433,7 +2433,7 @@
       "Decision journal syncs bidirectionally",
       "Conflicts handled gracefully"
     ],
-    "created_at": "2026-01-18T03:15:09.933854",
+    "created_at": "2026-01-18T03:51:41.216715",
     "status": "suggested",
     "source": "automated"
   },
@@ -2459,7 +2459,7 @@
       "Reminders sent before reviews",
       "Supports multiple calendar providers"
     ],
-    "created_at": "2026-01-18T03:15:09.933857",
+    "created_at": "2026-01-18T03:51:41.216721",
     "status": "suggested",
     "source": "automated"
   },
@@ -2487,7 +2487,7 @@
       "Each failure mode has detection signals and safeguards",
       "Tests pass for all new failure modes"
     ],
-    "created_at": "2026-01-18T03:15:09.933860",
+    "created_at": "2026-01-18T03:51:41.216727",
     "status": "suggested",
     "source": "automated"
   },
@@ -2515,7 +2515,7 @@
       "Examples are searchable by domain and model",
       "Examples include source citations"
     ],
-    "created_at": "2026-01-18T03:15:09.933863",
+    "created_at": "2026-01-18T03:51:41.216733",
     "status": "suggested",
     "source": "automated"
   },
@@ -2542,7 +2542,7 @@
       "Integration tests run in CI/CD",
       "Performance benchmarks established"
     ],
-    "created_at": "2026-01-18T03:15:09.933866",
+    "created_at": "2026-01-18T03:51:41.216739",
     "status": "suggested",
     "source": "automated"
   },
@@ -2568,7 +2568,7 @@
       "Property tests for all analysis functions",
       "No failures found by fuzzing"
     ],
-    "created_at": "2026-01-18T03:15:09.933868",
+    "created_at": "2026-01-18T03:51:41.216744",
     "status": "suggested",
     "source": "automated"
   },
@@ -2596,7 +2596,7 @@
       "Getting started guide complete",
       "Documentation builds without errors"
     ],
-    "created_at": "2026-01-18T03:15:09.933871",
+    "created_at": "2026-01-18T03:51:41.216749",
     "status": "suggested",
     "source": "automated"
   },
@@ -2622,7 +2622,7 @@
       "All major components documented",
       "Design decisions recorded"
     ],
-    "created_at": "2026-01-18T03:15:09.933874",
+    "created_at": "2026-01-18T03:51:41.216754",
     "status": "suggested",
     "source": "automated"
   },
@@ -2647,7 +2647,7 @@
       "mypy passes with strict mode",
       "All public APIs have type hints"
     ],
-    "created_at": "2026-01-18T03:15:09.933877",
+    "created_at": "2026-01-18T03:51:41.216759",
     "status": "suggested",
     "source": "automated"
   },
@@ -2674,7 +2674,7 @@
       "All errors have meaningful messages",
       "Error handling is consistent across modules"
     ],
-    "created_at": "2026-01-18T03:15:09.933880",
+    "created_at": "2026-01-18T03:51:41.216765",
     "status": "suggested",
     "source": "automated"
   },
@@ -2703,7 +2703,7 @@
       "Outcomes can be tracked over time",
       "Analytics show decision patterns"
     ],
-    "created_at": "2026-01-18T03:15:09.933883",
+    "created_at": "2026-01-18T03:51:41.216770",
     "status": "suggested",
     "source": "automated"
   },
@@ -2731,7 +2731,7 @@
       "System learns from user feedback",
       "Recommendation accuracy > 70%"
     ],
-    "created_at": "2026-01-18T03:15:09.933886",
+    "created_at": "2026-01-18T03:51:41.216774",
     "status": "suggested",
     "source": "automated"
   },
@@ -2758,7 +2758,7 @@
       "Core features available offline",
       "Syncs with main system"
     ],
-    "created_at": "2026-01-18T03:15:09.933889",
+    "created_at": "2026-01-18T03:51:41.216778",
     "status": "suggested",
     "source": "automated"
   },
@@ -2785,7 +2785,7 @@
       "Decision journal syncs bidirectionally",
       "Conflicts handled gracefully"
     ],
-    "created_at": "2026-01-18T03:15:09.933891",
+    "created_at": "2026-01-18T03:51:41.216782",
     "status": "suggested",
     "source": "automated"
   },
@@ -2811,7 +2811,7 @@
       "Reminders sent before reviews",
       "Supports multiple calendar providers"
     ],
-    "created_at": "2026-01-18T03:15:09.933894",
+    "created_at": "2026-01-18T03:51:41.216785",
     "status": "suggested",
     "source": "automated"
   },
@@ -2839,7 +2839,7 @@
       "Each failure mode has detection signals and safeguards",
       "Tests pass for all new failure modes"
     ],
-    "created_at": "2026-01-18T03:15:09.933897",
+    "created_at": "2026-01-18T03:51:41.216789",
     "status": "suggested",
     "source": "automated"
   },
@@ -2867,7 +2867,7 @@
       "Examples are searchable by domain and model",
       "Examples include source citations"
     ],
-    "created_at": "2026-01-18T03:15:09.933900",
+    "created_at": "2026-01-18T03:51:41.216792",
     "status": "suggested",
     "source": "automated"
   },
@@ -2894,7 +2894,7 @@
       "Integration tests run in CI/CD",
       "Performance benchmarks established"
     ],
-    "created_at": "2026-01-18T03:15:09.933903",
+    "created_at": "2026-01-18T03:51:41.216796",
     "status": "suggested",
     "source": "automated"
   },
@@ -2920,7 +2920,7 @@
       "Property tests for all analysis functions",
       "No failures found by fuzzing"
     ],
-    "created_at": "2026-01-18T03:15:09.933906",
+    "created_at": "2026-01-18T03:51:41.216799",
     "status": "suggested",
     "source": "automated"
   },
@@ -2948,7 +2948,7 @@
       "Getting started guide complete",
       "Documentation builds without errors"
     ],
-    "created_at": "2026-01-18T03:15:09.933908",
+    "created_at": "2026-01-18T03:51:41.216802",
     "status": "suggested",
     "source": "automated"
   },
@@ -2974,7 +2974,7 @@
       "All major components documented",
       "Design decisions recorded"
     ],
-    "created_at": "2026-01-18T03:15:09.933911",
+    "created_at": "2026-01-18T03:51:41.216805",
     "status": "suggested",
     "source": "automated"
   },
@@ -2999,7 +2999,7 @@
       "mypy passes with strict mode",
       "All public APIs have type hints"
     ],
-    "created_at": "2026-01-18T03:15:09.933914",
+    "created_at": "2026-01-18T03:51:41.216809",
     "status": "suggested",
     "source": "automated"
   },
@@ -3026,7 +3026,7 @@
       "All errors have meaningful messages",
       "Error handling is consistent across modules"
     ],
-    "created_at": "2026-01-18T03:15:09.933917",
+    "created_at": "2026-01-18T03:51:41.216812",
     "status": "suggested",
     "source": "automated"
   },
@@ -3055,7 +3055,7 @@
       "Outcomes can be tracked over time",
       "Analytics show decision patterns"
     ],
-    "created_at": "2026-01-18T03:15:09.933920",
+    "created_at": "2026-01-18T03:51:41.216816",
     "status": "suggested",
     "source": "automated"
   },
@@ -3083,7 +3083,7 @@
       "System learns from user feedback",
       "Recommendation accuracy > 70%"
     ],
-    "created_at": "2026-01-18T03:15:09.933923",
+    "created_at": "2026-01-18T03:51:41.216819",
     "status": "suggested",
     "source": "automated"
   },
@@ -3110,7 +3110,7 @@
       "Core features available offline",
       "Syncs with main system"
     ],
-    "created_at": "2026-01-18T03:15:09.933926",
+    "created_at": "2026-01-18T03:51:41.216823",
     "status": "suggested",
     "source": "automated"
   },
@@ -3137,7 +3137,7 @@
       "Decision journal syncs bidirectionally",
       "Conflicts handled gracefully"
     ],
-    "created_at": "2026-01-18T03:15:09.933929",
+    "created_at": "2026-01-18T03:51:41.216826",
     "status": "suggested",
     "source": "automated"
   },
@@ -3163,7 +3163,7 @@
       "Reminders sent before reviews",
       "Supports multiple calendar providers"
     ],
-    "created_at": "2026-01-18T03:15:09.933932",
+    "created_at": "2026-01-18T03:51:41.216829",
     "status": "suggested",
     "source": "automated"
   },
@@ -3191,7 +3191,7 @@
       "Each failure mode has detection signals and safeguards",
       "Tests pass for all new failure modes"
     ],
-    "created_at": "2026-01-18T03:15:09.933981",
+    "created_at": "2026-01-18T03:51:41.216832",
     "status": "suggested",
     "source": "automated"
   },
@@ -3219,7 +3219,7 @@
       "Examples are searchable by domain and model",
       "Examples include source citations"
     ],
-    "created_at": "2026-01-18T03:15:09.933988",
+    "created_at": "2026-01-18T03:51:41.216835",
     "status": "suggested",
     "source": "automated"
   },
@@ -3246,7 +3246,7 @@
       "Integration tests run in CI/CD",
       "Performance benchmarks established"
     ],
-    "created_at": "2026-01-18T03:15:09.933994",
+    "created_at": "2026-01-18T03:51:41.216838",
     "status": "suggested",
     "source": "automated"
   },
@@ -3272,7 +3272,7 @@
       "Property tests for all analysis functions",
       "No failures found by fuzzing"
     ],
-    "created_at": "2026-01-18T03:15:09.933999",
+    "created_at": "2026-01-18T03:51:41.216841",
     "status": "suggested",
     "source": "automated"
   },
@@ -3300,7 +3300,7 @@
       "Getting started guide complete",
       "Documentation builds without errors"
     ],
-    "created_at": "2026-01-18T03:15:09.934005",
+    "created_at": "2026-01-18T03:51:41.216844",
     "status": "suggested",
     "source": "automated"
   },
@@ -3326,7 +3326,7 @@
       "All major components documented",
       "Design decisions recorded"
     ],
-    "created_at": "2026-01-18T03:15:09.934009",
+    "created_at": "2026-01-18T03:51:41.216848",
     "status": "suggested",
     "source": "automated"
   },
@@ -3351,7 +3351,7 @@
       "mypy passes with strict mode",
       "All public APIs have type hints"
     ],
-    "created_at": "2026-01-18T03:15:09.934014",
+    "created_at": "2026-01-18T03:51:41.216851",
     "status": "suggested",
     "source": "automated"
   },
@@ -3378,7 +3378,7 @@
       "All errors have meaningful messages",
       "Error handling is consistent across modules"
     ],
-    "created_at": "2026-01-18T03:15:09.934019",
+    "created_at": "2026-01-18T03:51:41.216854",
     "status": "suggested",
     "source": "automated"
   },
@@ -3407,7 +3407,7 @@
       "Outcomes can be tracked over time",
       "Analytics show decision patterns"
     ],
-    "created_at": "2026-01-18T03:15:09.934024",
+    "created_at": "2026-01-18T03:51:41.216857",
     "status": "suggested",
     "source": "automated"
   },
@@ -3435,7 +3435,7 @@
       "System learns from user feedback",
       "Recommendation accuracy > 70%"
     ],
-    "created_at": "2026-01-18T03:15:09.934029",
+    "created_at": "2026-01-18T03:51:41.216861",
     "status": "suggested",
     "source": "automated"
   },
@@ -3462,7 +3462,7 @@
       "Core features available offline",
       "Syncs with main system"
     ],
-    "created_at": "2026-01-18T03:15:09.934033",
+    "created_at": "2026-01-18T03:51:41.216864",
     "status": "suggested",
     "source": "automated"
   },
@@ -3489,7 +3489,7 @@
       "Decision journal syncs bidirectionally",
       "Conflicts handled gracefully"
     ],
-    "created_at": "2026-01-18T03:15:09.934039",
+    "created_at": "2026-01-18T03:51:41.216867",
     "status": "suggested",
     "source": "automated"
   },
@@ -3515,7 +3515,1063 @@
       "Reminders sent before reviews",
       "Supports multiple calendar providers"
     ],
-    "created_at": "2026-01-18T03:15:09.934043",
+    "created_at": "2026-01-18T03:51:41.217020",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "11d5a412a5bb",
+    "title": "Expand Failure Modes Database",
+    "description": "Add failure modes for all 129 mental models. Currently only 5 models have comprehensive failure mode analysis.",
+    "category": "content",
+    "priority": 2,
+    "impact_score": 0.9,
+    "effort_estimate": "large",
+    "affected_components": [
+      "safeguards/failure_modes.py",
+      "safeguards/failure_modes_deep.py"
+    ],
+    "implementation_steps": [
+      "Identify models without failure modes",
+      "Research common failure patterns for each model",
+      "Document 5 failure modes per model",
+      "Add case studies and quantitative thresholds",
+      "Write tests for new failure modes"
+    ],
+    "acceptance_criteria": [
+      "All 129 models have at least 3 failure modes",
+      "Each failure mode has detection signals and safeguards",
+      "Tests pass for all new failure modes"
+    ],
+    "created_at": "2026-01-18T03:51:41.217024",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "14216a5b7ee7",
+    "title": "Add Real-World Examples Database",
+    "description": "Create comprehensive database of real-world examples for each mental model, including business cases, historical events, and personal applications.",
+    "category": "content",
+    "priority": 3,
+    "impact_score": 0.8,
+    "effort_estimate": "large",
+    "affected_components": [
+      "data/examples/",
+      "analysis/model_analyzer.py"
+    ],
+    "implementation_steps": [
+      "Create examples data structure",
+      "Research 3-5 examples per model",
+      "Categorize by domain (business, personal, historical)",
+      "Link examples to failure modes where applicable",
+      "Add search functionality for examples"
+    ],
+    "acceptance_criteria": [
+      "Each model has at least 3 real-world examples",
+      "Examples are searchable by domain and model",
+      "Examples include source citations"
+    ],
+    "created_at": "2026-01-18T03:51:41.217027",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "8c57f8b068ac",
+    "title": "Add Integration Test Suite",
+    "description": "Create comprehensive integration tests that test complete workflows from signal detection to Lollapalooza analysis.",
+    "category": "testing",
+    "priority": 2,
+    "impact_score": 0.85,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "tests/integration/"
+    ],
+    "implementation_steps": [
+      "Map critical user workflows",
+      "Create test fixtures with realistic data",
+      "Write end-to-end tests for each workflow",
+      "Add performance benchmarks",
+      "Set up CI/CD integration"
+    ],
+    "acceptance_criteria": [
+      "Coverage of all critical paths > 80%",
+      "Integration tests run in CI/CD",
+      "Performance benchmarks established"
+    ],
+    "created_at": "2026-01-18T03:51:41.217030",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "428a4102ffa1",
+    "title": "Add Property-Based Testing",
+    "description": "Implement property-based tests using Hypothesis to find edge cases in analysis algorithms.",
+    "category": "testing",
+    "priority": 3,
+    "impact_score": 0.7,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "tests/property/",
+      "analysis/"
+    ],
+    "implementation_steps": [
+      "Install Hypothesis library",
+      "Identify invariants in analysis functions",
+      "Write property-based tests for core algorithms",
+      "Add fuzzing for input validation"
+    ],
+    "acceptance_criteria": [
+      "Property tests for all analysis functions",
+      "No failures found by fuzzing"
+    ],
+    "created_at": "2026-01-18T03:51:41.217033",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "d645824f9393",
+    "title": "Generate API Documentation",
+    "description": "Create comprehensive API documentation using Sphinx or MkDocs, including examples and tutorials.",
+    "category": "documentation",
+    "priority": 2,
+    "impact_score": 0.8,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "docs/",
+      "src/"
+    ],
+    "implementation_steps": [
+      "Set up documentation framework",
+      "Write docstrings for all public APIs",
+      "Create getting started guide",
+      "Add code examples for common use cases",
+      "Generate API reference automatically"
+    ],
+    "acceptance_criteria": [
+      "All public APIs documented",
+      "Getting started guide complete",
+      "Documentation builds without errors"
+    ],
+    "created_at": "2026-01-18T03:51:41.217036",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "066cc9635804",
+    "title": "Create Architecture Documentation",
+    "description": "Document system architecture with diagrams showing component interactions, data flows, and design decisions.",
+    "category": "documentation",
+    "priority": 3,
+    "impact_score": 0.7,
+    "effort_estimate": "small",
+    "affected_components": [
+      "docs/architecture/"
+    ],
+    "implementation_steps": [
+      "Create system overview diagram",
+      "Document each major component",
+      "Explain data flow patterns",
+      "Document design decisions and rationale"
+    ],
+    "acceptance_criteria": [
+      "Architecture diagrams created",
+      "All major components documented",
+      "Design decisions recorded"
+    ],
+    "created_at": "2026-01-18T03:51:41.217039",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "19887f3501ad",
+    "title": "Complete Type Hint Coverage",
+    "description": "Add comprehensive type hints to all modules for better IDE support and static analysis.",
+    "category": "quality",
+    "priority": 3,
+    "impact_score": 0.6,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/"
+    ],
+    "implementation_steps": [
+      "Run mypy to identify missing type hints",
+      "Add type hints to all public functions",
+      "Add type hints to class attributes",
+      "Configure strict mypy checking"
+    ],
+    "acceptance_criteria": [
+      "mypy passes with strict mode",
+      "All public APIs have type hints"
+    ],
+    "created_at": "2026-01-18T03:51:41.217042",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "7ceb292a01c5",
+    "title": "Improve Error Handling",
+    "description": "Implement consistent error handling with custom exceptions and proper error messages.",
+    "category": "quality",
+    "priority": 2,
+    "impact_score": 0.75,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/",
+      "src/exceptions.py"
+    ],
+    "implementation_steps": [
+      "Create custom exception hierarchy",
+      "Replace generic exceptions with specific ones",
+      "Add error context to all exceptions",
+      "Implement error recovery where possible"
+    ],
+    "acceptance_criteria": [
+      "Custom exception classes defined",
+      "All errors have meaningful messages",
+      "Error handling is consistent across modules"
+    ],
+    "created_at": "2026-01-18T03:51:41.217045",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "7186b03001f3",
+    "title": "Add Decision Journal Feature",
+    "description": "Create a decision journal that tracks decisions made using mental models, outcomes, and lessons learned.",
+    "category": "feature",
+    "priority": 2,
+    "impact_score": 0.9,
+    "effort_estimate": "large",
+    "affected_components": [
+      "src/journal/",
+      "src/api/"
+    ],
+    "implementation_steps": [
+      "Design decision journal data model",
+      "Create journal entry CRUD operations",
+      "Link entries to mental models used",
+      "Add outcome tracking and analysis",
+      "Create journal analytics dashboard"
+    ],
+    "acceptance_criteria": [
+      "Users can create decision entries",
+      "Entries link to mental models",
+      "Outcomes can be tracked over time",
+      "Analytics show decision patterns"
+    ],
+    "created_at": "2026-01-18T03:51:41.217048",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "ea6cdbb75326",
+    "title": "Build Model Recommendation Engine",
+    "description": "Create ML-powered recommendation system that suggests relevant mental models based on context and past usage.",
+    "category": "feature",
+    "priority": 3,
+    "impact_score": 0.85,
+    "effort_estimate": "large",
+    "affected_components": [
+      "src/analysis/recommender.py",
+      "src/ml/"
+    ],
+    "implementation_steps": [
+      "Collect usage data for training",
+      "Design recommendation algorithm",
+      "Implement collaborative filtering",
+      "Add content-based recommendations",
+      "Create A/B testing framework"
+    ],
+    "acceptance_criteria": [
+      "Recommendations are contextually relevant",
+      "System learns from user feedback",
+      "Recommendation accuracy > 70%"
+    ],
+    "created_at": "2026-01-18T03:51:41.217051",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "7ff2606de1f5",
+    "title": "Create Mobile Companion App",
+    "description": "Build a mobile app for quick mental model lookups, decision journaling, and real-time alerts.",
+    "category": "feature",
+    "priority": 4,
+    "impact_score": 0.7,
+    "effort_estimate": "large",
+    "affected_components": [
+      "mobile/"
+    ],
+    "implementation_steps": [
+      "Design mobile-first UI/UX",
+      "Choose cross-platform framework",
+      "Implement core features",
+      "Add offline support",
+      "Integrate with main system via API"
+    ],
+    "acceptance_criteria": [
+      "App works on iOS and Android",
+      "Core features available offline",
+      "Syncs with main system"
+    ],
+    "created_at": "2026-01-18T03:51:41.217054",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "20bd6dab4831",
+    "title": "Add Notion Integration",
+    "description": "Create bidirectional sync with Notion for decision journals and mental model databases.",
+    "category": "integration",
+    "priority": 3,
+    "impact_score": 0.75,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/connectors/notion.py"
+    ],
+    "implementation_steps": [
+      "Set up Notion API client",
+      "Design sync data model",
+      "Implement export to Notion",
+      "Implement import from Notion",
+      "Add conflict resolution"
+    ],
+    "acceptance_criteria": [
+      "Mental models sync to Notion database",
+      "Decision journal syncs bidirectionally",
+      "Conflicts handled gracefully"
+    ],
+    "created_at": "2026-01-18T03:51:41.217056",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "e2e0a9de8215",
+    "title": "Add Calendar Integration",
+    "description": "Integrate with Google Calendar/Outlook to schedule decision reviews and model study sessions.",
+    "category": "integration",
+    "priority": 4,
+    "impact_score": 0.6,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/connectors/calendar.py"
+    ],
+    "implementation_steps": [
+      "Implement Google Calendar connector",
+      "Implement Outlook connector",
+      "Create scheduling logic",
+      "Add reminder notifications"
+    ],
+    "acceptance_criteria": [
+      "Events created in user's calendar",
+      "Reminders sent before reviews",
+      "Supports multiple calendar providers"
+    ],
+    "created_at": "2026-01-18T03:51:41.217059",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "9a93f3194891",
+    "title": "Expand Failure Modes Database",
+    "description": "Add failure modes for all 129 mental models. Currently only 5 models have comprehensive failure mode analysis.",
+    "category": "content",
+    "priority": 2,
+    "impact_score": 0.9,
+    "effort_estimate": "large",
+    "affected_components": [
+      "safeguards/failure_modes.py",
+      "safeguards/failure_modes_deep.py"
+    ],
+    "implementation_steps": [
+      "Identify models without failure modes",
+      "Research common failure patterns for each model",
+      "Document 5 failure modes per model",
+      "Add case studies and quantitative thresholds",
+      "Write tests for new failure modes"
+    ],
+    "acceptance_criteria": [
+      "All 129 models have at least 3 failure modes",
+      "Each failure mode has detection signals and safeguards",
+      "Tests pass for all new failure modes"
+    ],
+    "created_at": "2026-01-18T03:51:41.217062",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "02f3e7da4ad1",
+    "title": "Add Real-World Examples Database",
+    "description": "Create comprehensive database of real-world examples for each mental model, including business cases, historical events, and personal applications.",
+    "category": "content",
+    "priority": 3,
+    "impact_score": 0.8,
+    "effort_estimate": "large",
+    "affected_components": [
+      "data/examples/",
+      "analysis/model_analyzer.py"
+    ],
+    "implementation_steps": [
+      "Create examples data structure",
+      "Research 3-5 examples per model",
+      "Categorize by domain (business, personal, historical)",
+      "Link examples to failure modes where applicable",
+      "Add search functionality for examples"
+    ],
+    "acceptance_criteria": [
+      "Each model has at least 3 real-world examples",
+      "Examples are searchable by domain and model",
+      "Examples include source citations"
+    ],
+    "created_at": "2026-01-18T03:51:41.217065",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "b63f2b38fe71",
+    "title": "Add Integration Test Suite",
+    "description": "Create comprehensive integration tests that test complete workflows from signal detection to Lollapalooza analysis.",
+    "category": "testing",
+    "priority": 2,
+    "impact_score": 0.85,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "tests/integration/"
+    ],
+    "implementation_steps": [
+      "Map critical user workflows",
+      "Create test fixtures with realistic data",
+      "Write end-to-end tests for each workflow",
+      "Add performance benchmarks",
+      "Set up CI/CD integration"
+    ],
+    "acceptance_criteria": [
+      "Coverage of all critical paths > 80%",
+      "Integration tests run in CI/CD",
+      "Performance benchmarks established"
+    ],
+    "created_at": "2026-01-18T03:51:41.217068",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "84fb21d9cafa",
+    "title": "Add Property-Based Testing",
+    "description": "Implement property-based tests using Hypothesis to find edge cases in analysis algorithms.",
+    "category": "testing",
+    "priority": 3,
+    "impact_score": 0.7,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "tests/property/",
+      "analysis/"
+    ],
+    "implementation_steps": [
+      "Install Hypothesis library",
+      "Identify invariants in analysis functions",
+      "Write property-based tests for core algorithms",
+      "Add fuzzing for input validation"
+    ],
+    "acceptance_criteria": [
+      "Property tests for all analysis functions",
+      "No failures found by fuzzing"
+    ],
+    "created_at": "2026-01-18T03:51:41.217071",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "41a80cc3878d",
+    "title": "Generate API Documentation",
+    "description": "Create comprehensive API documentation using Sphinx or MkDocs, including examples and tutorials.",
+    "category": "documentation",
+    "priority": 2,
+    "impact_score": 0.8,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "docs/",
+      "src/"
+    ],
+    "implementation_steps": [
+      "Set up documentation framework",
+      "Write docstrings for all public APIs",
+      "Create getting started guide",
+      "Add code examples for common use cases",
+      "Generate API reference automatically"
+    ],
+    "acceptance_criteria": [
+      "All public APIs documented",
+      "Getting started guide complete",
+      "Documentation builds without errors"
+    ],
+    "created_at": "2026-01-18T03:51:41.217074",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "4ba929357854",
+    "title": "Create Architecture Documentation",
+    "description": "Document system architecture with diagrams showing component interactions, data flows, and design decisions.",
+    "category": "documentation",
+    "priority": 3,
+    "impact_score": 0.7,
+    "effort_estimate": "small",
+    "affected_components": [
+      "docs/architecture/"
+    ],
+    "implementation_steps": [
+      "Create system overview diagram",
+      "Document each major component",
+      "Explain data flow patterns",
+      "Document design decisions and rationale"
+    ],
+    "acceptance_criteria": [
+      "Architecture diagrams created",
+      "All major components documented",
+      "Design decisions recorded"
+    ],
+    "created_at": "2026-01-18T03:51:41.217077",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "f376aeeb8d0e",
+    "title": "Complete Type Hint Coverage",
+    "description": "Add comprehensive type hints to all modules for better IDE support and static analysis.",
+    "category": "quality",
+    "priority": 3,
+    "impact_score": 0.6,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/"
+    ],
+    "implementation_steps": [
+      "Run mypy to identify missing type hints",
+      "Add type hints to all public functions",
+      "Add type hints to class attributes",
+      "Configure strict mypy checking"
+    ],
+    "acceptance_criteria": [
+      "mypy passes with strict mode",
+      "All public APIs have type hints"
+    ],
+    "created_at": "2026-01-18T03:51:41.217080",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "cf29804e8bd8",
+    "title": "Improve Error Handling",
+    "description": "Implement consistent error handling with custom exceptions and proper error messages.",
+    "category": "quality",
+    "priority": 2,
+    "impact_score": 0.75,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/",
+      "src/exceptions.py"
+    ],
+    "implementation_steps": [
+      "Create custom exception hierarchy",
+      "Replace generic exceptions with specific ones",
+      "Add error context to all exceptions",
+      "Implement error recovery where possible"
+    ],
+    "acceptance_criteria": [
+      "Custom exception classes defined",
+      "All errors have meaningful messages",
+      "Error handling is consistent across modules"
+    ],
+    "created_at": "2026-01-18T03:51:41.217083",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "546bc36e6eea",
+    "title": "Add Decision Journal Feature",
+    "description": "Create a decision journal that tracks decisions made using mental models, outcomes, and lessons learned.",
+    "category": "feature",
+    "priority": 2,
+    "impact_score": 0.9,
+    "effort_estimate": "large",
+    "affected_components": [
+      "src/journal/",
+      "src/api/"
+    ],
+    "implementation_steps": [
+      "Design decision journal data model",
+      "Create journal entry CRUD operations",
+      "Link entries to mental models used",
+      "Add outcome tracking and analysis",
+      "Create journal analytics dashboard"
+    ],
+    "acceptance_criteria": [
+      "Users can create decision entries",
+      "Entries link to mental models",
+      "Outcomes can be tracked over time",
+      "Analytics show decision patterns"
+    ],
+    "created_at": "2026-01-18T03:51:41.217086",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "cd3c23d4649a",
+    "title": "Build Model Recommendation Engine",
+    "description": "Create ML-powered recommendation system that suggests relevant mental models based on context and past usage.",
+    "category": "feature",
+    "priority": 3,
+    "impact_score": 0.85,
+    "effort_estimate": "large",
+    "affected_components": [
+      "src/analysis/recommender.py",
+      "src/ml/"
+    ],
+    "implementation_steps": [
+      "Collect usage data for training",
+      "Design recommendation algorithm",
+      "Implement collaborative filtering",
+      "Add content-based recommendations",
+      "Create A/B testing framework"
+    ],
+    "acceptance_criteria": [
+      "Recommendations are contextually relevant",
+      "System learns from user feedback",
+      "Recommendation accuracy > 70%"
+    ],
+    "created_at": "2026-01-18T03:51:41.217089",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "df30b1082a2c",
+    "title": "Create Mobile Companion App",
+    "description": "Build a mobile app for quick mental model lookups, decision journaling, and real-time alerts.",
+    "category": "feature",
+    "priority": 4,
+    "impact_score": 0.7,
+    "effort_estimate": "large",
+    "affected_components": [
+      "mobile/"
+    ],
+    "implementation_steps": [
+      "Design mobile-first UI/UX",
+      "Choose cross-platform framework",
+      "Implement core features",
+      "Add offline support",
+      "Integrate with main system via API"
+    ],
+    "acceptance_criteria": [
+      "App works on iOS and Android",
+      "Core features available offline",
+      "Syncs with main system"
+    ],
+    "created_at": "2026-01-18T03:51:41.217092",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "dfee95d49378",
+    "title": "Add Notion Integration",
+    "description": "Create bidirectional sync with Notion for decision journals and mental model databases.",
+    "category": "integration",
+    "priority": 3,
+    "impact_score": 0.75,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/connectors/notion.py"
+    ],
+    "implementation_steps": [
+      "Set up Notion API client",
+      "Design sync data model",
+      "Implement export to Notion",
+      "Implement import from Notion",
+      "Add conflict resolution"
+    ],
+    "acceptance_criteria": [
+      "Mental models sync to Notion database",
+      "Decision journal syncs bidirectionally",
+      "Conflicts handled gracefully"
+    ],
+    "created_at": "2026-01-18T03:51:41.217094",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "e533eb41e4a0",
+    "title": "Add Calendar Integration",
+    "description": "Integrate with Google Calendar/Outlook to schedule decision reviews and model study sessions.",
+    "category": "integration",
+    "priority": 4,
+    "impact_score": 0.6,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/connectors/calendar.py"
+    ],
+    "implementation_steps": [
+      "Implement Google Calendar connector",
+      "Implement Outlook connector",
+      "Create scheduling logic",
+      "Add reminder notifications"
+    ],
+    "acceptance_criteria": [
+      "Events created in user's calendar",
+      "Reminders sent before reviews",
+      "Supports multiple calendar providers"
+    ],
+    "created_at": "2026-01-18T03:51:41.217098",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "cb76f7d9fe7e",
+    "title": "Expand Failure Modes Database",
+    "description": "Add failure modes for all 129 mental models. Currently only 5 models have comprehensive failure mode analysis.",
+    "category": "content",
+    "priority": 2,
+    "impact_score": 0.9,
+    "effort_estimate": "large",
+    "affected_components": [
+      "safeguards/failure_modes.py",
+      "safeguards/failure_modes_deep.py"
+    ],
+    "implementation_steps": [
+      "Identify models without failure modes",
+      "Research common failure patterns for each model",
+      "Document 5 failure modes per model",
+      "Add case studies and quantitative thresholds",
+      "Write tests for new failure modes"
+    ],
+    "acceptance_criteria": [
+      "All 129 models have at least 3 failure modes",
+      "Each failure mode has detection signals and safeguards",
+      "Tests pass for all new failure modes"
+    ],
+    "created_at": "2026-01-18T03:51:41.217200",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "4a5ff87f2a1c",
+    "title": "Add Real-World Examples Database",
+    "description": "Create comprehensive database of real-world examples for each mental model, including business cases, historical events, and personal applications.",
+    "category": "content",
+    "priority": 3,
+    "impact_score": 0.8,
+    "effort_estimate": "large",
+    "affected_components": [
+      "data/examples/",
+      "analysis/model_analyzer.py"
+    ],
+    "implementation_steps": [
+      "Create examples data structure",
+      "Research 3-5 examples per model",
+      "Categorize by domain (business, personal, historical)",
+      "Link examples to failure modes where applicable",
+      "Add search functionality for examples"
+    ],
+    "acceptance_criteria": [
+      "Each model has at least 3 real-world examples",
+      "Examples are searchable by domain and model",
+      "Examples include source citations"
+    ],
+    "created_at": "2026-01-18T03:51:41.217213",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "a1bdeb9c86bd",
+    "title": "Add Integration Test Suite",
+    "description": "Create comprehensive integration tests that test complete workflows from signal detection to Lollapalooza analysis.",
+    "category": "testing",
+    "priority": 2,
+    "impact_score": 0.85,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "tests/integration/"
+    ],
+    "implementation_steps": [
+      "Map critical user workflows",
+      "Create test fixtures with realistic data",
+      "Write end-to-end tests for each workflow",
+      "Add performance benchmarks",
+      "Set up CI/CD integration"
+    ],
+    "acceptance_criteria": [
+      "Coverage of all critical paths > 80%",
+      "Integration tests run in CI/CD",
+      "Performance benchmarks established"
+    ],
+    "created_at": "2026-01-18T03:51:41.217224",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "f7727d3130b1",
+    "title": "Add Property-Based Testing",
+    "description": "Implement property-based tests using Hypothesis to find edge cases in analysis algorithms.",
+    "category": "testing",
+    "priority": 3,
+    "impact_score": 0.7,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "tests/property/",
+      "analysis/"
+    ],
+    "implementation_steps": [
+      "Install Hypothesis library",
+      "Identify invariants in analysis functions",
+      "Write property-based tests for core algorithms",
+      "Add fuzzing for input validation"
+    ],
+    "acceptance_criteria": [
+      "Property tests for all analysis functions",
+      "No failures found by fuzzing"
+    ],
+    "created_at": "2026-01-18T03:51:41.217233",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "e2dd922fbec0",
+    "title": "Generate API Documentation",
+    "description": "Create comprehensive API documentation using Sphinx or MkDocs, including examples and tutorials.",
+    "category": "documentation",
+    "priority": 2,
+    "impact_score": 0.8,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "docs/",
+      "src/"
+    ],
+    "implementation_steps": [
+      "Set up documentation framework",
+      "Write docstrings for all public APIs",
+      "Create getting started guide",
+      "Add code examples for common use cases",
+      "Generate API reference automatically"
+    ],
+    "acceptance_criteria": [
+      "All public APIs documented",
+      "Getting started guide complete",
+      "Documentation builds without errors"
+    ],
+    "created_at": "2026-01-18T03:51:41.217243",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "b83e1b555b17",
+    "title": "Create Architecture Documentation",
+    "description": "Document system architecture with diagrams showing component interactions, data flows, and design decisions.",
+    "category": "documentation",
+    "priority": 3,
+    "impact_score": 0.7,
+    "effort_estimate": "small",
+    "affected_components": [
+      "docs/architecture/"
+    ],
+    "implementation_steps": [
+      "Create system overview diagram",
+      "Document each major component",
+      "Explain data flow patterns",
+      "Document design decisions and rationale"
+    ],
+    "acceptance_criteria": [
+      "Architecture diagrams created",
+      "All major components documented",
+      "Design decisions recorded"
+    ],
+    "created_at": "2026-01-18T03:51:41.217252",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "04f5d8f3c980",
+    "title": "Complete Type Hint Coverage",
+    "description": "Add comprehensive type hints to all modules for better IDE support and static analysis.",
+    "category": "quality",
+    "priority": 3,
+    "impact_score": 0.6,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/"
+    ],
+    "implementation_steps": [
+      "Run mypy to identify missing type hints",
+      "Add type hints to all public functions",
+      "Add type hints to class attributes",
+      "Configure strict mypy checking"
+    ],
+    "acceptance_criteria": [
+      "mypy passes with strict mode",
+      "All public APIs have type hints"
+    ],
+    "created_at": "2026-01-18T03:51:41.217261",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "62e259f2ae5f",
+    "title": "Improve Error Handling",
+    "description": "Implement consistent error handling with custom exceptions and proper error messages.",
+    "category": "quality",
+    "priority": 2,
+    "impact_score": 0.75,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/",
+      "src/exceptions.py"
+    ],
+    "implementation_steps": [
+      "Create custom exception hierarchy",
+      "Replace generic exceptions with specific ones",
+      "Add error context to all exceptions",
+      "Implement error recovery where possible"
+    ],
+    "acceptance_criteria": [
+      "Custom exception classes defined",
+      "All errors have meaningful messages",
+      "Error handling is consistent across modules"
+    ],
+    "created_at": "2026-01-18T03:51:41.217270",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "b899d296361e",
+    "title": "Add Decision Journal Feature",
+    "description": "Create a decision journal that tracks decisions made using mental models, outcomes, and lessons learned.",
+    "category": "feature",
+    "priority": 2,
+    "impact_score": 0.9,
+    "effort_estimate": "large",
+    "affected_components": [
+      "src/journal/",
+      "src/api/"
+    ],
+    "implementation_steps": [
+      "Design decision journal data model",
+      "Create journal entry CRUD operations",
+      "Link entries to mental models used",
+      "Add outcome tracking and analysis",
+      "Create journal analytics dashboard"
+    ],
+    "acceptance_criteria": [
+      "Users can create decision entries",
+      "Entries link to mental models",
+      "Outcomes can be tracked over time",
+      "Analytics show decision patterns"
+    ],
+    "created_at": "2026-01-18T03:51:41.217280",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "f829483feb3b",
+    "title": "Build Model Recommendation Engine",
+    "description": "Create ML-powered recommendation system that suggests relevant mental models based on context and past usage.",
+    "category": "feature",
+    "priority": 3,
+    "impact_score": 0.85,
+    "effort_estimate": "large",
+    "affected_components": [
+      "src/analysis/recommender.py",
+      "src/ml/"
+    ],
+    "implementation_steps": [
+      "Collect usage data for training",
+      "Design recommendation algorithm",
+      "Implement collaborative filtering",
+      "Add content-based recommendations",
+      "Create A/B testing framework"
+    ],
+    "acceptance_criteria": [
+      "Recommendations are contextually relevant",
+      "System learns from user feedback",
+      "Recommendation accuracy > 70%"
+    ],
+    "created_at": "2026-01-18T03:51:41.217288",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "b772a86e0780",
+    "title": "Create Mobile Companion App",
+    "description": "Build a mobile app for quick mental model lookups, decision journaling, and real-time alerts.",
+    "category": "feature",
+    "priority": 4,
+    "impact_score": 0.7,
+    "effort_estimate": "large",
+    "affected_components": [
+      "mobile/"
+    ],
+    "implementation_steps": [
+      "Design mobile-first UI/UX",
+      "Choose cross-platform framework",
+      "Implement core features",
+      "Add offline support",
+      "Integrate with main system via API"
+    ],
+    "acceptance_criteria": [
+      "App works on iOS and Android",
+      "Core features available offline",
+      "Syncs with main system"
+    ],
+    "created_at": "2026-01-18T03:51:41.217296",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "498b1e4f510a",
+    "title": "Add Notion Integration",
+    "description": "Create bidirectional sync with Notion for decision journals and mental model databases.",
+    "category": "integration",
+    "priority": 3,
+    "impact_score": 0.75,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/connectors/notion.py"
+    ],
+    "implementation_steps": [
+      "Set up Notion API client",
+      "Design sync data model",
+      "Implement export to Notion",
+      "Implement import from Notion",
+      "Add conflict resolution"
+    ],
+    "acceptance_criteria": [
+      "Mental models sync to Notion database",
+      "Decision journal syncs bidirectionally",
+      "Conflicts handled gracefully"
+    ],
+    "created_at": "2026-01-18T03:51:41.217304",
+    "status": "suggested",
+    "source": "automated"
+  },
+  {
+    "id": "512b43d6178f",
+    "title": "Add Calendar Integration",
+    "description": "Integrate with Google Calendar/Outlook to schedule decision reviews and model study sessions.",
+    "category": "integration",
+    "priority": 4,
+    "impact_score": 0.6,
+    "effort_estimate": "medium",
+    "affected_components": [
+      "src/connectors/calendar.py"
+    ],
+    "implementation_steps": [
+      "Implement Google Calendar connector",
+      "Implement Outlook connector",
+      "Create scheduling logic",
+      "Add reminder notifications"
+    ],
+    "acceptance_criteria": [
+      "Events created in user's calendar",
+      "Reminders sent before reviews",
+      "Supports multiple calendar providers"
+    ],
+    "created_at": "2026-01-18T03:51:41.217309",
     "status": "suggested",
     "source": "automated"
   }

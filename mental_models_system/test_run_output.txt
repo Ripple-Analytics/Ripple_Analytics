@@ -1,0 +1,544 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.0rc1, pytest-9.0.2, pluggy-1.6.0 -- /usr/bin/python3.11
+cachedir: .pytest_cache
+rootdir: /home/ubuntu/Ripple_Analytics/mental_models_system
+configfile: pytest.ini
+plugins: anyio-4.11.0, cov-7.0.0, asyncio-1.3.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 321 items
+
+tests/integration/test_data_audit_security.py::TestDataExportImport::test_export_full PASSED [  0%]
+tests/integration/test_data_audit_security.py::TestDataExportImport::test_export_selective PASSED [  0%]
+tests/integration/test_data_audit_security.py::TestDataExportImport::test_data_exporter_attributes PASSED [  0%]
+tests/integration/test_data_audit_security.py::TestAuditLogging::test_audit_logger_initialization PASSED [  1%]
+tests/integration/test_data_audit_security.py::TestAuditLogging::test_log_event PASSED [  1%]
+tests/integration/test_data_audit_security.py::TestAuditLogging::test_log_api_request PASSED [  1%]
+tests/integration/test_data_audit_security.py::TestAuditLogging::test_query_events PASSED [  2%]
+tests/integration/test_data_audit_security.py::TestAuditLogging::test_get_stats PASSED [  2%]
+tests/integration/test_data_audit_security.py::TestAuditLogging::test_get_recent_events PASSED [  2%]
+tests/integration/test_data_audit_security.py::TestSecurity::test_rate_limiter_initialization PASSED [  3%]
+tests/integration/test_data_audit_security.py::TestSecurity::test_rate_limit_check PASSED [  3%]
+tests/integration/test_data_audit_security.py::TestSecurity::test_rate_limiter_stats PASSED [  3%]
+tests/integration/test_data_audit_security.py::TestSecurity::test_block_ip PASSED [  4%]
+tests/integration/test_data_audit_security.py::TestSecurity::test_api_key_manager_initialization PASSED [  4%]
+tests/integration/test_data_audit_security.py::TestSecurity::test_generate_api_key PASSED [  4%]
+tests/integration/test_data_audit_security.py::TestSecurity::test_validate_api_key PASSED [  4%]
+tests/integration/test_data_audit_security.py::TestSecurity::test_revoke_api_key PASSED [  5%]
+tests/integration/test_data_audit_security.py::TestSecurity::test_list_api_keys PASSED [  5%]
+tests/integration/test_data_audit_security.py::TestEndToEndSecurity::test_full_api_key_lifecycle PASSED [  5%]
+tests/integration/test_data_audit_security.py::TestEndToEndSecurity::test_audit_security_integration PASSED [  6%]
+tests/integration/test_end_to_end_workflow.py::TestEndToEndWorkflows::test_signal_to_lollapalooza_workflow FAILED [  6%]
+tests/integration/test_end_to_end_workflow.py::TestEndToEndWorkflows::test_decision_tracking_workflow PASSED [  6%]
+tests/integration/test_end_to_end_workflow.py::TestEndToEndWorkflows::test_regime_detection_workflow FAILED [  7%]
+tests/integration/test_end_to_end_workflow.py::TestEndToEndWorkflows::test_knowledge_graph_workflow FAILED [  7%]
+tests/integration/test_end_to_end_workflow.py::TestEndToEndWorkflows::test_failure_mode_detection_workflow FAILED [  7%]
+tests/integration/test_end_to_end_workflow.py::TestEndToEndWorkflows::test_bayesian_update_workflow PASSED [  8%]
+tests/integration/test_end_to_end_workflow.py::TestEndToEndWorkflows::test_api_integration_workflow FAILED [  8%]
+tests/integration/test_end_to_end_workflow.py::TestErrorHandlingWorkflows::test_invalid_input_handling PASSED [  8%]
+tests/integration/test_end_to_end_workflow.py::TestErrorHandlingWorkflows::test_missing_data_handling PASSED [  9%]
+tests/integration/test_end_to_end_workflow.py::TestErrorHandlingWorkflows::test_concurrent_access_handling PASSED [  9%]
+tests/integration/test_end_to_end_workflow.py::TestPerformanceWorkflows::test_large_text_analysis_performance FAILED [  9%]
+tests/integration/test_end_to_end_workflow.py::TestPerformanceWorkflows::test_batch_analysis_performance PASSED [  9%]
+tests/integration/test_scheduler_webhooks.py::TestCronParser::test_parse_every_minute PASSED [ 10%]
+tests/integration/test_scheduler_webhooks.py::TestCronParser::test_parse_specific_time PASSED [ 10%]
+tests/integration/test_scheduler_webhooks.py::TestCronParser::test_parse_range PASSED [ 10%]
+tests/integration/test_scheduler_webhooks.py::TestCronParser::test_parse_step PASSED [ 11%]
+tests/integration/test_scheduler_webhooks.py::TestCronParser::test_get_next_run PASSED [ 11%]
+tests/integration/test_scheduler_webhooks.py::TestCronParser::test_invalid_expression PASSED [ 11%]
+tests/integration/test_scheduler_webhooks.py::TestJobScheduler::test_add_job PASSED [ 12%]
+tests/integration/test_scheduler_webhooks.py::TestJobScheduler::test_remove_job PASSED [ 12%]
+tests/integration/test_scheduler_webhooks.py::TestJobScheduler::test_enable_disable_job PASSED [ 12%]
+tests/integration/test_scheduler_webhooks.py::TestJobScheduler::test_get_due_jobs PASSED [ 13%]
+tests/integration/test_scheduler_webhooks.py::TestJobScheduler::test_cron_job_scheduling PASSED [ 13%]
+tests/integration/test_scheduler_webhooks.py::TestJobScheduler::test_job_persistence PASSED [ 13%]
+tests/integration/test_scheduler_webhooks.py::TestJobScheduler::test_get_stats PASSED [ 14%]
+tests/integration/test_scheduler_webhooks.py::TestWebhookManager::test_add_target PASSED [ 14%]
+tests/integration/test_scheduler_webhooks.py::TestWebhookManager::test_remove_target PASSED [ 14%]
+tests/integration/test_scheduler_webhooks.py::TestWebhookManager::test_enable_disable_target PASSED [ 14%]
+tests/integration/test_scheduler_webhooks.py::TestWebhookManager::test_event_filtering PASSED [ 15%]
+tests/integration/test_scheduler_webhooks.py::TestWebhookManager::test_priority_filtering PASSED [ 15%]
+tests/integration/test_scheduler_webhooks.py::TestWebhookManager::test_slack_payload_format PASSED [ 15%]
+tests/integration/test_scheduler_webhooks.py::TestWebhookManager::test_discord_payload_format PASSED [ 16%]
+tests/integration/test_scheduler_webhooks.py::TestWebhookManager::test_teams_payload_format PASSED [ 16%]
+tests/integration/test_scheduler_webhooks.py::TestWebhookManager::test_target_persistence PASSED [ 16%]
+tests/integration/test_scheduler_webhooks.py::TestWebhookManager::test_get_stats PASSED [ 17%]
+tests/integration/test_scheduler_webhooks.py::TestSchedulerWebhookIntegration::test_scheduler_webhook_notification PASSED [ 17%]
+tests/integration/test_scheduler_webhooks.py::TestSchedulerWebhookIntegration::test_default_jobs_creation PASSED [ 17%]
+tests/integration/test_scheduler_webhooks.py::TestCacheIntegration::test_cache_basic_operations PASSED [ 18%]
+tests/integration/test_scheduler_webhooks.py::TestCacheIntegration::test_cache_decorator PASSED [ 18%]
+tests/integration/test_scheduler_webhooks.py::TestCacheIntegration::test_llm_cache PASSED [ 18%]
+tests/integration/test_system_integration.py::TestMentalModelLoader::test_load_all_models PASSED [ 19%]
+tests/integration/test_system_integration.py::TestMentalModelLoader::test_get_models_by_category PASSED [ 19%]
+tests/integration/test_system_integration.py::TestMentalModelLoader::test_get_model_by_id PASSED [ 19%]
+tests/integration/test_system_integration.py::TestFailureModesLoader::test_load_failure_modes PASSED [ 19%]
+tests/integration/test_system_integration.py::TestFailureModesLoader::test_get_case_studies PASSED [ 20%]
+tests/integration/test_system_integration.py::TestFailureModesLoader::test_generate_pre_mortem PASSED [ 20%]
+tests/integration/test_system_integration.py::TestKnowledgeGraph::test_create_graph PASSED [ 20%]
+tests/integration/test_system_integration.py::TestKnowledgeGraph::test_search_by_model PASSED [ 21%]
+tests/integration/test_system_integration.py::TestKnowledgeGraph::test_export_graphml PASSED [ 21%]
+tests/integration/test_system_integration.py::TestBacktestEngine::test_create_engine PASSED [ 21%]
+tests/integration/test_system_integration.py::TestBacktestEngine::test_add_decisions PASSED [ 22%]
+tests/integration/test_system_integration.py::TestBacktestEngine::test_backtest_combination PASSED [ 22%]
+tests/integration/test_system_integration.py::TestBacktestEngine::test_find_synergies PASSED [ 22%]
+tests/integration/test_system_integration.py::TestConnectorIntegration::test_connector_registry PASSED [ 23%]
+tests/integration/test_system_integration.py::TestConnectorIntegration::test_local_storage_connector PASSED [ 23%]
+tests/integration/test_system_integration.py::TestLollapaloozaDetection::test_engine_creation PASSED [ 23%]
+tests/integration/test_system_integration.py::TestLollapaloozaDetection::test_submit_signal PASSED [ 23%]
+tests/integration/test_system_integration.py::TestLollapaloozaDetection::test_get_status PASSED [ 24%]
+tests/integration/test_system_integration.py::TestDecisionJournal::test_create_decision PASSED [ 24%]
+tests/integration/test_system_integration.py::TestDecisionJournal::test_record_outcome PASSED [ 24%]
+tests/integration/test_system_integration.py::TestEndToEndWorkflow::test_document_analysis_workflow PASSED [ 25%]
+tests/integration/test_system_integration.py::TestEndToEndWorkflow::test_decision_tracking_workflow PASSED [ 25%]
+tests/integration/test_system_integration.py::TestDataPersistence::test_save_and_load_decisions PASSED [ 25%]
+tests/integration/test_system_integration.py::TestDataPersistence::test_knowledge_graph_persistence PASSED [ 26%]
+tests/test_analysis.py::TestStatisticalAnalyzer::test_bayesian_update PASSED [ 26%]
+tests/test_analysis.py::TestStatisticalAnalyzer::test_bootstrap_confidence_interval PASSED [ 26%]
+tests/test_analysis.py::TestStatisticalAnalyzer::test_confidence_interval_calculation PASSED [ 27%]
+tests/test_analysis.py::TestStatisticalAnalyzer::test_correlation_analysis PASSED [ 27%]
+tests/test_analysis.py::TestStatisticalAnalyzer::test_lollapalooza_probability_bounded PASSED [ 27%]
+tests/test_analysis.py::TestStatisticalAnalyzer::test_lollapalooza_probability_increases_with_models PASSED [ 28%]
+tests/test_analysis.py::TestStatisticalAnalyzer::test_monte_carlo_simulation PASSED [ 28%]
+tests/test_analysis.py::TestStatisticalAnalyzer::test_two_sample_t_test_different_means PASSED [ 28%]
+tests/test_analysis.py::TestStatisticalAnalyzer::test_two_sample_t_test_same_means PASSED [ 28%]
+tests/test_analysis.py::TestConfidenceIntervalDataclass::test_confidence_interval_creation PASSED [ 29%]
+tests/test_bayesian.py::TestBayesianAnalyzer::test_bayesian_ab_test_different_models PASSED [ 29%]
+tests/test_bayesian.py::TestBayesianAnalyzer::test_bayesian_ab_test_equal_models PASSED [ 29%]
+tests/test_bayesian.py::TestBayesianAnalyzer::test_beta_binomial_inference PASSED [ 30%]
+tests/test_bayesian.py::TestBayesianAnalyzer::test_beta_binomial_with_strong_prior PASSED [ 30%]
+tests/test_bayesian.py::TestBayesianAnalyzer::test_beta_binomial_with_weak_prior PASSED [ 30%]
+tests/test_bayesian.py::TestBayesianAnalyzer::test_calculate_model_effectiveness_no_data PASSED [ 31%]
+tests/test_bayesian.py::TestBayesianAnalyzer::test_calculate_model_effectiveness_with_data PASSED [ 31%]
+tests/test_bayesian.py::TestBayesianAnalyzer::test_cohens_d_interpretation PASSED [ 31%]
+tests/test_bayesian.py::TestBayesianAnalyzer::test_initialization PASSED [ 32%]
+tests/test_bayesian.py::TestBayesianAnalyzer::test_lollapalooza_probability_no_data PASSED [ 32%]
+tests/test_bayesian.py::TestBayesianAnalyzer::test_lollapalooza_probability_with_data PASSED [ 32%]
+tests/test_bayesian.py::TestBayesianDataClasses::test_bayesian_result_creation PASSED [ 33%]
+tests/test_bayesian.py::TestBayesianDataClasses::test_model_effectiveness_creation PASSED [ 33%]
+tests/test_database.py::TestDatabaseSchema::test_case_studies_table_exists PASSED [ 33%]
+tests/test_database.py::TestDatabaseSchema::test_frameworks_table_exists PASSED [ 33%]
+tests/test_database.py::TestDatabaseSchema::test_mental_models_table_exists PASSED [ 34%]
+tests/test_database.py::TestDatabaseSchema::test_planck_matrix_table_exists PASSED [ 34%]
+tests/test_database.py::TestDatabaseSchema::test_thinker_principles_table_exists PASSED [ 34%]
+tests/test_database.py::TestPopulateData::test_case_categories_defined PASSED [ 35%]
+tests/test_database.py::TestPopulateData::test_exemplar_cases_defined PASSED [ 35%]
+tests/test_database.py::TestPopulateData::test_frameworks_defined PASSED [ 35%]
+tests/test_database.py::TestPopulateData::test_mental_models_defined PASSED [ 36%]
+tests/test_database.py::TestPopulateData::test_mental_models_have_categories PASSED [ 36%]
+tests/test_database.py::TestPopulateData::test_regions_defined PASSED    [ 36%]
+tests/test_database.py::TestPopulateData::test_thinker_principles_defined PASSED [ 37%]
+tests/test_database.py::TestMentalModelStructure::test_lindy_ages_positive PASSED [ 37%]
+tests/test_database.py::TestMentalModelStructure::test_model_tuple_structure PASSED [ 37%]
+tests/test_database.py::TestPrincipleStructure::test_principle_tuple_structure PASSED [ 38%]
+tests/test_hmm_regime.py::TestHMMRegimeDetector::test_detect_regime_transitions PASSED [ 38%]
+tests/test_hmm_regime.py::TestHMMRegimeDetector::test_get_regime_probabilities PASSED [ 38%]
+tests/test_hmm_regime.py::TestHMMRegimeDetector::test_initialization PASSED [ 38%]
+tests/test_hmm_regime.py::TestHMMRegimeDetector::test_predict_regimes PASSED [ 39%]
+tests/test_hmm_regime.py::TestHMMRegimeDetector::test_predict_without_training_raises_error PASSED [ 39%]
+tests/test_hmm_regime.py::TestHMMRegimeDetector::test_prepare_features_shape PASSED [ 39%]
+tests/test_hmm_regime.py::TestHMMRegimeDetector::test_regime_labels_meaningful PASSED [ 40%]
+tests/test_hmm_regime.py::TestHMMRegimeDetector::test_train_creates_model PASSED [ 40%]
+tests/test_hmm_regime.py::TestHMMRegimeDetector::test_transition_matrix_properties PASSED [ 40%]
+tests/test_hmm_regime.py::TestRegimeDataClasses::test_regime_state_creation PASSED [ 41%]
+tests/test_hmm_regime.py::TestRegimeDataClasses::test_regime_transition_creation PASSED [ 41%]
+tests/unit/test_analyzer.py::TestMentalModelLoader::test_load_models_from_file PASSED [ 41%]
+tests/unit/test_analyzer.py::TestMentalModelLoader::test_get_model_by_id PASSED [ 42%]
+tests/unit/test_analyzer.py::TestMentalModelLoader::test_get_models_by_category PASSED [ 42%]
+tests/unit/test_analyzer.py::TestMentalModelLoader::test_search_models PASSED [ 42%]
+tests/unit/test_analyzer.py::TestMentalModelAnalyzer::test_analyze_text PASSED [ 42%]
+tests/unit/test_analyzer.py::TestMentalModelAnalyzer::test_batch_analyze PASSED [ 43%]
+tests/unit/test_analyzer.py::TestMentalModelAnalyzer::test_detect_lollapalooza PASSED [ 43%]
+tests/unit/test_analyzer.py::TestAnalysisResult::test_result_serialization PASSED [ 43%]
+tests/unit/test_analyzer.py::TestAnalysisResult::test_result_validation PASSED [ 44%]
+tests/unit/test_analyzer.py::TestPromptTemplates::test_analysis_prompt_format PASSED [ 44%]
+tests/unit/test_analyzer.py::TestPromptTemplates::test_prompt_length_limits PASSED [ 44%]
+tests/unit/test_analyzer.py::TestAnalyzerEdgeCases::test_empty_text PASSED [ 45%]
+tests/unit/test_analyzer.py::TestAnalyzerEdgeCases::test_very_long_text PASSED [ 45%]
+tests/unit/test_analyzer.py::TestAnalyzerEdgeCases::test_special_characters PASSED [ 45%]
+tests/unit/test_analyzer.py::TestAnalyzerEdgeCases::test_llm_error_handling PASSED [ 46%]
+tests/unit/test_connectors.py::TestConnectorConfig::test_default_config PASSED [ 46%]
+tests/unit/test_connectors.py::TestConnectorConfig::test_custom_config PASSED [ 46%]
+tests/unit/test_connectors.py::TestConnectorRegistry::test_registry_singleton PASSED [ 47%]
+tests/unit/test_connectors.py::TestConnectorRegistry::test_list_available PASSED [ 47%]
+tests/unit/test_connectors.py::TestConnectorRegistry::test_list_by_type PASSED [ 47%]
+tests/unit/test_connectors.py::TestConnectorRegistry::test_list_open_source PASSED [ 47%]
+tests/unit/test_connectors.py::TestConnectorStatus::test_status_values PASSED [ 48%]
+tests/unit/test_connectors.py::TestConnectorType::test_type_values PASSED [ 48%]
+tests/unit/test_connectors.py::TestBaseConnector::test_connector_info PASSED [ 48%]
+tests/unit/test_connectors.py::TestOllamaConnector::test_connect_success PASSED [ 49%]
+tests/unit/test_connectors.py::TestOllamaConnector::test_generate_prompt PASSED [ 49%]
+tests/unit/test_connectors.py::TestOllamaConnector::test_embed_text PASSED [ 49%]
+tests/unit/test_connectors.py::TestGitHubConnector::test_create_issue PASSED [ 50%]
+tests/unit/test_connectors.py::TestGitHubConnector::test_list_issues PASSED [ 50%]
+tests/unit/test_connectors.py::TestGitHubConnector::test_create_pr PASSED [ 50%]
+tests/unit/test_connectors.py::TestSlackConnector::test_send_message PASSED [ 51%]
+tests/unit/test_connectors.py::TestSlackConnector::test_read_channel PASSED [ 51%]
+tests/unit/test_connectors.py::TestLocalStorageConnector::test_write_and_read PASSED [ 51%]
+tests/unit/test_connectors.py::TestLocalStorageConnector::test_list_files PASSED [ 52%]
+tests/unit/test_connectors.py::TestLocalStorageConnector::test_delete_file PASSED [ 52%]
+tests/unit/test_connectors.py::TestConnectorFactory::test_create_connector_by_name PASSED [ 52%]
+tests/unit/test_edge_cases.py::TestMentalModelLoaderEdgeCases::test_loader_initialization PASSED [ 52%]
+tests/unit/test_edge_cases.py::TestMentalModelLoaderEdgeCases::test_get_model_by_name PASSED [ 53%]
+tests/unit/test_edge_cases.py::TestMentalModelLoaderEdgeCases::test_get_models_by_category PASSED [ 53%]
+tests/unit/test_edge_cases.py::TestFailureModesLoaderEdgeCases::test_loader_initialization PASSED [ 53%]
+tests/unit/test_edge_cases.py::TestFailureModesLoaderEdgeCases::test_get_statistics PASSED [ 54%]
+tests/unit/test_edge_cases.py::TestFailureModesLoaderEdgeCases::test_get_failure_modes PASSED [ 54%]
+tests/unit/test_edge_cases.py::TestKnowledgeGraphEdgeCases::test_graph_initialization PASSED [ 54%]
+tests/unit/test_edge_cases.py::TestKnowledgeGraphEdgeCases::test_get_summary PASSED [ 55%]
+tests/unit/test_edge_cases.py::TestKnowledgeGraphEdgeCases::test_search PASSED [ 55%]
+tests/unit/test_edge_cases.py::TestCacheEdgeCases::test_lru_cache_basic PASSED [ 55%]
+tests/unit/test_edge_cases.py::TestCacheEdgeCases::test_lru_cache_eviction PASSED [ 56%]
+tests/unit/test_edge_cases.py::TestCacheEdgeCases::test_cache_stats PASSED [ 56%]
+tests/unit/test_edge_cases.py::TestCacheEdgeCases::test_cached_decorator PASSED [ 56%]
+tests/unit/test_edge_cases.py::TestBackupEdgeCases::test_backup_manager_initialization PASSED [ 57%]
+tests/unit/test_edge_cases.py::TestBackupEdgeCases::test_create_empty_backup PASSED [ 57%]
+tests/unit/test_edge_cases.py::TestDecisionJournalEdgeCases::test_journal_initialization PASSED [ 57%]
+tests/unit/test_edge_cases.py::TestDecisionJournalEdgeCases::test_create_decision PASSED [ 57%]
+tests/unit/test_edge_cases.py::TestDecisionJournalEdgeCases::test_get_nonexistent_decision PASSED [ 58%]
+tests/unit/test_edge_cases.py::TestWebhookEdgeCases::test_webhook_manager_initialization PASSED [ 58%]
+tests/unit/test_edge_cases.py::TestWebhookEdgeCases::test_get_stats PASSED [ 58%]
+tests/unit/test_edge_cases.py::TestWebhookEdgeCases::test_list_targets PASSED [ 59%]
+tests/unit/test_edge_cases.py::TestSchedulerEdgeCases::test_scheduler_initialization PASSED [ 59%]
+tests/unit/test_edge_cases.py::TestSchedulerEdgeCases::test_list_jobs PASSED [ 59%]
+tests/unit/test_edge_cases.py::TestSchedulerEdgeCases::test_get_stats PASSED [ 60%]
+tests/unit/test_edge_cases.py::TestAPISecurityEdgeCases::test_api_key_manager_initialization PASSED [ 60%]
+tests/unit/test_edge_cases.py::TestAPISecurityEdgeCases::test_generate_api_key PASSED [ 60%]
+tests/unit/test_edge_cases.py::TestAPISecurityEdgeCases::test_validate_invalid_key PASSED [ 61%]
+tests/unit/test_edge_cases.py::TestDataExportImportEdgeCases::test_exporter_initialization PASSED [ 61%]
+tests/unit/test_edge_cases.py::TestDataExportImportEdgeCases::test_importer_initialization PASSED [ 61%]
+tests/unit/test_edge_cases.py::TestLollapaloozaEdgeCases::test_engine_initialization PASSED [ 61%]
+tests/unit/test_edge_cases.py::TestLollapaloozaEdgeCases::test_get_status PASSED [ 62%]
+tests/unit/test_edge_cases.py::TestLollapaloozaEdgeCases::test_get_recent_events PASSED [ 62%]
+tests/unit/test_edge_cases.py::TestIntegrationEdgeCases::test_system_under_memory_pressure PASSED [ 62%]
+tests/unit/test_edge_cases.py::TestIntegrationEdgeCases::test_concurrent_operations PASSED [ 63%]
+tests/unit/test_improvement_engine.py::TestImprovementSuggestion::test_suggestion_creation PASSED [ 63%]
+tests/unit/test_improvement_engine.py::TestImprovementSuggestion::test_suggestion_to_dict PASSED [ 63%]
+tests/unit/test_improvement_engine.py::TestImprovementCategory::test_categories_exist PASSED [ 64%]
+tests/unit/test_improvement_engine.py::TestPriority::test_priority_ordering PASSED [ 64%]
+tests/unit/test_improvement_engine.py::TestStatus::test_status_values PASSED [ 64%]
+tests/unit/test_improvement_engine.py::TestImprovementEngine::test_engine_creation PASSED [ 65%]
+tests/unit/test_improvement_engine.py::TestImprovementEngine::test_analyze_and_suggest PASSED [ 65%]
+tests/unit/test_improvement_engine.py::TestImprovementEngine::test_suggestions_saved PASSED [ 65%]
+tests/unit/test_improvement_engine.py::TestImprovementEngine::test_suggestions_loaded PASSED [ 66%]
+tests/unit/test_improvement_engine.py::TestImprovementEngine::test_get_prioritized_suggestions PASSED [ 66%]
+tests/unit/test_improvement_engine.py::TestImprovementEngine::test_filter_by_status PASSED [ 66%]
+tests/unit/test_improvement_engine.py::TestImprovementEngine::test_filter_by_category PASSED [ 66%]
+tests/unit/test_improvement_engine.py::TestImprovementEngine::test_limit_results PASSED [ 67%]
+tests/unit/test_improvement_engine.py::TestImprovementEngine::test_add_suggestion PASSED [ 67%]
+tests/unit/test_improvement_engine.py::TestImprovementEngine::test_update_status PASSED [ 67%]
+tests/unit/test_improvement_engine.py::TestImprovementEngine::test_mark_implemented PASSED [ 68%]
+tests/unit/test_improvement_engine.py::TestImprovementEngine::test_get_statistics PASSED [ 68%]
+tests/unit/test_improvement_engine.py::TestImprovementEngine::test_generate_report PASSED [ 68%]
+tests/unit/test_improvement_engine.py::TestImprovementEngine::test_empty_statistics PASSED [ 69%]
+tests/unit/test_improvement_engine.py::TestConvenienceFunctions::test_get_improvement_engine PASSED [ 69%]
+tests/unit/test_improvement_engine.py::TestConvenienceFunctions::test_run_improvement_analysis PASSED [ 69%]
+tests/unit/test_improvement_engine.py::TestConvenienceFunctions::test_get_top_improvements PASSED [ 70%]
+tests/unit/test_improvement_engine.py::TestSuggestionContent::test_content_gap_suggestions PASSED [ 70%]
+tests/unit/test_improvement_engine.py::TestSuggestionContent::test_test_coverage_suggestions PASSED [ 70%]
+tests/unit/test_improvement_engine.py::TestSuggestionContent::test_documentation_suggestions PASSED [ 71%]
+tests/unit/test_improvement_engine.py::TestSuggestionContent::test_code_quality_suggestions PASSED [ 71%]
+tests/unit/test_improvement_engine.py::TestSuggestionContent::test_feature_suggestions PASSED [ 71%]
+tests/unit/test_improvement_engine.py::TestSuggestionContent::test_integration_suggestions PASSED [ 71%]
+tests/unit/test_knowledge_graph.py::TestKnowledgeGraph::test_create_empty_graph PASSED [ 72%]
+tests/unit/test_knowledge_graph.py::TestKnowledgeGraph::test_add_document_node PASSED [ 72%]
+tests/unit/test_knowledge_graph.py::TestKnowledgeGraph::test_add_model_node PASSED [ 72%]
+tests/unit/test_knowledge_graph.py::TestKnowledgeGraph::test_link_document_to_model PASSED [ 73%]
+tests/unit/test_knowledge_graph.py::TestKnowledgeGraph::test_get_documents_by_model PASSED [ 73%]
+tests/unit/test_knowledge_graph.py::TestKnowledgeGraph::test_get_models_by_document PASSED [ 73%]
+tests/unit/test_knowledge_graph.py::TestKnowledgeGraph::test_find_similar_documents PASSED [ 74%]
+tests/unit/test_knowledge_graph.py::TestKnowledgeGraph::test_detect_lollapalooza_clusters PASSED [ 74%]
+tests/unit/test_knowledge_graph.py::TestKnowledgeGraph::test_export_to_json PASSED [ 74%]
+tests/unit/test_knowledge_graph.py::TestKnowledgeGraph::test_export_to_graphml PASSED [ 75%]
+tests/unit/test_knowledge_graph.py::TestKnowledgeGraph::test_search_nodes PASSED [ 75%]
+tests/unit/test_knowledge_graph.py::TestKnowledgeGraph::test_get_statistics PASSED [ 75%]
+tests/unit/test_knowledge_graph.py::TestGraphPersistence::test_save_and_load PASSED [ 76%]
+tests/unit/test_knowledge_graph.py::TestGraphQueries::test_get_model_frequency PASSED [ 76%]
+tests/unit/test_knowledge_graph.py::TestGraphQueries::test_get_category_distribution PASSED [ 76%]
+tests/unit/test_safeguards.py::TestFailureModes::test_load_failure_modes PASSED [ 76%]
+tests/unit/test_safeguards.py::TestFailureModes::test_get_failure_modes_by_model PASSED [ 77%]
+tests/unit/test_safeguards.py::TestFailureModes::test_failure_mode_structure PASSED [ 77%]
+tests/unit/test_safeguards.py::TestFailureModes::test_get_safeguards PASSED [ 77%]
+tests/unit/test_safeguards.py::TestFailureModes::test_check_decision_for_failures PASSED [ 78%]
+tests/unit/test_safeguards.py::TestFailureModes::test_generate_checklist PASSED [ 78%]
+tests/unit/test_safeguards.py::TestFailureModes::test_calculate_risk_score PASSED [ 78%]
+tests/unit/test_safeguards.py::TestFailureModes::test_get_amplifying_biases PASSED [ 79%]
+tests/unit/test_safeguards.py::TestFailureModes::test_get_mitigating_models PASSED [ 79%]
+tests/unit/test_safeguards.py::TestFailureModeDeep::test_deep_failure_mode_structure PASSED [ 79%]
+tests/unit/test_safeguards.py::TestFailureModeDeep::test_case_study_detail PASSED [ 80%]
+tests/unit/test_safeguards.py::TestFailureModeDeep::test_quantitative_thresholds PASSED [ 80%]
+tests/unit/test_safeguards.py::TestSafeguardGeneration::test_generate_structural_safeguards PASSED [ 80%]
+tests/unit/test_safeguards.py::TestSafeguardGeneration::test_generate_cognitive_safeguards PASSED [ 80%]
+tests/unit/test_safeguards.py::TestSafeguardGeneration::test_generate_social_safeguards PASSED [ 81%]
+tests/unit/test_safeguards.py::TestSafeguardGeneration::test_generate_recovery_protocol PASSED [ 81%]
+tests/unit/test_safeguards.py::TestLollapaloozaRisk::test_calculate_lollapalooza_risk PASSED [ 81%]
+tests/unit/test_safeguards.py::TestLollapaloozaRisk::test_high_risk_combinations PASSED [ 82%]
+tests/unit/test_safeguards.py::TestLollapaloozaRisk::test_risk_mitigation_suggestions PASSED [ 82%]
+tests/unit/test_safeguards.py::TestFailureModeExport::test_export_to_json PASSED [ 82%]
+tests/unit/test_safeguards.py::TestFailureModeExport::test_export_checklist_pdf PASSED [ 83%]
+tests/unit/test_scheduler_webhooks.py::TestJobScheduler::test_scheduler_initialization PASSED [ 83%]
+tests/unit/test_scheduler_webhooks.py::TestJobScheduler::test_list_jobs PASSED [ 83%]
+tests/unit/test_scheduler_webhooks.py::TestJobScheduler::test_add_job PASSED [ 84%]
+tests/unit/test_scheduler_webhooks.py::TestJobScheduler::test_remove_job PASSED [ 84%]
+tests/unit/test_scheduler_webhooks.py::TestJobScheduler::test_remove_nonexistent_job PASSED [ 84%]
+tests/unit/test_scheduler_webhooks.py::TestJobScheduler::test_enable_job PASSED [ 85%]
+tests/unit/test_scheduler_webhooks.py::TestJobScheduler::test_disable_job PASSED [ 85%]
+tests/unit/test_scheduler_webhooks.py::TestJobScheduler::test_get_stats PASSED [ 85%]
+tests/unit/test_scheduler_webhooks.py::TestJobScheduler::test_job_priority_ordering PASSED [ 85%]
+tests/unit/test_scheduler_webhooks.py::TestJobScheduler::test_cron_schedule_parsing PASSED [ 86%]
+tests/unit/test_scheduler_webhooks.py::TestJobScheduler::test_interval_schedule_parsing PASSED [ 86%]
+tests/unit/test_scheduler_webhooks.py::TestWebhookManager::test_webhook_manager_initialization PASSED [ 86%]
+tests/unit/test_scheduler_webhooks.py::TestWebhookManager::test_list_targets PASSED [ 87%]
+tests/unit/test_scheduler_webhooks.py::TestWebhookManager::test_add_target PASSED [ 87%]
+tests/unit/test_scheduler_webhooks.py::TestWebhookManager::test_remove_target PASSED [ 87%]
+tests/unit/test_scheduler_webhooks.py::TestWebhookManager::test_remove_nonexistent_target PASSED [ 88%]
+tests/unit/test_scheduler_webhooks.py::TestWebhookManager::test_get_stats PASSED [ 88%]
+tests/unit/test_scheduler_webhooks.py::TestWebhookManager::test_webhook_types PASSED [ 88%]
+tests/unit/test_scheduler_webhooks.py::TestWebhookManager::test_event_types PASSED [ 89%]
+tests/unit/test_scheduler_webhooks.py::TestWebhookManager::test_event_priority_ordering PASSED [ 89%]
+tests/unit/test_scheduler_webhooks.py::TestWebhookManager::test_webhook_event_creation PASSED [ 89%]
+tests/unit/test_scheduler_webhooks.py::TestWebhookManager::test_target_filtering_by_priority PASSED [ 90%]
+tests/unit/test_scheduler_webhooks.py::TestWebhookManager::test_target_rate_limiting PASSED [ 90%]
+tests/unit/test_scheduler_webhooks.py::TestSchedulerCLI::test_scheduler_list_command PASSED [ 90%]
+tests/unit/test_scheduler_webhooks.py::TestSchedulerCLI::test_scheduler_stats_command PASSED [ 90%]
+tests/unit/test_scheduler_webhooks.py::TestWebhookCLI::test_webhook_list_command PASSED [ 91%]
+tests/unit/test_scheduler_webhooks.py::TestWebhookCLI::test_webhook_stats_command PASSED [ 91%]
+tests/unit/test_scheduler_webhooks.py::TestSchedulerAPI::test_list_jobs_endpoint PASSED [ 91%]
+tests/unit/test_scheduler_webhooks.py::TestSchedulerAPI::test_get_scheduler_stats_endpoint PASSED [ 92%]
+tests/unit/test_scheduler_webhooks.py::TestWebhookAPI::test_list_targets_endpoint PASSED [ 92%]
+tests/unit/test_scheduler_webhooks.py::TestWebhookAPI::test_get_webhook_stats_endpoint PASSED [ 92%]
+tests/unit/test_websocket.py::TestWebSocketEvent::test_event_creation PASSED [ 93%]
+tests/unit/test_websocket.py::TestWebSocketEvent::test_event_to_json PASSED [ 93%]
+tests/unit/test_websocket.py::TestEventType::test_event_types PASSED     [ 93%]
+tests/unit/test_websocket.py::TestChannel::test_channels PASSED          [ 94%]
+tests/unit/test_websocket.py::TestWebSocketManager::test_connect_client PASSED [ 94%]
+tests/unit/test_websocket.py::TestWebSocketManager::test_disconnect_client PASSED [ 94%]
+tests/unit/test_websocket.py::TestWebSocketManager::test_subscribe_to_channel PASSED [ 95%]
+tests/unit/test_websocket.py::TestWebSocketManager::test_unsubscribe_from_channel PASSED [ 95%]
+tests/unit/test_websocket.py::TestWebSocketManager::test_ping_pong PASSED [ 95%]
+tests/unit/test_websocket.py::TestWebSocketManager::test_broadcast_signal PASSED [ 95%]
+tests/unit/test_websocket.py::TestWebSocketManager::test_broadcast_lollapalooza PASSED [ 96%]
+tests/unit/test_websocket.py::TestWebSocketManager::test_broadcast_analysis_progress PASSED [ 96%]
+tests/unit/test_websocket.py::TestWebSocketManager::test_broadcast_failure_warning PASSED [ 96%]
+tests/unit/test_websocket.py::TestWebSocketManager::test_channel_filtering PASSED [ 97%]
+tests/unit/test_websocket.py::TestWebSocketManager::test_event_history PASSED [ 97%]
+tests/unit/test_websocket.py::TestWebSocketManager::test_get_history PASSED [ 97%]
+tests/unit/test_websocket.py::TestWebSocketManager::test_get_stats PASSED [ 98%]
+tests/unit/test_websocket.py::TestWebSocketManager::test_stats_with_clients PASSED [ 98%]
+tests/unit/test_websocket.py::TestWebSocketManager::test_invalid_json_message PASSED [ 98%]
+tests/unit/test_websocket.py::TestWebSocketManager::test_unknown_action PASSED [ 99%]
+tests/unit/test_websocket.py::TestGlobalManager::test_get_websocket_manager PASSED [ 99%]
+tests/unit/test_websocket.py::TestEventHandlers::test_event_handler_decorator PASSED [ 99%]
+tests/unit/test_websocket.py::TestEventHandlers::test_multiple_handlers PASSED [100%]
+
+=================================== FAILURES ===================================
+__________ TestEndToEndWorkflows.test_signal_to_lollapalooza_workflow __________
+tests/integration/test_end_to_end_workflow.py:60: in test_signal_to_lollapalooza_workflow
+    assert len(signals) >= 3, "Should detect multiple mental model signals"
+E   AssertionError: Should detect multiple mental model signals
+E   assert 2 >= 3
+E    +  where 2 = len([ModelMatch(model_id=77, model_name='Network Effects', relevance_score=0.9, confidence=0.85, evidence='More sellers attract more buyers', insights=['Strong network effects']), ModelMatch(model_id=76, model_name='Switching Costs', relevance_score=0.8, confidence=0.75, evidence='Prime membership lock-in', insights=['High switching costs'])])
+_____________ TestEndToEndWorkflows.test_regime_detection_workflow _____________
+tests/integration/test_end_to_end_workflow.py:152: in test_regime_detection_workflow
+    detector.fit(returns)
+src/analysis/hmm_regime.py:154: in fit
+    return self.train(features, n_iter)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/analysis/hmm_regime.py:176: in train
+    self.model.fit(features)
+/usr/local/lib/python3.11/dist-packages/hmmlearn/base.py:475: in fit
+    X = check_array(X)
+        ^^^^^^^^^^^^^^
+/usr/local/lib/python3.11/dist-packages/sklearn/utils/validation.py:1060: in check_array
+    raise ValueError(msg)
+E   ValueError: Expected 2D array, got 1D array instead:
+E   array=[ 5.96714153e-03 -3.82643012e-04  7.47688538e-03  1.62302986e-02
+E    -1.34153375e-03 -1.34136957e-03  1.67921282e-02  8.67434729e-03
+E    -3.69474386e-03  6.42560044e-03 -3.63417693e-03 -3.65729754e-03
+E     3.41962272e-03 -1.81328024e-02 -1.62491783e-02 -4.62287529e-03
+E    -9.12831120e-03  4.14247333e-03 -8.08024076e-03 -1.31230370e-02
+E     1.56564877e-02 -1.25776300e-03  1.67528205e-03 -1.32474819e-02
+E    -4.44382725e-03  2.10922590e-03 -1.05099358e-02  4.75698018e-03
+E    -5.00638690e-03 -1.91693750e-03 -5.01706612e-03  1.95227818e-02
+E     8.65027753e-04 -9.57710929e-03  9.22544912e-03 -1.12084365e-02
+E     3.08863595e-03 -1.85967012e-02 -1.22818605e-02  2.96861236e-03
+E     8.38466580e-03  2.71368281e-03 -1.56482824e-04 -2.01103696e-03
+E    -1.37852199e-02 -6.19844208e-03 -3.60638771e-03  1.15712223e-02
+E     4.43618290e-03 -1.66304016e-02  4.24083969e-03 -2.85082280e-03
+E    -5.76922000e-03  7.11676289e-03  1.13099952e-02  1.03128012e-02
+E    -7.39217523e-03 -2.09212376e-03  4.31263431e-03  1.07554513e-02
+E    -3.79174238e-03 -8.56589767e-04 -1.00633497e-02 -1.09620662e-02
+E     9.12525822e-03  1.45624003e-02  2.79898784e-04  1.10353290e-02
+E     4.61636025e-03 -5.45119755e-03  4.61395606e-03  1.63803657e-02
+E     6.41739609e-04  1.66464366e-02 -2.51974510e-02  9.21902504e-03
+E     1.87047068e-03 -1.99007350e-03  1.91760777e-03 -1.88756891e-02
+E    -1.19671888e-03  4.57112572e-03  1.57789404e-02 -4.18270218e-03
+E    -7.08493603e-03 -4.01757044e-03  1.01540212e-02  4.28751110e-03
+E    -4.29760204e-03  6.13267433e-03  1.97077549e-03  1.06864499e-02
+E    -6.02053094e-03 -2.27662147e-03 -2.92108153e-03 -1.36351495e-02
+E     3.96120277e-03  3.61055272e-03  1.05113457e-03 -1.34587133e-03
+E    -4.44611223e-02 -1.46193597e-02 -1.22814355e-02 -2.60683181e-02
+E    -6.83857135e-03  1.01215257e-02  5.45855770e-02  3.23733438e-03
+E     5.72651172e-03 -4.23337747e-03 -5.95631365e-02 -2.79541626e-03
+E    -1.93093702e-04  7.18972634e-02 -7.77082894e-03  7.04642027e-03
+E    -3.04135309e-03 -3.70603411e-02  3.22846844e-02  2.05579910e-02
+E     2.17309584e-02 -2.92816236e-02  4.00838293e-02 -4.40555319e-02
+E     1.56057128e-02  6.37136688e-02 -3.17160898e-02 -1.89889319e-02
+E     9.89540953e-04 -1.71042696e-02 -4.85199029e-02  5.68892442e-05
+E    -3.38691114e-02  1.22077729e-02 -2.95827270e-02  4.44980322e-02
+E    -2.54975988e-02 -1.16618455e-02  2.24055165e-02 -3.89259295e-02
+E     4.82379804e-03  3.72142826e-02 -5.02244970e-02  3.53901576e-03
+E     5.79648383e-03  2.14546862e-02 -3.91085213e-02 -4.16136984e-02
+E     1.36582470e-02  6.90954020e-03  5.51478551e-03  8.39344628e-03
+E    -2.24007416e-02  4.96761091e-03  6.79217420e-03 -2.34305425e-02
+E     5.39732353e-02  1.22149876e-02 -3.77391049e-02  1.76966083e-02
+E    -3.12404501e-02  2.16125381e-02  3.27578674e-02 -2.66204696e-02
+E     2.69012839e-02  1.03834278e-02  2.26618048e-02  5.49037895e-02
+E    -9.36164348e-03 -2.46120849e-02 -2.86854329e-02 -2.64743085e-02
+E    -4.31305128e-03  8.23455924e-03  6.30072398e-03  2.28154975e-02
+E    -1.60994324e-03  4.16060223e-02 -9.93970500e-03  7.96050750e-02
+E     1.67700204e-02 -2.77147267e-02 -3.41267749e-02  1.24741725e-02
+E    -8.70388356e-03  1.94200148e-02  1.21971287e-02 -4.18486738e-03
+E    -2.74038115e-02 -4.74454167e-02 -1.53954486e-02  2.36919638e-02
+E     4.42281232e-03 -3.93721634e-02  3.19542778e-03  9.55952139e-03
+E    -2.85157231e-02  2.61175318e-03 -2.53738447e-04 -3.62891089e-02
+E     5.36681041e-03  8.41176790e-03  1.62457686e-02  1.58070308e-02
+E    -2.06650405e-02 -1.40673756e-02  7.72552901e-03  7.70678926e-03
+E     7.72571529e-03  5.77909724e-02  8.56335766e-03  1.70334846e-02
+E     1.43100265e-02  9.77086877e-03 -4.72903867e-03  1.13845383e-02
+E    -1.15923782e-02 -3.55227910e-03 -7.28045322e-03  1.22811209e-03
+E     3.47198785e-02 -2.80089779e-02  1.02939029e-02 -2.41907381e-02
+E    -7.07897799e-03  1.63342590e-02  9.64200286e-04 -1.61661717e-02
+E    -1.07295556e-02  1.01939662e-02 -1.09554995e-02  3.24687884e-03
+E     6.83577599e-04 -9.77400521e-03  3.21591613e-02  9.50878533e-03
+E    -3.03771388e-02  2.79681472e-03 -9.92679697e-03  1.27865000e-02
+E    -1.18878111e-02 -1.72104662e-03  7.57480918e-03  1.29863279e-02
+E    -1.80044461e-02 -5.01751854e-03 -7.12417967e-03 -9.79993849e-03
+E     2.64818136e-02  6.07472566e-03 -1.89132593e-02  1.37679292e-02
+E     3.18323430e-02  1.54869789e-02 -2.27905495e-02 -7.26351109e-03
+E     1.90036672e-02 -1.06150420e-02  6.65729142e-03  1.16195108e-02
+E    -1.39039571e-02 -8.92880341e-04 -4.86190101e-02 -1.53658146e-02
+E    -3.78852227e-03 -1.87167477e-02  2.44861696e-02 -2.14521207e-02
+E    -6.60066730e-03  1.96110866e-03  2.16190993e-02 -2.15379323e-02
+E     1.74474563e-02  1.53495915e-04 -1.47226298e-02  6.93155211e-03
+E     2.98589543e-03 -9.00325316e-03  1.04703127e-03 -5.77970395e-03
+E     1.70276018e-03  9.93196012e-03  2.37902522e-02 -1.85672325e-02
+E     3.19955006e-02 -2.92813170e-02 -2.27677643e-03  8.82475810e-03
+E     4.21487802e-03 -9.34049280e-03 -3.12183376e-03 -7.39501402e-03
+E    -8.84047135e-03  1.27440315e-02  5.35523229e-03 -1.03936439e-02
+E     1.34939981e-02  4.60949281e-03  1.21929318e-02  9.44443263e-03].
+E   Reshape your data either using array.reshape(-1, 1) if your data has a single feature or array.reshape(1, -1) if it contains a single sample.
+_____________ TestEndToEndWorkflows.test_knowledge_graph_workflow ______________
+tests/integration/test_end_to_end_workflow.py:197: in test_knowledge_graph_workflow
+    assert len(related) > 0, "Should find related models"
+E   AssertionError: Should find related models
+E   assert 0 > 0
+E    +  where 0 = len([])
+__________ TestEndToEndWorkflows.test_failure_mode_detection_workflow __________
+tests/integration/test_end_to_end_workflow.py:253: in test_failure_mode_detection_workflow
+    assert len(warnings) > 0, "Should detect potential failure modes"
+E   AssertionError: Should detect potential failure modes
+E   assert 0 > 0
+E    +  where 0 = len([])
+_____________ TestEndToEndWorkflows.test_api_integration_workflow ______________
+tests/integration/test_end_to_end_workflow.py:317: in test_api_integration_workflow
+    assert response.status_code == 200
+E   assert 404 == 200
+E    +  where 404 = <Response [404 Not Found]>.status_code
+________ TestPerformanceWorkflows.test_large_text_analysis_performance _________
+tests/integration/test_end_to_end_workflow.py:413: in test_large_text_analysis_performance
+    assert len(signals) > 0, "Should detect signals in large text"
+E   AssertionError: Should detect signals in large text
+E   assert 0 > 0
+E    +  where 0 = len([])
+=========================== short test summary info ============================
+FAILED tests/integration/test_end_to_end_workflow.py::TestEndToEndWorkflows::test_signal_to_lollapalooza_workflow - AssertionError: Should detect multiple mental model signals
+assert 2 >= 3
+ +  where 2 = len([ModelMatch(model_id=77, model_name='Network Effects', relevance_score=0.9, confidence=0.85, evidence='More sellers attract more buyers', insights=['Strong network effects']), ModelMatch(model_id=76, model_name='Switching Costs', relevance_score=0.8, confidence=0.75, evidence='Prime membership lock-in', insights=['High switching costs'])])
+FAILED tests/integration/test_end_to_end_workflow.py::TestEndToEndWorkflows::test_regime_detection_workflow - ValueError: Expected 2D array, got 1D array instead:
+array=[ 5.96714153e-03 -3.82643012e-04  7.47688538e-03  1.62302986e-02
+ -1.34153375e-03 -1.34136957e-03  1.67921282e-02  8.67434729e-03
+ -3.69474386e-03  6.42560044e-03 -3.63417693e-03 -3.65729754e-03
+  3.41962272e-03 -1.81328024e-02 -1.62491783e-02 -4.62287529e-03
+ -9.12831120e-03  4.14247333e-03 -8.08024076e-03 -1.31230370e-02
+  1.56564877e-02 -1.25776300e-03  1.67528205e-03 -1.32474819e-02
+ -4.44382725e-03  2.10922590e-03 -1.05099358e-02  4.75698018e-03
+ -5.00638690e-03 -1.91693750e-03 -5.01706612e-03  1.95227818e-02
+  8.65027753e-04 -9.57710929e-03  9.22544912e-03 -1.12084365e-02
+  3.08863595e-03 -1.85967012e-02 -1.22818605e-02  2.96861236e-03
+  8.38466580e-03  2.71368281e-03 -1.56482824e-04 -2.01103696e-03
+ -1.37852199e-02 -6.19844208e-03 -3.60638771e-03  1.15712223e-02
+  4.43618290e-03 -1.66304016e-02  4.24083969e-03 -2.85082280e-03
+ -5.76922000e-03  7.11676289e-03  1.13099952e-02  1.03128012e-02
+ -7.39217523e-03 -2.09212376e-03  4.31263431e-03  1.07554513e-02
+ -3.79174238e-03 -8.56589767e-04 -1.00633497e-02 -1.09620662e-02
+  9.12525822e-03  1.45624003e-02  2.79898784e-04  1.10353290e-02
+  4.61636025e-03 -5.45119755e-03  4.61395606e-03  1.63803657e-02
+  6.41739609e-04  1.66464366e-02 -2.51974510e-02  9.21902504e-03
+  1.87047068e-03 -1.99007350e-03  1.91760777e-03 -1.88756891e-02
+ -1.19671888e-03  4.57112572e-03  1.57789404e-02 -4.18270218e-03
+ -7.08493603e-03 -4.01757044e-03  1.01540212e-02  4.28751110e-03
+ -4.29760204e-03  6.13267433e-03  1.97077549e-03  1.06864499e-02
+ -6.02053094e-03 -2.27662147e-03 -2.92108153e-03 -1.36351495e-02
+  3.96120277e-03  3.61055272e-03  1.05113457e-03 -1.34587133e-03
+ -4.44611223e-02 -1.46193597e-02 -1.22814355e-02 -2.60683181e-02
+ -6.83857135e-03  1.01215257e-02  5.45855770e-02  3.23733438e-03
+  5.72651172e-03 -4.23337747e-03 -5.95631365e-02 -2.79541626e-03
+ -1.93093702e-04  7.18972634e-02 -7.77082894e-03  7.04642027e-03
+ -3.04135309e-03 -3.70603411e-02  3.22846844e-02  2.05579910e-02
+  2.17309584e-02 -2.92816236e-02  4.00838293e-02 -4.40555319e-02
+  1.56057128e-02  6.37136688e-02 -3.17160898e-02 -1.89889319e-02
+  9.89540953e-04 -1.71042696e-02 -4.85199029e-02  5.68892442e-05
+ -3.38691114e-02  1.22077729e-02 -2.95827270e-02  4.44980322e-02
+ -2.54975988e-02 -1.16618455e-02  2.24055165e-02 -3.89259295e-02
+  4.82379804e-03  3.72142826e-02 -5.02244970e-02  3.53901576e-03
+  5.79648383e-03  2.14546862e-02 -3.91085213e-02 -4.16136984e-02
+  1.36582470e-02  6.90954020e-03  5.51478551e-03  8.39344628e-03
+ -2.24007416e-02  4.96761091e-03  6.79217420e-03 -2.34305425e-02
+  5.39732353e-02  1.22149876e-02 -3.77391049e-02  1.76966083e-02
+ -3.12404501e-02  2.16125381e-02  3.27578674e-02 -2.66204696e-02
+  2.69012839e-02  1.03834278e-02  2.26618048e-02  5.49037895e-02
+ -9.36164348e-03 -2.46120849e-02 -2.86854329e-02 -2.64743085e-02
+ -4.31305128e-03  8.23455924e-03  6.30072398e-03  2.28154975e-02
+ -1.60994324e-03  4.16060223e-02 -9.93970500e-03  7.96050750e-02
+  1.67700204e-02 -2.77147267e-02 -3.41267749e-02  1.24741725e-02
+ -8.70388356e-03  1.94200148e-02  1.21971287e-02 -4.18486738e-03
+ -2.74038115e-02 -4.74454167e-02 -1.53954486e-02  2.36919638e-02
+  4.42281232e-03 -3.93721634e-02  3.19542778e-03  9.55952139e-03
+ -2.85157231e-02  2.61175318e-03 -2.53738447e-04 -3.62891089e-02
+  5.36681041e-03  8.41176790e-03  1.62457686e-02  1.58070308e-02
+ -2.06650405e-02 -1.40673756e-02  7.72552901e-03  7.70678926e-03
+  7.72571529e-03  5.77909724e-02  8.56335766e-03  1.70334846e-02
+  1.43100265e-02  9.77086877e-03 -4.72903867e-03  1.13845383e-02
+ -1.15923782e-02 -3.55227910e-03 -7.28045322e-03  1.22811209e-03
+  3.47198785e-02 -2.80089779e-02  1.02939029e-02 -2.41907381e-02
+ -7.07897799e-03  1.63342590e-02  9.64200286e-04 -1.61661717e-02
+ -1.07295556e-02  1.01939662e-02 -1.09554995e-02  3.24687884e-03
+  6.83577599e-04 -9.77400521e-03  3.21591613e-02  9.50878533e-03
+ -3.03771388e-02  2.79681472e-03 -9.92679697e-03  1.27865000e-02
+ -1.18878111e-02 -1.72104662e-03  7.57480918e-03  1.29863279e-02
+ -1.80044461e-02 -5.01751854e-03 -7.12417967e-03 -9.79993849e-03
+  2.64818136e-02  6.07472566e-03 -1.89132593e-02  1.37679292e-02
+  3.18323430e-02  1.54869789e-02 -2.27905495e-02 -7.26351109e-03
+  1.90036672e-02 -1.06150420e-02  6.65729142e-03  1.16195108e-02
+ -1.39039571e-02 -8.92880341e-04 -4.86190101e-02 -1.53658146e-02
+ -3.78852227e-03 -1.87167477e-02  2.44861696e-02 -2.14521207e-02
+ -6.60066730e-03  1.96110866e-03  2.16190993e-02 -2.15379323e-02
+  1.74474563e-02  1.53495915e-04 -1.47226298e-02  6.93155211e-03
+  2.98589543e-03 -9.00325316e-03  1.04703127e-03 -5.77970395e-03
+  1.70276018e-03  9.93196012e-03  2.37902522e-02 -1.85672325e-02
+  3.19955006e-02 -2.92813170e-02 -2.27677643e-03  8.82475810e-03
+  4.21487802e-03 -9.34049280e-03 -3.12183376e-03 -7.39501402e-03
+ -8.84047135e-03  1.27440315e-02  5.35523229e-03 -1.03936439e-02
+  1.34939981e-02  4.60949281e-03  1.21929318e-02  9.44443263e-03].
+Reshape your data either using array.reshape(-1, 1) if your data has a single feature or array.reshape(1, -1) if it contains a single sample.
+FAILED tests/integration/test_end_to_end_workflow.py::TestEndToEndWorkflows::test_knowledge_graph_workflow - AssertionError: Should find related models
+assert 0 > 0
+ +  where 0 = len([])
+FAILED tests/integration/test_end_to_end_workflow.py::TestEndToEndWorkflows::test_failure_mode_detection_workflow - AssertionError: Should detect potential failure modes
+assert 0 > 0
+ +  where 0 = len([])
+FAILED tests/integration/test_end_to_end_workflow.py::TestEndToEndWorkflows::test_api_integration_workflow - assert 404 == 200
+ +  where 404 = <Response [404 Not Found]>.status_code
+FAILED tests/integration/test_end_to_end_workflow.py::TestPerformanceWorkflows::test_large_text_analysis_performance - AssertionError: Should detect signals in large text
+assert 0 > 0
+ +  where 0 = len([])
+======================== 6 failed, 315 passed in 14.30s ========================

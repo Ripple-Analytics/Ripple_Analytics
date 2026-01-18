@@ -80,7 +80,7 @@
       "timeout_seconds": 3600,
       "retry_count": 3,
       "last_run": null,
-      "next_run": "2026-01-18T04:15:10.047808",
+      "next_run": "2026-01-18T04:51:41.385095",
       "run_count": 0,
       "failure_count": 0,
       "metadata": {}
@@ -97,7 +97,7 @@
       "timeout_seconds": 3600,
       "retry_count": 3,
       "last_run": null,
-      "next_run": "2026-01-18T04:15:10.047813",
+      "next_run": "2026-01-18T04:51:41.385111",
       "run_count": 0,
       "failure_count": 0,
       "metadata": {}
@@ -148,11 +148,11 @@
       "timeout_seconds": 3600,
       "retry_count": 3,
       "last_run": null,
-      "next_run": "2026-01-18T04:15:10.048074",
+      "next_run": "2026-01-18T04:51:41.385520",
       "run_count": 0,
       "failure_count": 0,
       "metadata": {}
     }
   ],
-  "updated_at": "2026-01-18T03:15:10.048111"
+  "updated_at": "2026-01-18T03:51:41.385576"
 }

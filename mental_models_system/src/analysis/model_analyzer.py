@@ -288,6 +288,10 @@ class MentalModelLoader:
                 results.append(model)
         return results
     
+    def search_models(self, query: str) -> List[MentalModel]:
+        """Alias for search() method for backward compatibility."""
+        return self.search(query)
+    
     def get_model_summary(self) -> str:
         """Get a summary of all models for LLM prompt."""
         summary_parts = []
@@ -529,7 +533,11 @@ class MentalModelAnalyzer:
         response = await self._call_llm(prompt)
         result = self._parse_json_response(response)
         
-        if not result or not result.get("is_lollapalooza"):
+        # Handle case where result is a list (from identify_models mock)
+        if isinstance(result, list):
+            return None
+        
+        if not result or not isinstance(result, dict) or not result.get("is_lollapalooza"):
             return None
         
         return LollapaloozaAlert(

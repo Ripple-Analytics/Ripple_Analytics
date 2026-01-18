@@ -215,6 +215,30 @@
       ],
       "enabled": true,
       "usage_count": 0
+    },
+    {
+      "key_hash": "d629fcbc5f34819eb735955b476e6cc72ee1f748f6253772c0bfbaafac652564",
+      "name": "test_key",
+      "created_at": "2026-01-18T03:44:16.020658",
+      "expires_at": null,
+      "rate_limit_multiplier": 1.0,
+      "scopes": [
+        "read"
+      ],
+      "enabled": true,
+      "usage_count": 0
+    },
+    {
+      "key_hash": "c2de42b8e960534dbad167c02df88acd8c30f45edd6acd0825d10878b1abfba2",
+      "name": "test_key",
+      "created_at": "2026-01-18T03:51:40.960425",
+      "expires_at": null,
+      "rate_limit_multiplier": 1.0,
+      "scopes": [
+        "read"
+      ],
+      "enabled": true,
+      "usage_count": 0
     }
   ]
 }

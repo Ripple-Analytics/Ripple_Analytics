@@ -1,6 +1,6 @@
 [
   {
-    "id": "ca5b7beebc82",
+    "id": "e104a5a7fc72",
     "title": "Expand to New Market",
     "description": "Should we enter the European market?",
     "mental_models_used": [
@@ -11,17 +11,17 @@
     "decision_made": "Yes, enter within 6 months",
     "rationale": "Strong first-mover opportunity with favorable regulations",
     "confidence": 0.75,
-    "created_at": "2026-01-18T03:10:55.995169",
+    "created_at": "2026-01-18T03:49:18.537362",
     "status": "completed",
     "outcome": "Successfully launched in 3 countries",
     "success": true,
     "lessons_learned": "Regulatory research was critical; should have allocated more resources",
-    "completed_at": "2026-01-18T03:10:55.995684",
+    "completed_at": "2026-01-18T03:49:18.538085",
     "tags": [],
     "related_decisions": []
   },
   {
-    "id": "4bf483c4bb00",
+    "id": "9577acf1af7c",
     "title": "Decision 0",
     "description": "Test decision 0",
     "mental_models_used": [
@@ -30,7 +30,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:10:56.458748",
+    "created_at": "2026-01-18T03:49:26.177195",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -40,7 +40,7 @@
     "related_decisions": []
   },
   {
-    "id": "7eadb96cb50f",
+    "id": "77608fb74592",
     "title": "Decision 1",
     "description": "Test decision 1",
     "mental_models_used": [
@@ -49,7 +49,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:10:56.459114",
+    "created_at": "2026-01-18T03:49:26.177680",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -59,7 +59,7 @@
     "related_decisions": []
   },
   {
-    "id": "0a91f8050b21",
+    "id": "bef0aa3c700e",
     "title": "Decision 2",
     "description": "Test decision 2",
     "mental_models_used": [
@@ -68,7 +68,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:10:56.459791",
+    "created_at": "2026-01-18T03:49:26.178708",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -78,7 +78,7 @@
     "related_decisions": []
   },
   {
-    "id": "50cf35f71787",
+    "id": "8dca82871ea5",
     "title": "Decision 3",
     "description": "Test decision 3",
     "mental_models_used": [
@@ -87,7 +87,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:10:56.460210",
+    "created_at": "2026-01-18T03:49:26.179078",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -97,7 +97,7 @@
     "related_decisions": []
   },
   {
-    "id": "9f432dad4e1c",
+    "id": "517e140292c5",
     "title": "Decision 4",
     "description": "Test decision 4",
     "mental_models_used": [
@@ -106,7 +106,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:10:56.460907",
+    "created_at": "2026-01-18T03:49:26.180041",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -116,7 +116,7 @@
     "related_decisions": []
   },
   {
-    "id": "c0da7d4d1663",
+    "id": "0c110fca3e79",
     "title": "Decision 5",
     "description": "Test decision 5",
     "mental_models_used": [
@@ -125,7 +125,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:10:56.461391",
+    "created_at": "2026-01-18T03:49:26.181818",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -135,7 +135,7 @@
     "related_decisions": []
   },
   {
-    "id": "f0a5bd9b27db",
+    "id": "6cf098b86d6b",
     "title": "Decision 6",
     "description": "Test decision 6",
     "mental_models_used": [
@@ -144,7 +144,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:10:56.462189",
+    "created_at": "2026-01-18T03:49:26.181963",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -154,7 +154,7 @@
     "related_decisions": []
   },
   {
-    "id": "9012344c852d",
+    "id": "d3444e2c436c",
     "title": "Decision 7",
     "description": "Test decision 7",
     "mental_models_used": [
@@ -163,7 +163,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:10:56.463039",
+    "created_at": "2026-01-18T03:49:26.182070",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -173,7 +173,7 @@
     "related_decisions": []
   },
   {
-    "id": "f1f1b7202247",
+    "id": "7192f3683b70",
     "title": "Decision 8",
     "description": "Test decision 8",
     "mental_models_used": [
@@ -182,7 +182,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:10:56.463840",
+    "created_at": "2026-01-18T03:49:26.183199",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -192,7 +192,7 @@
     "related_decisions": []
   },
   {
-    "id": "b182e4daa719",
+    "id": "a74584d1ab93",
     "title": "Decision 9",
     "description": "Test decision 9",
     "mental_models_used": [
@@ -201,7 +201,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:10:56.465053",
+    "created_at": "2026-01-18T03:49:26.185553",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -211,7 +211,7 @@
     "related_decisions": []
   },
   {
-    "id": "f6449381bf96",
+    "id": "a9d1b3c93df7",
     "title": "Expand to New Market",
     "description": "Should we enter the European market?",
     "mental_models_used": [
@@ -222,17 +222,17 @@
     "decision_made": "Yes, enter within 6 months",
     "rationale": "Strong first-mover opportunity with favorable regulations",
     "confidence": 0.75,
-    "created_at": "2026-01-18T03:15:07.542623",
+    "created_at": "2026-01-18T03:51:15.093548",
     "status": "completed",
     "outcome": "Successfully launched in 3 countries",
     "success": true,
     "lessons_learned": "Regulatory research was critical; should have allocated more resources",
-    "completed_at": "2026-01-18T03:15:07.544204",
+    "completed_at": "2026-01-18T03:51:15.095840",
     "tags": [],
     "related_decisions": []
   },
   {
-    "id": "3072b91d4a46",
+    "id": "f095ebff8efb",
     "title": "Decision 0",
     "description": "Test decision 0",
     "mental_models_used": [
@@ -241,7 +241,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:15:07.678964",
+    "created_at": "2026-01-18T03:51:22.565988",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -251,7 +251,7 @@
     "related_decisions": []
   },
   {
-    "id": "db32ae1b9ede",
+    "id": "93f222c319a8",
     "title": "Decision 1",
     "description": "Test decision 1",
     "mental_models_used": [
@@ -260,7 +260,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:15:07.679569",
+    "created_at": "2026-01-18T03:51:22.566826",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -270,7 +270,7 @@
     "related_decisions": []
   },
   {
-    "id": "d9dbc43cca6c",
+    "id": "8e3c2413dcf5",
     "title": "Decision 2",
     "description": "Test decision 2",
     "mental_models_used": [
@@ -279,7 +279,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:15:07.680493",
+    "created_at": "2026-01-18T03:51:22.568130",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -289,7 +289,7 @@
     "related_decisions": []
   },
   {
-    "id": "0fcea58ca27b",
+    "id": "5c6ee622c45f",
     "title": "Decision 3",
     "description": "Test decision 3",
     "mental_models_used": [
@@ -298,7 +298,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:15:07.681654",
+    "created_at": "2026-01-18T03:51:22.568870",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -308,7 +308,7 @@
     "related_decisions": []
   },
   {
-    "id": "871217057152",
+    "id": "536274f4fef4",
     "title": "Decision 4",
     "description": "Test decision 4",
     "mental_models_used": [
@@ -317,7 +317,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:15:07.682242",
+    "created_at": "2026-01-18T03:51:22.570541",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -327,7 +327,7 @@
     "related_decisions": []
   },
   {
-    "id": "8a651a47e198",
+    "id": "2ebe12b5e82f",
     "title": "Decision 5",
     "description": "Test decision 5",
     "mental_models_used": [
@@ -336,7 +336,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:15:07.683893",
+    "created_at": "2026-01-18T03:51:22.573091",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -346,7 +346,7 @@
     "related_decisions": []
   },
   {
-    "id": "07deb84547eb",
+    "id": "a883a91f57a7",
     "title": "Decision 6",
     "description": "Test decision 6",
     "mental_models_used": [
@@ -355,7 +355,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:15:07.684046",
+    "created_at": "2026-01-18T03:51:22.574411",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -365,7 +365,7 @@
     "related_decisions": []
   },
   {
-    "id": "18d64aa66028",
+    "id": "035d161bbedf",
     "title": "Decision 7",
     "description": "Test decision 7",
     "mental_models_used": [
@@ -374,7 +374,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:15:07.684675",
+    "created_at": "2026-01-18T03:51:22.575896",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -384,7 +384,7 @@
     "related_decisions": []
   },
   {
-    "id": "7fad8d687427",
+    "id": "0c1e9979c971",
     "title": "Decision 8",
     "description": "Test decision 8",
     "mental_models_used": [
@@ -393,7 +393,7 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:15:07.687032",
+    "created_at": "2026-01-18T03:51:22.576627",
     "status": "pending",
     "outcome": null,
     "success": null,
@@ -401,9 +401,9 @@
     "completed_at": null,
     "tags": [],
     "related_decisions": []
-  }
-]  {
-    "id": "dbad0048966c",
+  },
+  {
+    "id": "0ce9b5459cd2",
     "title": "Decision 9",
     "description": "Test decision 9",
     "mental_models_used": [
@@ -412,7 +412,218 @@
     "decision_made": "Test",
     "rationale": "Test",
     "confidence": 0.5,
-    "created_at": "2026-01-18T03:15:07.688924",
+    "created_at": "2026-01-18T03:51:22.578321",
+    "status": "pending",
+    "outcome": null,
+    "success": null,
+    "lessons_learned": null,
+    "completed_at": null,
+    "tags": [],
+    "related_decisions": []
+  },
+  {
+    "id": "27a0e3664f18",
+    "title": "Expand to New Market",
+    "description": "Should we enter the European market?",
+    "mental_models_used": [
+      "First-Mover Advantage",
+      "Economies of Scale",
+      "Regulatory Capture"
+    ],
+    "decision_made": "Yes, enter within 6 months",
+    "rationale": "Strong first-mover opportunity with favorable regulations",
+    "confidence": 0.75,
+    "created_at": "2026-01-18T03:51:38.365041",
+    "status": "completed",
+    "outcome": "Successfully launched in 3 countries",
+    "success": true,
+    "lessons_learned": "Regulatory research was critical; should have allocated more resources",
+    "completed_at": "2026-01-18T03:51:38.369314",
+    "tags": [],
+    "related_decisions": []
+  },
+  {
+    "id": "b13e1a125f4a",
+    "title": "Decision 0",
+    "description": "Test decision 0",
+    "mental_models_used": [
+      "Test Model"
+    ],
+    "decision_made": "Test",
+    "rationale": "Test",
+    "confidence": 0.5,
+    "created_at": "2026-01-18T03:51:38.810150",
+    "status": "pending",
+    "outcome": null,
+    "success": null,
+    "lessons_learned": null,
+    "completed_at": null,
+    "tags": [],
+    "related_decisions": []
+  },
+  {
+    "id": "ba2b899e2207",
+    "title": "Decision 1",
+    "description": "Test decision 1",
+    "mental_models_used": [
+      "Test Model"
+    ],
+    "decision_made": "Test",
+    "rationale": "Test",
+    "confidence": 0.5,
+    "created_at": "2026-01-18T03:51:38.811234",
+    "status": "pending",
+    "outcome": null,
+    "success": null,
+    "lessons_learned": null,
+    "completed_at": null,
+    "tags": [],
+    "related_decisions": []
+  },
+  {
+    "id": "811fe6370dcb",
+    "title": "Decision 2",
+    "description": "Test decision 2",
+    "mental_models_used": [
+      "Test Model"
+    ],
+    "decision_made": "Test",
+    "rationale": "Test",
+    "confidence": 0.5,
+    "created_at": "2026-01-18T03:51:38.813611",
+    "status": "pending",
+    "outcome": null,
+    "success": null,
+    "lessons_learned": null,
+    "completed_at": null,
+    "tags": [],
+    "related_decisions": []
+  },
+  {
+    "id": "45949ad12b9f",
+    "title": "Decision 3",
+    "description": "Test decision 3",
+    "mental_models_used": [
+      "Test Model"
+    ],
+    "decision_made": "Test",
+    "rationale": "Test",
+    "confidence": 0.5,
+    "created_at": "2026-01-18T03:51:38.817099",
+    "status": "pending",
+    "outcome": null,
+    "success": null,
+    "lessons_learned": null,
+    "completed_at": null,
+    "tags": [],
+    "related_decisions": []
+  },
+  {
+    "id": "fa4396e5a384",
+    "title": "Decision 4",
+    "description": "Test decision 4",
+    "mental_models_used": [
+      "Test Model"
+    ],
+    "decision_made": "Test",
+    "rationale": "Test",
+    "confidence": 0.5,
+    "created_at": "2026-01-18T03:51:38.818807",
+    "status": "pending",
+    "outcome": null,
+    "success": null,
+    "lessons_learned": null,
+    "completed_at": null,
+    "tags": [],
+    "related_decisions": []
+  },
+  {
+    "id": "3579bd03ab8b",
+    "title": "Decision 5",
+    "description": "Test decision 5",
+    "mental_models_used": [
+      "Test Model"
+    ],
+    "decision_made": "Test",
+    "rationale": "Test",
+    "confidence": 0.5,
+    "created_at": "2026-01-18T03:51:38.821127",
+    "status": "pending",
+    "outcome": null,
+    "success": null,
+    "lessons_learned": null,
+    "completed_at": null,
+    "tags": [],
+    "related_decisions": []
+  },
+  {
+    "id": "455214c1e6fd",
+    "title": "Decision 6",
+    "description": "Test decision 6",
+    "mental_models_used": [
+      "Test Model"
+    ],
+    "decision_made": "Test",
+    "rationale": "Test",
+    "confidence": 0.5,
+    "created_at": "2026-01-18T03:51:38.822928",
+    "status": "pending",
+    "outcome": null,
+    "success": null,
+    "lessons_learned": null,
+    "completed_at": null,
+    "tags": [],
+    "related_decisions": []
+  },
+  {
+    "id": "e7f1bbca571a",
+    "title": "Decision 7",
+    "description": "Test decision 7",
+    "mental_models_used": [
+      "Test Model"
+    ],
+    "decision_made": "Test",
+    "rationale": "Test",
+    "confidence": 0.5,
+    "created_at": "2026-01-18T03:51:38.823986",
+    "status": "pending",
+    "outcome": null,
+    "success": null,
+    "lessons_learned": null,
+    "completed_at": null,
+    "tags": [],
+    "related_decisions": []
+  },
+  {
+    "id": "6e83aba47175",
+    "title": "Decision 8",
+    "description": "Test decision 8",
+    "mental_models_used": [
+      "Test Model"
+    ],
+    "decision_made": "Test",
+    "rationale": "Test",
+    "confidence": 0.5,
+    "created_at": "2026-01-18T03:51:38.825838",
+    "status": "pending",
+    "outcome": null,
+    "success": null,
+    "lessons_learned": null,
+    "completed_at": null,
+    "tags": [],
+    "related_decisions": []
+  },
+  {
+    "id": "1012636cfb28",
+    "title": "Decision 9",
+    "description": "Test decision 9",
+    "mental_models_used": [
+      "Test Model"
+    ],
+    "decision_made": "Test",
+    "rationale": "Test",
+    "confidence": 0.5,
+    "created_at": "2026-01-18T03:51:38.831175",
     "status": "pending",
     "outcome": null,
     "success": null,
