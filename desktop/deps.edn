@@ -1,0 +1,59 @@
+{:paths ["src" "../src"]
+ 
+ :deps {;; Clojure core
+        org.clojure/clojure {:mvn/version "1.11.1"}
+        org.clojure/core.async {:mvn/version "1.6.681"}
+        
+        ;; HTTP client for LM Studio
+        clj-http/clj-http {:mvn/version "3.12.3"}
+        
+        ;; JSON parsing
+        cheshire/cheshire {:mvn/version "5.12.0"}
+        metosin/jsonista {:mvn/version "0.3.8"}
+        
+        ;; PDF extraction
+        org.apache.pdfbox/pdfbox {:mvn/version "3.0.1"}
+        
+        ;; DOCX extraction
+        org.apache.poi/poi {:mvn/version "5.2.5"}
+        org.apache.poi/poi-ooxml {:mvn/version "5.2.5"}
+        
+        ;; Logging
+        com.taoensso/timbre {:mvn/version "6.3.1"}
+        
+        ;; Configuration
+        environ/environ {:mvn/version "1.2.0"}
+        
+        ;; File watching
+        hawk/hawk {:mvn/version "0.2.11"}
+        
+        ;; SQLite for local persistent storage
+        org.xerial/sqlite-jdbc {:mvn/version "3.44.1.0"}
+        com.github.seancorfield/next.jdbc {:mvn/version "1.3.909"}
+        
+        ;; HikariCP for connection pooling
+        com.zaxxer/HikariCP {:mvn/version "5.1.0"}
+        
+        ;; Hot code reloading
+        org.clojure/tools.namespace {:mvn/version "1.4.4"}
+        
+        ;; JavaFX GUI (CLJFX)
+        cljfx/cljfx {:mvn/version "1.7.24"}
+        org.openjfx/javafx-controls {:mvn/version "21"}
+        org.openjfx/javafx-base {:mvn/version "21"}
+        org.openjfx/javafx-graphics {:mvn/version "21"}}
+ 
+ :aliases
+ {:run {:main-opts ["-m" "mental-models.desktop.cli"]}
+  
+  :gui {:main-opts ["-m" "mental-models.desktop.gui.app"]}
+  
+  :repl {:extra-deps {nrepl/nrepl {:mvn/version "1.1.0"}
+                      cider/cider-nrepl {:mvn/version "0.44.0"}}
+         :main-opts ["-m" "nrepl.cmdline" "--middleware" "[cider.nrepl/cider-middleware]"]}
+  
+  :uberjar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.1.303"}}
+            :exec-fn hf.depstar/uberjar
+            :exec-args {:jar "mental-models-desktop.jar"
+                        :aot true
+                        :main-class mental_models.desktop.cli}}}}
