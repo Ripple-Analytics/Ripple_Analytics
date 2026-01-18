@@ -4,7 +4,7 @@
         org.clojure/clojurescript {:mvn/version "1.11.60"}
         
         ;; Electric Clojure - Reactive full-stack framework
-        com.hyperfiddle/electric {:mvn/version "v2-alpha-540-g0e0a8f8d"}
+        hyperfiddle/electric {:mvn/version "v2-alpha-540-g0e06dbb5"}
         
         ;; Server
         ring/ring-core {:mvn/version "1.10.0"}
@@ -42,7 +42,7 @@
          :extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}}}
   
   :build {:deps {io.github.clojure/tools.build {:mvn/version "0.9.6"}
-                 com.hyperfiddle/electric-build {:mvn/version "v2-alpha-540-g0e0a8f8d"}}
+                 hyperfiddle/electric-build {:mvn/version "v2-alpha-540-g0e06dbb5"}}
           :ns-default build}
   
   :prod {:main-opts ["-m" "mental-models.main"]}}}
