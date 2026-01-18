@@ -189,6 +189,9 @@ class FailureModesLoader:
             'failure_modes_psychology.json',
             'failure_modes_psychology_2.json',
             'failure_modes_psychology_3.json',
+            'failure_modes_math.json',
+            'failure_modes_physics.json',
+            'failure_modes_biology.json',
             'failure_modes_math_physics_bio.json',
             'failure_modes_organizational.json'
         ]

@@ -1,0 +1,126 @@
+{
+  "category": "Physics",
+  "models": [
+    {
+      "id": 100,
+      "name": "Critical Mass",
+      "failure_modes": [
+        {"mode": "Underestimating critical mass requirements", "description": "Not reaching threshold for chain reaction", "real_world_case": "Network product launched without enough users.", "warning_signs": ["Slow adoption", "No viral growth", "Below threshold"], "safeguards": ["Calculate threshold", "Concentrate resources", "Reach critical mass first"], "quantitative_threshold": "Identify and reach minimum viable scale"},
+        {"mode": "Overestimating critical mass achieved", "description": "Thinking you've reached critical mass when you haven't", "real_world_case": "Premature scaling before network effects kick in.", "warning_signs": ["Premature scaling", "No organic growth", "Forced growth"], "safeguards": ["Verify organic growth", "Test without subsidies", "Real metrics"], "quantitative_threshold": "Critical mass = self-sustaining growth"},
+        {"mode": "Wrong critical mass metric", "description": "Measuring wrong thing for critical mass", "real_world_case": "Users vs engaged users.", "warning_signs": ["Vanity metrics", "Wrong measure", "Inactive users"], "safeguards": ["Active users", "Engagement metrics", "Quality over quantity"], "quantitative_threshold": "Measure what drives network effects"},
+        {"mode": "Critical mass in wrong geography", "description": "Spreading thin instead of concentrating", "real_world_case": "Launching in 50 cities at once.", "warning_signs": ["Thin spread", "No density", "Weak everywhere"], "safeguards": ["Concentrate geographically", "Win one market", "Sequential expansion"], "quantitative_threshold": "Dominate one market before expanding"},
+        {"mode": "Losing critical mass", "description": "Falling below threshold after achieving it", "real_world_case": "Network effects reversing as users leave.", "warning_signs": ["User churn", "Declining engagement", "Negative spiral"], "safeguards": ["Maintain engagement", "Continuous value", "Churn monitoring"], "quantitative_threshold": "Critical mass can be lost"}
+      ]
+    },
+    {
+      "id": 101,
+      "name": "Activation Energy",
+      "failure_modes": [
+        {"mode": "Underestimating activation energy", "description": "Not providing enough push to start", "real_world_case": "Product launch without enough marketing.", "warning_signs": ["Slow start", "No momentum", "Stalled"], "safeguards": ["Calculate required push", "Sufficient resources", "Strong launch"], "quantitative_threshold": "Initial push must exceed activation energy"},
+        {"mode": "Stopping before activation", "description": "Giving up before reaching threshold", "real_world_case": "Stopping marketing before product catches on.", "warning_signs": ["Premature stop", "Impatience", "No traction yet"], "safeguards": ["Commit to threshold", "Patience", "Sufficient runway"], "quantitative_threshold": "Continue until activation achieved"},
+        {"mode": "Wrong type of activation energy", "description": "Pushing in wrong direction", "real_world_case": "Marketing to wrong audience.", "warning_signs": ["Wrong target", "No response", "Wasted energy"], "safeguards": ["Right target", "Right message", "Right channel"], "quantitative_threshold": "Energy must be applied correctly"},
+        {"mode": "Activation without sustainability", "description": "Starting reaction that can't sustain", "real_world_case": "Viral launch without retention.", "warning_signs": ["Spike and crash", "No retention", "One-time event"], "safeguards": ["Sustainable model", "Retention focus", "Long-term value"], "quantitative_threshold": "Activation must lead to sustainable reaction"},
+        {"mode": "Increasing activation energy over time", "description": "Market becoming harder to activate", "real_world_case": "Saturated market requiring more to break through.", "warning_signs": ["Increasing costs", "Harder to start", "Market saturation"], "safeguards": ["Early mover", "Differentiation", "New approaches"], "quantitative_threshold": "Activation energy increases in crowded markets"}
+      ]
+    },
+    {
+      "id": 102,
+      "name": "Inertia",
+      "failure_modes": [
+        {"mode": "Underestimating inertia", "description": "Not accounting for resistance to change", "real_world_case": "Expecting quick adoption of new process.", "warning_signs": ["Slow adoption", "Resistance", "Status quo bias"], "safeguards": ["Plan for resistance", "Change management", "Patience"], "quantitative_threshold": "Change takes 3x longer than expected"},
+        {"mode": "Fighting inertia directly", "description": "Trying to force change against resistance", "real_world_case": "Mandating change without buy-in.", "warning_signs": ["Resistance", "Pushback", "Compliance without adoption"], "safeguards": ["Work with inertia", "Gradual change", "Incentive alignment"], "quantitative_threshold": "Work with inertia, not against it"},
+        {"mode": "Organizational inertia blindness", "description": "Not seeing how organizations resist change", "real_world_case": "Expecting quick corporate transformation.", "warning_signs": ["Slow progress", "Bureaucratic resistance", "Unchanged behavior"], "safeguards": ["Understand org dynamics", "Coalition building", "Incremental wins"], "quantitative_threshold": "Organizations have massive inertia"},
+        {"mode": "Positive inertia neglect", "description": "Not using inertia to your advantage", "real_world_case": "Not building habits and systems.", "warning_signs": ["Starting from scratch", "No momentum", "Repeated effort"], "safeguards": ["Build habits", "Create systems", "Use momentum"], "quantitative_threshold": "Build positive inertia through habits"},
+        {"mode": "Inertia in strategy", "description": "Continuing strategies due to inertia", "real_world_case": "Kodak continuing film strategy.", "warning_signs": ["Outdated strategy", "Resistance to pivot", "Sunk cost"], "safeguards": ["Regular strategy review", "Willingness to pivot", "Fresh eyes"], "quantitative_threshold": "Strategic inertia can be fatal"}
+      ]
+    },
+    {
+      "id": 103,
+      "name": "Friction",
+      "failure_modes": [
+        {"mode": "Ignoring friction", "description": "Not accounting for resistance in systems", "real_world_case": "Assuming frictionless adoption.", "warning_signs": ["Optimistic projections", "Ignoring obstacles", "Surprise resistance"], "safeguards": ["Identify friction points", "Reduce friction", "Realistic expectations"], "quantitative_threshold": "Every step has friction"},
+        {"mode": "Wrong friction focus", "description": "Reducing friction in wrong places", "real_world_case": "Optimizing unimportant steps.", "warning_signs": ["Wrong priorities", "No impact", "Wasted effort"], "safeguards": ["Find key friction points", "Prioritize impact", "User journey mapping"], "quantitative_threshold": "Focus on highest-friction points"},
+        {"mode": "Friction as feature blindness", "description": "Not seeing when friction is valuable", "real_world_case": "Removing friction that provided value.", "warning_signs": ["Over-optimization", "Lost value", "Unintended consequences"], "safeguards": ["Understand friction purpose", "Selective reduction", "Test changes"], "quantitative_threshold": "Some friction is intentional"},
+        {"mode": "Adding friction unintentionally", "description": "Creating new friction while reducing old", "real_world_case": "New process more complex than old.", "warning_signs": ["Net increase", "New obstacles", "User complaints"], "safeguards": ["Net friction analysis", "User testing", "Before/after comparison"], "quantitative_threshold": "Measure total friction, not just changed friction"},
+        {"mode": "Friction accumulation", "description": "Small frictions adding up to major obstacle", "real_world_case": "Death by a thousand cuts in user experience.", "warning_signs": ["Many small issues", "Cumulative effect", "User abandonment"], "safeguards": ["Audit total friction", "Fix small issues", "Holistic view"], "quantitative_threshold": "Small frictions compound"}
+      ]
+    },
+    {
+      "id": 104,
+      "name": "Leverage",
+      "failure_modes": [
+        {"mode": "Leverage without understanding downside", "description": "Using leverage without risk awareness", "real_world_case": "Leveraged investments without margin call awareness.", "warning_signs": ["Upside focus only", "Ignoring downside", "Overconfidence"], "safeguards": ["Understand full risk", "Stress test", "Margin of safety"], "quantitative_threshold": "Leverage amplifies both gains and losses"},
+        {"mode": "Over-leverage", "description": "Using too much leverage", "real_world_case": "LTCM's 25:1 leverage.", "warning_signs": ["High leverage ratios", "Small moves hurt", "Fragility"], "safeguards": ["Conservative leverage", "Stress testing", "Survival first"], "quantitative_threshold": "Leverage that can wipe you out is too much"},
+        {"mode": "Hidden leverage", "description": "Not recognizing embedded leverage", "real_world_case": "Options as hidden leverage.", "warning_signs": ["Complex instruments", "Hidden exposure", "Surprise losses"], "safeguards": ["Identify all leverage", "Full exposure analysis", "Transparency"], "quantitative_threshold": "Know your total leverage"},
+        {"mode": "Leverage in wrong direction", "description": "Amplifying wrong things", "real_world_case": "Leveraging declining business.", "warning_signs": ["Amplified losses", "Wrong bet", "Accelerated decline"], "safeguards": ["Leverage winners", "Right direction", "Quality first"], "quantitative_threshold": "Only leverage what's working"},
+        {"mode": "Leverage timing", "description": "Using leverage at wrong time", "real_world_case": "Leveraging at market peak.", "warning_signs": ["Peak leverage", "Euphoria", "Late cycle"], "safeguards": ["Counter-cyclical leverage", "Timing awareness", "Conservative at peaks"], "quantitative_threshold": "Leverage when others are fearful"}
+      ]
+    },
+    {
+      "id": 105,
+      "name": "Equilibrium",
+      "failure_modes": [
+        {"mode": "Assuming static equilibrium", "description": "Thinking equilibrium is permanent", "real_world_case": "Assuming market share will stay stable.", "warning_signs": ["Static thinking", "Complacency", "Ignoring dynamics"], "safeguards": ["Dynamic thinking", "Monitor for shifts", "Continuous adaptation"], "quantitative_threshold": "Equilibria are temporary"},
+        {"mode": "Missing equilibrium shifts", "description": "Not recognizing when equilibrium changes", "real_world_case": "Industry disruption changing competitive dynamics.", "warning_signs": ["Disruption", "New entrants", "Changing rules"], "safeguards": ["Monitor for shifts", "Early warning systems", "Adaptation capability"], "quantitative_threshold": "Equilibria can shift suddenly"},
+        {"mode": "Fighting equilibrium", "description": "Trying to maintain unsustainable position", "real_world_case": "Defending obsolete business model.", "warning_signs": ["Increasing effort", "Declining results", "Exhaustion"], "safeguards": ["Recognize new equilibrium", "Adapt", "Don't fight physics"], "quantitative_threshold": "Can't fight equilibrium forever"},
+        {"mode": "Equilibrium at wrong level", "description": "Settling at suboptimal equilibrium", "real_world_case": "Industry stuck at low-quality equilibrium.", "warning_signs": ["Suboptimal state", "Coordination failure", "Stuck"], "safeguards": ["Identify better equilibria", "Coordinate change", "First mover"], "quantitative_threshold": "Multiple equilibria possible"},
+        {"mode": "Equilibrium blindness", "description": "Not seeing system is in equilibrium", "real_world_case": "Expecting change in stable system.", "warning_signs": ["No change despite effort", "Stable patterns", "Resistance"], "safeguards": ["Recognize equilibrium", "Understand forces", "Change the game"], "quantitative_threshold": "Equilibrium requires changing underlying forces"}
+      ]
+    },
+    {
+      "id": 106,
+      "name": "Entropy",
+      "failure_modes": [
+        {"mode": "Ignoring entropy", "description": "Not accounting for natural decay", "real_world_case": "Assuming systems stay organized without effort.", "warning_signs": ["Decay", "Disorder", "Declining quality"], "safeguards": ["Continuous maintenance", "Energy input", "Fight entropy"], "quantitative_threshold": "All systems tend toward disorder"},
+        {"mode": "Underestimating entropy rate", "description": "Not realizing how fast things decay", "real_world_case": "Skills decaying faster than expected.", "warning_signs": ["Rapid decline", "Surprise decay", "Faster than expected"], "safeguards": ["Regular maintenance", "Continuous investment", "Monitor decay"], "quantitative_threshold": "Entropy is constant and relentless"},
+        {"mode": "Entropy in organizations", "description": "Not fighting organizational decay", "real_world_case": "Bureaucracy growing, efficiency declining.", "warning_signs": ["Bureaucracy", "Inefficiency", "Complexity growth"], "safeguards": ["Regular pruning", "Simplification", "Renewal"], "quantitative_threshold": "Organizations naturally become bureaucratic"},
+        {"mode": "Entropy in relationships", "description": "Not maintaining relationships", "real_world_case": "Network decaying without maintenance.", "warning_signs": ["Lost connections", "Weakening ties", "Isolation"], "safeguards": ["Regular contact", "Relationship investment", "Maintenance"], "quantitative_threshold": "Relationships decay without maintenance"},
+        {"mode": "Fighting entropy inefficiently", "description": "Wasting energy fighting inevitable decay", "real_world_case": "Maintaining obsolete systems.", "warning_signs": ["High maintenance cost", "Diminishing returns", "Exhaustion"], "safeguards": ["Strategic maintenance", "Replace vs repair", "Efficiency"], "quantitative_threshold": "Sometimes better to rebuild than maintain"}
+      ]
+    },
+    {
+      "id": 107,
+      "name": "Velocity vs Speed",
+      "failure_modes": [
+        {"mode": "Confusing speed with velocity", "description": "Moving fast without direction", "real_world_case": "Busy but not progressing.", "warning_signs": ["High activity", "No progress", "Spinning wheels"], "safeguards": ["Direction first", "Measure progress", "Velocity not speed"], "quantitative_threshold": "Velocity = speed + direction"},
+        {"mode": "Speed without direction", "description": "Optimizing for speed alone", "real_world_case": "Fast iteration in wrong direction.", "warning_signs": ["Fast but wrong", "Wasted effort", "No destination"], "safeguards": ["Direction first", "Course correction", "Strategic speed"], "quantitative_threshold": "Wrong direction fast = worse than slow"},
+        {"mode": "Direction without speed", "description": "Right direction but too slow", "real_world_case": "Correct strategy, slow execution.", "warning_signs": ["Slow progress", "Missed windows", "Overtaken"], "safeguards": ["Urgency", "Execution speed", "Bias to action"], "quantitative_threshold": "Right direction needs adequate speed"},
+        {"mode": "Changing direction too often", "description": "Frequent pivots reducing net velocity", "real_world_case": "Constant strategy changes.", "warning_signs": ["Frequent pivots", "No momentum", "Starting over"], "safeguards": ["Commitment", "Persistence", "Strategic patience"], "quantitative_threshold": "Pivots reset velocity to zero"},
+        {"mode": "Velocity measurement error", "description": "Measuring wrong velocity metrics", "real_world_case": "Measuring output not outcome.", "warning_signs": ["Wrong metrics", "False progress", "Vanity metrics"], "safeguards": ["Outcome metrics", "Real progress", "Customer value"], "quantitative_threshold": "Measure velocity toward goal, not activity"}
+      ]
+    },
+    {
+      "id": 108,
+      "name": "Resonance",
+      "failure_modes": [
+        {"mode": "Missing resonance frequency", "description": "Not finding what resonates", "real_world_case": "Marketing message that doesn't connect.", "warning_signs": ["No response", "Flat reception", "No engagement"], "safeguards": ["Test messages", "Find resonance", "Iterate"], "quantitative_threshold": "Keep testing until you find resonance"},
+        {"mode": "Destructive resonance", "description": "Amplification causing damage", "real_world_case": "Viral negative feedback.", "warning_signs": ["Amplified negatives", "Runaway feedback", "Damage"], "safeguards": ["Monitor resonance", "Dampen negatives", "Circuit breakers"], "quantitative_threshold": "Resonance can be destructive"},
+        {"mode": "Resonance dependence", "description": "Over-relying on single resonant message", "real_world_case": "One-hit wonder product.", "warning_signs": ["Single message", "No evolution", "Fading resonance"], "safeguards": ["Multiple resonances", "Evolution", "Refresh"], "quantitative_threshold": "Resonance fades over time"},
+        {"mode": "False resonance", "description": "Thinking you've found resonance when you haven't", "real_world_case": "Echo chamber feedback.", "warning_signs": ["Small group enthusiasm", "No broad appeal", "Echo chamber"], "safeguards": ["Broad testing", "Outside feedback", "Real market test"], "quantitative_threshold": "Test resonance outside your bubble"},
+        {"mode": "Resonance timing", "description": "Right message, wrong time", "real_world_case": "Product ahead of its time.", "warning_signs": ["No response", "Too early", "Market not ready"], "safeguards": ["Market timing", "Patience", "Readiness signals"], "quantitative_threshold": "Resonance requires right timing"}
+      ]
+    },
+    {
+      "id": 109,
+      "name": "Half-Life",
+      "failure_modes": [
+        {"mode": "Ignoring knowledge half-life", "description": "Not recognizing knowledge decay", "real_world_case": "Using outdated skills.", "warning_signs": ["Outdated knowledge", "Declining relevance", "Obsolescence"], "safeguards": ["Continuous learning", "Skill refresh", "Stay current"], "quantitative_threshold": "Technical knowledge half-life: 2-5 years"},
+        {"mode": "Overestimating half-life", "description": "Thinking things last longer than they do", "real_world_case": "Assuming competitive advantage persists.", "warning_signs": ["Complacency", "Surprise decay", "Overtaken"], "safeguards": ["Conservative estimates", "Continuous renewal", "Monitor decay"], "quantitative_threshold": "Most advantages decay faster than expected"},
+        {"mode": "Underestimating half-life", "description": "Thinking things decay faster than they do", "real_world_case": "Abandoning still-valuable assets.", "warning_signs": ["Premature abandonment", "Wasted value", "Chasing new"], "safeguards": ["Measure actual decay", "Extract remaining value", "Patience"], "quantitative_threshold": "Some things have longer half-lives"},
+        {"mode": "Half-life in relationships", "description": "Not maintaining decaying relationships", "real_world_case": "Lost professional network.", "warning_signs": ["Fading connections", "Lost touch", "Weak network"], "safeguards": ["Regular contact", "Relationship maintenance", "Renewal"], "quantitative_threshold": "Relationships have half-life without maintenance"},
+        {"mode": "Half-life of information", "description": "Acting on decayed information", "real_world_case": "Decisions based on old data.", "warning_signs": ["Old data", "Changed conditions", "Stale information"], "safeguards": ["Fresh data", "Recency check", "Update information"], "quantitative_threshold": "Information decays - check recency"}
+      ]
+    },
+    {
+      "id": 110,
+      "name": "Feedback Loops",
+      "failure_modes": [
+        {"mode": "Missing feedback loops", "description": "Not recognizing system feedback", "real_world_case": "Actions creating unintended consequences.", "warning_signs": ["Surprise effects", "Unintended consequences", "System behavior"], "safeguards": ["Map feedback loops", "System thinking", "Anticipate effects"], "quantitative_threshold": "Most systems have feedback loops"},
+        {"mode": "Positive feedback blindness", "description": "Not seeing runaway amplification", "real_world_case": "Bubble dynamics.", "warning_signs": ["Accelerating trends", "Self-reinforcing", "Exponential growth"], "safeguards": ["Identify positive feedback", "Monitor for bubbles", "Circuit breakers"], "quantitative_threshold": "Positive feedback can run away"},
+        {"mode": "Negative feedback neglect", "description": "Not using stabilizing feedback", "real_world_case": "No error correction in system.", "warning_signs": ["No correction", "Drift", "Instability"], "safeguards": ["Build in negative feedback", "Error correction", "Stabilization"], "quantitative_threshold": "Negative feedback provides stability"},
+        {"mode": "Feedback delay blindness", "description": "Not accounting for feedback delay", "real_world_case": "Overcorrecting due to delayed feedback.", "warning_signs": ["Oscillation", "Overcorrection", "Instability"], "safeguards": ["Account for delays", "Patience", "Dampen oscillations"], "quantitative_threshold": "Delayed feedback causes oscillation"},
+        {"mode": "Breaking feedback loops", "description": "Disrupting necessary feedback", "real_world_case": "Removing market price signals.", "warning_signs": ["Lost information", "Poor decisions", "System dysfunction"], "safeguards": ["Preserve feedback", "Information flow", "Signal integrity"], "quantitative_threshold": "Feedback loops carry essential information"}
+      ]
+    }
+  ]
+}

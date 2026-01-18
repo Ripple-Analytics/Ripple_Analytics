@@ -1,0 +1,93 @@
+{
+  "category": "Math",
+  "models": [
+    {
+      "id": 92,
+      "name": "Compounding",
+      "failure_modes": [
+        {"mode": "Underestimating compound effects", "description": "Not grasping exponential growth", "real_world_case": "Underestimating long-term investment returns.", "warning_signs": ["Linear thinking", "Short-term focus", "Surprise at results"], "safeguards": ["Calculate explicitly", "Visualize growth", "Long-term thinking"], "quantitative_threshold": "7% annual = 2x in 10 years, 4x in 20 years"},
+        {"mode": "Negative compounding blindness", "description": "Not seeing how costs compound", "real_world_case": "2% fees compounding to 50% of returns.", "warning_signs": ["Ignoring small costs", "Fee blindness", "Erosion"], "safeguards": ["Calculate total cost", "Long-term impact", "Fee sensitivity"], "quantitative_threshold": "1% fee = 25% less wealth over 30 years"},
+        {"mode": "Interrupting compounding", "description": "Breaking the compound chain", "real_world_case": "Selling investments and restarting.", "warning_signs": ["Frequent changes", "Restarts", "Impatience"], "safeguards": ["Stay invested", "Patience", "Long-term commitment"], "quantitative_threshold": "Each interruption costs years of compounding"},
+        {"mode": "Wrong compounding base", "description": "Compounding the wrong thing", "real_world_case": "Growing revenue while profits shrink.", "warning_signs": ["Wrong metric focus", "Vanity metrics", "Missing fundamentals"], "safeguards": ["Compound what matters", "Focus on value", "Right metrics"], "quantitative_threshold": "Compound profits, not just revenue"},
+        {"mode": "Compounding negative behaviors", "description": "Bad habits compounding over time", "real_world_case": "Small daily inefficiencies becoming massive waste.", "warning_signs": ["Small bad habits", "Gradual decline", "Normalized dysfunction"], "safeguards": ["Fix small problems early", "Continuous improvement", "Habit audit"], "quantitative_threshold": "1% daily decline = 97% annual decline"}
+      ]
+    },
+    {
+      "id": 93,
+      "name": "Power Laws",
+      "failure_modes": [
+        {"mode": "Expecting normal distribution", "description": "Assuming outcomes are normally distributed", "real_world_case": "Expecting average returns from VC portfolio.", "warning_signs": ["Average thinking", "Ignoring outliers", "Normal distribution assumption"], "safeguards": ["Recognize power laws", "Focus on outliers", "Tail awareness"], "quantitative_threshold": "In power law domains, top 1% = 50%+ of value"},
+        {"mode": "Diversifying in power law domains", "description": "Over-diversifying when concentration matters", "real_world_case": "VC spreading too thin across investments.", "warning_signs": ["Over-diversification", "Average returns", "Missing winners"], "safeguards": ["Concentrate on best", "Follow winners", "Power law strategy"], "quantitative_threshold": "In power law, concentrate on winners"},
+        {"mode": "Giving up on power law bets", "description": "Abandoning before power law kicks in", "real_world_case": "Selling Amazon early.", "warning_signs": ["Early exit", "Impatience", "Missing tail"], "safeguards": ["Hold winners", "Patience", "Let winners run"], "quantitative_threshold": "Power law returns come late"},
+        {"mode": "Applying power law where it doesn't apply", "description": "Assuming power law in normal domains", "real_world_case": "Concentrating in stable industries.", "warning_signs": ["Wrong domain", "Unnecessary concentration", "Misapplied model"], "safeguards": ["Identify distribution type", "Domain awareness", "Appropriate strategy"], "quantitative_threshold": "Not all domains follow power laws"},
+        {"mode": "Power law in negative outcomes", "description": "Not recognizing power law risks", "real_world_case": "Tail risk in financial crises.", "warning_signs": ["Ignoring tail risk", "Normal risk models", "Surprise losses"], "safeguards": ["Tail risk awareness", "Fat tail models", "Margin of safety"], "quantitative_threshold": "Negative power laws can be catastrophic"}
+      ]
+    },
+    {
+      "id": 94,
+      "name": "Law of Large Numbers",
+      "failure_modes": [
+        {"mode": "Small sample overconfidence", "description": "Drawing conclusions from small samples", "real_world_case": "Judging fund manager on 3 years.", "warning_signs": ["Small samples", "Overconfidence", "Premature conclusions"], "safeguards": ["Larger samples", "Statistical significance", "Patience"], "quantitative_threshold": "Need 30+ observations for reliability"},
+        {"mode": "Ignoring variance in small samples", "description": "Not accounting for high variance", "real_world_case": "Hot hand fallacy in basketball.", "warning_signs": ["Pattern seeking", "Ignoring randomness", "Streaks"], "safeguards": ["Account for variance", "Longer time frames", "Statistical thinking"], "quantitative_threshold": "Small samples have high variance"},
+        {"mode": "Gambler's fallacy", "description": "Expecting short-term regression", "real_world_case": "Expecting red after many blacks.", "warning_signs": ["Due thinking", "Expecting balance", "Short-term regression"], "safeguards": ["Independence of events", "No memory", "Each event fresh"], "quantitative_threshold": "Past events don't affect independent future events"},
+        {"mode": "Regression to mean timing", "description": "Not knowing when regression will occur", "real_world_case": "Expecting immediate mean reversion.", "warning_signs": ["Timing assumptions", "Impatience", "Early action"], "safeguards": ["Patience", "Long-term view", "No timing"], "quantitative_threshold": "Regression happens eventually, timing unknown"},
+        {"mode": "Confusing population and sample", "description": "Treating sample statistics as population parameters", "real_world_case": "Assuming sample mean is true mean.", "warning_signs": ["Overconfidence", "No uncertainty", "Point estimates"], "safeguards": ["Confidence intervals", "Uncertainty acknowledgment", "Sample vs population"], "quantitative_threshold": "Sample statistics have uncertainty"}
+      ]
+    },
+    {
+      "id": 95,
+      "name": "Expected Value",
+      "failure_modes": [
+        {"mode": "Ignoring probability", "description": "Focusing on outcome, not probability", "real_world_case": "Buying lottery tickets for big prize.", "warning_signs": ["Outcome focus", "Ignoring odds", "Wishful thinking"], "safeguards": ["Calculate probability", "Expected value math", "Realistic assessment"], "quantitative_threshold": "EV = probability × outcome"},
+        {"mode": "Ignoring magnitude", "description": "Focusing on probability, not outcome size", "real_world_case": "Avoiding small probability of large loss.", "warning_signs": ["Probability focus only", "Ignoring impact", "Incomplete analysis"], "safeguards": ["Consider magnitude", "Full EV calculation", "Impact assessment"], "quantitative_threshold": "Both probability and magnitude matter"},
+        {"mode": "Negative expected value bets", "description": "Taking bets with negative EV", "real_world_case": "Casino gambling.", "warning_signs": ["House edge", "Negative EV", "Entertainment rationalization"], "safeguards": ["Calculate EV", "Avoid negative EV", "Discipline"], "quantitative_threshold": "Don't take negative EV bets repeatedly"},
+        {"mode": "Expected value in non-repeatable situations", "description": "Using EV for one-time decisions", "real_world_case": "Betting everything on positive EV one-time bet.", "warning_signs": ["Single bet thinking", "No repetition", "Ruin risk"], "safeguards": ["Consider ruin", "Kelly criterion", "Survival first"], "quantitative_threshold": "EV matters most for repeated bets"},
+        {"mode": "Utility vs expected value", "description": "Ignoring diminishing marginal utility", "real_world_case": "Risking needed money for positive EV.", "warning_signs": ["Linear utility assumption", "Ignoring utility curve", "Risk of ruin"], "safeguards": ["Consider utility", "Diminishing returns", "Risk management"], "quantitative_threshold": "Utility of money is not linear"}
+      ]
+    },
+    {
+      "id": 96,
+      "name": "Bayes Theorem",
+      "failure_modes": [
+        {"mode": "Ignoring base rates", "description": "Not starting with prior probability", "real_world_case": "Ignoring that most startups fail.", "warning_signs": ["No prior", "Special case thinking", "Overconfidence"], "safeguards": ["Start with base rate", "Adjust from there", "Prior first"], "quantitative_threshold": "Base rate is your starting point"},
+        {"mode": "Overweighting new evidence", "description": "Updating too much on single data point", "real_world_case": "Changing view completely on one event.", "warning_signs": ["Volatile beliefs", "Overreaction", "Single data point"], "safeguards": ["Proportional updating", "Weight evidence properly", "Stability"], "quantitative_threshold": "Update proportional to evidence strength"},
+        {"mode": "Underweighting new evidence", "description": "Not updating enough on strong evidence", "real_world_case": "Ignoring clear disconfirming evidence.", "warning_signs": ["Sticky beliefs", "Ignoring evidence", "Anchoring"], "safeguards": ["Force updates", "Honor evidence", "Flexibility"], "quantitative_threshold": "Strong evidence should move beliefs significantly"},
+        {"mode": "Confirmation bias in updating", "description": "Only updating on confirming evidence", "real_world_case": "Seeking and weighting confirming evidence.", "warning_signs": ["Selective updating", "Confirmation bias", "One-way changes"], "safeguards": ["Seek disconfirming", "Update both ways", "Symmetric"], "quantitative_threshold": "Disconfirming evidence is more valuable"},
+        {"mode": "Wrong likelihood ratios", "description": "Misjudging how diagnostic evidence is", "real_world_case": "Thinking evidence is more diagnostic than it is.", "warning_signs": ["Overconfident updates", "Wrong diagnosticity", "Misjudged evidence"], "safeguards": ["Calibrate diagnosticity", "Multiple evidence sources", "Humility"], "quantitative_threshold": "Most evidence is less diagnostic than we think"}
+      ]
+    },
+    {
+      "id": 97,
+      "name": "Regression to Mean",
+      "failure_modes": [
+        {"mode": "Expecting immediate regression", "description": "Thinking regression happens quickly", "real_world_case": "Shorting after one good quarter.", "warning_signs": ["Timing assumptions", "Impatience", "Early action"], "safeguards": ["Patience", "Long-term view", "No timing"], "quantitative_threshold": "Regression timing is unpredictable"},
+        {"mode": "Confusing regression with causation", "description": "Attributing regression to interventions", "real_world_case": "Thinking treatment worked when it was regression.", "warning_signs": ["Causal attribution", "No control group", "Regression ignored"], "safeguards": ["Control groups", "Regression awareness", "Causal inference"], "quantitative_threshold": "Extreme values regress regardless of intervention"},
+        {"mode": "Regression in non-mean-reverting systems", "description": "Expecting regression where it doesn't apply", "real_world_case": "Expecting tech stocks to regress to old valuations.", "warning_signs": ["Wrong domain", "Structural change", "Old baselines"], "safeguards": ["Identify regime changes", "New baselines", "Domain awareness"], "quantitative_threshold": "Not all systems mean-revert"},
+        {"mode": "Ignoring regression in predictions", "description": "Predicting extremes will continue", "real_world_case": "Extrapolating exceptional performance.", "warning_signs": ["Extrapolation", "Ignoring regression", "Overconfidence"], "safeguards": ["Regress predictions to mean", "Conservative forecasts", "Regression adjustment"], "quantitative_threshold": "Extreme performance usually regresses"},
+        {"mode": "Regression to wrong mean", "description": "Regressing to incorrect baseline", "real_world_case": "Using historical mean that's no longer relevant.", "warning_signs": ["Wrong baseline", "Outdated mean", "Structural change"], "safeguards": ["Identify correct mean", "Update baselines", "Regime awareness"], "quantitative_threshold": "Mean can shift over time"}
+      ]
+    },
+    {
+      "id": 98,
+      "name": "Pareto Principle",
+      "failure_modes": [
+        {"mode": "Misapplying 80/20", "description": "Assuming 80/20 applies everywhere", "real_world_case": "Expecting 80/20 in uniform distributions.", "warning_signs": ["Universal application", "Wrong domains", "Forced fit"], "safeguards": ["Verify distribution", "Domain awareness", "Empirical check"], "quantitative_threshold": "80/20 is approximation, not law"},
+        {"mode": "Ignoring the 80%", "description": "Completely neglecting the long tail", "real_world_case": "Ignoring small customers entirely.", "warning_signs": ["Complete neglect", "Missing value", "Over-concentration"], "safeguards": ["Value the tail", "Efficient service", "Don't ignore"], "quantitative_threshold": "80% still has value, just less per unit"},
+        {"mode": "Static 80/20 thinking", "description": "Not recognizing the 20% changes", "real_world_case": "Focusing on yesterday's top customers.", "warning_signs": ["Static analysis", "Outdated focus", "Missing shifts"], "safeguards": ["Regular analysis", "Dynamic focus", "Update priorities"], "quantitative_threshold": "The vital few change over time"},
+        {"mode": "80/20 of 80/20 blindness", "description": "Not applying recursively", "real_world_case": "Not finding the 4% that drives 64%.", "warning_signs": ["Single layer", "Missing concentration", "Incomplete analysis"], "safeguards": ["Apply recursively", "Find the vital few of vital few", "Deep analysis"], "quantitative_threshold": "80/20 of 80/20 = 4% drives 64%"},
+        {"mode": "Pareto as excuse for neglect", "description": "Using 80/20 to justify ignoring things", "real_world_case": "Neglecting important but not top priorities.", "warning_signs": ["Rationalized neglect", "Important things ignored", "Excuse-making"], "safeguards": ["Prioritize, don't neglect", "Efficient handling", "Complete coverage"], "quantitative_threshold": "Prioritize, but don't completely neglect"}
+      ]
+    },
+    {
+      "id": 99,
+      "name": "Margin of Safety",
+      "failure_modes": [
+        {"mode": "Insufficient margin", "description": "Not enough buffer for uncertainty", "real_world_case": "Buying at fair value with no margin.", "warning_signs": ["Tight margins", "No buffer", "Optimistic assumptions"], "safeguards": ["Conservative assumptions", "Larger margins", "Stress testing"], "quantitative_threshold": "20-30% margin minimum for uncertainty"},
+        {"mode": "Margin erosion", "description": "Gradually reducing safety margins", "real_world_case": "Normalized deviance in safety standards.", "warning_signs": ["Incremental reductions", "Nothing bad yet", "Cost pressure"], "safeguards": ["Absolute standards", "No compromise", "Regular audits"], "quantitative_threshold": "Safety margins should never decrease"},
+        {"mode": "False precision eliminating margin", "description": "Precise calculations creating false confidence", "real_world_case": "DCF to two decimal places.", "warning_signs": ["False precision", "Overconfidence", "No uncertainty"], "safeguards": ["Ranges not points", "Acknowledge uncertainty", "Conservative"], "quantitative_threshold": "Add margin to precise calculations"},
+        {"mode": "Margin in wrong dimension", "description": "Safety margin in area that doesn't matter", "real_world_case": "Over-engineering unimportant features.", "warning_signs": ["Misallocated margin", "Wrong priorities", "Critical gaps"], "safeguards": ["Identify critical paths", "Prioritize margins", "Risk-based"], "quantitative_threshold": "Margin where it matters most"},
+        {"mode": "Competitive pressure eliminating margin", "description": "Racing to bottom removes safety", "real_world_case": "Airlines cutting maintenance to compete.", "warning_signs": ["Price wars", "Cost cutting", "Safety compromises"], "safeguards": ["Non-negotiable standards", "Value pricing", "Differentiation"], "quantitative_threshold": "Some margins are non-negotiable"}
+      ]
+    }
+  ]
+}
