@@ -1420,6 +1420,958 @@
           "example_scenario": "Not recognizing bubble pattern because 'this time the technology is real'"
         }
       ]
+    },
+    {
+      "model_id": 26,
+      "model_name": "Confirmation Bias",
+      "failures": [
+        {
+          "id": "fm_26_1",
+          "name": "Selective Evidence Gathering",
+          "description": "Only seeking information that confirms existing beliefs",
+          "category": "data_bias",
+          "severity": "critical",
+          "detection_signals": ["one_sided_research", "no_contrary_sources", "confirming_evidence_only"],
+          "prevention_strategies": ["Actively seek disconfirming evidence", "Assign devil's advocate", "Research bear case first"],
+          "example_scenario": "Bull case research only cites positive analyst reports, ignoring critical ones"
+        },
+        {
+          "id": "fm_26_2",
+          "name": "Interpretation Bias",
+          "description": "Interpreting ambiguous evidence as confirming existing beliefs",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["ambiguous_evidence_interpreted_favorably", "alternative_interpretations_ignored", "spin_on_neutral_data"],
+          "prevention_strategies": ["List multiple interpretations", "Seek outside interpretation", "Pre-register interpretation criteria"],
+          "example_scenario": "Interpreting flat sales as 'stabilization' when bearish view would call it 'stagnation'"
+        },
+        {
+          "id": "fm_26_3",
+          "name": "Memory Bias",
+          "description": "Remembering confirming evidence better than disconfirming",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["selective_recall", "forgotten_contradictions", "memory_favors_thesis"],
+          "prevention_strategies": ["Document all evidence systematically", "Review contradicting evidence regularly", "Use checklists"],
+          "example_scenario": "Remembering successful predictions but forgetting failures"
+        },
+        {
+          "id": "fm_26_4",
+          "name": "Source Selection Bias",
+          "description": "Choosing sources known to confirm existing views",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["echo_chamber_sources", "no_diverse_viewpoints", "tribal_information_sources"],
+          "prevention_strategies": ["Diversify information sources", "Include opposing viewpoints", "Seek heterodox sources"],
+          "example_scenario": "Only reading bullish analysts on a stock you own"
+        },
+        {
+          "id": "fm_26_5",
+          "name": "Hypothesis Preservation",
+          "description": "Modifying hypothesis to accommodate contradicting evidence rather than rejecting it",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["ad_hoc_modifications", "moving_goalposts", "special_pleading"],
+          "prevention_strategies": ["Pre-specify falsification criteria", "Track hypothesis modifications", "Require strong evidence for modifications"],
+          "example_scenario": "Adding exceptions to investment thesis each time it's challenged rather than reconsidering"
+        }
+      ]
+    },
+    {
+      "model_id": 27,
+      "model_name": "Hindsight Bias",
+      "failures": [
+        {
+          "id": "fm_27_1",
+          "name": "Outcome-Based Judgment",
+          "description": "Judging decisions by outcomes rather than process quality",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["outcome_determines_judgment", "process_ignored", "results_only_evaluation"],
+          "prevention_strategies": ["Evaluate process separately from outcome", "Document reasoning before outcomes known", "Judge decisions at time made"],
+          "example_scenario": "Criticizing investment decision that lost money even though process was sound"
+        },
+        {
+          "id": "fm_27_2",
+          "name": "Predictability Illusion",
+          "description": "Believing past events were more predictable than they actually were",
+          "category": "overconfidence",
+          "severity": "high",
+          "detection_signals": ["obvious_in_hindsight_claims", "predictability_overstated", "uncertainty_forgotten"],
+          "prevention_strategies": ["Document predictions before events", "Review pre-event uncertainty", "Track prediction accuracy"],
+          "example_scenario": "Claiming 'everyone knew' the bubble would burst after it did"
+        },
+        {
+          "id": "fm_27_3",
+          "name": "Learning Distortion",
+          "description": "Drawing wrong lessons from past because of hindsight bias",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["oversimplified_lessons", "causation_assumed", "complexity_ignored"],
+          "prevention_strategies": ["Study multiple similar cases", "Consider counterfactuals", "Acknowledge role of luck"],
+          "example_scenario": "Concluding 'should have sold at the top' without acknowledging it wasn't knowable"
+        },
+        {
+          "id": "fm_27_4",
+          "name": "Creeping Determinism",
+          "description": "Viewing past as inevitable chain of events",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["inevitability_narrative", "contingency_ignored", "deterministic_framing"],
+          "prevention_strategies": ["Consider alternative histories", "Identify decision points", "Acknowledge contingency"],
+          "example_scenario": "Viewing company's success as inevitable rather than result of many uncertain decisions"
+        },
+        {
+          "id": "fm_27_5",
+          "name": "Overconfidence from Hindsight",
+          "description": "Becoming overconfident in future predictions because past seems predictable",
+          "category": "overconfidence",
+          "severity": "high",
+          "detection_signals": ["increased_confidence_after_outcomes", "pattern_recognition_overconfidence", "future_seems_predictable"],
+          "prevention_strategies": ["Track actual prediction accuracy", "Maintain uncertainty estimates", "Study prediction failures"],
+          "example_scenario": "Believing you can predict next crisis because you 'saw' the last one coming"
+        }
+      ]
+    },
+    {
+      "model_id": 28,
+      "model_name": "First-Conclusion Bias",
+      "failures": [
+        {
+          "id": "fm_28_1",
+          "name": "Premature Commitment",
+          "description": "Committing to first conclusion before adequate analysis",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["rapid_conclusion", "limited_analysis", "first_answer_accepted"],
+          "prevention_strategies": ["Require minimum analysis time", "Generate multiple hypotheses", "Delay conclusion"],
+          "example_scenario": "Forming investment opinion after reading one article"
+        },
+        {
+          "id": "fm_28_2",
+          "name": "Anchoring on Initial View",
+          "description": "Subsequent analysis anchored to and confirming initial conclusion",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["initial_view_unchanged", "confirming_analysis", "anchoring_effect"],
+          "prevention_strategies": ["Document initial view separately", "Seek disconfirming analysis", "Fresh eyes review"],
+          "example_scenario": "All subsequent research confirms initial bullish view because that's what you're looking for"
+        },
+        {
+          "id": "fm_28_3",
+          "name": "Cognitive Ease Preference",
+          "description": "Accepting conclusions that come easily rather than doing hard analysis",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["easy_answer_accepted", "complex_analysis_avoided", "cognitive_laziness"],
+          "prevention_strategies": ["Require thorough analysis", "Challenge easy answers", "Embrace complexity"],
+          "example_scenario": "Accepting simple narrative rather than doing detailed financial analysis"
+        },
+        {
+          "id": "fm_28_4",
+          "name": "Pattern Matching Shortcut",
+          "description": "Matching situation to familiar pattern without verifying fit",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["pattern_assumed", "differences_ignored", "template_applied"],
+          "prevention_strategies": ["Verify pattern fit", "Look for differences", "Consider unique factors"],
+          "example_scenario": "Assuming company will follow same path as similar company without checking differences"
+        },
+        {
+          "id": "fm_28_5",
+          "name": "Intuition Over Analysis",
+          "description": "Trusting gut feeling over systematic analysis",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["intuition_cited", "analysis_skipped", "gut_feeling_trusted"],
+          "prevention_strategies": ["Require analytical support", "Test intuition against data", "Use structured process"],
+          "example_scenario": "Making investment based on 'feeling good' about management without due diligence"
+        }
+      ]
+    },
+    {
+      "model_id": 29,
+      "model_name": "Anchoring Bias",
+      "failures": [
+        {
+          "id": "fm_29_1",
+          "name": "Irrelevant Anchor Influence",
+          "description": "Being influenced by anchors that have no logical relevance",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["irrelevant_reference_point", "arbitrary_anchor", "anchor_not_justified"],
+          "prevention_strategies": ["Question anchor relevance", "Generate own estimates first", "Use multiple reference points"],
+          "example_scenario": "Valuation anchored to IPO price which has no bearing on current value"
+        },
+        {
+          "id": "fm_29_2",
+          "name": "Insufficient Adjustment",
+          "description": "Adjusting insufficiently from anchor even when adjustment is needed",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["small_adjustment_from_anchor", "anchor_dominates", "adjustment_inadequate"],
+          "prevention_strategies": ["Make larger adjustments", "Start from different anchors", "Use outside view"],
+          "example_scenario": "Adjusting analyst price target by 10% when fundamentals suggest 50% change needed"
+        },
+        {
+          "id": "fm_29_3",
+          "name": "Self-Generated Anchor",
+          "description": "Being anchored by your own previous estimates",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["previous_estimate_anchors", "reluctance_to_change", "own_anchor_effect"],
+          "prevention_strategies": ["Fresh analysis periodically", "Ignore previous estimates", "Independent re-estimation"],
+          "example_scenario": "Sticking close to your original price target despite changed circumstances"
+        },
+        {
+          "id": "fm_29_4",
+          "name": "Negotiation Anchor Trap",
+          "description": "Being anchored by counterparty's opening position",
+          "category": "context_blindness",
+          "severity": "high",
+          "detection_signals": ["counterparty_anchor_accepted", "negotiation_around_their_number", "own_anchor_not_set"],
+          "prevention_strategies": ["Set own anchor first", "Ignore counterparty anchor", "Use objective criteria"],
+          "example_scenario": "Negotiating around seller's asking price rather than your own valuation"
+        },
+        {
+          "id": "fm_29_5",
+          "name": "Historical Price Anchoring",
+          "description": "Anchoring on historical prices that may no longer be relevant",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["historical_price_cited", "52_week_high_low_anchoring", "past_price_as_reference"],
+          "prevention_strategies": ["Value based on fundamentals", "Ignore historical prices", "Focus on intrinsic value"],
+          "example_scenario": "Thinking stock is cheap because it's down 50% from highs"
+        }
+      ]
+    },
+    {
+      "model_id": 30,
+      "model_name": "Incentive-Caused Bias",
+      "failures": [
+        {
+          "id": "fm_30_1",
+          "name": "Self-Interest Blindness",
+          "description": "Not recognizing how own incentives bias analysis",
+          "category": "data_bias",
+          "severity": "critical",
+          "detection_signals": ["personal_stake_present", "bias_not_acknowledged", "self_serving_conclusion"],
+          "prevention_strategies": ["Disclose conflicts", "Seek independent review", "Assume bias exists"],
+          "example_scenario": "Analyst bullish on stock their firm is underwriting"
+        },
+        {
+          "id": "fm_30_2",
+          "name": "Professional Incentive Distortion",
+          "description": "Professional incentives unconsciously shaping recommendations",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["recommendation_aligns_with_incentives", "career_risk_avoided", "fee_generating_advice"],
+          "prevention_strategies": ["Map advisor incentives", "Seek fee-only advice", "Consider incentive alignment"],
+          "example_scenario": "Broker recommending active trading because it generates commissions"
+        },
+        {
+          "id": "fm_30_3",
+          "name": "Institutional Incentive Capture",
+          "description": "Institutional incentives overriding individual judgment",
+          "category": "context_blindness",
+          "severity": "high",
+          "detection_signals": ["institutional_pressure", "career_risk_consideration", "going_along_to_get_along"],
+          "prevention_strategies": ["Recognize institutional pressures", "Document independent view", "Seek outside perspective"],
+          "example_scenario": "Analyst maintaining buy rating because firm has banking relationship"
+        },
+        {
+          "id": "fm_30_4",
+          "name": "Incentive Rationalization",
+          "description": "Constructing rational-sounding justifications for incentive-driven conclusions",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["elaborate_justification", "conclusion_matches_incentives", "post_hoc_reasoning"],
+          "prevention_strategies": ["Write conclusion before knowing incentives", "Seek disinterested review", "Question convenient conclusions"],
+          "example_scenario": "Building sophisticated model that happens to justify the deal you want to do"
+        },
+        {
+          "id": "fm_30_5",
+          "name": "Incentive Contagion",
+          "description": "Adopting others' biased views because of their incentives",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["biased_source_trusted", "source_incentives_ignored", "accepting_biased_input"],
+          "prevention_strategies": ["Map source incentives", "Discount biased sources", "Seek disinterested sources"],
+          "example_scenario": "Trusting sell-side research without considering their incentives"
+        }
+      ]
+    },
+    {
+      "model_id": 31,
+      "model_name": "Pavlovian Association/Conditioning",
+      "failures": [
+        {
+          "id": "fm_31_1",
+          "name": "Conditioned Response Blindness",
+          "description": "Not recognizing conditioned responses driving behavior",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["automatic_response", "stimulus_response_pattern", "unconscious_reaction"],
+          "prevention_strategies": ["Identify triggers", "Pause before responding", "Question automatic reactions"],
+          "example_scenario": "Automatically buying dips because it worked before, without analyzing current situation"
+        },
+        {
+          "id": "fm_31_2",
+          "name": "False Association",
+          "description": "Creating associations between unrelated events",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["spurious_correlation", "coincidental_pairing", "superstitious_thinking"],
+          "prevention_strategies": ["Require causal mechanism", "Test association statistically", "Consider base rates"],
+          "example_scenario": "Believing certain market indicators predict outcomes when correlation is spurious"
+        },
+        {
+          "id": "fm_31_3",
+          "name": "Extinction Failure",
+          "description": "Continuing conditioned response after conditions have changed",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["outdated_response", "conditions_changed", "old_pattern_applied"],
+          "prevention_strategies": ["Regularly review if conditions still apply", "Update mental models", "Test assumptions"],
+          "example_scenario": "Continuing to buy dips in bear market because it worked in bull market"
+        },
+        {
+          "id": "fm_31_4",
+          "name": "Generalization Error",
+          "description": "Generalizing conditioned response to dissimilar situations",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["overgeneralization", "different_context_same_response", "similarity_assumed"],
+          "prevention_strategies": ["Check context similarity", "Limit generalization", "Test in new context"],
+          "example_scenario": "Applying strategy that worked in one market to completely different market"
+        },
+        {
+          "id": "fm_31_5",
+          "name": "Emotional Conditioning",
+          "description": "Emotional responses conditioned by past experiences distorting judgment",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["emotional_reaction", "past_experience_triggered", "irrational_fear_or_excitement"],
+          "prevention_strategies": ["Recognize emotional triggers", "Separate emotion from analysis", "Use systematic process"],
+          "example_scenario": "Fear of a sector because of past losses there, even when fundamentals are different"
+        }
+      ]
+    },
+    {
+      "model_id": 32,
+      "model_name": "Hyperbolic Discounting/Short-Termism",
+      "failures": [
+        {
+          "id": "fm_32_1",
+          "name": "Present Bias",
+          "description": "Overweighting immediate outcomes vs. future outcomes",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["short_term_focus", "future_discounted_heavily", "immediate_gratification"],
+          "prevention_strategies": ["Explicitly value long-term", "Use consistent discount rates", "Pre-commit to long-term"],
+          "example_scenario": "Selling winning position for immediate gain rather than holding for larger future gain"
+        },
+        {
+          "id": "fm_32_2",
+          "name": "Quarterly Earnings Myopia",
+          "description": "Overweighting quarterly results vs. long-term value creation",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["quarterly_focus", "long_term_ignored", "short_term_metrics_emphasized"],
+          "prevention_strategies": ["Focus on multi-year trends", "Evaluate long-term value creation", "Ignore quarterly noise"],
+          "example_scenario": "Selling stock after one bad quarter despite strong long-term thesis"
+        },
+        {
+          "id": "fm_32_3",
+          "name": "Impatience with Compounding",
+          "description": "Undervaluing slow compounding in favor of quick gains",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["compounding_undervalued", "quick_gains_preferred", "impatience_with_slow_growth"],
+          "prevention_strategies": ["Calculate long-term compounding value", "Visualize future value", "Commit to holding periods"],
+          "example_scenario": "Abandoning 15% compounder for speculative 100% gain attempt"
+        },
+        {
+          "id": "fm_32_4",
+          "name": "Career Risk Short-Termism",
+          "description": "Short-term focus driven by career risk of underperformance",
+          "category": "context_blindness",
+          "severity": "high",
+          "detection_signals": ["career_risk_consideration", "benchmark_hugging", "avoiding_short_term_underperformance"],
+          "prevention_strategies": ["Align incentives with long-term", "Accept short-term underperformance", "Focus on process"],
+          "example_scenario": "Avoiding undervalued stock because it might underperform in near term"
+        },
+        {
+          "id": "fm_32_5",
+          "name": "Inconsistent Time Preferences",
+          "description": "Applying different discount rates to similar future periods",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["inconsistent_discounting", "near_future_overweighted", "time_inconsistency"],
+          "prevention_strategies": ["Use consistent discount rates", "Apply same standards to all periods", "Check for time inconsistency"],
+          "example_scenario": "Heavily discounting year 2 vs year 1, but not year 3 vs year 2"
+        }
+      ]
+    },
+    {
+      "model_id": 33,
+      "model_name": "Representativeness Bias",
+      "failures": [
+        {
+          "id": "fm_33_1",
+          "name": "Base Rate Neglect",
+          "description": "Ignoring base rates in favor of representativeness",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["base_rate_ignored", "stereotype_match_emphasized", "prior_probability_neglected"],
+          "prevention_strategies": ["Always start with base rates", "Adjust from base rate", "Require base rate in analysis"],
+          "example_scenario": "Assuming startup will succeed because founders fit successful founder stereotype, ignoring 90% failure rate"
+        },
+        {
+          "id": "fm_33_2",
+          "name": "Sample Size Insensitivity",
+          "description": "Drawing strong conclusions from small samples that seem representative",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["small_sample", "strong_conclusion", "sample_size_ignored"],
+          "prevention_strategies": ["Check sample size", "Adjust confidence for sample size", "Require minimum sample"],
+          "example_scenario": "Concluding strategy works based on 3 successful trades"
+        },
+        {
+          "id": "fm_33_3",
+          "name": "Conjunction Fallacy",
+          "description": "Judging specific scenarios as more likely than general ones",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["specific_scenario_preferred", "conjunction_judged_more_likely", "detail_adds_credibility"],
+          "prevention_strategies": ["Check probability logic", "Simpler scenarios more likely", "Avoid detail bias"],
+          "example_scenario": "Believing detailed bull case more likely than simple 'stock goes up'"
+        },
+        {
+          "id": "fm_33_4",
+          "name": "Stereotype Matching",
+          "description": "Judging probability by fit to stereotype rather than evidence",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["stereotype_match", "evidence_secondary", "pattern_matching_over_data"],
+          "prevention_strategies": ["Focus on specific evidence", "Ignore stereotypes", "Use data not patterns"],
+          "example_scenario": "Assuming company will fail because CEO doesn't fit successful CEO stereotype"
+        },
+        {
+          "id": "fm_33_5",
+          "name": "Regression Ignorance",
+          "description": "Not expecting regression to mean after extreme observations",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["extreme_performance_extrapolated", "regression_not_expected", "trend_continuation_assumed"],
+          "prevention_strategies": ["Expect regression to mean", "Discount extreme performance", "Use long-term averages"],
+          "example_scenario": "Expecting exceptional year to continue rather than regress to average"
+        }
+      ]
+    },
+    {
+      "model_id": 34,
+      "model_name": "Status Quo Bias/Habit Persistence",
+      "failures": [
+        {
+          "id": "fm_34_1",
+          "name": "Default Option Preference",
+          "description": "Preferring current state simply because it's the default",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["default_chosen", "change_avoided", "inertia_present"],
+          "prevention_strategies": ["Evaluate options equally", "Consider opportunity cost of status quo", "Require justification for default"],
+          "example_scenario": "Keeping underperforming investment because selling requires action"
+        },
+        {
+          "id": "fm_34_2",
+          "name": "Change Aversion",
+          "description": "Resisting change even when change is beneficial",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["change_resisted", "benefits_of_change_discounted", "risks_of_change_overweighted"],
+          "prevention_strategies": ["Evaluate change objectively", "Consider cost of not changing", "Overcome inertia deliberately"],
+          "example_scenario": "Not updating investment process despite evidence of better approaches"
+        },
+        {
+          "id": "fm_34_3",
+          "name": "Endowment Effect",
+          "description": "Overvaluing what you already own",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["owned_assets_overvalued", "selling_price_exceeds_buying_price", "attachment_to_holdings"],
+          "prevention_strategies": ["Value holdings as if you didn't own them", "Would you buy at current price?", "Regular portfolio review"],
+          "example_scenario": "Refusing to sell stock at price you wouldn't pay to buy it"
+        },
+        {
+          "id": "fm_34_4",
+          "name": "Process Ossification",
+          "description": "Continuing processes because 'that's how we've always done it'",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["legacy_process", "no_recent_review", "tradition_cited"],
+          "prevention_strategies": ["Regular process review", "Question all processes", "Zero-based process design"],
+          "example_scenario": "Using outdated valuation methods because they're familiar"
+        },
+        {
+          "id": "fm_34_5",
+          "name": "Omission Bias",
+          "description": "Preferring inaction over action even when action is better",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["inaction_preferred", "action_avoided", "omission_over_commission"],
+          "prevention_strategies": ["Evaluate action and inaction equally", "Consider cost of inaction", "Overcome action aversion"],
+          "example_scenario": "Not selling deteriorating position because selling feels like 'doing something wrong'"
+        }
+      ]
+    },
+    {
+      "model_id": 35,
+      "model_name": "Inversion",
+      "failures": [
+        {
+          "id": "fm_35_1",
+          "name": "Inversion Omission",
+          "description": "Failing to apply inversion when it would reveal important insights",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["no_inversion_applied", "only_positive_case_considered", "failure_modes_not_analyzed"],
+          "prevention_strategies": ["Always ask 'what could go wrong?'", "Require inversion in analysis", "Checklist for inversion"],
+          "example_scenario": "Investment thesis only considers how it could succeed, not how it could fail"
+        },
+        {
+          "id": "fm_35_2",
+          "name": "Superficial Inversion",
+          "description": "Applying inversion superficially without deep analysis",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["shallow_risk_analysis", "obvious_risks_only", "inversion_as_checkbox"],
+          "prevention_strategies": ["Deep dive into failure modes", "Second and third order effects", "Stress test inversion"],
+          "example_scenario": "Risk section lists obvious risks without analyzing probability or impact"
+        },
+        {
+          "id": "fm_35_3",
+          "name": "Inversion Without Action",
+          "description": "Identifying risks through inversion but not acting on them",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["risks_identified_not_addressed", "inversion_ignored", "no_mitigation_plan"],
+          "prevention_strategies": ["Require mitigation for identified risks", "Act on inversion insights", "Track risk mitigation"],
+          "example_scenario": "Identifying key risk but proceeding without mitigation plan"
+        },
+        {
+          "id": "fm_35_4",
+          "name": "Asymmetric Inversion",
+          "description": "Applying inversion to some scenarios but not others",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["selective_inversion", "some_scenarios_not_inverted", "inconsistent_application"],
+          "prevention_strategies": ["Apply inversion consistently", "Invert all major assumptions", "Systematic inversion process"],
+          "example_scenario": "Inverting competitive risks but not management risks"
+        },
+        {
+          "id": "fm_35_5",
+          "name": "Inversion Paralysis",
+          "description": "Excessive focus on what could go wrong preventing action",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["excessive_risk_focus", "action_paralysis", "pessimism_dominates"],
+          "prevention_strategies": ["Balance inversion with opportunity", "Quantify risks vs. rewards", "Accept some risk"],
+          "example_scenario": "Never investing because you can always find something that could go wrong"
+        }
+      ]
+    },
+    {
+      "model_id": 36,
+      "model_name": "Checklist Approach",
+      "failures": [
+        {
+          "id": "fm_36_1",
+          "name": "Checklist as Checkbox",
+          "description": "Going through checklist mechanically without genuine analysis",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["mechanical_completion", "no_deep_analysis", "checkbox_mentality"],
+          "prevention_strategies": ["Require substantive answers", "Review checklist quality", "Explain reasoning for each item"],
+          "example_scenario": "Checking 'competitive advantage: yes' without analyzing what it actually is"
+        },
+        {
+          "id": "fm_36_2",
+          "name": "Incomplete Checklist",
+          "description": "Checklist missing important items for the situation",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["key_items_missing", "generic_checklist", "situation_specific_items_absent"],
+          "prevention_strategies": ["Customize checklist for situation", "Regular checklist review", "Add items from failures"],
+          "example_scenario": "Using generic checklist that misses industry-specific risks"
+        },
+        {
+          "id": "fm_36_3",
+          "name": "Checklist Overconfidence",
+          "description": "False confidence from completing checklist",
+          "category": "overconfidence",
+          "severity": "medium",
+          "detection_signals": ["checklist_completion_equals_confidence", "process_over_judgment", "false_security"],
+          "prevention_strategies": ["Checklist is minimum not maximum", "Maintain skepticism", "Checklist doesn't guarantee success"],
+          "example_scenario": "Feeling confident because checklist is complete, missing non-checklist risks"
+        },
+        {
+          "id": "fm_36_4",
+          "name": "Outdated Checklist",
+          "description": "Using checklist that hasn't been updated for changed conditions",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["old_checklist", "conditions_changed", "new_risks_not_included"],
+          "prevention_strategies": ["Regular checklist updates", "Post-mortem checklist review", "Add new failure modes"],
+          "example_scenario": "Using pre-2008 checklist that doesn't include liquidity risk items"
+        },
+        {
+          "id": "fm_36_5",
+          "name": "Checklist Rigidity",
+          "description": "Following checklist rigidly when situation requires flexibility",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["rigid_application", "unique_situation", "checklist_doesn't_fit"],
+          "prevention_strategies": ["Adapt checklist to situation", "Use judgment alongside checklist", "Know when to deviate"],
+          "example_scenario": "Rejecting opportunity because it doesn't fit standard checklist despite unique merits"
+        }
+      ]
+    },
+    {
+      "model_id": 37,
+      "model_name": "Two-Track Analysis",
+      "failures": [
+        {
+          "id": "fm_37_1",
+          "name": "Single Track Dominance",
+          "description": "One track (rational or psychological) dominates analysis",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["one_track_only", "other_track_ignored", "imbalanced_analysis"],
+          "prevention_strategies": ["Require both tracks", "Equal weight to each", "Checklist for both"],
+          "example_scenario": "Pure financial analysis ignoring psychological factors affecting management"
+        },
+        {
+          "id": "fm_37_2",
+          "name": "Track Integration Failure",
+          "description": "Analyzing both tracks but failing to integrate insights",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["tracks_analyzed_separately", "no_integration", "conflicting_conclusions_unresolved"],
+          "prevention_strategies": ["Explicitly integrate tracks", "Resolve conflicts", "Synthesize insights"],
+          "example_scenario": "Rational analysis says buy, psychological says sell, no resolution"
+        },
+        {
+          "id": "fm_37_3",
+          "name": "Psychological Track Superficiality",
+          "description": "Superficial treatment of psychological factors",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["shallow_psychological_analysis", "biases_listed_not_analyzed", "psychology_as_afterthought"],
+          "prevention_strategies": ["Deep psychological analysis", "Specific bias identification", "Behavioral evidence"],
+          "example_scenario": "Mentioning 'management may be overconfident' without analyzing evidence"
+        },
+        {
+          "id": "fm_37_4",
+          "name": "Self-Analysis Blind Spot",
+          "description": "Applying two-track to others but not to own analysis",
+          "category": "context_blindness",
+          "severity": "high",
+          "detection_signals": ["others_analyzed_not_self", "own_biases_ignored", "asymmetric_application"],
+          "prevention_strategies": ["Apply to own analysis", "Seek external bias check", "Assume own biases exist"],
+          "example_scenario": "Analyzing target company's biases while ignoring own confirmation bias"
+        },
+        {
+          "id": "fm_37_5",
+          "name": "Rational Track Overconfidence",
+          "description": "Overconfidence in rational analysis, underweighting psychological",
+          "category": "overconfidence",
+          "severity": "medium",
+          "detection_signals": ["rational_dominates", "psychology_dismissed", "numbers_over_behavior"],
+          "prevention_strategies": ["Respect psychological factors", "History of rational failures", "Behavior often trumps numbers"],
+          "example_scenario": "Trusting financial model despite management incentive misalignment"
+        }
+      ]
+    },
+    {
+      "model_id": 38,
+      "model_name": "Elementary Worldly Wisdom",
+      "failures": [
+        {
+          "id": "fm_38_1",
+          "name": "Narrow Mental Model Set",
+          "description": "Using too few mental models, missing important perspectives",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["few_models_applied", "single_discipline", "limited_perspective"],
+          "prevention_strategies": ["Expand mental model repertoire", "Apply models from multiple disciplines", "Seek diverse perspectives"],
+          "example_scenario": "Analyzing business only through financial lens, missing psychological and competitive dynamics"
+        },
+        {
+          "id": "fm_38_2",
+          "name": "Model Misapplication",
+          "description": "Applying mental model to situation where it doesn't fit",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["model_doesn't_fit", "forced_application", "poor_model_choice"],
+          "prevention_strategies": ["Check model applicability", "Know model limitations", "Multiple models for validation"],
+          "example_scenario": "Applying supply/demand model to situation driven by network effects"
+        },
+        {
+          "id": "fm_38_3",
+          "name": "Model Overconfidence",
+          "description": "Excessive confidence in mental model predictions",
+          "category": "overconfidence",
+          "severity": "medium",
+          "detection_signals": ["model_treated_as_truth", "uncertainty_ignored", "model_limitations_dismissed"],
+          "prevention_strategies": ["Models are approximations", "Maintain uncertainty", "Test model predictions"],
+          "example_scenario": "Treating moat analysis as definitive when moats can erode unexpectedly"
+        },
+        {
+          "id": "fm_38_4",
+          "name": "Model Updating Failure",
+          "description": "Not updating mental models based on new evidence or failures",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["outdated_models", "failures_not_incorporated", "static_thinking"],
+          "prevention_strategies": ["Regular model review", "Learn from failures", "Update models with evidence"],
+          "example_scenario": "Using pre-internet mental models for digital businesses"
+        },
+        {
+          "id": "fm_38_5",
+          "name": "Model Conflict Paralysis",
+          "description": "Paralysis when different mental models give conflicting answers",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["conflicting_models", "no_resolution", "decision_paralysis"],
+          "prevention_strategies": ["Weight models by relevance", "Seek additional information", "Accept uncertainty"],
+          "example_scenario": "Valuation model says buy, competitive analysis says sell, no decision made"
+        }
+      ]
+    },
+    {
+      "model_id": 39,
+      "model_name": "Latticework of Mental Models",
+      "failures": [
+        {
+          "id": "fm_39_1",
+          "name": "Isolated Model Application",
+          "description": "Applying models in isolation rather than as interconnected latticework",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["models_applied_separately", "no_interconnection", "siloed_analysis"],
+          "prevention_strategies": ["Connect models explicitly", "Look for model interactions", "Build integrated view"],
+          "example_scenario": "Analyzing moat, management, and valuation separately without integration"
+        },
+        {
+          "id": "fm_39_2",
+          "name": "Latticework Gaps",
+          "description": "Missing important models in the latticework",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["key_models_missing", "blind_spots", "incomplete_latticework"],
+          "prevention_strategies": ["Audit latticework regularly", "Add models from failures", "Seek diverse disciplines"],
+          "example_scenario": "Latticework missing psychology models, leading to behavioral blind spots"
+        },
+        {
+          "id": "fm_39_3",
+          "name": "Latticework Rigidity",
+          "description": "Rigid latticework that doesn't adapt to new situations",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["same_models_always", "new_situations_old_models", "no_adaptation"],
+          "prevention_strategies": ["Adapt latticework to situation", "Add situation-specific models", "Flexible application"],
+          "example_scenario": "Applying same latticework to tech startup as to mature industrial company"
+        },
+        {
+          "id": "fm_39_4",
+          "name": "Latticework Complexity Overload",
+          "description": "Latticework too complex to apply effectively",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["too_many_models", "analysis_paralysis", "complexity_overwhelms"],
+          "prevention_strategies": ["Prioritize key models", "Simplify for situation", "Focus on most relevant"],
+          "example_scenario": "Trying to apply 50 models to every situation, losing focus"
+        },
+        {
+          "id": "fm_39_5",
+          "name": "Latticework Without Practice",
+          "description": "Having latticework knowledge without practiced application",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["theoretical_knowledge", "no_practical_application", "models_not_internalized"],
+          "prevention_strategies": ["Practice applying models", "Case study analysis", "Deliberate practice"],
+          "example_scenario": "Knowing about mental models but not actually using them in analysis"
+        }
+      ]
+    },
+    {
+      "model_id": 40,
+      "model_name": "Multidisciplinary Approach",
+      "failures": [
+        {
+          "id": "fm_40_1",
+          "name": "Disciplinary Silos",
+          "description": "Staying within one discipline when multiple are needed",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["single_discipline", "no_cross_pollination", "narrow_expertise"],
+          "prevention_strategies": ["Seek diverse expertise", "Cross-disciplinary teams", "Learn from other fields"],
+          "example_scenario": "Financial analyst missing psychological factors that drive the business"
+        },
+        {
+          "id": "fm_40_2",
+          "name": "Superficial Multidisciplinarity",
+          "description": "Surface-level application of other disciplines without deep understanding",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["shallow_cross_discipline", "buzzwords_without_depth", "misapplied_concepts"],
+          "prevention_strategies": ["Deep learning in key disciplines", "Consult experts", "Verify understanding"],
+          "example_scenario": "Misapplying evolutionary concepts to business without understanding biology"
+        },
+        {
+          "id": "fm_40_3",
+          "name": "Discipline Translation Failure",
+          "description": "Failing to translate insights between disciplines",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["insights_not_translated", "discipline_specific_jargon", "no_practical_application"],
+          "prevention_strategies": ["Translate to practical terms", "Focus on actionable insights", "Bridge disciplines explicitly"],
+          "example_scenario": "Understanding physics concept but not applying it to business situation"
+        },
+        {
+          "id": "fm_40_4",
+          "name": "Discipline Hierarchy Bias",
+          "description": "Valuing some disciplines over others inappropriately",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["discipline_preference", "some_disciplines_dismissed", "hierarchy_of_knowledge"],
+          "prevention_strategies": ["Value all relevant disciplines", "Situation determines relevance", "No discipline hierarchy"],
+          "example_scenario": "Dismissing psychology insights because 'it's not as rigorous as finance'"
+        },
+        {
+          "id": "fm_40_5",
+          "name": "Jack of All Trades Trap",
+          "description": "Broad but shallow knowledge across disciplines",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["broad_shallow_knowledge", "no_deep_expertise", "surface_level_everywhere"],
+          "prevention_strategies": ["Deep expertise in core areas", "Know when to consult experts", "T-shaped knowledge"],
+          "example_scenario": "Knowing a little about everything but not enough to apply any discipline well"
+        }
+      ]
+    },
+    {
+      "model_id": 41,
+      "model_name": "Circle of Competence",
+      "failures": [
+        {
+          "id": "fm_41_1",
+          "name": "Circle Overestimation",
+          "description": "Believing circle of competence is larger than it actually is",
+          "category": "overconfidence",
+          "severity": "critical",
+          "detection_signals": ["competence_overestimated", "unfamiliar_territory_entered", "dunning_kruger_effect"],
+          "prevention_strategies": ["Honest self-assessment", "Track prediction accuracy by domain", "Seek feedback on competence"],
+          "example_scenario": "Tech investor believing they understand biotech because 'it's all science'"
+        },
+        {
+          "id": "fm_41_2",
+          "name": "Circle Boundary Blindness",
+          "description": "Not knowing where circle of competence ends",
+          "category": "context_blindness",
+          "severity": "high",
+          "detection_signals": ["boundaries_unclear", "gradual_drift_outside", "no_competence_mapping"],
+          "prevention_strategies": ["Map competence explicitly", "Define boundaries clearly", "Regular boundary review"],
+          "example_scenario": "Gradually drifting into unfamiliar sectors without recognizing it"
+        },
+        {
+          "id": "fm_41_3",
+          "name": "Circle Stagnation",
+          "description": "Not expanding circle of competence over time",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["no_learning", "same_circle_for_years", "world_changing_circle_not"],
+          "prevention_strategies": ["Deliberate circle expansion", "Continuous learning", "Adapt to changing world"],
+          "example_scenario": "Retail investor not learning about e-commerce as it transforms retail"
+        },
+        {
+          "id": "fm_41_4",
+          "name": "Circle Shrinkage Denial",
+          "description": "Not recognizing when competence has eroded",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["outdated_knowledge", "industry_changed", "competence_assumed_not_verified"],
+          "prevention_strategies": ["Regular competence verification", "Stay current", "Acknowledge knowledge decay"],
+          "example_scenario": "Assuming expertise in industry you haven't followed for years"
+        },
+        {
+          "id": "fm_41_5",
+          "name": "Circle Rigidity",
+          "description": "Refusing to venture outside circle even when appropriate",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["excessive_caution", "opportunities_missed", "circle_as_prison"],
+          "prevention_strategies": ["Calculated circle expansion", "Partner with experts", "Learn new areas deliberately"],
+          "example_scenario": "Missing great opportunity because it's slightly outside current circle"
+        }
+      ]
+    },
+    {
+      "model_id": 42,
+      "model_name": "First Principles Thinking",
+      "failures": [
+        {
+          "id": "fm_42_1",
+          "name": "False First Principles",
+          "description": "Treating assumptions as first principles when they're not fundamental",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["assumptions_treated_as_axioms", "not_truly_fundamental", "hidden_assumptions"],
+          "prevention_strategies": ["Question all assumptions", "Go deeper", "Verify fundamentality"],
+          "example_scenario": "Treating 'customers want low prices' as first principle when they actually want value"
+        },
+        {
+          "id": "fm_42_2",
+          "name": "Incomplete Decomposition",
+          "description": "Not breaking problem down to truly fundamental components",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["shallow_decomposition", "compound_assumptions_remain", "not_atomic"],
+          "prevention_strategies": ["Keep decomposing", "Ask 'why' repeatedly", "Verify atomic level"],
+          "example_scenario": "Stopping decomposition at 'we need to grow revenue' without breaking down further"
+        },
+        {
+          "id": "fm_42_3",
+          "name": "Reconstruction Failure",
+          "description": "Decomposing to first principles but failing to reconstruct solution",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["decomposition_without_synthesis", "no_actionable_conclusion", "analysis_without_action"],
+          "prevention_strategies": ["Complete the reconstruction", "Build up from principles", "Reach actionable conclusion"],
+          "example_scenario": "Understanding fundamental physics but not designing the product"
+        },
+        {
+          "id": "fm_42_4",
+          "name": "First Principles Overuse",
+          "description": "Using first principles when analogy or convention would be more efficient",
+          "category": "reasoning_error",
+          "severity": "low",
+          "detection_signals": ["reinventing_wheel", "ignoring_valid_conventions", "excessive_decomposition"],
+          "prevention_strategies": ["Use first principles selectively", "Leverage valid conventions", "Efficiency matters"],
+          "example_scenario": "Deriving accounting from first principles when GAAP works fine"
+        },
+        {
+          "id": "fm_42_5",
+          "name": "Context-Free First Principles",
+          "description": "Applying first principles without considering context",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["context_ignored", "theoretical_over_practical", "real_world_constraints_missed"],
+          "prevention_strategies": ["Include context in analysis", "Practical constraints matter", "Theory meets reality"],
+          "example_scenario": "First principles say X is optimal but regulatory constraints make it impossible"
+        }
+      ]
     }
   ]
 }
