@@ -286,6 +286,66 @@ knowledge_graph_edges = Gauge(
     "Number of edges in knowledge graph"
 )
 
+# Improvement Tracking Metrics
+improvement_suggestions_pending = Gauge(
+    "improvement_suggestions_pending_total",
+    "Total number of pending improvement suggestions"
+)
+
+improvement_suggestions_completed = Counter(
+    "improvement_suggestions_completed_total",
+    "Total number of completed improvement suggestions"
+)
+
+improvement_suggestions_generated = Counter(
+    "improvement_suggestions_generated_total",
+    "Total number of improvement suggestions generated"
+)
+
+improvement_suggestions_by_priority = Gauge(
+    "improvement_suggestions_by_priority",
+    "Improvement suggestions by priority level",
+    labels=["priority"]
+)
+
+improvement_suggestions_by_category = Gauge(
+    "improvement_suggestions_by_category",
+    "Improvement suggestions by category",
+    labels=["category"]
+)
+
+failure_mode_coverage = Gauge(
+    "failure_mode_coverage_ratio",
+    "Ratio of models with adequate failure modes (5+)"
+)
+
+failure_modes_per_model = Gauge(
+    "failure_modes_per_model",
+    "Number of failure modes per model",
+    labels=["model"]
+)
+
+decisions_recorded = Counter(
+    "decisions_recorded_total",
+    "Total number of decisions recorded"
+)
+
+decisions_with_outcomes = Counter(
+    "decisions_with_outcomes_total",
+    "Total number of decisions with recorded outcomes"
+)
+
+mental_models_total = Gauge(
+    "mental_models_total",
+    "Total number of mental models in the system"
+)
+
+improvement_suggestion_impact = Gauge(
+    "improvement_suggestion_impact",
+    "Estimated impact of improvement suggestions",
+    labels=["suggestion_id", "title"]
+)
+
 
 # =============================================================================
 # METRICS REGISTRY
@@ -360,6 +420,17 @@ registry.register(signal_priority)
 registry.register(harvester_errors_total)
 registry.register(knowledge_graph_nodes)
 registry.register(knowledge_graph_edges)
+registry.register(improvement_suggestions_pending)
+registry.register(improvement_suggestions_completed)
+registry.register(improvement_suggestions_generated)
+registry.register(improvement_suggestions_by_priority)
+registry.register(improvement_suggestions_by_category)
+registry.register(failure_mode_coverage)
+registry.register(failure_modes_per_model)
+registry.register(decisions_recorded)
+registry.register(decisions_with_outcomes)
+registry.register(mental_models_total)
+registry.register(improvement_suggestion_impact)
 
 
 # =============================================================================
