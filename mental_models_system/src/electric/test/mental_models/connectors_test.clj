@@ -1927,3 +1927,166 @@
       ;; Restore config
       (conn/set-pool-config original-config))
     (conn/drain-pool)))
+
+;; ============================================
+;; Graceful Shutdown Tests
+;; ============================================
+
+(deftest test-shutdown-state-atom
+  (testing "Shutdown state atom is initialized"
+    (is (instance? clojure.lang.Atom conn/shutdown-state))
+    (is (map? @conn/shutdown-state))
+    (is (contains? @conn/shutdown-state :shutting-down))
+    (is (contains? @conn/shutdown-state :pending-operations))
+    (is (contains? @conn/shutdown-state :shutdown-hooks))))
+
+(deftest test-is-shutting-down
+  (testing "Is shutting down returns correct state"
+    ;; Reset state first
+    (swap! conn/shutdown-state assoc :shutting-down false)
+    (is (false? (conn/is-shutting-down?)))
+    (swap! conn/shutdown-state assoc :shutting-down true)
+    (is (true? (conn/is-shutting-down?)))
+    ;; Reset for other tests
+    (swap! conn/shutdown-state assoc :shutting-down false)))
+
+(deftest test-register-shutdown-hook
+  (testing "Register shutdown hook adds hook"
+    (let [hook-id (conn/register-shutdown-hook #(println "test") :name "test-hook" :priority 10)]
+      (is (uuid? hook-id))
+      (is (some #(= hook-id (:id %)) (:shutdown-hooks @conn/shutdown-state)))
+      ;; Cleanup
+      (conn/unregister-shutdown-hook hook-id))))
+
+(deftest test-unregister-shutdown-hook
+  (testing "Unregister shutdown hook removes hook"
+    (let [hook-id (conn/register-shutdown-hook #(println "test") :name "test-hook")]
+      (conn/unregister-shutdown-hook hook-id)
+      (is (not (some #(= hook-id (:id %)) (:shutdown-hooks @conn/shutdown-state)))))))
+
+(deftest test-track-operation
+  (testing "Track operation increments counter"
+    (swap! conn/shutdown-state assoc :shutting-down false)
+    (let [initial @(:pending-operations @conn/shutdown-state)
+          complete-fn (conn/track-operation)]
+      (is (= (inc initial) @(:pending-operations @conn/shutdown-state)))
+      (complete-fn)
+      (is (= initial @(:pending-operations @conn/shutdown-state))))))
+
+(deftest test-with-tracked-operation
+  (testing "With tracked operation executes function"
+    (swap! conn/shutdown-state assoc :shutting-down false)
+    (let [result (conn/with-tracked-operation #(+ 1 2))]
+      (is (= 3 result)))))
+
+(deftest test-with-tracked-operation-during-shutdown
+  (testing "With tracked operation rejects during shutdown"
+    (swap! conn/shutdown-state assoc :shutting-down true)
+    (let [result (conn/with-tracked-operation #(+ 1 2))]
+      (is (contains? result :error)))
+    ;; Reset for other tests
+    (swap! conn/shutdown-state assoc :shutting-down false)))
+
+(deftest test-get-shutdown-status
+  (testing "Get shutdown status returns correct info"
+    (let [status (conn/get-shutdown-status)]
+      (is (map? status))
+      (is (contains? status :shutting-down))
+      (is (contains? status :pending-operations))
+      (is (contains? status :registered-hooks))
+      (is (contains? status :timeout-ms)))))
+
+;; ============================================
+;; Request Deduplication Tests
+;; ============================================
+
+(deftest test-request-dedup-cache-atom
+  (testing "Request dedup cache atom is initialized"
+    (is (instance? clojure.lang.Atom conn/request-dedup-cache))
+    (is (map? @conn/request-dedup-cache))))
+
+(deftest test-dedup-config-atom
+  (testing "Dedup config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/dedup-config))
+    (let [config @conn/dedup-config]
+      (is (contains? config :enabled))
+      (is (contains? config :ttl-ms))
+      (is (contains? config :max-entries)))))
+
+(deftest test-get-dedup-config
+  (testing "Get dedup config returns config"
+    (let [config (conn/get-dedup-config)]
+      (is (map? config))
+      (is (boolean? (:enabled config)))
+      (is (number? (:ttl-ms config)))
+      (is (number? (:max-entries config))))))
+
+(deftest test-set-dedup-config
+  (testing "Set dedup config updates values"
+    (let [original (conn/get-dedup-config)]
+      (conn/set-dedup-config {:ttl-ms 10000})
+      (is (= 10000 (:ttl-ms (conn/get-dedup-config))))
+      ;; Restore
+      (conn/set-dedup-config original))))
+
+(deftest test-request-key
+  (testing "Request key generates unique key"
+    (let [key1 (conn/request-key :github :list-repos {:user "test"})
+          key2 (conn/request-key :github :list-repos {:user "test"})
+          key3 (conn/request-key :github :list-repos {:user "other"})]
+      (is (string? key1))
+      (is (= key1 key2))
+      (is (not= key1 key3)))))
+
+(deftest test-clear-dedup-cache
+  (testing "Clear dedup cache empties cache"
+    (swap! conn/request-dedup-cache assoc "test-key" {:result "test"})
+    (conn/clear-dedup-cache)
+    (is (empty? @conn/request-dedup-cache))))
+
+(deftest test-get-dedup-stats
+  (testing "Get dedup stats returns statistics"
+    (conn/clear-dedup-cache)
+    (let [stats (conn/get-dedup-stats)]
+      (is (map? stats))
+      (is (contains? stats :total-entries))
+      (is (contains? stats :in-flight))
+      (is (contains? stats :cached))
+      (is (contains? stats :expired))
+      (is (= 0 (:total-entries stats))))))
+
+(deftest test-with-deduplication
+  (testing "With deduplication executes function"
+    (conn/clear-dedup-cache)
+    (let [call-count (atom 0)
+          result (conn/with-deduplication :test :op {:param 1}
+                   #(do (swap! call-count inc) "result"))]
+      (is (= "result" result))
+      (is (= 1 @call-count)))))
+
+(deftest test-with-deduplication-caches-result
+  (testing "With deduplication caches result"
+    (conn/clear-dedup-cache)
+    (let [call-count (atom 0)
+          request-fn #(do (swap! call-count inc) "cached-result")]
+      ;; First call
+      (conn/with-deduplication :test :op {:param 1} request-fn)
+      ;; Second call should use cache
+      (let [result (conn/with-deduplication :test :op {:param 1} request-fn)]
+        (is (= "cached-result" result))
+        (is (= 1 @call-count)))))
+  (conn/clear-dedup-cache))
+
+(deftest test-with-deduplication-disabled
+  (testing "With deduplication disabled makes every call"
+    (conn/clear-dedup-cache)
+    (let [original (conn/get-dedup-config)
+          call-count (atom 0)
+          request-fn #(do (swap! call-count inc) "result")]
+      (conn/set-dedup-config {:enabled false})
+      (conn/with-deduplication :test :op {:param 1} request-fn)
+      (conn/with-deduplication :test :op {:param 1} request-fn)
+      (is (= 2 @call-count))
+      ;; Restore
+      (conn/set-dedup-config original)))
+  (conn/clear-dedup-cache))
