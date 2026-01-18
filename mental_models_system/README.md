@@ -9,20 +9,20 @@ Built for 100 years. Planck knowledge, not chauffeur knowledge.
 | Metric | Value |
 |--------|-------|
 | Total Lines of Code | 86,051 |
-| Python Code | 60,000+ lines |
+| Electric Clojure Code | 14,632 lines |
 | Swift Code | 4,000+ lines |
 | JSON Data | 22,395 lines |
 | HTML/Templates | 1,200+ lines |
 | YAML/Config | 1,957 lines |
 | Total Files | 220+ |
-| Mental Models | 129 |
-| Failure Modes | 645 |
+| Mental Models | 160 |
+| Failure Modes | 800 |
 | Connectors | 11 |
 | Task Handlers | 9 |
 | Statistical Analysis Functions | 15+ |
 | iOS/watchOS Views | 20+ |
 
-**Last Updated:** January 18, 2026 08:18 UTC
+**Last Updated:** January 18, 2026 10:00 UTC
 
 ## Architecture
 
