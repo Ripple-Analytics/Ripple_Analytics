@@ -438,3 +438,173 @@
     (is (contains? conn/default-http-opts :connection-timeout))
     (is (= 30000 (:socket-timeout conn/default-http-opts)))
     (is (= 10000 (:connection-timeout conn/default-http-opts)))))
+
+;; ============================================
+;; Metrics & Telemetry Tests
+;; ============================================
+
+(deftest test-metrics-atom-initialized
+  (testing "Metrics atom is initialized with correct structure"
+    (is (instance? clojure.lang.Atom conn/metrics))
+    (is (map? @conn/metrics))
+    (is (contains? @conn/metrics :requests))
+    (is (contains? @conn/metrics :errors))
+    (is (contains? @conn/metrics :latencies))
+    (is (contains? @conn/metrics :cache-hits))
+    (is (contains? @conn/metrics :cache-misses))
+    (is (contains? @conn/metrics :rate-limit-waits))
+    (is (contains? @conn/metrics :retries))))
+
+(deftest test-record-request
+  (testing "Record request increments counter"
+    (conn/reset-metrics)
+    (conn/record-request :github)
+    (is (= 1 (get-in @conn/metrics [:requests :github])))
+    (conn/record-request :github)
+    (is (= 2 (get-in @conn/metrics [:requests :github])))
+    (conn/record-request :slack)
+    (is (= 1 (get-in @conn/metrics [:requests :slack])))))
+
+(deftest test-record-error
+  (testing "Record error increments error counter by type"
+    (conn/reset-metrics)
+    (conn/record-error :github java.net.SocketTimeoutException)
+    (is (= 1 (get-in @conn/metrics [:errors :github java.net.SocketTimeoutException])))
+    (conn/record-error :github java.net.SocketTimeoutException)
+    (is (= 2 (get-in @conn/metrics [:errors :github java.net.SocketTimeoutException])))
+    (conn/record-error :github java.io.IOException)
+    (is (= 1 (get-in @conn/metrics [:errors :github java.io.IOException])))))
+
+(deftest test-record-latency
+  (testing "Record latency tracks min, max, total, count"
+    (conn/reset-metrics)
+    (conn/record-latency :github 100)
+    (let [latencies (get-in @conn/metrics [:latencies :github])]
+      (is (= 1 (:count latencies)))
+      (is (= 100 (:total latencies)))
+      (is (= 100 (:min latencies)))
+      (is (= 100 (:max latencies))))
+    
+    (conn/record-latency :github 200)
+    (let [latencies (get-in @conn/metrics [:latencies :github])]
+      (is (= 2 (:count latencies)))
+      (is (= 300 (:total latencies)))
+      (is (= 100 (:min latencies)))
+      (is (= 200 (:max latencies))))
+    
+    (conn/record-latency :github 50)
+    (let [latencies (get-in @conn/metrics [:latencies :github])]
+      (is (= 3 (:count latencies)))
+      (is (= 350 (:total latencies)))
+      (is (= 50 (:min latencies)))
+      (is (= 200 (:max latencies))))))
+
+(deftest test-record-cache-hit-miss
+  (testing "Record cache hits and misses"
+    (conn/reset-metrics)
+    (conn/record-cache-hit :github)
+    (conn/record-cache-hit :github)
+    (conn/record-cache-miss :github)
+    (is (= 2 (get-in @conn/metrics [:cache-hits :github])))
+    (is (= 1 (get-in @conn/metrics [:cache-misses :github])))))
+
+(deftest test-record-rate-limit-wait
+  (testing "Record rate limit waits"
+    (conn/reset-metrics)
+    (conn/record-rate-limit-wait :github)
+    (conn/record-rate-limit-wait :github)
+    (is (= 2 (get-in @conn/metrics [:rate-limit-waits :github])))))
+
+(deftest test-record-retry
+  (testing "Record retry attempts"
+    (conn/reset-metrics)
+    (conn/record-retry :github 1)
+    (conn/record-retry :github 1)
+    (conn/record-retry :github 2)
+    (is (= 2 (get-in @conn/metrics [:retries :github 1])))
+    (is (= 1 (get-in @conn/metrics [:retries :github 2])))))
+
+(deftest test-get-metrics
+  (testing "Get metrics for all or specific connector"
+    (conn/reset-metrics)
+    (conn/record-request :github)
+    (conn/record-latency :github 100)
+    
+    ;; Get all metrics
+    (let [all-metrics (conn/get-metrics)]
+      (is (map? all-metrics))
+      (is (= 1 (get-in all-metrics [:requests :github]))))
+    
+    ;; Get specific connector metrics
+    (let [github-metrics (conn/get-metrics :github)]
+      (is (= 1 (:requests github-metrics)))
+      (is (map? (:latencies github-metrics)))
+      (is (= 1 (get-in github-metrics [:latencies :count]))))))
+
+(deftest test-get-average-latency
+  (testing "Calculate average latency"
+    (conn/reset-metrics)
+    (conn/record-latency :github 100)
+    (conn/record-latency :github 200)
+    (conn/record-latency :github 300)
+    (is (= 200 (conn/get-average-latency :github)))
+    
+    ;; No data should return 0
+    (is (= 0 (conn/get-average-latency :nonexistent)))))
+
+(deftest test-get-error-rate
+  (testing "Calculate error rate"
+    (conn/reset-metrics)
+    (conn/record-request :github)
+    (conn/record-request :github)
+    (conn/record-request :github)
+    (conn/record-request :github)
+    (conn/record-error :github Exception)
+    (is (= 0.25 (conn/get-error-rate :github)))
+    
+    ;; No requests should return 0.0
+    (is (= 0.0 (conn/get-error-rate :nonexistent)))))
+
+(deftest test-get-cache-hit-rate
+  (testing "Calculate cache hit rate"
+    (conn/reset-metrics)
+    (conn/record-cache-hit :github)
+    (conn/record-cache-hit :github)
+    (conn/record-cache-hit :github)
+    (conn/record-cache-miss :github)
+    (is (= 0.75 (conn/get-cache-hit-rate :github)))
+    
+    ;; No cache activity should return 0.0
+    (is (= 0.0 (conn/get-cache-hit-rate :nonexistent)))))
+
+(deftest test-reset-metrics
+  (testing "Reset all metrics"
+    (conn/record-request :github)
+    (conn/record-latency :github 100)
+    (conn/reset-metrics)
+    (is (= {} (:requests @conn/metrics)))
+    (is (= {} (:latencies @conn/metrics))))
+  
+  (testing "Reset specific connector metrics"
+    (conn/record-request :github)
+    (conn/record-request :slack)
+    (conn/reset-metrics :github)
+    (is (nil? (get-in @conn/metrics [:requests :github])))
+    (is (= 1 (get-in @conn/metrics [:requests :slack])))))
+
+(deftest test-get-metrics-summary
+  (testing "Get metrics summary for all connectors"
+    (conn/reset-metrics)
+    (conn/record-request :github)
+    (conn/record-request :github)
+    (conn/record-latency :github 100)
+    (conn/record-latency :github 200)
+    (conn/record-cache-hit :github)
+    (conn/record-cache-miss :github)
+    
+    (let [summary (conn/get-metrics-summary)]
+      (is (map? summary))
+      (is (contains? summary :github))
+      (is (= 2 (get-in summary [:github :requests])))
+      (is (= 150 (get-in summary [:github :avg-latency-ms])))
+      (is (= 0.5 (get-in summary [:github :cache-hit-rate]))))))
