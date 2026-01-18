@@ -581,6 +581,10 @@ class MentalModelAnalyzer:
         # Run async version in event loop
         try:
             loop = asyncio.get_event_loop()
+            if loop.is_running():
+                # If event loop is already running (e.g., in pytest-asyncio),
+                # return the coroutine directly so it can be awaited
+                return self.analyze_text_async(text, document_name)
         except RuntimeError:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
