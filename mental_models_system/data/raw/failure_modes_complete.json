@@ -4052,6 +4052,3198 @@
           "example_scenario": "Risk model underestimating probability of market crash"
         }
       ]
+    },
+    {
+      "model_id": 73,
+      "model_name": "Regression to the Mean",
+      "failures": [
+        {
+          "id": "fm_73_1",
+          "name": "Regression Blindness",
+          "description": "Not expecting regression to mean after extreme observations",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["extreme_extrapolated", "regression_not_expected", "trend_continuation_assumed"],
+          "prevention_strategies": ["Expect regression after extremes", "Use long-term averages", "Discount extreme performance"],
+          "example_scenario": "Expecting exceptional year to continue rather than regress"
+        },
+        {
+          "id": "fm_73_2",
+          "name": "Skill vs Luck Confusion",
+          "description": "Attributing regression to skill change rather than luck normalization",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["skill_change_assumed", "luck_not_considered", "causal_attribution_wrong"],
+          "prevention_strategies": ["Consider luck component", "Separate skill from luck", "Base rate analysis"],
+          "example_scenario": "Firing manager after bad year that was actually regression from lucky year"
+        },
+        {
+          "id": "fm_73_3",
+          "name": "Mean Misidentification",
+          "description": "Regressing to wrong mean",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["wrong_mean_used", "reference_class_wrong", "mean_not_verified"],
+          "prevention_strategies": ["Identify correct mean", "Appropriate reference class", "Verify mean estimate"],
+          "example_scenario": "Expecting company to regress to industry mean when it has structural advantages"
+        },
+        {
+          "id": "fm_73_4",
+          "name": "Regression Speed Misjudgment",
+          "description": "Misjudging how quickly regression occurs",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["regression_speed_wrong", "timing_misjudged", "persistence_misestimated"],
+          "prevention_strategies": ["Analyze regression speed", "Historical regression patterns", "Persistence analysis"],
+          "example_scenario": "Expecting immediate regression when it takes years"
+        },
+        {
+          "id": "fm_73_5",
+          "name": "Structural Change vs Regression",
+          "description": "Confusing structural change with temporary deviation",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["structural_change_missed", "regression_assumed_wrongly", "new_normal_not_recognized"],
+          "prevention_strategies": ["Distinguish structural from cyclical", "Analyze change drivers", "Test for regime change"],
+          "example_scenario": "Expecting regression when industry has structurally changed"
+        }
+      ]
+    },
+    {
+      "model_id": 74,
+      "model_name": "Inertia/Momentum",
+      "failures": [
+        {
+          "id": "fm_74_1",
+          "name": "Momentum Extrapolation",
+          "description": "Extrapolating momentum indefinitely",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["momentum_extrapolated", "reversal_not_considered", "trend_assumed_permanent"],
+          "prevention_strategies": ["Expect momentum to fade", "Analyze reversal triggers", "Time-bound momentum"],
+          "example_scenario": "Assuming stock momentum will continue indefinitely"
+        },
+        {
+          "id": "fm_74_2",
+          "name": "Inertia Underestimation",
+          "description": "Underestimating organizational or system inertia",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["change_assumed_easy", "inertia_ignored", "resistance_underestimated"],
+          "prevention_strategies": ["Respect inertia", "Plan for resistance", "Change management"],
+          "example_scenario": "Expecting rapid turnaround when organizational inertia is strong"
+        },
+        {
+          "id": "fm_74_3",
+          "name": "Momentum Source Confusion",
+          "description": "Not understanding what's driving momentum",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["momentum_source_unclear", "drivers_not_analyzed", "sustainability_unknown"],
+          "prevention_strategies": ["Analyze momentum drivers", "Understand sustainability", "Source identification"],
+          "example_scenario": "Riding momentum without understanding if it's fundamental or speculative"
+        },
+        {
+          "id": "fm_74_4",
+          "name": "Momentum Reversal Blindness",
+          "description": "Not seeing signs of momentum reversal",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["reversal_signs_missed", "leading_indicators_ignored", "trend_change_not_detected"],
+          "prevention_strategies": ["Monitor reversal indicators", "Leading indicator analysis", "Early warning systems"],
+          "example_scenario": "Missing signs that positive momentum is about to reverse"
+        },
+        {
+          "id": "fm_74_5",
+          "name": "Negative Momentum Denial",
+          "description": "Denying negative momentum hoping for reversal",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["negative_momentum_denied", "hope_over_analysis", "catching_falling_knife"],
+          "prevention_strategies": ["Acknowledge negative momentum", "Don't fight the trend", "Wait for reversal confirmation"],
+          "example_scenario": "Buying into declining stock hoping momentum will reverse without evidence"
+        }
+      ]
+    },
+    {
+      "model_id": 75,
+      "model_name": "Feedback Loops",
+      "failures": [
+        {
+          "id": "fm_75_1",
+          "name": "Feedback Loop Blindness",
+          "description": "Not identifying feedback loops in system",
+          "category": "incomplete_analysis",
+          "severity": "critical",
+          "detection_signals": ["feedback_not_identified", "linear_thinking", "system_dynamics_ignored"],
+          "prevention_strategies": ["Map feedback loops", "System dynamics analysis", "Causal loop diagrams"],
+          "example_scenario": "Missing reinforcing feedback loop that will amplify small changes"
+        },
+        {
+          "id": "fm_75_2",
+          "name": "Loop Polarity Confusion",
+          "description": "Confusing reinforcing and balancing loops",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["polarity_confused", "reinforcing_vs_balancing_wrong", "system_behavior_misunderstood"],
+          "prevention_strategies": ["Verify loop polarity", "Trace through loop", "Test with scenarios"],
+          "example_scenario": "Expecting stabilization from reinforcing loop or amplification from balancing loop"
+        },
+        {
+          "id": "fm_75_3",
+          "name": "Feedback Delay Blindness",
+          "description": "Not accounting for delays in feedback loops",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["delays_ignored", "immediate_feedback_assumed", "lag_not_modeled"],
+          "prevention_strategies": ["Identify delays", "Model lag effects", "Anticipate delayed feedback"],
+          "example_scenario": "Not anticipating that actions today will have delayed consequences"
+        },
+        {
+          "id": "fm_75_4",
+          "name": "Feedback Strength Misjudgment",
+          "description": "Misjudging the strength of feedback effects",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["feedback_strength_wrong", "amplification_misjudged", "dampening_misjudged"],
+          "prevention_strategies": ["Quantify feedback strength", "Sensitivity analysis", "Historical calibration"],
+          "example_scenario": "Underestimating how strongly feedback loop will amplify changes"
+        },
+        {
+          "id": "fm_75_5",
+          "name": "Multiple Loop Interaction",
+          "description": "Not considering interaction between multiple feedback loops",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["loops_analyzed_separately", "interactions_ignored", "dominant_loop_not_identified"],
+          "prevention_strategies": ["Analyze loop interactions", "Identify dominant loops", "System-level view"],
+          "example_scenario": "Missing that two loops interact to create unexpected behavior"
+        }
+      ]
+    },
+    {
+      "model_id": 76,
+      "model_name": "Tipping Points",
+      "failures": [
+        {
+          "id": "fm_76_1",
+          "name": "Tipping Point Blindness",
+          "description": "Not recognizing existence of tipping points",
+          "category": "incomplete_analysis",
+          "severity": "critical",
+          "detection_signals": ["linear_change_assumed", "thresholds_ignored", "discontinuity_not_expected"],
+          "prevention_strategies": ["Look for tipping points", "Threshold analysis", "Non-linear thinking"],
+          "example_scenario": "Assuming gradual change when system can tip suddenly"
+        },
+        {
+          "id": "fm_76_2",
+          "name": "Tipping Point Location Error",
+          "description": "Misjudging where tipping point is",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["threshold_location_wrong", "too_early_or_late", "trigger_point_misjudged"],
+          "prevention_strategies": ["Analyze threshold location", "Multiple scenarios", "Monitor proximity"],
+          "example_scenario": "Thinking system is far from tipping point when it's actually close"
+        },
+        {
+          "id": "fm_76_3",
+          "name": "Irreversibility Blindness",
+          "description": "Not recognizing irreversibility after tipping",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["reversibility_assumed", "hysteresis_ignored", "point_of_no_return_missed"],
+          "prevention_strategies": ["Analyze reversibility", "Understand hysteresis", "Identify points of no return"],
+          "example_scenario": "Assuming situation can be reversed after tipping point is crossed"
+        },
+        {
+          "id": "fm_76_4",
+          "name": "Early Warning Ignorance",
+          "description": "Ignoring early warning signs of approaching tipping point",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["early_warnings_ignored", "leading_indicators_dismissed", "gradual_changes_not_tracked"],
+          "prevention_strategies": ["Monitor early warnings", "Track leading indicators", "Gradual change analysis"],
+          "example_scenario": "Ignoring small changes that signal approaching tipping point"
+        },
+        {
+          "id": "fm_76_5",
+          "name": "Cascade Tipping",
+          "description": "Not recognizing that one tipping point can trigger others",
+          "category": "incomplete_analysis",
+          "severity": "critical",
+          "detection_signals": ["cascade_not_considered", "isolated_tipping_assumed", "domino_effects_missed"],
+          "prevention_strategies": ["Map cascade potential", "Identify linked tipping points", "Domino analysis"],
+          "example_scenario": "Missing that one system tipping will trigger cascade of others"
+        }
+      ]
+    },
+    {
+      "model_id": 77,
+      "model_name": "Emergence",
+      "failures": [
+        {
+          "id": "fm_77_1",
+          "name": "Reductionist Blindness",
+          "description": "Analyzing only parts, missing emergent whole",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["parts_only_analysis", "whole_ignored", "emergence_not_considered"],
+          "prevention_strategies": ["Analyze at system level", "Look for emergent properties", "Whole greater than parts"],
+          "example_scenario": "Analyzing individual components without seeing emergent system behavior"
+        },
+        {
+          "id": "fm_77_2",
+          "name": "Emergence Prediction Failure",
+          "description": "Failing to predict emergent properties",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["emergence_not_predicted", "surprise_properties", "unexpected_behavior"],
+          "prevention_strategies": ["Study similar systems", "Scenario planning", "Expect surprises"],
+          "example_scenario": "Not anticipating emergent behavior when components are combined"
+        },
+        {
+          "id": "fm_77_3",
+          "name": "Emergence Attribution Error",
+          "description": "Attributing emergent properties to individual components",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["wrong_attribution", "component_credited_for_system", "emergence_misunderstood"],
+          "prevention_strategies": ["Understand emergence source", "System vs component attribution", "Interaction effects"],
+          "example_scenario": "Crediting one team member for success that emerged from team dynamics"
+        },
+        {
+          "id": "fm_77_4",
+          "name": "Negative Emergence Blindness",
+          "description": "Not anticipating negative emergent properties",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["only_positive_emergence", "negative_emergence_missed", "unintended_consequences"],
+          "prevention_strategies": ["Consider negative emergence", "Unintended consequence analysis", "Pre-mortem"],
+          "example_scenario": "Combining good components that create bad emergent behavior"
+        },
+        {
+          "id": "fm_77_5",
+          "name": "Emergence Timing",
+          "description": "Misjudging when emergence will occur",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["timing_wrong", "emergence_delayed_or_early", "threshold_misjudged"],
+          "prevention_strategies": ["Analyze emergence conditions", "Monitor for emergence", "Threshold identification"],
+          "example_scenario": "Expecting immediate emergence when it requires time to develop"
+        }
+      ]
+    },
+    {
+      "model_id": 78,
+      "model_name": "Irreducibility",
+      "failures": [
+        {
+          "id": "fm_78_1",
+          "name": "False Reducibility",
+          "description": "Assuming complex system can be reduced to simple components",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["oversimplification", "complexity_denied", "reductionism_overused"],
+          "prevention_strategies": ["Respect irreducibility", "Holistic analysis", "Complexity acceptance"],
+          "example_scenario": "Trying to understand market by analyzing individual traders"
+        },
+        {
+          "id": "fm_78_2",
+          "name": "Irreducibility Paralysis",
+          "description": "Using irreducibility as excuse for not analyzing",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["analysis_avoided", "complexity_as_excuse", "learned_helplessness"],
+          "prevention_strategies": ["Analyze what you can", "Partial understanding valuable", "Appropriate simplification"],
+          "example_scenario": "Not analyzing because 'it's too complex to understand'"
+        },
+        {
+          "id": "fm_78_3",
+          "name": "Level of Analysis Error",
+          "description": "Analyzing at wrong level of abstraction",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["wrong_level", "too_micro_or_macro", "abstraction_mismatch"],
+          "prevention_strategies": ["Choose appropriate level", "Multi-level analysis", "Match level to question"],
+          "example_scenario": "Analyzing macro trends when micro factors are decisive"
+        },
+        {
+          "id": "fm_78_4",
+          "name": "Interaction Irreducibility",
+          "description": "Not recognizing that interactions can't be reduced to components",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["interactions_ignored", "component_focus_only", "relationship_blindness"],
+          "prevention_strategies": ["Analyze interactions", "Relationship mapping", "Network effects"],
+          "example_scenario": "Analyzing team members individually without considering team dynamics"
+        },
+        {
+          "id": "fm_78_5",
+          "name": "Context Irreducibility",
+          "description": "Not recognizing that context can't be separated from phenomenon",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["context_stripped", "decontextualized_analysis", "environment_ignored"],
+          "prevention_strategies": ["Include context", "Situated analysis", "Environment matters"],
+          "example_scenario": "Analyzing strategy without considering competitive context"
+        }
+      ]
+    },
+    {
+      "model_id": 79,
+      "model_name": "Law of Large Numbers",
+      "failures": [
+        {
+          "id": "fm_79_1",
+          "name": "Small Sample Overconfidence",
+          "description": "Applying law of large numbers to small samples",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["small_sample_conclusions", "law_misapplied", "sample_size_ignored"],
+          "prevention_strategies": ["Check sample size", "Appropriate confidence", "Large sample requirement"],
+          "example_scenario": "Drawing strong conclusions from 10 observations"
+        },
+        {
+          "id": "fm_79_2",
+          "name": "Independence Assumption",
+          "description": "Assuming independence when observations are correlated",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["independence_assumed", "correlation_ignored", "effective_sample_smaller"],
+          "prevention_strategies": ["Test for independence", "Adjust for correlation", "Effective sample size"],
+          "example_scenario": "Treating correlated observations as independent samples"
+        },
+        {
+          "id": "fm_79_3",
+          "name": "Distribution Assumption Error",
+          "description": "Assuming finite variance when distribution has fat tails",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["distribution_assumed", "fat_tails_ignored", "variance_assumed_finite"],
+          "prevention_strategies": ["Test distribution", "Fat tail analysis", "Robust methods"],
+          "example_scenario": "Applying law of large numbers when returns have infinite variance"
+        },
+        {
+          "id": "fm_79_4",
+          "name": "Convergence Speed Misjudgment",
+          "description": "Misjudging how quickly convergence occurs",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["convergence_speed_wrong", "sample_size_needed_wrong", "patience_lacking"],
+          "prevention_strategies": ["Analyze convergence rate", "Sufficient sample size", "Patience with convergence"],
+          "example_scenario": "Expecting convergence with 100 samples when 10,000 are needed"
+        },
+        {
+          "id": "fm_79_5",
+          "name": "Gambler's Fallacy Connection",
+          "description": "Confusing law of large numbers with gambler's fallacy",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["short_run_expectation", "balancing_expected", "independence_violated"],
+          "prevention_strategies": ["Long run vs short run", "No memory in randomness", "Independence understanding"],
+          "example_scenario": "Expecting short-term 'correction' because of law of large numbers"
+        }
+      ]
+    },
+    {
+      "model_id": 80,
+      "model_name": "Bell Curve/Normal Distribution",
+      "failures": [
+        {
+          "id": "fm_80_1",
+          "name": "Normality Assumption Error",
+          "description": "Assuming normal distribution when it's not",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["normality_assumed", "distribution_not_tested", "fat_tails_ignored"],
+          "prevention_strategies": ["Test for normality", "Consider alternatives", "Fat tail awareness"],
+          "example_scenario": "Using normal distribution for financial returns that have fat tails"
+        },
+        {
+          "id": "fm_80_2",
+          "name": "Tail Risk Underestimation",
+          "description": "Underestimating probability of extreme events under normality",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["tails_underweighted", "extreme_events_dismissed", "6_sigma_events_ignored"],
+          "prevention_strategies": ["Fat tail analysis", "Extreme value theory", "Historical extremes"],
+          "example_scenario": "Dismissing 'impossible' event that actually has meaningful probability"
+        },
+        {
+          "id": "fm_80_3",
+          "name": "Mean-Variance Sufficiency",
+          "description": "Assuming mean and variance fully describe distribution",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["only_mean_variance", "higher_moments_ignored", "skewness_kurtosis_missed"],
+          "prevention_strategies": ["Analyze higher moments", "Full distribution analysis", "Skewness and kurtosis"],
+          "example_scenario": "Comparing investments by mean and variance when skewness matters"
+        },
+        {
+          "id": "fm_80_4",
+          "name": "Central Limit Theorem Misuse",
+          "description": "Misapplying central limit theorem",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["CLT_misapplied", "conditions_not_met", "sample_too_small"],
+          "prevention_strategies": ["Verify CLT conditions", "Sufficient sample size", "Independence check"],
+          "example_scenario": "Assuming normality of average when sample is too small"
+        },
+        {
+          "id": "fm_80_5",
+          "name": "Stationarity for Normality",
+          "description": "Assuming distribution stays normal over time",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["stationarity_assumed", "regime_changes_ignored", "distribution_shift_missed"],
+          "prevention_strategies": ["Test for stationarity", "Regime analysis", "Time-varying distributions"],
+          "example_scenario": "Using historical normal distribution when regime has changed"
+        }
+      ]
+    },
+    {
+      "model_id": 81,
+      "model_name": "Power Laws",
+      "failures": [
+        {
+          "id": "fm_81_1",
+          "name": "Power Law Misidentification",
+          "description": "Claiming power law when distribution is different",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["power_law_assumed", "not_statistically_tested", "alternative_distributions_ignored"],
+          "prevention_strategies": ["Statistical testing", "Compare distributions", "Rigorous identification"],
+          "example_scenario": "Claiming power law based on log-log plot without proper testing"
+        },
+        {
+          "id": "fm_81_2",
+          "name": "Infinite Variance Implications",
+          "description": "Not understanding implications of infinite variance",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["variance_assumed_finite", "standard_statistics_used", "extreme_events_underweighted"],
+          "prevention_strategies": ["Understand infinite variance", "Appropriate statistics", "Extreme event focus"],
+          "example_scenario": "Using mean and variance for power law distribution with alpha < 2"
+        },
+        {
+          "id": "fm_81_3",
+          "name": "Scale Invariance Misunderstanding",
+          "description": "Not understanding scale invariance implications",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["scale_invariance_ignored", "typical_scale_assumed", "no_characteristic_scale"],
+          "prevention_strategies": ["Understand scale invariance", "No typical value", "Extreme dominance"],
+          "example_scenario": "Looking for 'typical' value when power law has no characteristic scale"
+        },
+        {
+          "id": "fm_81_4",
+          "name": "Power Law Extrapolation",
+          "description": "Extrapolating power law beyond valid range",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["extrapolation_beyond_data", "range_not_verified", "tail_behavior_assumed"],
+          "prevention_strategies": ["Verify range", "Careful extrapolation", "Tail uncertainty"],
+          "example_scenario": "Extrapolating power law to extreme values without verification"
+        },
+        {
+          "id": "fm_81_5",
+          "name": "Power Law Mechanism Blindness",
+          "description": "Not understanding mechanism generating power law",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["mechanism_unknown", "just_fitting_curve", "generative_process_ignored"],
+          "prevention_strategies": ["Understand mechanism", "Preferential attachment", "Generative models"],
+          "example_scenario": "Fitting power law without understanding why it arises"
+        }
+      ]
+    },
+    {
+      "model_id": 82,
+      "model_name": "Fat Tails/Extremistan",
+      "failures": [
+        {
+          "id": "fm_82_1",
+          "name": "Mediocristan Thinking in Extremistan",
+          "description": "Applying normal distribution thinking to fat-tailed domains",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["normal_thinking_applied", "domain_misclassified", "tail_risk_ignored"],
+          "prevention_strategies": ["Classify domain correctly", "Fat tail awareness", "Extremistan thinking"],
+          "example_scenario": "Using Gaussian risk models for financial markets"
+        },
+        {
+          "id": "fm_82_2",
+          "name": "Black Swan Blindness",
+          "description": "Not preparing for black swan events",
+          "category": "incomplete_analysis",
+          "severity": "critical",
+          "detection_signals": ["black_swans_ignored", "only_known_risks", "tail_events_dismissed"],
+          "prevention_strategies": ["Expect black swans", "Antifragile positioning", "Tail risk hedging"],
+          "example_scenario": "Risk management that ignores possibility of unprecedented events"
+        },
+        {
+          "id": "fm_82_3",
+          "name": "Sample Mean Reliance",
+          "description": "Relying on sample mean in fat-tailed distribution",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["sample_mean_trusted", "instability_ignored", "single_observation_dominance"],
+          "prevention_strategies": ["Robust statistics", "Median over mean", "Sample instability awareness"],
+          "example_scenario": "Using historical average return when single event can dominate"
+        },
+        {
+          "id": "fm_82_4",
+          "name": "Tail Correlation Blindness",
+          "description": "Not recognizing increased correlation in tails",
+          "category": "incomplete_analysis",
+          "severity": "critical",
+          "detection_signals": ["normal_correlation_assumed", "tail_dependence_ignored", "diversification_overestimated"],
+          "prevention_strategies": ["Analyze tail correlation", "Stress test correlations", "Crisis correlation"],
+          "example_scenario": "Assuming diversification works in crisis when correlations spike"
+        },
+        {
+          "id": "fm_82_5",
+          "name": "Historical Data Insufficiency",
+          "description": "Not recognizing that history doesn't capture tail risk",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["history_trusted_for_tails", "sample_too_short", "unprecedented_dismissed"],
+          "prevention_strategies": ["History insufficient for tails", "Theoretical tail analysis", "Stress scenarios"],
+          "example_scenario": "Believing 30 years of data captures tail risk"
+        }
+      ]
+    },
+    {
+      "model_id": 83,
+      "model_name": "Bayesian Updating",
+      "failures": [
+        {
+          "id": "fm_83_1",
+          "name": "Prior Misspecification",
+          "description": "Starting with wrong prior probability",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["prior_not_justified", "base_rate_ignored", "subjective_prior_wrong"],
+          "prevention_strategies": ["Justify prior", "Use base rates", "Prior sensitivity analysis"],
+          "example_scenario": "Starting with 50% prior when base rate is 1%"
+        },
+        {
+          "id": "fm_83_2",
+          "name": "Insufficient Updating",
+          "description": "Not updating enough given evidence",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["anchoring_on_prior", "evidence_underweighted", "slow_updating"],
+          "prevention_strategies": ["Full Bayesian update", "Evidence weight correctly", "Overcome anchoring"],
+          "example_scenario": "Barely changing view despite strong contradicting evidence"
+        },
+        {
+          "id": "fm_83_3",
+          "name": "Overupdating",
+          "description": "Updating too much on weak evidence",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["overreaction_to_evidence", "noise_treated_as_signal", "volatile_beliefs"],
+          "prevention_strategies": ["Appropriate evidence weight", "Signal vs noise", "Stable updating"],
+          "example_scenario": "Dramatically changing view based on single data point"
+        },
+        {
+          "id": "fm_83_4",
+          "name": "Likelihood Ratio Error",
+          "description": "Incorrectly estimating likelihood ratio",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["likelihood_ratio_wrong", "evidence_strength_misjudged", "diagnostic_value_wrong"],
+          "prevention_strategies": ["Careful likelihood estimation", "Evidence diagnosticity", "Calibration"],
+          "example_scenario": "Treating weak evidence as highly diagnostic"
+        },
+        {
+          "id": "fm_83_5",
+          "name": "Confirmation Bias in Updating",
+          "description": "Asymmetric updating favoring existing beliefs",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["asymmetric_updating", "confirming_evidence_overweighted", "disconfirming_underweighted"],
+          "prevention_strategies": ["Symmetric updating", "Devil's advocate", "Disconfirming evidence focus"],
+          "example_scenario": "Updating strongly on confirming evidence, weakly on disconfirming"
+        }
+      ]
+    },
+    {
+      "model_id": 84,
+      "model_name": "Entropy/Thermodynamics",
+      "failures": [
+        {
+          "id": "fm_84_1",
+          "name": "Entropy Reversal Expectation",
+          "description": "Expecting entropy to decrease without energy input",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["spontaneous_order_expected", "energy_input_ignored", "second_law_violated"],
+          "prevention_strategies": ["Respect second law", "Energy requirements", "Entropy always increases"],
+          "example_scenario": "Expecting organization to improve without effort"
+        },
+        {
+          "id": "fm_84_2",
+          "name": "Local vs Global Entropy",
+          "description": "Confusing local entropy decrease with global",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["local_decrease_only", "global_increase_ignored", "system_boundary_wrong"],
+          "prevention_strategies": ["Consider full system", "Global entropy accounting", "Boundary analysis"],
+          "example_scenario": "Celebrating local efficiency while creating larger disorder elsewhere"
+        },
+        {
+          "id": "fm_84_3",
+          "name": "Equilibrium Assumption",
+          "description": "Assuming system is at equilibrium when it's not",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["equilibrium_assumed", "far_from_equilibrium_ignored", "dynamic_state_missed"],
+          "prevention_strategies": ["Test for equilibrium", "Non-equilibrium analysis", "Dynamic systems"],
+          "example_scenario": "Applying equilibrium analysis to far-from-equilibrium system"
+        },
+        {
+          "id": "fm_84_4",
+          "name": "Energy Dissipation Blindness",
+          "description": "Not accounting for energy dissipation",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["dissipation_ignored", "efficiency_overestimated", "waste_not_counted"],
+          "prevention_strategies": ["Account for dissipation", "Realistic efficiency", "Waste analysis"],
+          "example_scenario": "Ignoring energy costs of maintaining order"
+        },
+        {
+          "id": "fm_84_5",
+          "name": "Information Entropy Confusion",
+          "description": "Confusing thermodynamic and information entropy",
+          "category": "reasoning_error",
+          "severity": "low",
+          "detection_signals": ["entropy_types_confused", "wrong_entropy_applied", "analogy_overextended"],
+          "prevention_strategies": ["Distinguish entropy types", "Appropriate application", "Careful analogy"],
+          "example_scenario": "Applying thermodynamic entropy concepts incorrectly to information"
+        }
+      ]
+    },
+    {
+      "model_id": 85,
+      "model_name": "Reciprocity",
+      "failures": [
+        {
+          "id": "fm_85_1",
+          "name": "Reciprocity Expectation Error",
+          "description": "Expecting reciprocity when it won't occur",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["reciprocity_assumed", "one_sided_relationship", "exploitation_risk"],
+          "prevention_strategies": ["Verify reciprocity potential", "Test before committing", "Protect against non-reciprocity"],
+          "example_scenario": "Giving value expecting return from party that won't reciprocate"
+        },
+        {
+          "id": "fm_85_2",
+          "name": "Reciprocity Timing Mismatch",
+          "description": "Expecting immediate reciprocity when it's delayed",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["immediate_return_expected", "patience_lacking", "long_term_reciprocity_missed"],
+          "prevention_strategies": ["Allow time for reciprocity", "Long-term view", "Relationship building"],
+          "example_scenario": "Abandoning relationship because reciprocity isn't immediate"
+        },
+        {
+          "id": "fm_85_3",
+          "name": "Negative Reciprocity Blindness",
+          "description": "Not anticipating negative reciprocity",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["retaliation_not_expected", "negative_spiral_missed", "conflict_escalation"],
+          "prevention_strategies": ["Anticipate retaliation", "Avoid triggering negative reciprocity", "De-escalation"],
+          "example_scenario": "Taking aggressive action without expecting retaliation"
+        },
+        {
+          "id": "fm_85_4",
+          "name": "Reciprocity Manipulation",
+          "description": "Being manipulated through reciprocity norm",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["manipulation_not_detected", "obligation_created_artificially", "reciprocity_exploited"],
+          "prevention_strategies": ["Recognize manipulation", "Don't feel obligated by unsolicited gifts", "Evaluate independently"],
+          "example_scenario": "Feeling obligated to reciprocate manipulative 'gift'"
+        },
+        {
+          "id": "fm_85_5",
+          "name": "Reciprocity Scale Mismatch",
+          "description": "Reciprocating at wrong scale",
+          "category": "reasoning_error",
+          "severity": "low",
+          "detection_signals": ["scale_mismatch", "over_or_under_reciprocation", "proportionality_wrong"],
+          "prevention_strategies": ["Proportional reciprocity", "Match scale appropriately", "Calibrate response"],
+          "example_scenario": "Over-reciprocating small favor or under-reciprocating large one"
+        }
+      ]
+    },
+    {
+      "model_id": 86,
+      "model_name": "Velocity",
+      "failures": [
+        {
+          "id": "fm_86_1",
+          "name": "Speed vs Velocity Confusion",
+          "description": "Confusing speed (magnitude) with velocity (direction + magnitude)",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["direction_ignored", "speed_only_measured", "vector_nature_missed"],
+          "prevention_strategies": ["Consider direction", "Vector analysis", "Direction matters"],
+          "example_scenario": "Measuring activity level without considering if it's in right direction"
+        },
+        {
+          "id": "fm_86_2",
+          "name": "Velocity Change Blindness",
+          "description": "Not detecting changes in velocity",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["acceleration_missed", "velocity_change_not_detected", "momentum_shift_ignored"],
+          "prevention_strategies": ["Monitor velocity changes", "Acceleration analysis", "Trend changes"],
+          "example_scenario": "Missing that growth rate is decelerating"
+        },
+        {
+          "id": "fm_86_3",
+          "name": "Terminal Velocity Ignorance",
+          "description": "Not recognizing limits to velocity",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["unlimited_growth_assumed", "constraints_ignored", "terminal_velocity_missed"],
+          "prevention_strategies": ["Identify velocity limits", "Constraint analysis", "Saturation effects"],
+          "example_scenario": "Expecting growth to continue accelerating indefinitely"
+        },
+        {
+          "id": "fm_86_4",
+          "name": "Relative Velocity Blindness",
+          "description": "Not considering relative velocity",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["absolute_velocity_only", "relative_position_ignored", "competitive_velocity_missed"],
+          "prevention_strategies": ["Analyze relative velocity", "Competitive comparison", "Relative progress"],
+          "example_scenario": "Celebrating growth while competitors grow faster"
+        },
+        {
+          "id": "fm_86_5",
+          "name": "Velocity Sustainability",
+          "description": "Not analyzing if velocity is sustainable",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["sustainability_not_analyzed", "resource_depletion_ignored", "burnout_risk"],
+          "prevention_strategies": ["Analyze sustainability", "Resource requirements", "Long-term viability"],
+          "example_scenario": "Maintaining unsustainable pace that will lead to burnout"
+        }
+      ]
+    },
+    {
+      "model_id": 87,
+      "model_name": "Leverage",
+      "failures": [
+        {
+          "id": "fm_87_1",
+          "name": "Leverage Amplification Blindness",
+          "description": "Not recognizing leverage amplifies both gains and losses",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["upside_only_focus", "downside_amplification_ignored", "asymmetric_view"],
+          "prevention_strategies": ["Consider both directions", "Downside analysis", "Symmetric view"],
+          "example_scenario": "Using leverage for upside without considering amplified downside"
+        },
+        {
+          "id": "fm_87_2",
+          "name": "Hidden Leverage",
+          "description": "Not identifying hidden sources of leverage",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["hidden_leverage_missed", "off_balance_sheet", "embedded_leverage"],
+          "prevention_strategies": ["Look for hidden leverage", "Full leverage accounting", "Embedded leverage analysis"],
+          "example_scenario": "Missing leverage embedded in derivatives or off-balance sheet"
+        },
+        {
+          "id": "fm_87_3",
+          "name": "Leverage Cascade Risk",
+          "description": "Not recognizing cascade effects of leverage",
+          "category": "incomplete_analysis",
+          "severity": "critical",
+          "detection_signals": ["cascade_not_considered", "systemic_leverage_ignored", "contagion_risk"],
+          "prevention_strategies": ["Analyze cascade potential", "Systemic leverage view", "Contagion analysis"],
+          "example_scenario": "Individual leverage safe but system-wide leverage creates cascade risk"
+        },
+        {
+          "id": "fm_87_4",
+          "name": "Leverage Timing Risk",
+          "description": "Not considering timing risk with leverage",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["timing_risk_ignored", "margin_call_risk", "forced_liquidation"],
+          "prevention_strategies": ["Timing risk analysis", "Liquidity buffer", "Margin call planning"],
+          "example_scenario": "Being right long-term but forced out by short-term margin call"
+        },
+        {
+          "id": "fm_87_5",
+          "name": "Operational Leverage Confusion",
+          "description": "Confusing financial and operational leverage",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["leverage_types_confused", "fixed_cost_leverage_missed", "combined_leverage_ignored"],
+          "prevention_strategies": ["Distinguish leverage types", "Combined leverage analysis", "Fixed cost awareness"],
+          "example_scenario": "Analyzing financial leverage while ignoring high operational leverage"
+        }
+      ]
+    },
+    {
+      "model_id": 88,
+      "model_name": "Activation Energy",
+      "failures": [
+        {
+          "id": "fm_88_1",
+          "name": "Activation Energy Underestimation",
+          "description": "Underestimating energy needed to start change",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["easy_start_assumed", "initial_effort_underestimated", "barrier_minimized"],
+          "prevention_strategies": ["Realistic activation estimate", "Plan for initial barrier", "Resource for startup"],
+          "example_scenario": "Underestimating effort needed to start new initiative"
+        },
+        {
+          "id": "fm_88_2",
+          "name": "Catalyst Blindness",
+          "description": "Not identifying catalysts that lower activation energy",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["catalysts_not_identified", "barrier_reduction_missed", "enablers_ignored"],
+          "prevention_strategies": ["Identify catalysts", "Barrier reduction strategies", "Enabler analysis"],
+          "example_scenario": "Not finding catalyst that could make change much easier"
+        },
+        {
+          "id": "fm_88_3",
+          "name": "Activation vs Sustaining Energy",
+          "description": "Confusing energy to start with energy to sustain",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["start_vs_sustain_confused", "ongoing_energy_ignored", "maintenance_underestimated"],
+          "prevention_strategies": ["Distinguish start and sustain", "Ongoing resource planning", "Maintenance budgeting"],
+          "example_scenario": "Planning for launch but not for ongoing operation"
+        },
+        {
+          "id": "fm_88_4",
+          "name": "Multiple Activation Barriers",
+          "description": "Not recognizing multiple sequential barriers",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["single_barrier_assumed", "sequential_barriers_missed", "cumulative_effort_wrong"],
+          "prevention_strategies": ["Map all barriers", "Sequential analysis", "Cumulative planning"],
+          "example_scenario": "Overcoming first barrier only to face unexpected second barrier"
+        },
+        {
+          "id": "fm_88_5",
+          "name": "Activation Energy Timing",
+          "description": "Wrong timing for applying activation energy",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["timing_wrong", "window_missed", "premature_or_late"],
+          "prevention_strategies": ["Timing analysis", "Window identification", "Readiness assessment"],
+          "example_scenario": "Applying energy when conditions aren't right for change"
+        }
+      ]
+    },
+    {
+      "model_id": 89,
+      "model_name": "Catalysts",
+      "failures": [
+        {
+          "id": "fm_89_1",
+          "name": "Catalyst Identification Failure",
+          "description": "Not identifying what could catalyze change",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["catalysts_not_identified", "triggers_missed", "change_drivers_unknown"],
+          "prevention_strategies": ["Systematic catalyst search", "Trigger identification", "Change driver analysis"],
+          "example_scenario": "Missing catalyst that could unlock value"
+        },
+        {
+          "id": "fm_89_2",
+          "name": "Catalyst Timing Misjudgment",
+          "description": "Misjudging when catalyst will occur",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["timing_wrong", "catalyst_delayed", "premature_expectation"],
+          "prevention_strategies": ["Timing scenario analysis", "Catalyst monitoring", "Patience with catalysts"],
+          "example_scenario": "Expecting catalyst in months when it takes years"
+        },
+        {
+          "id": "fm_89_3",
+          "name": "Catalyst Effectiveness Overestimation",
+          "description": "Overestimating impact of catalyst",
+          "category": "overconfidence",
+          "severity": "medium",
+          "detection_signals": ["impact_overestimated", "catalyst_not_sufficient", "other_factors_needed"],
+          "prevention_strategies": ["Realistic impact assessment", "Catalyst sufficiency analysis", "Multiple factors"],
+          "example_scenario": "Expecting catalyst to fully solve problem when other factors needed"
+        },
+        {
+          "id": "fm_89_4",
+          "name": "Negative Catalyst Blindness",
+          "description": "Not anticipating negative catalysts",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["only_positive_catalysts", "negative_triggers_missed", "downside_catalysts_ignored"],
+          "prevention_strategies": ["Consider negative catalysts", "Downside trigger analysis", "Risk catalyst mapping"],
+          "example_scenario": "Focusing on positive catalysts while missing negative ones"
+        },
+        {
+          "id": "fm_89_5",
+          "name": "Catalyst Dependency",
+          "description": "Over-relying on specific catalyst",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["single_catalyst_dependency", "no_alternative_path", "catalyst_or_nothing"],
+          "prevention_strategies": ["Multiple catalyst paths", "Reduce catalyst dependency", "Alternative scenarios"],
+          "example_scenario": "Thesis entirely dependent on single catalyst occurring"
+        }
+      ]
+    },
+    {
+      "model_id": 90,
+      "model_name": "Alloying",
+      "failures": [
+        {
+          "id": "fm_90_1",
+          "name": "Combination Blindness",
+          "description": "Not seeing value in combining different elements",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["elements_viewed_separately", "combination_not_considered", "synergy_missed"],
+          "prevention_strategies": ["Consider combinations", "Synergy analysis", "Alloy thinking"],
+          "example_scenario": "Missing that combining two strategies creates something stronger"
+        },
+        {
+          "id": "fm_90_2",
+          "name": "Wrong Proportions",
+          "description": "Combining elements in wrong proportions",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["proportions_wrong", "balance_off", "mixture_suboptimal"],
+          "prevention_strategies": ["Optimize proportions", "Test different mixtures", "Balance analysis"],
+          "example_scenario": "Combining strategies but in wrong proportions"
+        },
+        {
+          "id": "fm_90_3",
+          "name": "Incompatible Elements",
+          "description": "Trying to combine incompatible elements",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["incompatibility_ignored", "conflict_between_elements", "negative_interaction"],
+          "prevention_strategies": ["Compatibility analysis", "Test combinations", "Identify conflicts"],
+          "example_scenario": "Combining strategies that conflict with each other"
+        },
+        {
+          "id": "fm_90_4",
+          "name": "Alloy Brittleness",
+          "description": "Creating combination that's brittle under stress",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["stress_testing_missing", "brittleness_not_detected", "failure_mode_unknown"],
+          "prevention_strategies": ["Stress test combinations", "Brittleness analysis", "Failure mode identification"],
+          "example_scenario": "Combination works in normal conditions but fails under stress"
+        },
+        {
+          "id": "fm_90_5",
+          "name": "Over-Alloying",
+          "description": "Adding too many elements, creating complexity",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["too_many_elements", "complexity_excessive", "diminishing_returns"],
+          "prevention_strategies": ["Simplicity preference", "Diminishing returns awareness", "Optimal complexity"],
+          "example_scenario": "Adding more elements when simpler combination would be better"
+        }
+      ]
+    },
+    {
+      "model_id": 91,
+      "model_name": "Criticality",
+      "failures": [
+        {
+          "id": "fm_91_1",
+          "name": "Critical Point Blindness",
+          "description": "Not recognizing when system is at critical point",
+          "category": "incomplete_analysis",
+          "severity": "critical",
+          "detection_signals": ["criticality_not_detected", "phase_transition_missed", "instability_ignored"],
+          "prevention_strategies": ["Monitor for criticality", "Phase transition analysis", "Instability indicators"],
+          "example_scenario": "Missing that system is at critical point where small change causes large effect"
+        },
+        {
+          "id": "fm_91_2",
+          "name": "Self-Organized Criticality Ignorance",
+          "description": "Not recognizing self-organized criticality in system",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["SOC_not_recognized", "power_law_avalanches_missed", "scale_free_behavior_ignored"],
+          "prevention_strategies": ["Identify SOC systems", "Avalanche analysis", "Scale-free patterns"],
+          "example_scenario": "Not recognizing that system naturally evolves to critical state"
+        },
+        {
+          "id": "fm_91_3",
+          "name": "Avalanche Prediction Failure",
+          "description": "Trying to predict specific avalanches in critical system",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["specific_prediction_attempted", "unpredictability_denied", "false_precision"],
+          "prevention_strategies": ["Accept unpredictability", "Statistical approach", "Prepare for avalanches"],
+          "example_scenario": "Trying to predict exact timing of crisis in critical system"
+        },
+        {
+          "id": "fm_91_4",
+          "name": "Criticality Removal Attempt",
+          "description": "Trying to eliminate criticality that's inherent to system",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["criticality_elimination_attempted", "system_nature_ignored", "futile_control"],
+          "prevention_strategies": ["Accept inherent criticality", "Adapt to criticality", "Resilience over control"],
+          "example_scenario": "Trying to eliminate market volatility that's inherent to system"
+        },
+        {
+          "id": "fm_91_5",
+          "name": "Critical Mass Misjudgment",
+          "description": "Misjudging critical mass needed for change",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["critical_mass_wrong", "threshold_misjudged", "premature_or_late"],
+          "prevention_strategies": ["Analyze critical mass", "Threshold identification", "Monitor accumulation"],
+          "example_scenario": "Acting before reaching critical mass or missing the window"
+        }
+      ]
+    },
+    {
+      "model_id": 92,
+      "model_name": "Surface Area",
+      "failures": [
+        {
+          "id": "fm_92_1",
+          "name": "Surface Area Underestimation",
+          "description": "Underestimating exposure surface area",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["exposure_underestimated", "attack_surface_missed", "vulnerability_points_uncounted"],
+          "prevention_strategies": ["Map full surface area", "Exposure analysis", "Vulnerability enumeration"],
+          "example_scenario": "Underestimating number of points where system can be attacked"
+        },
+        {
+          "id": "fm_92_2",
+          "name": "Surface Area Growth Blindness",
+          "description": "Not recognizing how surface area grows with scale",
+          "category": "scale_mismatch",
+          "severity": "high",
+          "detection_signals": ["scaling_effects_missed", "linear_assumption", "complexity_growth_ignored"],
+          "prevention_strategies": ["Analyze scaling effects", "Non-linear growth awareness", "Complexity management"],
+          "example_scenario": "Not anticipating that doubling size more than doubles exposure"
+        },
+        {
+          "id": "fm_92_3",
+          "name": "Surface Area Reduction Opportunity",
+          "description": "Missing opportunities to reduce surface area",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["reduction_not_considered", "unnecessary_exposure", "simplification_missed"],
+          "prevention_strategies": ["Minimize surface area", "Simplification", "Exposure reduction"],
+          "example_scenario": "Maintaining unnecessary complexity that increases attack surface"
+        },
+        {
+          "id": "fm_92_4",
+          "name": "Interface Proliferation",
+          "description": "Creating too many interfaces/touchpoints",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["too_many_interfaces", "touchpoint_proliferation", "integration_complexity"],
+          "prevention_strategies": ["Minimize interfaces", "Consolidation", "Standard interfaces"],
+          "example_scenario": "Creating many custom interfaces instead of standardizing"
+        },
+        {
+          "id": "fm_92_5",
+          "name": "Hidden Surface Area",
+          "description": "Not identifying hidden exposure points",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["hidden_exposure_missed", "indirect_surface_ignored", "shadow_IT"],
+          "prevention_strategies": ["Discover hidden surface", "Comprehensive mapping", "Shadow system identification"],
+          "example_scenario": "Missing unofficial systems that create exposure"
+        }
+      ]
+    },
+    {
+      "model_id": 93,
+      "model_name": "Global/Local Maxima",
+      "failures": [
+        {
+          "id": "fm_93_1",
+          "name": "Local Maximum Trap",
+          "description": "Getting stuck at local maximum, missing global",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["local_optimization_only", "exploration_stopped", "incremental_only"],
+          "prevention_strategies": ["Explore broadly", "Avoid local traps", "Periodic exploration"],
+          "example_scenario": "Optimizing current approach when better alternatives exist"
+        },
+        {
+          "id": "fm_93_2",
+          "name": "Valley Crossing Failure",
+          "description": "Unwilling to cross valley to reach higher peak",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["valley_crossing_avoided", "short_term_loss_unacceptable", "no_temporary_setback"],
+          "prevention_strategies": ["Accept temporary setbacks", "Long-term view", "Strategic retreat"],
+          "example_scenario": "Refusing to take step back that would enable bigger leap forward"
+        },
+        {
+          "id": "fm_93_3",
+          "name": "Landscape Misunderstanding",
+          "description": "Not understanding the optimization landscape",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["landscape_unknown", "peaks_not_mapped", "terrain_misunderstood"],
+          "prevention_strategies": ["Map landscape", "Understand terrain", "Multiple perspectives"],
+          "example_scenario": "Optimizing without understanding where peaks and valleys are"
+        },
+        {
+          "id": "fm_93_4",
+          "name": "Landscape Change Blindness",
+          "description": "Not recognizing that landscape is changing",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["static_landscape_assumed", "shifting_peaks_missed", "dynamic_ignored"],
+          "prevention_strategies": ["Monitor landscape changes", "Dynamic optimization", "Adaptive strategy"],
+          "example_scenario": "Optimizing for yesterday's landscape"
+        },
+        {
+          "id": "fm_93_5",
+          "name": "Multi-Objective Confusion",
+          "description": "Confusing single and multi-objective optimization",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["single_objective_assumed", "tradeoffs_ignored", "pareto_frontier_missed"],
+          "prevention_strategies": ["Recognize multiple objectives", "Pareto analysis", "Tradeoff management"],
+          "example_scenario": "Optimizing one dimension while ignoring others"
+        }
+      ]
+    },
+    {
+      "model_id": 94,
+      "model_name": "Replication",
+      "failures": [
+        {
+          "id": "fm_94_1",
+          "name": "Replication Failure",
+          "description": "Inability to replicate success",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["replication_failed", "success_factors_unknown", "one_time_only"],
+          "prevention_strategies": ["Understand success factors", "Codify process", "Test replicability"],
+          "example_scenario": "One-time success that can't be repeated"
+        },
+        {
+          "id": "fm_94_2",
+          "name": "Context Dependency Blindness",
+          "description": "Not recognizing context-dependent factors",
+          "category": "context_blindness",
+          "severity": "high",
+          "detection_signals": ["context_ignored", "universal_application_assumed", "local_factors_missed"],
+          "prevention_strategies": ["Identify context factors", "Local adaptation", "Context analysis"],
+          "example_scenario": "Trying to replicate strategy without replicating context"
+        },
+        {
+          "id": "fm_94_3",
+          "name": "Tacit Knowledge Loss",
+          "description": "Losing tacit knowledge in replication",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["tacit_knowledge_not_captured", "explicit_only", "know_how_lost"],
+          "prevention_strategies": ["Capture tacit knowledge", "Apprenticeship", "Knowledge transfer"],
+          "example_scenario": "Documenting process but missing unwritten expertise"
+        },
+        {
+          "id": "fm_94_4",
+          "name": "Scale Replication Failure",
+          "description": "Failing to replicate at different scale",
+          "category": "scale_mismatch",
+          "severity": "high",
+          "detection_signals": ["scale_effects_ignored", "linear_scaling_assumed", "small_to_large_failed"],
+          "prevention_strategies": ["Analyze scale effects", "Non-linear scaling", "Pilot testing"],
+          "example_scenario": "Small success doesn't scale to large implementation"
+        },
+        {
+          "id": "fm_94_5",
+          "name": "Replication Degradation",
+          "description": "Quality degradation through replication",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["quality_decline", "copy_of_copy_degradation", "fidelity_loss"],
+          "prevention_strategies": ["Maintain fidelity", "Quality control", "Master copy reference"],
+          "example_scenario": "Each replication slightly worse than original"
+        }
+      ]
+    },
+    {
+      "model_id": 95,
+      "model_name": "Cooperation/Defection",
+      "failures": [
+        {
+          "id": "fm_95_1",
+          "name": "Defection Blindness",
+          "description": "Not anticipating defection",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["defection_not_expected", "cooperation_assumed", "trust_misplaced"],
+          "prevention_strategies": ["Anticipate defection", "Incentive analysis", "Trust but verify"],
+          "example_scenario": "Assuming cooperation when incentives favor defection"
+        },
+        {
+          "id": "fm_95_2",
+          "name": "Tit-for-Tat Failure",
+          "description": "Not implementing effective reciprocal strategy",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["no_reciprocity", "always_cooperate_or_defect", "strategy_suboptimal"],
+          "prevention_strategies": ["Reciprocal strategy", "Tit-for-tat", "Conditional cooperation"],
+          "example_scenario": "Always cooperating even when exploited"
+        },
+        {
+          "id": "fm_95_3",
+          "name": "Repeated Game Ignorance",
+          "description": "Treating repeated game as one-shot",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["one_shot_thinking", "reputation_ignored", "future_interactions_discounted"],
+          "prevention_strategies": ["Recognize repeated game", "Reputation value", "Long-term relationships"],
+          "example_scenario": "Defecting in repeated game, destroying long-term value"
+        },
+        {
+          "id": "fm_95_4",
+          "name": "Cooperation Mechanism Failure",
+          "description": "Not creating mechanisms to enable cooperation",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["no_cooperation_mechanism", "enforcement_missing", "monitoring_absent"],
+          "prevention_strategies": ["Create cooperation mechanisms", "Monitoring and enforcement", "Incentive alignment"],
+          "example_scenario": "Expecting cooperation without mechanisms to support it"
+        },
+        {
+          "id": "fm_95_5",
+          "name": "Defection Cascade",
+          "description": "Not anticipating cascade of defections",
+          "category": "incomplete_analysis",
+          "severity": "critical",
+          "detection_signals": ["cascade_not_expected", "contagion_ignored", "unraveling_risk"],
+          "prevention_strategies": ["Prevent first defection", "Cascade analysis", "Stability mechanisms"],
+          "example_scenario": "One defection triggering cascade of others"
+        }
+      ]
+    },
+    {
+      "model_id": 96,
+      "model_name": "Hierarchical Organization",
+      "failures": [
+        {
+          "id": "fm_96_1",
+          "name": "Hierarchy Rigidity",
+          "description": "Hierarchy too rigid for environment",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["inflexibility", "slow_adaptation", "bureaucracy"],
+          "prevention_strategies": ["Flexible hierarchy", "Adaptive structure", "Reduce rigidity"],
+          "example_scenario": "Rigid hierarchy unable to adapt to changing environment"
+        },
+        {
+          "id": "fm_96_2",
+          "name": "Hierarchy Depth Error",
+          "description": "Wrong number of hierarchical levels",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["too_many_or_few_levels", "span_of_control_wrong", "communication_delays"],
+          "prevention_strategies": ["Optimize hierarchy depth", "Appropriate span of control", "Flatten when possible"],
+          "example_scenario": "Too many levels creating communication delays"
+        },
+        {
+          "id": "fm_96_3",
+          "name": "Information Flow Blockage",
+          "description": "Hierarchy blocking information flow",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["information_blocked", "upward_flow_filtered", "downward_distortion"],
+          "prevention_strategies": ["Enable information flow", "Skip-level communication", "Transparency"],
+          "example_scenario": "Critical information not reaching decision makers"
+        },
+        {
+          "id": "fm_96_4",
+          "name": "Hierarchy vs Network Confusion",
+          "description": "Using hierarchy when network structure better",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["hierarchy_forced", "network_benefits_missed", "collaboration_hindered"],
+          "prevention_strategies": ["Consider network structure", "Hybrid models", "Appropriate structure"],
+          "example_scenario": "Forcing hierarchical structure on collaborative work"
+        },
+        {
+          "id": "fm_96_5",
+          "name": "Power Distance Problems",
+          "description": "Inappropriate power distance in hierarchy",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["power_distance_wrong", "cultural_mismatch", "authority_issues"],
+          "prevention_strategies": ["Appropriate power distance", "Cultural fit", "Authority calibration"],
+          "example_scenario": "Power distance mismatched to culture or task"
+        }
+      ]
+    },
+    {
+      "model_id": 97,
+      "model_name": "Incentives",
+      "failures": [
+        {
+          "id": "fm_97_1",
+          "name": "Incentive Misalignment",
+          "description": "Incentives not aligned with desired outcomes",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["misaligned_incentives", "perverse_incentives", "wrong_behavior_rewarded"],
+          "prevention_strategies": ["Align incentives", "Outcome-based rewards", "Incentive audit"],
+          "example_scenario": "Rewarding activity instead of results"
+        },
+        {
+          "id": "fm_97_2",
+          "name": "Goodhart's Law",
+          "description": "Metric becomes target and loses meaning",
+          "category": "feedback_loop",
+          "severity": "high",
+          "detection_signals": ["metric_gaming", "target_hit_but_goal_missed", "measure_corrupted"],
+          "prevention_strategies": ["Multiple metrics", "Outcome focus", "Resist gaming"],
+          "example_scenario": "Optimizing metric while missing actual goal"
+        },
+        {
+          "id": "fm_97_3",
+          "name": "Unintended Consequences",
+          "description": "Incentives creating unintended behaviors",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["unintended_behaviors", "side_effects", "perverse_outcomes"],
+          "prevention_strategies": ["Anticipate consequences", "Pilot testing", "Feedback loops"],
+          "example_scenario": "Incentive creating harmful side effects"
+        },
+        {
+          "id": "fm_97_4",
+          "name": "Short-Term Incentive Bias",
+          "description": "Incentives favoring short-term over long-term",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["short_termism", "long_term_sacrificed", "quarterly_focus"],
+          "prevention_strategies": ["Long-term incentives", "Deferred compensation", "Multi-period rewards"],
+          "example_scenario": "Quarterly bonuses driving short-term thinking"
+        },
+        {
+          "id": "fm_97_5",
+          "name": "Crowding Out Intrinsic Motivation",
+          "description": "Extrinsic incentives destroying intrinsic motivation",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["intrinsic_motivation_lost", "overjustification", "passion_killed"],
+          "prevention_strategies": ["Preserve intrinsic motivation", "Appropriate incentives", "Autonomy and mastery"],
+          "example_scenario": "Paying for activity that was previously done for love"
+        }
+      ]
+    },
+    {
+      "model_id": 98,
+      "model_name": "Bureaucracy",
+      "failures": [
+        {
+          "id": "fm_98_1",
+          "name": "Bureaucratic Creep",
+          "description": "Bureaucracy growing without bound",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["process_proliferation", "rules_accumulating", "complexity_increasing"],
+          "prevention_strategies": ["Regular pruning", "Sunset clauses", "Simplification"],
+          "example_scenario": "Processes and rules accumulating over time"
+        },
+        {
+          "id": "fm_98_2",
+          "name": "Bureaucratic Rigidity",
+          "description": "Bureaucracy preventing adaptation",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["inflexibility", "change_resistance", "process_over_outcome"],
+          "prevention_strategies": ["Flexible processes", "Outcome focus", "Exception handling"],
+          "example_scenario": "Following process even when it doesn't make sense"
+        },
+        {
+          "id": "fm_98_3",
+          "name": "Bureaucratic Overhead",
+          "description": "Bureaucracy consuming excessive resources",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["high_overhead", "low_productivity", "admin_bloat"],
+          "prevention_strategies": ["Minimize overhead", "Efficiency focus", "Lean processes"],
+          "example_scenario": "More time on process than actual work"
+        },
+        {
+          "id": "fm_98_4",
+          "name": "Bureaucratic Capture",
+          "description": "Bureaucracy serving itself rather than mission",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["self_serving", "mission_drift", "empire_building"],
+          "prevention_strategies": ["Mission focus", "Accountability", "External oversight"],
+          "example_scenario": "Bureaucracy optimizing for its own growth"
+        },
+        {
+          "id": "fm_98_5",
+          "name": "Bureaucratic Stifling",
+          "description": "Bureaucracy killing innovation and initiative",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["innovation_killed", "initiative_punished", "risk_aversion"],
+          "prevention_strategies": ["Encourage initiative", "Safe to fail", "Innovation space"],
+          "example_scenario": "Process preventing experimentation and innovation"
+        }
+      ]
+    },
+    {
+      "model_id": 99,
+      "model_name": "Preserving Optionality",
+      "failures": [
+        {
+          "id": "fm_99_1",
+          "name": "Premature Commitment",
+          "description": "Committing too early, losing options",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["early_commitment", "options_closed", "irreversibility"],
+          "prevention_strategies": ["Delay commitment", "Preserve options", "Reversibility"],
+          "example_scenario": "Locking in decision before having enough information"
+        },
+        {
+          "id": "fm_99_2",
+          "name": "Option Value Blindness",
+          "description": "Not valuing optionality",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["option_value_ignored", "flexibility_not_valued", "commitment_overvalued"],
+          "prevention_strategies": ["Value options", "Real options analysis", "Flexibility premium"],
+          "example_scenario": "Not recognizing value of keeping options open"
+        },
+        {
+          "id": "fm_99_3",
+          "name": "Option Cost Ignorance",
+          "description": "Not recognizing cost of maintaining options",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["option_cost_ignored", "free_options_assumed", "maintenance_cost_missed"],
+          "prevention_strategies": ["Account for option costs", "Cost-benefit of options", "Selective optionality"],
+          "example_scenario": "Keeping too many options open at high cost"
+        },
+        {
+          "id": "fm_99_4",
+          "name": "Option Expiration Blindness",
+          "description": "Not recognizing when options expire",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["expiration_missed", "window_closed", "option_lost"],
+          "prevention_strategies": ["Monitor expiration", "Exercise timing", "Window awareness"],
+          "example_scenario": "Missing window to exercise valuable option"
+        },
+        {
+          "id": "fm_99_5",
+          "name": "False Optionality",
+          "description": "Believing you have options when you don't",
+          "category": "overconfidence",
+          "severity": "high",
+          "detection_signals": ["illusory_options", "constraints_ignored", "false_flexibility"],
+          "prevention_strategies": ["Verify real options", "Constraint analysis", "Test optionality"],
+          "example_scenario": "Thinking you can change course when actually locked in"
+        }
+      ]
+    },
+    {
+      "model_id": 100,
+      "model_name": "Cornered Animal",
+      "failures": [
+        {
+          "id": "fm_100_1",
+          "name": "Cornering Opponent",
+          "description": "Cornering opponent making them desperate and dangerous",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["no_exit_left", "desperate_opponent", "escalation_risk"],
+          "prevention_strategies": ["Leave exit route", "Face-saving options", "De-escalation"],
+          "example_scenario": "Backing opponent into corner where they have nothing to lose"
+        },
+        {
+          "id": "fm_100_2",
+          "name": "Not Recognizing Being Cornered",
+          "description": "Not recognizing when you're being cornered",
+          "category": "context_blindness",
+          "severity": "high",
+          "detection_signals": ["options_closing", "trap_not_seen", "exit_routes_blocked"],
+          "prevention_strategies": ["Monitor options", "Recognize traps", "Maintain exits"],
+          "example_scenario": "Not seeing that options are being systematically closed"
+        },
+        {
+          "id": "fm_100_3",
+          "name": "Desperate Action Underestimation",
+          "description": "Underestimating what cornered party will do",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["desperation_underestimated", "extreme_actions_not_expected", "nothing_to_lose"],
+          "prevention_strategies": ["Expect desperate actions", "Worst case planning", "Cornered party analysis"],
+          "example_scenario": "Not expecting extreme actions from desperate party"
+        },
+        {
+          "id": "fm_100_4",
+          "name": "Self-Cornering",
+          "description": "Cornering yourself through commitments",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["self_imposed_constraints", "burned_bridges", "no_retreat"],
+          "prevention_strategies": ["Preserve options", "Avoid burning bridges", "Maintain flexibility"],
+          "example_scenario": "Making public commitments that eliminate your options"
+        },
+        {
+          "id": "fm_100_5",
+          "name": "Cornered Animal Empowerment",
+          "description": "Cornered party becoming more dangerous than expected",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["desperation_strength", "nothing_to_lose_power", "unexpected_resistance"],
+          "prevention_strategies": ["Respect cornered party", "Expect fierce resistance", "Avoid cornering"],
+          "example_scenario": "Cornered competitor fighting harder than expected"
+        }
+      ]
+    },
+    {
+      "model_id": 101,
+      "model_name": "Tendency to Minimize Energy Output (Mental & Physical)",
+      "failures": [
+        {
+          "id": "fm_101_1",
+          "name": "Energy Minimization Trap",
+          "description": "Minimizing effort when more effort needed",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["insufficient_effort", "shortcuts_taken", "lazy_thinking"],
+          "prevention_strategies": ["Appropriate effort", "Overcome laziness", "Effort when needed"],
+          "example_scenario": "Taking easy path when hard path is necessary"
+        },
+        {
+          "id": "fm_101_2",
+          "name": "Cognitive Ease Bias",
+          "description": "Preferring easy-to-process information over accurate",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["fluency_bias", "simple_preferred", "complexity_avoided"],
+          "prevention_strategies": ["Embrace complexity", "Effort for accuracy", "Resist fluency bias"],
+          "example_scenario": "Believing simple explanation because it's easy to understand"
+        },
+        {
+          "id": "fm_101_3",
+          "name": "Path of Least Resistance",
+          "description": "Always taking easiest path",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["always_easy_path", "resistance_avoided", "no_hard_choices"],
+          "prevention_strategies": ["Take hard path when better", "Overcome resistance", "Effort investment"],
+          "example_scenario": "Avoiding difficult but necessary actions"
+        },
+        {
+          "id": "fm_101_4",
+          "name": "Energy Conservation Overuse",
+          "description": "Conserving energy when should be expending",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["underinvestment", "effort_withheld", "opportunity_missed"],
+          "prevention_strategies": ["Invest effort strategically", "Recognize key moments", "Energy deployment"],
+          "example_scenario": "Conserving energy when critical moment requires full effort"
+        },
+        {
+          "id": "fm_101_5",
+          "name": "Automation Premature",
+          "description": "Automating before understanding",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["premature_automation", "understanding_lacking", "process_not_refined"],
+          "prevention_strategies": ["Understand before automating", "Manual first", "Refinement before automation"],
+          "example_scenario": "Automating broken process to save effort"
+        }
+      ]
+    },
+    {
+      "model_id": 102,
+      "model_name": "Natural Selection",
+      "failures": [
+        {
+          "id": "fm_102_1",
+          "name": "Selection Pressure Blindness",
+          "description": "Not identifying selection pressures in environment",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["selection_pressures_unknown", "survival_factors_missed", "fitness_criteria_unclear"],
+          "prevention_strategies": ["Identify selection pressures", "Fitness analysis", "Environmental scanning"],
+          "example_scenario": "Not understanding what determines survival in market"
+        },
+        {
+          "id": "fm_102_2",
+          "name": "Fitness Landscape Misunderstanding",
+          "description": "Misunderstanding what fitness means in context",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["fitness_misunderstood", "wrong_optimization_target", "survival_criteria_wrong"],
+          "prevention_strategies": ["Define fitness correctly", "Context-appropriate fitness", "Survival analysis"],
+          "example_scenario": "Optimizing for wrong fitness criteria"
+        },
+        {
+          "id": "fm_102_3",
+          "name": "Selection Speed Misjudgment",
+          "description": "Misjudging speed of selection process",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["selection_speed_wrong", "evolution_pace_misjudged", "adaptation_timing_off"],
+          "prevention_strategies": ["Analyze selection speed", "Generational timing", "Adaptation pace"],
+          "example_scenario": "Expecting rapid selection when it takes generations"
+        },
+        {
+          "id": "fm_102_4",
+          "name": "Survival vs Reproduction Confusion",
+          "description": "Confusing survival with reproductive success",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["survival_only_focus", "reproduction_ignored", "fitness_incomplete"],
+          "prevention_strategies": ["Consider both survival and reproduction", "Full fitness view", "Propagation analysis"],
+          "example_scenario": "Surviving but not propagating ideas/products"
+        },
+        {
+          "id": "fm_102_5",
+          "name": "Selection Environment Change",
+          "description": "Not recognizing selection environment has changed",
+          "category": "context_blindness",
+          "severity": "high",
+          "detection_signals": ["environment_change_missed", "old_fitness_criteria", "adaptation_lag"],
+          "prevention_strategies": ["Monitor environment changes", "Update fitness criteria", "Adaptive strategy"],
+          "example_scenario": "Optimizing for yesterday's selection environment"
+        }
+      ]
+    },
+    {
+      "model_id": 103,
+      "model_name": "Adaptation",
+      "failures": [
+        {
+          "id": "fm_103_1",
+          "name": "Adaptation Lag",
+          "description": "Adapting too slowly to environmental change",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["slow_adaptation", "environment_outpacing", "lag_accumulating"],
+          "prevention_strategies": ["Faster adaptation", "Early warning systems", "Proactive change"],
+          "example_scenario": "Adapting to market changes too slowly"
+        },
+        {
+          "id": "fm_103_2",
+          "name": "Over-Adaptation",
+          "description": "Over-adapting to current environment, losing flexibility",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["over_specialization", "flexibility_lost", "brittleness"],
+          "prevention_strategies": ["Maintain flexibility", "Avoid over-specialization", "Adaptive capacity"],
+          "example_scenario": "Perfectly adapted to current environment but unable to handle change"
+        },
+        {
+          "id": "fm_103_3",
+          "name": "Maladaptation",
+          "description": "Adapting in wrong direction",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["wrong_adaptation", "fitness_decreasing", "misaligned_change"],
+          "prevention_strategies": ["Verify adaptation direction", "Fitness feedback", "Course correction"],
+          "example_scenario": "Changing in ways that reduce fitness"
+        },
+        {
+          "id": "fm_103_4",
+          "name": "Adaptation Cost Blindness",
+          "description": "Not recognizing costs of adaptation",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["adaptation_costs_ignored", "change_cost_underestimated", "transition_pain_missed"],
+          "prevention_strategies": ["Account for adaptation costs", "Transition planning", "Cost-benefit of change"],
+          "example_scenario": "Underestimating cost and disruption of adapting"
+        },
+        {
+          "id": "fm_103_5",
+          "name": "False Adaptation Signal",
+          "description": "Adapting to noise rather than signal",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["noise_adaptation", "false_signal_response", "overreaction"],
+          "prevention_strategies": ["Distinguish signal from noise", "Appropriate response", "Filter noise"],
+          "example_scenario": "Changing strategy based on random fluctuation"
+        }
+      ]
+    },
+    {
+      "model_id": 104,
+      "model_name": "Red Queen Effect",
+      "failures": [
+        {
+          "id": "fm_104_1",
+          "name": "Standing Still Illusion",
+          "description": "Thinking standing still is safe when running required",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["complacency", "relative_position_ignored", "static_thinking"],
+          "prevention_strategies": ["Recognize Red Queen dynamics", "Continuous improvement", "Relative position focus"],
+          "example_scenario": "Maintaining current performance while competitors improve"
+        },
+        {
+          "id": "fm_104_2",
+          "name": "Race Pace Misjudgment",
+          "description": "Misjudging pace needed to stay competitive",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["pace_too_slow", "falling_behind", "competitive_gap_growing"],
+          "prevention_strategies": ["Monitor competitive pace", "Match or exceed pace", "Continuous benchmarking"],
+          "example_scenario": "Improving but not fast enough to maintain position"
+        },
+        {
+          "id": "fm_104_3",
+          "name": "Red Queen Exhaustion",
+          "description": "Exhausting resources in Red Queen race",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["resource_exhaustion", "unsustainable_pace", "burnout"],
+          "prevention_strategies": ["Sustainable pace", "Resource management", "Strategic rest"],
+          "example_scenario": "Running so hard that resources are depleted"
+        },
+        {
+          "id": "fm_104_4",
+          "name": "Wrong Race",
+          "description": "Running in wrong Red Queen race",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["wrong_competition", "irrelevant_race", "misallocated_effort"],
+          "prevention_strategies": ["Choose races wisely", "Strategic focus", "Exit wrong races"],
+          "example_scenario": "Competing intensely in race that doesn't matter"
+        },
+        {
+          "id": "fm_104_5",
+          "name": "Red Queen Escape Blindness",
+          "description": "Not seeing opportunities to escape Red Queen dynamics",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["escape_not_considered", "trapped_in_race", "alternative_paths_missed"],
+          "prevention_strategies": ["Look for escape routes", "Blue ocean strategy", "Change the game"],
+          "example_scenario": "Running endlessly when could change competitive dynamics"
+        }
+      ]
+    },
+    {
+      "model_id": 105,
+      "model_name": "Ecosystems",
+      "failures": [
+        {
+          "id": "fm_105_1",
+          "name": "Ecosystem Blindness",
+          "description": "Not seeing the ecosystem, only individual actors",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["ecosystem_not_seen", "isolated_analysis", "interdependencies_missed"],
+          "prevention_strategies": ["Ecosystem mapping", "Interdependency analysis", "System view"],
+          "example_scenario": "Analyzing company without understanding its ecosystem"
+        },
+        {
+          "id": "fm_105_2",
+          "name": "Ecosystem Health Ignorance",
+          "description": "Not monitoring ecosystem health",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["health_not_monitored", "ecosystem_degradation_missed", "sustainability_ignored"],
+          "prevention_strategies": ["Monitor ecosystem health", "Sustainability metrics", "Early warning indicators"],
+          "example_scenario": "Extracting value while ecosystem degrades"
+        },
+        {
+          "id": "fm_105_3",
+          "name": "Keystone Species Blindness",
+          "description": "Not identifying keystone species/actors",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["keystone_not_identified", "critical_actors_unknown", "leverage_points_missed"],
+          "prevention_strategies": ["Identify keystone actors", "Critical node analysis", "Leverage point mapping"],
+          "example_scenario": "Not recognizing which actors are critical to ecosystem"
+        },
+        {
+          "id": "fm_105_4",
+          "name": "Ecosystem Disruption Underestimation",
+          "description": "Underestimating cascade effects of ecosystem disruption",
+          "category": "reasoning_error",
+          "severity": "critical",
+          "detection_signals": ["cascade_underestimated", "ripple_effects_missed", "systemic_risk_ignored"],
+          "prevention_strategies": ["Cascade analysis", "Systemic risk assessment", "Ecosystem stress testing"],
+          "example_scenario": "Removing actor without anticipating ecosystem cascade"
+        },
+        {
+          "id": "fm_105_5",
+          "name": "Ecosystem Position Misunderstanding",
+          "description": "Misunderstanding own position in ecosystem",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["position_misunderstood", "role_unclear", "dependencies_unknown"],
+          "prevention_strategies": ["Understand own position", "Dependency mapping", "Role clarity"],
+          "example_scenario": "Not understanding how dependent on ecosystem you are"
+        }
+      ]
+    },
+    {
+      "model_id": 106,
+      "model_name": "Niches",
+      "failures": [
+        {
+          "id": "fm_106_1",
+          "name": "Niche Misidentification",
+          "description": "Misidentifying appropriate niche",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["wrong_niche", "poor_fit", "competitive_disadvantage"],
+          "prevention_strategies": ["Niche analysis", "Fit assessment", "Competitive positioning"],
+          "example_scenario": "Competing in niche where you have no advantage"
+        },
+        {
+          "id": "fm_106_2",
+          "name": "Niche Overcrowding",
+          "description": "Entering overcrowded niche",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["overcrowded_niche", "intense_competition", "margin_compression"],
+          "prevention_strategies": ["Niche capacity analysis", "Competition assessment", "Find underserved niches"],
+          "example_scenario": "Entering niche with too many competitors"
+        },
+        {
+          "id": "fm_106_3",
+          "name": "Niche Collapse Blindness",
+          "description": "Not seeing niche collapse coming",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["niche_shrinking", "demand_declining", "obsolescence_risk"],
+          "prevention_strategies": ["Monitor niche health", "Diversification", "Exit planning"],
+          "example_scenario": "Niche disappearing due to technology or market change"
+        },
+        {
+          "id": "fm_106_4",
+          "name": "Niche Expansion Failure",
+          "description": "Failing to expand beyond niche when needed",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["stuck_in_niche", "growth_limited", "expansion_failed"],
+          "prevention_strategies": ["Expansion strategy", "Adjacent niches", "Growth planning"],
+          "example_scenario": "Dominating niche but unable to grow beyond it"
+        },
+        {
+          "id": "fm_106_5",
+          "name": "Niche Defense Failure",
+          "description": "Failing to defend niche from invaders",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["niche_invaded", "defense_weak", "position_eroding"],
+          "prevention_strategies": ["Niche defense", "Barrier building", "Competitive response"],
+          "example_scenario": "Larger competitor entering and dominating your niche"
+        }
+      ]
+    },
+    {
+      "model_id": 107,
+      "model_name": "Self-Preservation",
+      "failures": [
+        {
+          "id": "fm_107_1",
+          "name": "Self-Preservation Overriding Mission",
+          "description": "Self-preservation instinct overriding organizational mission",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["mission_sacrificed", "survival_over_purpose", "institutional_self_interest"],
+          "prevention_strategies": ["Mission primacy", "Purpose over survival", "Institutional discipline"],
+          "example_scenario": "Organization prioritizing survival over mission fulfillment"
+        },
+        {
+          "id": "fm_107_2",
+          "name": "Threat Misidentification",
+          "description": "Misidentifying threats to survival",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["wrong_threats_identified", "real_threats_missed", "false_alarms"],
+          "prevention_strategies": ["Accurate threat assessment", "Comprehensive scanning", "Threat prioritization"],
+          "example_scenario": "Defending against wrong threats while real ones ignored"
+        },
+        {
+          "id": "fm_107_3",
+          "name": "Over-Preservation",
+          "description": "Excessive focus on preservation limiting growth",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["excessive_caution", "growth_sacrificed", "risk_aversion_extreme"],
+          "prevention_strategies": ["Balanced risk-taking", "Growth and preservation", "Appropriate caution"],
+          "example_scenario": "So focused on survival that growth opportunities missed"
+        },
+        {
+          "id": "fm_107_4",
+          "name": "Preservation Mechanism Failure",
+          "description": "Preservation mechanisms not working",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["mechanisms_failing", "protection_inadequate", "vulnerabilities_exposed"],
+          "prevention_strategies": ["Test preservation mechanisms", "Redundancy", "Mechanism maintenance"],
+          "example_scenario": "Assuming protected when preservation mechanisms have failed"
+        },
+        {
+          "id": "fm_107_5",
+          "name": "Preservation vs Adaptation Conflict",
+          "description": "Preservation instinct blocking necessary adaptation",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["change_resisted", "adaptation_blocked", "status_quo_defended"],
+          "prevention_strategies": ["Adaptive preservation", "Change for survival", "Evolution over stasis"],
+          "example_scenario": "Resisting change needed for long-term survival"
+        }
+      ]
+    },
+    {
+      "model_id": 108,
+      "model_name": "Replication (Biology)",
+      "failures": [
+        {
+          "id": "fm_108_1",
+          "name": "Replication Fidelity Error",
+          "description": "Errors in replication process",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["replication_errors", "fidelity_loss", "degradation"],
+          "prevention_strategies": ["Quality control", "Error correction", "Fidelity maintenance"],
+          "example_scenario": "Each copy slightly different from original"
+        },
+        {
+          "id": "fm_108_2",
+          "name": "Replication Rate Misjudgment",
+          "description": "Misjudging appropriate replication rate",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["rate_wrong", "too_fast_or_slow", "resource_mismatch"],
+          "prevention_strategies": ["Optimize replication rate", "Resource matching", "Sustainable growth"],
+          "example_scenario": "Replicating faster than resources can support"
+        },
+        {
+          "id": "fm_108_3",
+          "name": "Replication Without Variation",
+          "description": "Replicating without beneficial variation",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["no_variation", "exact_copies_only", "adaptation_blocked"],
+          "prevention_strategies": ["Allow variation", "Experimentation", "Adaptive replication"],
+          "example_scenario": "Copying exactly when variation would improve fitness"
+        },
+        {
+          "id": "fm_108_4",
+          "name": "Replication Resource Blindness",
+          "description": "Not recognizing replication resource requirements",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["resources_ignored", "replication_costs_missed", "sustainability_unknown"],
+          "prevention_strategies": ["Resource planning", "Replication costs", "Sustainability analysis"],
+          "example_scenario": "Replicating without ensuring resource availability"
+        },
+        {
+          "id": "fm_108_5",
+          "name": "Viral Replication Blindness",
+          "description": "Not recognizing viral replication dynamics",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["viral_dynamics_missed", "exponential_growth_not_expected", "spread_underestimated"],
+          "prevention_strategies": ["Understand viral dynamics", "Exponential thinking", "Spread modeling"],
+          "example_scenario": "Underestimating how fast ideas/products can spread"
+        }
+      ]
+    },
+    {
+      "model_id": 109,
+      "model_name": "Symbiosis",
+      "failures": [
+        {
+          "id": "fm_109_1",
+          "name": "Symbiosis Misidentification",
+          "description": "Misidentifying relationship as symbiotic when parasitic",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["relationship_misclassified", "parasitism_missed", "one_sided_benefit"],
+          "prevention_strategies": ["Verify mutual benefit", "Relationship audit", "Value flow analysis"],
+          "example_scenario": "Thinking partnership is mutual when being exploited"
+        },
+        {
+          "id": "fm_109_2",
+          "name": "Symbiosis Dependency",
+          "description": "Becoming too dependent on symbiotic partner",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["over_dependency", "single_partner_reliance", "vulnerability"],
+          "prevention_strategies": ["Diversify relationships", "Reduce dependency", "Maintain independence"],
+          "example_scenario": "Completely dependent on partner who could leave"
+        },
+        {
+          "id": "fm_109_3",
+          "name": "Symbiosis Breakdown Blindness",
+          "description": "Not seeing symbiosis breaking down",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["relationship_degrading", "mutual_benefit_declining", "partnership_failing"],
+          "prevention_strategies": ["Monitor relationship health", "Early warning signs", "Relationship maintenance"],
+          "example_scenario": "Not noticing partnership becoming less beneficial"
+        },
+        {
+          "id": "fm_109_4",
+          "name": "Symbiosis Opportunity Blindness",
+          "description": "Missing potential symbiotic relationships",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["opportunities_missed", "potential_partners_ignored", "go_it_alone"],
+          "prevention_strategies": ["Scan for symbiosis opportunities", "Partnership exploration", "Mutual benefit search"],
+          "example_scenario": "Missing partnership that could benefit both parties"
+        },
+        {
+          "id": "fm_109_5",
+          "name": "Symbiosis Evolution Failure",
+          "description": "Failing to evolve symbiotic relationship",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["static_relationship", "evolution_needed", "stagnation"],
+          "prevention_strategies": ["Evolve relationships", "Adapt partnerships", "Continuous improvement"],
+          "example_scenario": "Partnership that worked before no longer fits"
+        }
+      ]
+    },
+    {
+      "model_id": 110,
+      "model_name": "Parasitism",
+      "failures": [
+        {
+          "id": "fm_110_1",
+          "name": "Parasite Blindness",
+          "description": "Not recognizing parasitic relationships",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["parasites_not_identified", "value_extraction_missed", "exploitation_unnoticed"],
+          "prevention_strategies": ["Identify parasites", "Value flow analysis", "Relationship audit"],
+          "example_scenario": "Not recognizing that partner is extracting value without giving"
+        },
+        {
+          "id": "fm_110_2",
+          "name": "Parasite Tolerance",
+          "description": "Tolerating parasites when should eliminate",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["parasites_tolerated", "extraction_accepted", "no_action_taken"],
+          "prevention_strategies": ["Eliminate parasites", "Zero tolerance", "Relationship pruning"],
+          "example_scenario": "Continuing relationship that only extracts value"
+        },
+        {
+          "id": "fm_110_3",
+          "name": "Becoming Parasitic",
+          "description": "Unknowingly becoming parasitic to others",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["value_extraction_only", "no_value_given", "relationship_one_sided"],
+          "prevention_strategies": ["Self-audit", "Value contribution", "Mutual benefit focus"],
+          "example_scenario": "Taking from relationships without giving back"
+        },
+        {
+          "id": "fm_110_4",
+          "name": "Parasite Load Underestimation",
+          "description": "Underestimating cumulative parasite burden",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["cumulative_burden_missed", "many_small_parasites", "death_by_thousand_cuts"],
+          "prevention_strategies": ["Cumulative burden analysis", "Small parasite attention", "Total load assessment"],
+          "example_scenario": "Many small parasites adding up to significant burden"
+        },
+        {
+          "id": "fm_110_5",
+          "name": "Parasite Adaptation",
+          "description": "Parasites adapting to defenses",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["defenses_circumvented", "parasite_evolution", "arms_race"],
+          "prevention_strategies": ["Evolve defenses", "Continuous improvement", "Adaptive protection"],
+          "example_scenario": "Parasites finding ways around protective measures"
+        }
+      ]
+    },
+    {
+      "model_id": 111,
+      "model_name": "Homeostasis",
+      "failures": [
+        {
+          "id": "fm_111_1",
+          "name": "Homeostasis Disruption Blindness",
+          "description": "Not recognizing homeostasis being disrupted",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["balance_disrupted", "equilibrium_lost", "stability_threatened"],
+          "prevention_strategies": ["Monitor homeostasis", "Balance indicators", "Stability tracking"],
+          "example_scenario": "Not noticing system moving out of balance"
+        },
+        {
+          "id": "fm_111_2",
+          "name": "Homeostasis Resistance",
+          "description": "Homeostasis resisting beneficial change",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["change_resisted", "return_to_baseline", "improvement_reversed"],
+          "prevention_strategies": ["Overcome homeostasis", "Sustained change", "New equilibrium"],
+          "example_scenario": "System returning to old state after attempted improvement"
+        },
+        {
+          "id": "fm_111_3",
+          "name": "Homeostasis Set Point Error",
+          "description": "Homeostasis maintaining wrong set point",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["wrong_equilibrium", "suboptimal_balance", "set_point_incorrect"],
+          "prevention_strategies": ["Evaluate set point", "Adjust equilibrium", "Optimal balance"],
+          "example_scenario": "System maintaining balance at suboptimal level"
+        },
+        {
+          "id": "fm_111_4",
+          "name": "Homeostasis Mechanism Failure",
+          "description": "Homeostatic mechanisms failing",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["mechanisms_failing", "regulation_lost", "runaway_dynamics"],
+          "prevention_strategies": ["Monitor mechanisms", "Redundancy", "Mechanism maintenance"],
+          "example_scenario": "Feedback loops that maintain balance breaking down"
+        },
+        {
+          "id": "fm_111_5",
+          "name": "Homeostasis vs Growth Conflict",
+          "description": "Homeostasis conflicting with growth needs",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["growth_blocked", "stability_over_growth", "stagnation"],
+          "prevention_strategies": ["Balance stability and growth", "Dynamic equilibrium", "Controlled instability"],
+          "example_scenario": "Stability mechanisms preventing necessary growth"
+        }
+      ]
+    },
+    {
+      "model_id": 112,
+      "model_name": "Dunbar's Number",
+      "failures": [
+        {
+          "id": "fm_112_1",
+          "name": "Dunbar Limit Ignorance",
+          "description": "Ignoring cognitive limits on relationships",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["too_many_relationships", "relationship_quality_declining", "cognitive_overload"],
+          "prevention_strategies": ["Respect relationship limits", "Quality over quantity", "Relationship pruning"],
+          "example_scenario": "Trying to maintain more relationships than cognitively possible"
+        },
+        {
+          "id": "fm_112_2",
+          "name": "Relationship Layer Confusion",
+          "description": "Confusing different relationship layers",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["layers_confused", "intimacy_mismatch", "expectation_mismatch"],
+          "prevention_strategies": ["Understand relationship layers", "Appropriate expectations", "Layer management"],
+          "example_scenario": "Expecting close friend behavior from acquaintance"
+        },
+        {
+          "id": "fm_112_3",
+          "name": "Scaling Relationships Failure",
+          "description": "Failing to scale relationships appropriately",
+          "category": "scale_mismatch",
+          "severity": "medium",
+          "detection_signals": ["scaling_failed", "personal_approach_at_scale", "relationship_breakdown"],
+          "prevention_strategies": ["Appropriate scaling", "Relationship tiers", "Technology assistance"],
+          "example_scenario": "Trying to maintain personal relationships at organizational scale"
+        },
+        {
+          "id": "fm_112_4",
+          "name": "Inner Circle Neglect",
+          "description": "Neglecting inner circle for outer circles",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["inner_circle_neglected", "close_relationships_suffering", "priority_inversion"],
+          "prevention_strategies": ["Prioritize inner circle", "Relationship investment", "Core relationship focus"],
+          "example_scenario": "Spending time on acquaintances while neglecting close relationships"
+        },
+        {
+          "id": "fm_112_5",
+          "name": "Digital Relationship Illusion",
+          "description": "Thinking digital connections equal real relationships",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["digital_illusion", "shallow_connections", "relationship_quality_low"],
+          "prevention_strategies": ["Real relationship investment", "Digital supplement not replace", "Quality connections"],
+          "example_scenario": "Counting social media followers as relationships"
+        }
+      ]
+    },
+    {
+      "model_id": 113,
+      "model_name": "Trust",
+      "failures": [
+        {
+          "id": "fm_113_1",
+          "name": "Trust Misplacement",
+          "description": "Trusting untrustworthy parties",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["trust_misplaced", "trustworthiness_not_verified", "blind_trust"],
+          "prevention_strategies": ["Verify trustworthiness", "Trust but verify", "Earned trust"],
+          "example_scenario": "Trusting party that hasn't demonstrated trustworthiness"
+        },
+        {
+          "id": "fm_113_2",
+          "name": "Trust Deficit",
+          "description": "Not trusting when trust is warranted",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["excessive_distrust", "trust_withheld", "relationship_damage"],
+          "prevention_strategies": ["Appropriate trust", "Trust building", "Overcome distrust"],
+          "example_scenario": "Not trusting trustworthy party, damaging relationship"
+        },
+        {
+          "id": "fm_113_3",
+          "name": "Trust Erosion Blindness",
+          "description": "Not noticing trust eroding",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["trust_declining", "relationship_degrading", "warning_signs_missed"],
+          "prevention_strategies": ["Monitor trust levels", "Early warning signs", "Trust maintenance"],
+          "example_scenario": "Not noticing that trust in relationship is declining"
+        },
+        {
+          "id": "fm_113_4",
+          "name": "Trust Recovery Failure",
+          "description": "Failing to rebuild trust after breach",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["trust_not_rebuilt", "breach_unaddressed", "relationship_damaged"],
+          "prevention_strategies": ["Trust repair", "Breach acknowledgment", "Rebuilding process"],
+          "example_scenario": "Trust breach not properly addressed, relationship fails"
+        },
+        {
+          "id": "fm_113_5",
+          "name": "Trust Scaling Failure",
+          "description": "Failing to scale trust mechanisms",
+          "category": "scale_mismatch",
+          "severity": "medium",
+          "detection_signals": ["trust_mechanisms_failing", "scale_mismatch", "institutional_trust_lacking"],
+          "prevention_strategies": ["Scalable trust mechanisms", "Institutional trust", "Trust infrastructure"],
+          "example_scenario": "Personal trust doesn't scale to organizational level"
+        }
+      ]
+    },
+    {
+      "model_id": 114,
+      "model_name": "Hunting/Gathering vs Farming",
+      "failures": [
+        {
+          "id": "fm_114_1",
+          "name": "Mode Mismatch",
+          "description": "Using hunting mode when farming needed or vice versa",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["mode_mismatch", "approach_wrong", "strategy_misaligned"],
+          "prevention_strategies": ["Match mode to situation", "Mode awareness", "Appropriate strategy"],
+          "example_scenario": "Hunting for opportunities when should be farming existing ones"
+        },
+        {
+          "id": "fm_114_2",
+          "name": "Hunting Addiction",
+          "description": "Addicted to hunting, unable to farm",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["always_hunting", "farming_neglected", "no_cultivation"],
+          "prevention_strategies": ["Balance hunting and farming", "Cultivation skills", "Long-term investment"],
+          "example_scenario": "Always chasing new opportunities, never developing existing ones"
+        },
+        {
+          "id": "fm_114_3",
+          "name": "Farming Complacency",
+          "description": "Farming complacency missing hunting opportunities",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["only_farming", "opportunities_missed", "no_exploration"],
+          "prevention_strategies": ["Balance farming and hunting", "Exploration allocation", "Opportunity scanning"],
+          "example_scenario": "So focused on existing that new opportunities missed"
+        },
+        {
+          "id": "fm_114_4",
+          "name": "Transition Failure",
+          "description": "Failing to transition between modes",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["stuck_in_mode", "transition_failed", "inflexibility"],
+          "prevention_strategies": ["Mode flexibility", "Transition capability", "Adaptive approach"],
+          "example_scenario": "Unable to shift from hunting to farming when appropriate"
+        },
+        {
+          "id": "fm_114_5",
+          "name": "Resource Allocation Error",
+          "description": "Wrong allocation between hunting and farming",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["allocation_wrong", "imbalance", "suboptimal_mix"],
+          "prevention_strategies": ["Optimal allocation", "Balance assessment", "Resource rebalancing"],
+          "example_scenario": "Too much resource to hunting when farming would yield more"
+        }
+      ]
+    },
+    {
+      "model_id": 115,
+      "model_name": "Fight or Flight",
+      "failures": [
+        {
+          "id": "fm_115_1",
+          "name": "Wrong Response Selection",
+          "description": "Choosing fight when should flee or vice versa",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["wrong_response", "fight_when_flee", "flee_when_fight"],
+          "prevention_strategies": ["Accurate threat assessment", "Response calibration", "Situational awareness"],
+          "example_scenario": "Fighting battle that should be avoided"
+        },
+        {
+          "id": "fm_115_2",
+          "name": "Freeze Response",
+          "description": "Freezing when action needed",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["paralysis", "no_action", "decision_avoidance"],
+          "prevention_strategies": ["Overcome freeze", "Action bias", "Decision forcing"],
+          "example_scenario": "Paralyzed by threat when action needed"
+        },
+        {
+          "id": "fm_115_3",
+          "name": "Chronic Fight Mode",
+          "description": "Stuck in fight mode when not needed",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["always_fighting", "aggression_default", "no_de_escalation"],
+          "prevention_strategies": ["De-escalation", "Response modulation", "Appropriate aggression"],
+          "example_scenario": "Treating every situation as fight when not necessary"
+        },
+        {
+          "id": "fm_115_4",
+          "name": "Chronic Flight Mode",
+          "description": "Stuck in flight mode, always avoiding",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["always_fleeing", "avoidance_default", "no_confrontation"],
+          "prevention_strategies": ["Appropriate confrontation", "Stand ground when needed", "Courage building"],
+          "example_scenario": "Avoiding all conflict when some confrontation needed"
+        },
+        {
+          "id": "fm_115_5",
+          "name": "Threat Calibration Error",
+          "description": "Miscalibrating threat level",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["threat_miscalibrated", "over_or_under_reaction", "response_mismatch"],
+          "prevention_strategies": ["Accurate threat assessment", "Calibrated response", "Reality testing"],
+          "example_scenario": "Treating minor threat as major or major as minor"
+        }
+      ]
+    },
+    {
+      "model_id": 116,
+      "model_name": "Signaling",
+      "failures": [
+        {
+          "id": "fm_116_1",
+          "name": "Signal Misinterpretation",
+          "description": "Misinterpreting signals from others",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["signals_misread", "interpretation_wrong", "meaning_missed"],
+          "prevention_strategies": ["Signal verification", "Multiple interpretations", "Context consideration"],
+          "example_scenario": "Misreading competitor's signals about intentions"
+        },
+        {
+          "id": "fm_116_2",
+          "name": "Signal Noise Confusion",
+          "description": "Confusing signal with noise",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["noise_as_signal", "false_patterns", "overinterpretation"],
+          "prevention_strategies": ["Signal vs noise analysis", "Pattern verification", "Appropriate skepticism"],
+          "example_scenario": "Reading meaning into random variation"
+        },
+        {
+          "id": "fm_116_3",
+          "name": "Costly Signal Blindness",
+          "description": "Not recognizing costly signals as credible",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["costly_signals_ignored", "credibility_not_assessed", "cheap_talk_trusted"],
+          "prevention_strategies": ["Assess signal cost", "Credibility analysis", "Costly signal attention"],
+          "example_scenario": "Trusting cheap talk over costly signals"
+        },
+        {
+          "id": "fm_116_4",
+          "name": "Own Signal Failure",
+          "description": "Failing to send clear signals",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["unclear_signals", "misunderstood_intentions", "communication_failure"],
+          "prevention_strategies": ["Clear signaling", "Signal verification", "Feedback loops"],
+          "example_scenario": "Intentions misunderstood due to unclear signaling"
+        },
+        {
+          "id": "fm_116_5",
+          "name": "Signal Gaming",
+          "description": "Being fooled by gamed signals",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["signals_gamed", "manipulation_missed", "false_signals_trusted"],
+          "prevention_strategies": ["Signal verification", "Gaming detection", "Multiple signal sources"],
+          "example_scenario": "Trusting signals that have been deliberately manipulated"
+        }
+      ]
+    },
+    {
+      "model_id": 117,
+      "model_name": "Commitment and Consistency",
+      "failures": [
+        {
+          "id": "fm_117_1",
+          "name": "Foolish Consistency",
+          "description": "Maintaining consistency when change needed",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["consistency_over_correctness", "change_resisted", "wrong_path_continued"],
+          "prevention_strategies": ["Consistency audit", "Change when needed", "Outcome over consistency"],
+          "example_scenario": "Continuing failed strategy for consistency"
+        },
+        {
+          "id": "fm_117_2",
+          "name": "Commitment Escalation",
+          "description": "Escalating commitment to failing course",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["escalation_of_commitment", "doubling_down", "sunk_cost_driven"],
+          "prevention_strategies": ["Commitment review", "Exit criteria", "Fresh look"],
+          "example_scenario": "Investing more in failing project to justify past investment"
+        },
+        {
+          "id": "fm_117_3",
+          "name": "Public Commitment Trap",
+          "description": "Trapped by public commitments",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["public_commitment_binding", "face_saving", "flexibility_lost"],
+          "prevention_strategies": ["Careful public commitments", "Exit clauses", "Flexibility preservation"],
+          "example_scenario": "Unable to change course due to public statements"
+        },
+        {
+          "id": "fm_117_4",
+          "name": "Consistency Manipulation",
+          "description": "Being manipulated through consistency principle",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["manipulation_via_consistency", "foot_in_door", "commitment_exploited"],
+          "prevention_strategies": ["Recognize manipulation", "Independent evaluation", "Commitment awareness"],
+          "example_scenario": "Small commitment leading to larger unwanted commitment"
+        },
+        {
+          "id": "fm_117_5",
+          "name": "Inconsistency Blindness",
+          "description": "Not recognizing own inconsistencies",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["inconsistencies_unnoticed", "cognitive_dissonance_ignored", "contradictions_missed"],
+          "prevention_strategies": ["Self-audit", "Consistency check", "External feedback"],
+          "example_scenario": "Holding contradictory positions without realizing"
+        }
+      ]
+    },
+    {
+      "model_id": 118,
+      "model_name": "Narrative Instinct",
+      "failures": [
+        {
+          "id": "fm_118_1",
+          "name": "Narrative Fallacy",
+          "description": "Creating false narrative to explain random events",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["false_narrative", "randomness_explained_away", "pattern_imposed"],
+          "prevention_strategies": ["Recognize randomness", "Resist narrative urge", "Statistical thinking"],
+          "example_scenario": "Creating story to explain random market movement"
+        },
+        {
+          "id": "fm_118_2",
+          "name": "Narrative Over Data",
+          "description": "Preferring narrative over data",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["story_over_statistics", "anecdote_over_data", "narrative_bias"],
+          "prevention_strategies": ["Data primacy", "Statistical evidence", "Narrative skepticism"],
+          "example_scenario": "Believing compelling story over contradicting data"
+        },
+        {
+          "id": "fm_118_3",
+          "name": "Single Narrative Trap",
+          "description": "Accepting single narrative when multiple exist",
+          "category": "incomplete_analysis",
+          "severity": "medium",
+          "detection_signals": ["single_story", "alternative_narratives_ignored", "perspective_limited"],
+          "prevention_strategies": ["Multiple narratives", "Alternative perspectives", "Story diversity"],
+          "example_scenario": "Accepting one explanation when others equally valid"
+        },
+        {
+          "id": "fm_118_4",
+          "name": "Narrative Manipulation",
+          "description": "Being manipulated through narrative",
+          "category": "context_blindness",
+          "severity": "high",
+          "detection_signals": ["narrative_manipulation", "story_used_to_persuade", "emotional_appeal"],
+          "prevention_strategies": ["Narrative skepticism", "Evidence focus", "Manipulation awareness"],
+          "example_scenario": "Persuaded by compelling story rather than evidence"
+        },
+        {
+          "id": "fm_118_5",
+          "name": "Hindsight Narrative",
+          "description": "Creating narrative that makes past seem inevitable",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["hindsight_bias", "inevitability_illusion", "uncertainty_forgotten"],
+          "prevention_strategies": ["Remember uncertainty", "Probabilistic thinking", "Hindsight awareness"],
+          "example_scenario": "Believing outcome was obvious when it wasn't"
+        }
+      ]
+    },
+    {
+      "model_id": 119,
+      "model_name": "Curiosity Instinct",
+      "failures": [
+        {
+          "id": "fm_119_1",
+          "name": "Curiosity Suppression",
+          "description": "Suppressing beneficial curiosity",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["curiosity_suppressed", "questions_not_asked", "exploration_avoided"],
+          "prevention_strategies": ["Encourage curiosity", "Question asking", "Exploration time"],
+          "example_scenario": "Not asking questions that would reveal important information"
+        },
+        {
+          "id": "fm_119_2",
+          "name": "Curiosity Distraction",
+          "description": "Curiosity distracting from important work",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["distraction_by_curiosity", "rabbit_holes", "focus_lost"],
+          "prevention_strategies": ["Directed curiosity", "Time boxing", "Priority focus"],
+          "example_scenario": "Following interesting tangent instead of completing task"
+        },
+        {
+          "id": "fm_119_3",
+          "name": "Dangerous Curiosity",
+          "description": "Curiosity leading to dangerous exploration",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["risky_exploration", "boundaries_crossed", "danger_ignored"],
+          "prevention_strategies": ["Bounded curiosity", "Risk awareness", "Safe exploration"],
+          "example_scenario": "Exploring area that creates risk or liability"
+        },
+        {
+          "id": "fm_119_4",
+          "name": "Curiosity Satisfaction Trap",
+          "description": "Satisfying curiosity without action",
+          "category": "reasoning_error",
+          "severity": "low",
+          "detection_signals": ["learning_without_doing", "knowledge_hoarding", "no_application"],
+          "prevention_strategies": ["Apply learning", "Action orientation", "Knowledge application"],
+          "example_scenario": "Learning about topic but never applying knowledge"
+        },
+        {
+          "id": "fm_119_5",
+          "name": "Selective Curiosity",
+          "description": "Being curious only about confirming information",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["selective_exploration", "confirmation_seeking", "disconfirming_avoided"],
+          "prevention_strategies": ["Balanced curiosity", "Disconfirming exploration", "Intellectual honesty"],
+          "example_scenario": "Only curious about information that confirms beliefs"
+        }
+      ]
+    },
+    {
+      "model_id": 120,
+      "model_name": "Language Instinct",
+      "failures": [
+        {
+          "id": "fm_120_1",
+          "name": "Language Precision Failure",
+          "description": "Using imprecise language leading to misunderstanding",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["imprecise_language", "ambiguity", "misunderstanding"],
+          "prevention_strategies": ["Precise language", "Clarification", "Definition agreement"],
+          "example_scenario": "Vague language causing different interpretations"
+        },
+        {
+          "id": "fm_120_2",
+          "name": "Language Barrier Blindness",
+          "description": "Not recognizing language barriers",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["barrier_not_recognized", "communication_assumed", "translation_needed"],
+          "prevention_strategies": ["Recognize barriers", "Translation", "Simplification"],
+          "example_scenario": "Assuming understanding when language barrier exists"
+        },
+        {
+          "id": "fm_120_3",
+          "name": "Jargon Trap",
+          "description": "Using jargon that excludes or confuses",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["jargon_overuse", "audience_confused", "exclusion"],
+          "prevention_strategies": ["Appropriate language", "Audience awareness", "Plain language"],
+          "example_scenario": "Using technical jargon with non-technical audience"
+        },
+        {
+          "id": "fm_120_4",
+          "name": "Language Shaping Thought",
+          "description": "Language limiting or shaping thought inappropriately",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["thought_limited_by_language", "concepts_missing", "framing_effects"],
+          "prevention_strategies": ["Language awareness", "Multiple framings", "Concept expansion"],
+          "example_scenario": "Unable to think about concept because lacking words for it"
+        },
+        {
+          "id": "fm_120_5",
+          "name": "Written vs Spoken Confusion",
+          "description": "Confusing written and spoken communication needs",
+          "category": "reasoning_error",
+          "severity": "low",
+          "detection_signals": ["medium_mismatch", "tone_wrong", "formality_mismatch"],
+          "prevention_strategies": ["Medium awareness", "Appropriate tone", "Format matching"],
+          "example_scenario": "Writing formally when informal spoken style needed"
+        }
+      ]
+    },
+    {
+      "model_id": 121,
+      "model_name": "First-Conclusion Bias",
+      "failures": [
+        {
+          "id": "fm_121_1",
+          "name": "Premature Conclusion",
+          "description": "Reaching conclusion too quickly",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["quick_conclusion", "insufficient_analysis", "jumping_to_conclusion"],
+          "prevention_strategies": ["Deliberate analysis", "Multiple hypotheses", "Conclusion delay"],
+          "example_scenario": "Concluding based on first information without full analysis"
+        },
+        {
+          "id": "fm_121_2",
+          "name": "First Conclusion Lock-In",
+          "description": "Locking into first conclusion despite contrary evidence",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["conclusion_locked", "contrary_evidence_ignored", "belief_perseverance"],
+          "prevention_strategies": ["Conclusion revision", "Evidence openness", "Belief updating"],
+          "example_scenario": "Maintaining first conclusion despite contradicting evidence"
+        },
+        {
+          "id": "fm_121_3",
+          "name": "Confirmation After Conclusion",
+          "description": "Seeking only confirming evidence after conclusion",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["confirmation_seeking", "disconfirming_ignored", "biased_search"],
+          "prevention_strategies": ["Disconfirming search", "Devil's advocate", "Evidence balance"],
+          "example_scenario": "Only looking for evidence supporting first conclusion"
+        },
+        {
+          "id": "fm_121_4",
+          "name": "Conclusion Anchoring",
+          "description": "First conclusion anchoring subsequent analysis",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["anchoring_on_first", "adjustment_insufficient", "starting_point_bias"],
+          "prevention_strategies": ["Fresh analysis", "Multiple starting points", "Anchor awareness"],
+          "example_scenario": "All subsequent analysis biased by first conclusion"
+        },
+        {
+          "id": "fm_121_5",
+          "name": "Conclusion Communication Premature",
+          "description": "Communicating conclusion before fully validated",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["premature_communication", "conclusion_shared_early", "commitment_created"],
+          "prevention_strategies": ["Validate before communicating", "Tentative framing", "Revision allowance"],
+          "example_scenario": "Sharing conclusion that later needs to be revised"
+        }
+      ]
+    },
+    {
+      "model_id": 122,
+      "model_name": "Tendency to Overgeneralize",
+      "failures": [
+        {
+          "id": "fm_122_1",
+          "name": "Sample to Population Error",
+          "description": "Overgeneralizing from small or biased sample",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["small_sample_generalization", "biased_sample", "population_inference_wrong"],
+          "prevention_strategies": ["Sample size awareness", "Bias checking", "Appropriate generalization"],
+          "example_scenario": "Generalizing from few cases to entire population"
+        },
+        {
+          "id": "fm_122_2",
+          "name": "Context Stripping",
+          "description": "Generalizing while stripping important context",
+          "category": "context_blindness",
+          "severity": "high",
+          "detection_signals": ["context_removed", "situational_factors_ignored", "universal_claim"],
+          "prevention_strategies": ["Context preservation", "Conditional generalization", "Situational awareness"],
+          "example_scenario": "Applying lesson from one context universally"
+        },
+        {
+          "id": "fm_122_3",
+          "name": "Stereotype Formation",
+          "description": "Forming stereotypes from limited experience",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["stereotype_formed", "group_generalization", "individual_variation_ignored"],
+          "prevention_strategies": ["Individual assessment", "Variation awareness", "Stereotype resistance"],
+          "example_scenario": "Judging group based on few members"
+        },
+        {
+          "id": "fm_122_4",
+          "name": "Rule Overapplication",
+          "description": "Applying rule beyond its valid domain",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["rule_overapplied", "domain_exceeded", "exceptions_ignored"],
+          "prevention_strategies": ["Domain awareness", "Exception recognition", "Rule boundaries"],
+          "example_scenario": "Applying rule where it doesn't apply"
+        },
+        {
+          "id": "fm_122_5",
+          "name": "Temporal Overgeneralization",
+          "description": "Generalizing across time inappropriately",
+          "category": "temporal_error",
+          "severity": "medium",
+          "detection_signals": ["time_generalization", "era_differences_ignored", "historical_application"],
+          "prevention_strategies": ["Temporal context", "Era awareness", "Time-bound conclusions"],
+          "example_scenario": "Applying historical lesson to different era"
+        }
+      ]
+    },
+    {
+      "model_id": 123,
+      "model_name": "Relative Satisfaction/Misery",
+      "failures": [
+        {
+          "id": "fm_123_1",
+          "name": "Comparison Trap",
+          "description": "Satisfaction determined by wrong comparisons",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["wrong_comparison", "inappropriate_reference", "relative_misery"],
+          "prevention_strategies": ["Appropriate comparisons", "Absolute progress", "Reference point awareness"],
+          "example_scenario": "Unhappy despite good situation due to upward comparison"
+        },
+        {
+          "id": "fm_123_2",
+          "name": "Hedonic Treadmill Blindness",
+          "description": "Not recognizing hedonic adaptation",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["adaptation_not_expected", "permanent_happiness_assumed", "baseline_shift_missed"],
+          "prevention_strategies": ["Expect adaptation", "Sustainable satisfaction", "Baseline awareness"],
+          "example_scenario": "Expecting achievement to provide lasting satisfaction"
+        },
+        {
+          "id": "fm_123_3",
+          "name": "Social Comparison Obsession",
+          "description": "Excessive focus on social comparison",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["constant_comparison", "status_obsession", "relative_position_focus"],
+          "prevention_strategies": ["Reduce comparison", "Internal metrics", "Absolute progress"],
+          "example_scenario": "Happiness entirely dependent on relative position"
+        },
+        {
+          "id": "fm_123_4",
+          "name": "Reference Point Manipulation",
+          "description": "Being manipulated through reference point framing",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["reference_manipulation", "framing_effects", "anchor_exploitation"],
+          "prevention_strategies": ["Reference awareness", "Multiple references", "Absolute evaluation"],
+          "example_scenario": "Satisfaction manipulated by how options are framed"
+        },
+        {
+          "id": "fm_123_5",
+          "name": "Downward Comparison Avoidance",
+          "description": "Avoiding beneficial downward comparisons",
+          "category": "reasoning_error",
+          "severity": "low",
+          "detection_signals": ["only_upward_comparison", "gratitude_lacking", "perspective_missing"],
+          "prevention_strategies": ["Balanced comparison", "Gratitude practice", "Perspective taking"],
+          "example_scenario": "Never comparing to worse situations for perspective"
+        }
+      ]
+    },
+    {
+      "model_id": 124,
+      "model_name": "Envy/Jealousy",
+      "failures": [
+        {
+          "id": "fm_124_1",
+          "name": "Envy-Driven Decisions",
+          "description": "Making decisions driven by envy rather than merit",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["envy_motivated", "comparison_driven", "merit_ignored"],
+          "prevention_strategies": ["Merit-based decisions", "Envy awareness", "Independent evaluation"],
+          "example_scenario": "Pursuing something because others have it, not because it's right"
+        },
+        {
+          "id": "fm_124_2",
+          "name": "Envy Blindness",
+          "description": "Not recognizing envy influencing judgment",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["envy_unrecognized", "rationalization", "hidden_motivation"],
+          "prevention_strategies": ["Self-awareness", "Motivation examination", "Envy acknowledgment"],
+          "example_scenario": "Criticizing others' success due to unacknowledged envy"
+        },
+        {
+          "id": "fm_124_3",
+          "name": "Envy Spiral",
+          "description": "Envy creating negative spiral",
+          "category": "feedback_loop",
+          "severity": "medium",
+          "detection_signals": ["envy_escalating", "negative_spiral", "comparison_addiction"],
+          "prevention_strategies": ["Break envy cycle", "Gratitude practice", "Focus on own path"],
+          "example_scenario": "Envy leading to more comparison leading to more envy"
+        },
+        {
+          "id": "fm_124_4",
+          "name": "Envy Provoking",
+          "description": "Unknowingly provoking envy in others",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["envy_provoked", "display_excessive", "others_resentful"],
+          "prevention_strategies": ["Awareness of display", "Modesty", "Relationship sensitivity"],
+          "example_scenario": "Displaying success in ways that provoke envy and damage relationships"
+        },
+        {
+          "id": "fm_124_5",
+          "name": "Productive Envy Failure",
+          "description": "Failing to channel envy productively",
+          "category": "reasoning_error",
+          "severity": "low",
+          "detection_signals": ["envy_destructive", "no_motivation", "resentment_only"],
+          "prevention_strategies": ["Channel envy productively", "Use as motivation", "Learn from envied"],
+          "example_scenario": "Envy leading to resentment rather than motivation"
+        }
+      ]
+    },
+    {
+      "model_id": 125,
+      "model_name": "Distortion from Emotion",
+      "failures": [
+        {
+          "id": "fm_125_1",
+          "name": "Emotional Reasoning",
+          "description": "Using emotions as evidence for beliefs",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["emotion_as_evidence", "feeling_equals_truth", "affect_heuristic"],
+          "prevention_strategies": ["Separate emotion from evidence", "Emotional awareness", "Evidence-based reasoning"],
+          "example_scenario": "Believing something is true because it feels true"
+        },
+        {
+          "id": "fm_125_2",
+          "name": "Hot State Decisions",
+          "description": "Making important decisions in emotional state",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["emotional_decision", "hot_state", "regret_likely"],
+          "prevention_strategies": ["Cool down before deciding", "Decision delay", "Emotional state awareness"],
+          "example_scenario": "Making major decision while angry or excited"
+        },
+        {
+          "id": "fm_125_3",
+          "name": "Emotion Contagion Blindness",
+          "description": "Not recognizing emotional contagion affecting judgment",
+          "category": "context_blindness",
+          "severity": "medium",
+          "detection_signals": ["emotion_contagion", "group_emotion", "independent_judgment_lost"],
+          "prevention_strategies": ["Emotional independence", "Contagion awareness", "Separate from group"],
+          "example_scenario": "Judgment affected by others' emotions without realizing"
+        },
+        {
+          "id": "fm_125_4",
+          "name": "Emotion Suppression Backfire",
+          "description": "Suppressing emotions causing worse distortion",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["suppression_backfire", "emotion_leaking", "worse_distortion"],
+          "prevention_strategies": ["Acknowledge emotions", "Healthy processing", "Integration not suppression"],
+          "example_scenario": "Suppressed emotions affecting judgment in hidden ways"
+        },
+        {
+          "id": "fm_125_5",
+          "name": "Mood-Congruent Processing",
+          "description": "Processing information in mood-congruent way",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["mood_congruent_bias", "selective_processing", "mood_colored_interpretation"],
+          "prevention_strategies": ["Mood awareness", "Balanced processing", "Multiple mood perspectives"],
+          "example_scenario": "Seeing everything negatively when in bad mood"
+        }
+      ]
+    },
+    {
+      "model_id": 126,
+      "model_name": "Stress-Induced Mental Changes",
+      "failures": [
+        {
+          "id": "fm_126_1",
+          "name": "Stress Tunnel Vision",
+          "description": "Stress causing narrow focus, missing important factors",
+          "category": "incomplete_analysis",
+          "severity": "high",
+          "detection_signals": ["tunnel_vision", "narrow_focus", "peripheral_missed"],
+          "prevention_strategies": ["Broaden attention under stress", "Checklist use", "Deliberate expansion"],
+          "example_scenario": "Focusing on immediate threat while missing other important factors"
+        },
+        {
+          "id": "fm_126_2",
+          "name": "Stress-Induced Simplification",
+          "description": "Stress causing oversimplification",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["oversimplification", "complexity_avoided", "nuance_lost"],
+          "prevention_strategies": ["Maintain complexity awareness", "Stress management", "Deliberate nuance"],
+          "example_scenario": "Reducing complex situation to simple terms under stress"
+        },
+        {
+          "id": "fm_126_3",
+          "name": "Chronic Stress Degradation",
+          "description": "Chronic stress degrading cognitive function",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["cognitive_decline", "chronic_stress_effects", "performance_degradation"],
+          "prevention_strategies": ["Stress management", "Recovery time", "Sustainable pace"],
+          "example_scenario": "Long-term stress impairing judgment and memory"
+        },
+        {
+          "id": "fm_126_4",
+          "name": "Stress Contagion",
+          "description": "Stress spreading through team/organization",
+          "category": "feedback_loop",
+          "severity": "medium",
+          "detection_signals": ["stress_spreading", "team_stress", "contagion_effect"],
+          "prevention_strategies": ["Stress containment", "Calm leadership", "Contagion awareness"],
+          "example_scenario": "Leader's stress spreading to entire team"
+        },
+        {
+          "id": "fm_126_5",
+          "name": "Stress Response Mismatch",
+          "description": "Stress response mismatched to situation",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["response_mismatch", "over_or_under_reaction", "calibration_off"],
+          "prevention_strategies": ["Response calibration", "Situation assessment", "Appropriate stress level"],
+          "example_scenario": "High stress response to low-stakes situation"
+        }
+      ]
+    },
+    {
+      "model_id": 127,
+      "model_name": "Survivorship Bias",
+      "failures": [
+        {
+          "id": "fm_127_1",
+          "name": "Survivor Focus",
+          "description": "Focusing only on survivors, ignoring failures",
+          "category": "data_bias",
+          "severity": "critical",
+          "detection_signals": ["survivors_only", "failures_ignored", "selection_bias"],
+          "prevention_strategies": ["Include failures", "Full sample", "Survivorship awareness"],
+          "example_scenario": "Studying successful companies without studying failures"
+        },
+        {
+          "id": "fm_127_2",
+          "name": "Success Factor Misattribution",
+          "description": "Attributing success to wrong factors due to survivorship bias",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["wrong_attribution", "survivor_characteristics_credited", "causation_error"],
+          "prevention_strategies": ["Compare to failures", "Causal analysis", "Control group"],
+          "example_scenario": "Crediting factor that failures also had"
+        },
+        {
+          "id": "fm_127_3",
+          "name": "Advice from Survivors",
+          "description": "Taking advice only from survivors",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["survivor_advice_only", "failure_lessons_missed", "biased_guidance"],
+          "prevention_strategies": ["Learn from failures too", "Balanced advice", "Failure analysis"],
+          "example_scenario": "Following advice that worked for survivors but failed for others"
+        },
+        {
+          "id": "fm_127_4",
+          "name": "Historical Survivorship",
+          "description": "Historical record biased toward survivors",
+          "category": "data_bias",
+          "severity": "medium",
+          "detection_signals": ["historical_bias", "losers_forgotten", "winner_history"],
+          "prevention_strategies": ["Seek lost history", "Loser analysis", "Comprehensive history"],
+          "example_scenario": "Learning from history that only records winners"
+        },
+        {
+          "id": "fm_127_5",
+          "name": "Survivorship in Data",
+          "description": "Data sets suffering from survivorship bias",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["biased_data", "delisted_excluded", "failed_removed"],
+          "prevention_strategies": ["Survivorship-free data", "Include delisted", "Bias correction"],
+          "example_scenario": "Analyzing stock returns without including delisted companies"
+        }
+      ]
+    },
+    {
+      "model_id": 128,
+      "model_name": "Tendency to Want to Do Something",
+      "failures": [
+        {
+          "id": "fm_128_1",
+          "name": "Action Bias",
+          "description": "Acting when inaction would be better",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["action_for_action_sake", "inaction_uncomfortable", "doing_something"],
+          "prevention_strategies": ["Consider inaction", "Action necessity test", "Patience"],
+          "example_scenario": "Taking action that makes situation worse"
+        },
+        {
+          "id": "fm_128_2",
+          "name": "Intervention Excess",
+          "description": "Intervening when system would self-correct",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["over_intervention", "self_correction_blocked", "meddling"],
+          "prevention_strategies": ["Allow self-correction", "Minimal intervention", "System trust"],
+          "example_scenario": "Intervening in process that would have resolved itself"
+        },
+        {
+          "id": "fm_128_3",
+          "name": "Busy Work",
+          "description": "Doing busy work instead of important work",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["busy_not_productive", "activity_over_results", "important_avoided"],
+          "prevention_strategies": ["Prioritization", "Results focus", "Important over urgent"],
+          "example_scenario": "Staying busy with unimportant tasks"
+        },
+        {
+          "id": "fm_128_4",
+          "name": "Premature Action",
+          "description": "Acting before having enough information",
+          "category": "temporal_error",
+          "severity": "high",
+          "detection_signals": ["premature_action", "information_insufficient", "ready_fire_aim"],
+          "prevention_strategies": ["Information gathering", "Action timing", "Readiness assessment"],
+          "example_scenario": "Acting before understanding situation fully"
+        },
+        {
+          "id": "fm_128_5",
+          "name": "Action Addiction",
+          "description": "Addicted to action, unable to pause",
+          "category": "reasoning_error",
+          "severity": "medium",
+          "detection_signals": ["constant_action", "pause_impossible", "reflection_avoided"],
+          "prevention_strategies": ["Scheduled reflection", "Strategic pauses", "Action addiction awareness"],
+          "example_scenario": "Unable to stop and think, always doing"
+        }
+      ]
+    },
+    {
+      "model_id": 129,
+      "model_name": "Falsification/Confirmation Bias",
+      "failures": [
+        {
+          "id": "fm_129_1",
+          "name": "Confirmation Seeking",
+          "description": "Seeking only confirming evidence",
+          "category": "data_bias",
+          "severity": "critical",
+          "detection_signals": ["confirmation_only", "disconfirming_avoided", "biased_search"],
+          "prevention_strategies": ["Seek disconfirmation", "Devil's advocate", "Balanced evidence"],
+          "example_scenario": "Only looking for evidence that supports belief"
+        },
+        {
+          "id": "fm_129_2",
+          "name": "Disconfirmation Avoidance",
+          "description": "Avoiding or dismissing disconfirming evidence",
+          "category": "data_bias",
+          "severity": "critical",
+          "detection_signals": ["disconfirming_dismissed", "contrary_evidence_ignored", "belief_protected"],
+          "prevention_strategies": ["Welcome disconfirmation", "Evidence openness", "Belief updating"],
+          "example_scenario": "Dismissing evidence that contradicts belief"
+        },
+        {
+          "id": "fm_129_3",
+          "name": "Unfalsifiable Beliefs",
+          "description": "Holding beliefs that can't be falsified",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["unfalsifiable", "no_test_possible", "always_confirmed"],
+          "prevention_strategies": ["Require falsifiability", "Test conditions", "Belief examination"],
+          "example_scenario": "Belief structured so nothing could disprove it"
+        },
+        {
+          "id": "fm_129_4",
+          "name": "Asymmetric Evidence Weighting",
+          "description": "Weighting confirming evidence more than disconfirming",
+          "category": "data_bias",
+          "severity": "high",
+          "detection_signals": ["asymmetric_weighting", "confirming_overweighted", "disconfirming_underweighted"],
+          "prevention_strategies": ["Symmetric weighting", "Evidence calibration", "Bias awareness"],
+          "example_scenario": "Strong evidence against weighted less than weak evidence for"
+        },
+        {
+          "id": "fm_129_5",
+          "name": "Hypothesis Protection",
+          "description": "Protecting hypothesis rather than testing it",
+          "category": "reasoning_error",
+          "severity": "high",
+          "detection_signals": ["hypothesis_protected", "testing_avoided", "confirmation_sought"],
+          "prevention_strategies": ["Genuine testing", "Falsification attempts", "Intellectual honesty"],
+          "example_scenario": "Designing tests that can't fail rather than genuine tests"
+        }
+      ]
     }
   ]
 }
