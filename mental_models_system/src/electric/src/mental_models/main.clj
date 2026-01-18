@@ -581,24 +581,24 @@
         </div>
         <!-- Distributed Tab -->
         <div id=\"distributed\" class=\"p-4 hidden\">
-                        <div class=\"grid grid-cols-4 gap-4 mb-4\">
-                            <div class=\"metric-card rounded shadow-sm\">
-                                <div class=\"metric-value\" id=\"dist-workers\">NA</div>
-                                <div class=\"metric-label\">Active Workers</div>
-                            </div>
-                            <div class=\"metric-card rounded shadow-sm\">
-                                <div class=\"metric-value\" id=\"dist-tasks\">NA</div>
-                                <div class=\"metric-label\">Tasks Queued</div>
-                            </div>
-                            <div class=\"metric-card rounded shadow-sm\">
-                                <div class=\"metric-value accent\" id=\"dist-throughput\">NA</div>
-                                <div class=\"metric-label\">Tasks/Second</div>
-                            </div>
-                            <div class=\"metric-card rounded shadow-sm\">
-                                <div class=\"metric-value\" id=\"dist-data\">NA</div>
-                                <div class=\"metric-label\">Data Processed</div>
-                            </div>
-                        </div>
+                                                <div class=\"grid grid-cols-4 gap-4 mb-4\">
+                                                    <div class=\"metric-card rounded shadow-sm\">
+                                                        <div class=\"metric-value clickable\" id=\"dist-workers\" onclick=\"showProvenance('dist-workers')\">NA</div>
+                                                        <div class=\"metric-label\">Active Workers (click for source)</div>
+                                                    </div>
+                                                    <div class=\"metric-card rounded shadow-sm\">
+                                                        <div class=\"metric-value clickable\" id=\"dist-tasks\" onclick=\"showProvenance('dist-tasks')\">NA</div>
+                                                        <div class=\"metric-label\">Tasks Queued (click for source)</div>
+                                                    </div>
+                                                    <div class=\"metric-card rounded shadow-sm\">
+                                                        <div class=\"metric-value accent clickable\" id=\"dist-throughput\" onclick=\"showProvenance('dist-throughput')\">NA</div>
+                                                        <div class=\"metric-label\">Tasks/Second (click for source)</div>
+                                                    </div>
+                                                    <div class=\"metric-card rounded shadow-sm\">
+                                                        <div class=\"metric-value clickable\" id=\"dist-data\" onclick=\"showProvenance('dist-data')\">NA</div>
+                                                        <div class=\"metric-label\">Data Processed (click for source)</div>
+                                                    </div>
+                                                </div>
             
             <div class=\"grid grid-cols-2 gap-4\">
                 <div class=\"bg-white border rounded shadow-sm\">
@@ -1159,16 +1159,57 @@
                         timestamp: null,
                         isReal: false
                     },
-                    'api-status': {
-                        label: 'API Status',
-                        source: 'NA - Not yet loaded',
-                        endpoint: '/api/models',
-                        field: 'HTTP response status',
-                        rawValue: null,
-                        timestamp: null,
-                        isReal: false
-                    }
-                };
+                                    'api-status': {
+                                        label: 'API Status',
+                                        source: 'NA - Not yet loaded',
+                                        endpoint: '/api/models',
+                                        field: 'HTTP response status',
+                                        rawValue: null,
+                                        timestamp: null,
+                                        isReal: false
+                                    },
+                                    // Distributed Processing Metrics - all show NA until real backend is connected
+                                    'dist-workers': {
+                                        label: 'Active Workers',
+                                        source: 'NA - No distributed backend connected',
+                                        endpoint: '/api/distributed/workers (NOT IMPLEMENTED)',
+                                        field: 'User input from form',
+                                        rawValue: null,
+                                        timestamp: null,
+                                        isReal: false,
+                                        note: 'This metric shows the number of workers configured by the user. Real worker status requires a distributed backend.'
+                                    },
+                                    'dist-tasks': {
+                                        label: 'Tasks Queued',
+                                        source: 'NA - No distributed backend connected',
+                                        endpoint: '/api/distributed/tasks (NOT IMPLEMENTED)',
+                                        field: 'N/A - requires real task queue',
+                                        rawValue: null,
+                                        timestamp: null,
+                                        isReal: false,
+                                        note: 'This metric requires a real distributed task queue backend (e.g., Redis, RabbitMQ) to show actual queued tasks.'
+                                    },
+                                    'dist-throughput': {
+                                        label: 'Tasks Per Second',
+                                        source: 'NA - No distributed backend connected',
+                                        endpoint: '/api/distributed/throughput (NOT IMPLEMENTED)',
+                                        field: 'N/A - requires real processing metrics',
+                                        rawValue: null,
+                                        timestamp: null,
+                                        isReal: false,
+                                        note: 'This metric requires real-time monitoring of task processing to show actual throughput.'
+                                    },
+                                    'dist-data': {
+                                        label: 'Data Processed',
+                                        source: 'NA - No distributed backend connected',
+                                        endpoint: '/api/distributed/data (NOT IMPLEMENTED)',
+                                        field: 'N/A - requires real data tracking',
+                                        rawValue: null,
+                                        timestamp: null,
+                                        isReal: false,
+                                        note: 'This metric requires tracking actual data processed by workers to show real values.'
+                                    }
+                                };
         
                 function showProvenance(metricId) {
                     const prov = window.dataProvenance[metricId];
@@ -1233,15 +1274,22 @@
                         html += '</div>';
                     }
             
-                    // Timestamp
-                    html += '<div class=\"provenance-row\">';
-                    html += '<div class=\"provenance-label\">Last Updated</div>';
-                    html += '<div class=\"provenance-value\">' + (prov.timestamp || 'Never') + '</div>';
-                    html += '</div>';
+                                    // Timestamp
+                                    html += '<div class=\"provenance-row\">';
+                                    html += '<div class=\"provenance-label\">Last Updated</div>';
+                                    html += '<div class=\"provenance-value\">' + (prov.timestamp || 'Never') + '</div>';
+                                    html += '</div>';
+                    
+                                    // Note (for metrics that need explanation)
+                                    if (prov.note) {
+                                        html += '<div class=\"provenance-formula\" style=\"margin-top: 12px; border-left-color: var(--gray-500);\">';
+                                        html += '<strong>Note:</strong> ' + prov.note;
+                                        html += '</div>';
+                                    }
             
-                    body.innerHTML = html;
-                    modal.classList.add('active');
-                }
+                                    body.innerHTML = html;
+                                    modal.classList.add('active');
+                                }
         
                 function closeProvenance() {
                     document.getElementById('provenance-modal').classList.remove('active');
