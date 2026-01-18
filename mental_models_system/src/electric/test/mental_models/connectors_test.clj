@@ -2270,3 +2270,350 @@
       (is (contains? stats :connector-stats))
       (is (contains? (:connector-stats stats) :test-connector)))
     (reset! conn/retry-history {})))
+
+;; ============================================
+;; Request Prioritization Tests
+;; ============================================
+
+(deftest test-priority-queue-atom
+  (testing "Priority queue atom is initialized"
+    (is (instance? clojure.lang.Atom conn/priority-queue))
+    (is (map? @conn/priority-queue))
+    (is (contains? @conn/priority-queue :high))
+    (is (contains? @conn/priority-queue :normal))
+    (is (contains? @conn/priority-queue :low))
+    (is (contains? @conn/priority-queue :background))))
+
+(deftest test-priority-config-atom
+  (testing "Priority config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/priority-config))
+    (is (map? @conn/priority-config))
+    (is (contains? @conn/priority-config :enabled))
+    (is (contains? @conn/priority-config :high-weight))
+    (is (contains? @conn/priority-config :normal-weight))))
+
+(deftest test-get-priority-config
+  (testing "Get priority config returns config"
+    (let [config (conn/get-priority-config)]
+      (is (map? config))
+      (is (contains? config :enabled))
+      (is (contains? config :high-weight)))))
+
+(deftest test-set-priority-config
+  (testing "Set priority config updates values"
+    (let [original (conn/get-priority-config)]
+      (conn/set-priority-config {:high-weight 10})
+      (is (= 10 (:high-weight (conn/get-priority-config))))
+      ;; Restore
+      (conn/set-priority-config original))))
+
+(deftest test-enqueue-request
+  (testing "Enqueue request adds to queue"
+    (conn/clear-priority-queue)
+    (let [id (conn/enqueue-request :high #("result") :id "test-1")]
+      (is (= "test-1" id))
+      (is (= 1 (:high-count (conn/get-queue-stats)))))
+    (conn/clear-priority-queue)))
+
+(deftest test-dequeue-request
+  (testing "Dequeue request returns entry"
+    (conn/clear-priority-queue)
+    (conn/enqueue-request :high #("result") :id "test-1")
+    (let [entry (conn/dequeue-request)]
+      (is (map? entry))
+      (is (= "test-1" (:id entry))))
+    (conn/clear-priority-queue)))
+
+(deftest test-get-queue-stats
+  (testing "Get queue stats returns statistics"
+    (conn/clear-priority-queue)
+    (let [stats (conn/get-queue-stats)]
+      (is (map? stats))
+      (is (contains? stats :high-count))
+      (is (contains? stats :normal-count))
+      (is (contains? stats :total-count))
+      (is (= 0 (:total-count stats))))
+    (conn/clear-priority-queue)))
+
+(deftest test-clear-priority-queue
+  (testing "Clear priority queue empties all levels"
+    (conn/enqueue-request :high #("result"))
+    (conn/enqueue-request :normal #("result"))
+    (conn/clear-priority-queue)
+    (is (= 0 (:total-count (conn/get-queue-stats))))))
+
+(deftest test-process-priority-queue
+  (testing "Process priority queue executes requests"
+    (conn/clear-priority-queue)
+    (conn/enqueue-request :high #("result") :id "test-1")
+    (let [results (conn/process-priority-queue :max-concurrent 1)]
+      (is (vector? results))
+      (when (seq results)
+        (is (:success (first results)))))
+    (conn/clear-priority-queue)))
+
+;; ============================================
+;; Timeout Escalation Tests
+;; ============================================
+
+(deftest test-timeout-escalation-config-atom
+  (testing "Timeout escalation config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/timeout-escalation-config))
+    (is (map? @conn/timeout-escalation-config))
+    (is (contains? @conn/timeout-escalation-config :enabled))
+    (is (contains? @conn/timeout-escalation-config :initial-timeout-ms))
+    (is (contains? @conn/timeout-escalation-config :max-timeout-ms))))
+
+(deftest test-timeout-history-atom
+  (testing "Timeout history atom is initialized"
+    (is (instance? clojure.lang.Atom conn/timeout-history))
+    (is (map? @conn/timeout-history))))
+
+(deftest test-get-timeout-escalation-config
+  (testing "Get timeout escalation config returns config"
+    (let [config (conn/get-timeout-escalation-config)]
+      (is (map? config))
+      (is (contains? config :enabled))
+      (is (contains? config :initial-timeout-ms)))))
+
+(deftest test-set-timeout-escalation-config
+  (testing "Set timeout escalation config updates values"
+    (let [original (conn/get-timeout-escalation-config)]
+      (conn/set-timeout-escalation-config {:initial-timeout-ms 10000})
+      (is (= 10000 (:initial-timeout-ms (conn/get-timeout-escalation-config))))
+      ;; Restore
+      (conn/set-timeout-escalation-config original))))
+
+(deftest test-calculate-escalated-timeout
+  (testing "Calculate escalated timeout returns value"
+    (reset! conn/timeout-history {})
+    (let [timeout (conn/calculate-escalated-timeout :test-connector)]
+      (is (number? timeout))
+      (is (pos? timeout)))
+    (reset! conn/timeout-history {})))
+
+(deftest test-record-timeout
+  (testing "Record timeout increments escalation count"
+    (reset! conn/timeout-history {})
+    (conn/record-timeout :test-connector)
+    (is (= 1 (get-in @conn/timeout-history [:test-connector :escalation-count])))
+    (reset! conn/timeout-history {})))
+
+(deftest test-record-success-timeout
+  (testing "Record success decrements escalation count"
+    (reset! conn/timeout-history {:test-connector {:escalation-count 2 :timeouts []}})
+    (conn/record-success-timeout :test-connector)
+    (is (= 1 (get-in @conn/timeout-history [:test-connector :escalation-count])))
+    (reset! conn/timeout-history {})))
+
+(deftest test-get-timeout-stats
+  (testing "Get timeout stats returns statistics"
+    (reset! conn/timeout-history {})
+    (conn/record-timeout :test-connector)
+    (let [stats (conn/get-timeout-stats)]
+      (is (map? stats))
+      (is (contains? stats :config))
+      (is (contains? stats :history)))
+    (reset! conn/timeout-history {})))
+
+;; ============================================
+;; Connector Health Scoring Tests
+;; ============================================
+
+(deftest test-health-scores-atom
+  (testing "Health scores atom is initialized"
+    (is (instance? clojure.lang.Atom conn/health-scores))
+    (is (map? @conn/health-scores))))
+
+(deftest test-health-score-config-atom
+  (testing "Health score config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/health-score-config))
+    (is (map? @conn/health-score-config))
+    (is (contains? @conn/health-score-config :enabled))
+    (is (contains? @conn/health-score-config :success-weight))
+    (is (contains? @conn/health-score-config :failure-weight))))
+
+(deftest test-get-health-score-config
+  (testing "Get health score config returns config"
+    (let [config (conn/get-health-score-config)]
+      (is (map? config))
+      (is (contains? config :enabled))
+      (is (contains? config :initial-score)))))
+
+(deftest test-set-health-score-config
+  (testing "Set health score config updates values"
+    (let [original (conn/get-health-score-config)]
+      (conn/set-health-score-config {:initial-score 75.0})
+      (is (= 75.0 (:initial-score (conn/get-health-score-config))))
+      ;; Restore
+      (conn/set-health-score-config original))))
+
+(deftest test-get-connector-health-score
+  (testing "Get connector health score returns initial score for unknown"
+    (reset! conn/health-scores {})
+    (let [score (conn/get-connector-health-score :unknown-connector)]
+      (is (number? score))
+      (is (= (:initial-score @conn/health-score-config) score)))
+    (reset! conn/health-scores {})))
+
+(deftest test-update-health-score
+  (testing "Update health score changes score"
+    (reset! conn/health-scores {})
+    (let [initial (conn/get-connector-health-score :test-connector)
+          _ (conn/update-health-score :test-connector :success)
+          after-success (conn/get-connector-health-score :test-connector)]
+      (is (not= initial after-success)))
+    (reset! conn/health-scores {})))
+
+(deftest test-get-healthiest-connector
+  (testing "Get healthiest connector returns best option"
+    (reset! conn/health-scores {:conn-a 80.0 :conn-b 60.0 :conn-c 90.0})
+    (let [healthiest (conn/get-healthiest-connector [:conn-a :conn-b :conn-c])]
+      (is (= :conn-c healthiest)))
+    (reset! conn/health-scores {})))
+
+(deftest test-get-all-health-scores
+  (testing "Get all health scores returns summary"
+    (reset! conn/health-scores {:test-connector 75.0})
+    (let [all-scores (conn/get-all-health-scores)]
+      (is (map? all-scores))
+      (is (contains? all-scores :config))
+      (is (contains? all-scores :scores))
+      (is (contains? all-scores :summary)))
+    (reset! conn/health-scores {})))
+
+;; ============================================
+;; Request Tracing Tests
+;; ============================================
+
+(deftest test-trace-store-atom
+  (testing "Trace store atom is initialized"
+    (is (instance? clojure.lang.Atom conn/trace-store))
+    (is (map? @conn/trace-store))))
+
+(deftest test-trace-config-atom
+  (testing "Trace config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/trace-config))
+    (is (map? @conn/trace-config))
+    (is (contains? @conn/trace-config :enabled))
+    (is (contains? @conn/trace-config :max-traces))
+    (is (contains? @conn/trace-config :retention-ms))))
+
+(deftest test-get-trace-config
+  (testing "Get trace config returns config"
+    (let [config (conn/get-trace-config)]
+      (is (map? config))
+      (is (contains? config :enabled))
+      (is (contains? config :max-traces)))))
+
+(deftest test-set-trace-config
+  (testing "Set trace config updates values"
+    (let [original (conn/get-trace-config)]
+      (conn/set-trace-config {:max-traces 5000})
+      (is (= 5000 (:max-traces (conn/get-trace-config))))
+      ;; Restore
+      (conn/set-trace-config original))))
+
+(deftest test-generate-trace-id
+  (testing "Generate trace ID returns unique string"
+    (let [id1 (conn/generate-trace-id)
+          id2 (conn/generate-trace-id)]
+      (is (string? id1))
+      (is (string? id2))
+      (is (not= id1 id2))
+      (is (.startsWith id1 "trace-")))))
+
+(deftest test-generate-span-id
+  (testing "Generate span ID returns unique string"
+    (let [id1 (conn/generate-span-id)
+          id2 (conn/generate-span-id)]
+      (is (string? id1))
+      (is (string? id2))
+      (is (not= id1 id2))
+      (is (.startsWith id1 "span-")))))
+
+(deftest test-start-trace
+  (testing "Start trace creates trace entry"
+    (reset! conn/trace-store {})
+    (let [trace-id (conn/start-trace :operation "test-op")]
+      (is (string? trace-id))
+      (is (contains? @conn/trace-store trace-id))
+      (is (= "test-op" (:operation (get @conn/trace-store trace-id)))))
+    (reset! conn/trace-store {})))
+
+(deftest test-start-span
+  (testing "Start span adds span to trace"
+    (reset! conn/trace-store {})
+    (let [trace-id (conn/start-trace :operation "test-op")
+          span-id (conn/start-span trace-id "test-span")]
+      (is (string? span-id))
+      (is (= 1 (count (:spans (get @conn/trace-store trace-id))))))
+    (reset! conn/trace-store {})))
+
+(deftest test-end-span
+  (testing "End span updates span status"
+    (reset! conn/trace-store {})
+    (let [trace-id (conn/start-trace :operation "test-op")
+          span-id (conn/start-span trace-id "test-span")]
+      (conn/end-span trace-id span-id :status :completed)
+      (let [span (first (:spans (get @conn/trace-store trace-id)))]
+        (is (= :completed (:status span)))
+        (is (contains? span :ended-at))))
+    (reset! conn/trace-store {})))
+
+(deftest test-end-trace
+  (testing "End trace updates trace status"
+    (reset! conn/trace-store {})
+    (let [trace-id (conn/start-trace :operation "test-op")]
+      (conn/end-trace trace-id :status :completed)
+      (let [trace (get @conn/trace-store trace-id)]
+        (is (= :completed (:status trace)))
+        (is (contains? trace :ended-at))))
+    (reset! conn/trace-store {})))
+
+(deftest test-get-trace
+  (testing "Get trace returns trace by ID"
+    (reset! conn/trace-store {})
+    (let [trace-id (conn/start-trace :operation "test-op")
+          trace (conn/get-trace trace-id)]
+      (is (map? trace))
+      (is (= trace-id (:trace-id trace))))
+    (reset! conn/trace-store {})))
+
+(deftest test-with-tracing
+  (testing "With tracing executes function and creates trace"
+    (reset! conn/trace-store {})
+    (let [result (conn/with-tracing "test-op" #("result"))]
+      (is (= "result" result))
+      (is (= 1 (count @conn/trace-store))))
+    (reset! conn/trace-store {})))
+
+(deftest test-with-tracing-disabled
+  (testing "With tracing disabled executes without trace"
+    (reset! conn/trace-store {})
+    (let [original (conn/get-trace-config)]
+      (conn/set-trace-config {:enabled false})
+      (conn/with-tracing "test-op" #("result"))
+      (is (= 0 (count @conn/trace-store)))
+      ;; Restore
+      (conn/set-trace-config original))
+    (reset! conn/trace-store {})))
+
+(deftest test-get-trace-stats
+  (testing "Get trace stats returns statistics"
+    (reset! conn/trace-store {})
+    (let [trace-id (conn/start-trace :operation "test-op")]
+      (conn/end-trace trace-id :status :completed)
+      (let [stats (conn/get-trace-stats)]
+        (is (map? stats))
+        (is (contains? stats :total-traces))
+        (is (contains? stats :completed-traces))
+        (is (= 1 (:completed-traces stats)))))
+    (reset! conn/trace-store {})))
+
+(deftest test-cleanup-old-traces
+  (testing "Cleanup old traces removes expired entries"
+    (reset! conn/trace-store {"old-trace" {:started-at 0 :status :completed}})
+    (conn/cleanup-old-traces)
+    (is (= 0 (count @conn/trace-store)))
+    (reset! conn/trace-store {})))
