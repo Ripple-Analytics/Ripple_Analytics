@@ -486,6 +486,8 @@ class TestCacheIntegration:
         from src.cache import get_cache
         
         cache = get_cache()
+        # Clear cache to ensure clean state for test
+        cache.clear()
         call_count = 0
         
         @cache.cached(ttl=60, key_prefix="test:")

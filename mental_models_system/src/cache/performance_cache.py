@@ -525,6 +525,10 @@ class MultiLevelCache:
             'l1': self.l1.cleanup_expired(),
             'l2': self.l2.cleanup_expired()
         }
+    
+    def cached(self, ttl: int = None, key_prefix: str = ""):
+        """Return a decorator to cache function results."""
+        return cached(cache=self, ttl=ttl or self.default_ttl, key_prefix=key_prefix)
 
 
 # =============================================================================

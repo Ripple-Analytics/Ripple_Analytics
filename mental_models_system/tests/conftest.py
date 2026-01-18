@@ -180,7 +180,11 @@ def temp_data_dir(tmp_path) -> Path:
 @pytest.fixture
 def temp_models_file(temp_data_dir, sample_mental_models) -> Path:
     """Create temporary mental models JSON file."""
-    file_path = temp_data_dir / "mental_models.json"
+    # Create raw subdirectory to match expected path structure
+    raw_dir = temp_data_dir / "raw"
+    raw_dir.mkdir(exist_ok=True)
+    
+    file_path = raw_dir / "mental_models_complete.json"
     with open(file_path, "w") as f:
         json.dump({"mental_models": sample_mental_models}, f)
     return file_path
