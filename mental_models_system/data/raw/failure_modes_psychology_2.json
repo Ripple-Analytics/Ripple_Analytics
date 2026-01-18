@@ -1,0 +1,115 @@
+{
+  "category": "Psychology",
+  "models": [
+    {
+      "id": 16,
+      "name": "Excessive Self-Regard Tendency",
+      "failure_modes": [
+        {"mode": "Overconfidence in own abilities", "description": "Thinking you're better than you are", "real_world_case": "90% of drivers think they're above average.", "warning_signs": ["No self-doubt", "Dismissing feedback", "Surprised by failures"], "safeguards": ["Track predictions", "Seek feedback", "Calibration training"], "quantitative_threshold": "If you're never wrong, you're not tracking"},
+        {"mode": "Endowment effect", "description": "Overvaluing what you own", "real_world_case": "Sellers wanting 2x what buyers will pay.", "warning_signs": ["Attachment to possessions", "Refusing fair offers", "Sunk cost reasoning"], "safeguards": ["Imagine you don't own it", "Get outside valuations", "Detachment practice"], "quantitative_threshold": "Ownership premium is typically 2-3x"},
+        {"mode": "Self-serving attribution", "description": "Taking credit for success, blaming others for failure", "real_world_case": "CEOs crediting themselves in good times, blaming economy in bad.", "warning_signs": ["Asymmetric attribution", "No accountability", "Blame shifting"], "safeguards": ["Symmetric analysis", "Pre-commit to attribution", "External review"], "quantitative_threshold": "Apply same standards to success and failure"},
+        {"mode": "Blind spots about blind spots", "description": "Not knowing what you don't know", "real_world_case": "Dunning-Kruger effect - incompetent don't know they're incompetent.", "warning_signs": ["High confidence with low skill", "No questions", "Certainty"], "safeguards": ["Assume blind spots exist", "Seek diverse feedback", "Humility"], "quantitative_threshold": "Everyone has 3-5 major blind spots"},
+        {"mode": "Comparison to favorable reference", "description": "Choosing comparisons that make you look good", "real_world_case": "Comparing to worst performers, not best.", "warning_signs": ["Cherry-picked comparisons", "Avoiding tough benchmarks", "Relative thinking"], "safeguards": ["Compare to best", "Absolute standards", "External benchmarks"], "quantitative_threshold": "Compare to top 10%, not bottom 50%"}
+      ]
+    },
+    {
+      "id": 17,
+      "name": "Over-Optimism Tendency",
+      "failure_modes": [
+        {"mode": "Planning fallacy", "description": "Underestimating time, cost, and risk", "real_world_case": "Sydney Opera House: 4 years planned, 16 years actual.", "warning_signs": ["Best-case planning", "No contingency", "Ignoring base rates"], "safeguards": ["Reference class forecasting", "Add 50% buffer", "Pre-mortem"], "quantitative_threshold": "Projects typically take 2-3x planned time"},
+        {"mode": "Optimism about own projects", "description": "Believing your project is special", "real_world_case": "Startup founders ignoring 90% failure rate.", "warning_signs": ["This time is different", "Special circumstances", "Ignoring statistics"], "safeguards": ["Base rate analysis", "Outside view", "Devil's advocate"], "quantitative_threshold": "Your project is probably not special"},
+        {"mode": "Underestimating competition", "description": "Assuming competitors won't respond", "real_world_case": "First-mover advantage often illusory.", "warning_signs": ["Ignoring competitors", "Assuming static market", "Overconfidence"], "safeguards": ["Competitive analysis", "War gaming", "Assume response"], "quantitative_threshold": "Competitors will respond within 6-12 months"},
+        {"mode": "Optimism about control", "description": "Overestimating ability to control outcomes", "real_world_case": "Illusion of control in random events.", "warning_signs": ["Control assumptions", "Ignoring randomness", "Skill vs luck confusion"], "safeguards": ["Identify what you control", "Accept randomness", "Focus on process"], "quantitative_threshold": "You control less than you think"},
+        {"mode": "Survivorship-driven optimism", "description": "Only seeing successful examples", "real_world_case": "Studying successful entrepreneurs, ignoring failures.", "warning_signs": ["Success stories only", "No failure analysis", "Biased samples"], "safeguards": ["Study failures", "Include full sample", "Base rates"], "quantitative_threshold": "For every success story, there are 10-100 failures"}
+      ]
+    },
+    {
+      "id": 18,
+      "name": "Deprival-Superreaction Tendency",
+      "failure_modes": [
+        {"mode": "Loss aversion paralysis", "description": "Avoiding action to avoid potential loss", "real_world_case": "Not selling losing positions, hoping for recovery.", "warning_signs": ["Holding losers", "Selling winners", "Asymmetric treatment"], "safeguards": ["Treat gains and losses symmetrically", "Pre-commit to rules", "Reframe as opportunity cost"], "quantitative_threshold": "Losses feel 2x worse than equivalent gains"},
+        {"mode": "Sunk cost escalation", "description": "Continuing to avoid feeling loss", "real_world_case": "Concorde fallacy - continuing failed project.", "warning_signs": ["Throwing good money after bad", "Emotional attachment", "Can't admit failure"], "safeguards": ["Ignore sunk costs", "Fresh start analysis", "Kill criteria"], "quantitative_threshold": "Sunk costs are sunk - only future matters"},
+        {"mode": "Near-miss overreaction", "description": "Overreacting to almost losing", "real_world_case": "Panic selling after market dip.", "warning_signs": ["Emotional reactions", "Overreaction to volatility", "Short-term focus"], "safeguards": ["Long-term perspective", "Pre-commit to strategy", "Avoid checking frequently"], "quantitative_threshold": "Near-misses are normal, not signals"},
+        {"mode": "Territorial defense", "description": "Defending territory beyond its value", "real_world_case": "Companies fighting for declining markets.", "warning_signs": ["Defensive spending", "Pride over profit", "Emotional attachment"], "safeguards": ["Value-based decisions", "Willingness to retreat", "Opportunity cost"], "quantitative_threshold": "Defense should be proportional to value"},
+        {"mode": "Revenge for perceived loss", "description": "Retaliation for feeling deprived", "real_world_case": "Lawsuits that cost more than the loss.", "warning_signs": ["Spite-based actions", "Emotional decisions", "Irrational retaliation"], "safeguards": ["Cool-off periods", "Cost-benefit analysis", "Let go"], "quantitative_threshold": "Revenge typically costs more than original loss"}
+      ]
+    },
+    {
+      "id": 19,
+      "name": "Social-Proof Tendency",
+      "failure_modes": [
+        {"mode": "Herd behavior", "description": "Following crowd without independent analysis", "real_world_case": "Dot-com bubble - everyone buying because everyone buying.", "warning_signs": ["Following trends", "No independent analysis", "Fear of missing out"], "safeguards": ["Independent analysis", "Contrarian thinking", "First principles"], "quantitative_threshold": "When everyone agrees, be suspicious"},
+        {"mode": "Pluralistic ignorance", "description": "Everyone thinks everyone else knows", "real_world_case": "No one asking questions in meetings.", "warning_signs": ["Silence as agreement", "No dissent", "Assumed consensus"], "safeguards": ["Encourage questions", "Anonymous input", "Devil's advocate"], "quantitative_threshold": "If no one's questioning, no one's thinking"},
+        {"mode": "Social proof in uncertainty", "description": "Following others when uncertain", "real_world_case": "Bystander effect - no one helps because no one helps.", "warning_signs": ["Looking to others", "Waiting for action", "Uncertainty paralysis"], "safeguards": ["Act first", "Independent judgment", "Reduce uncertainty"], "quantitative_threshold": "In uncertainty, social proof is least reliable"},
+        {"mode": "Expert social proof", "description": "Following experts without verification", "real_world_case": "Following analyst recommendations blindly.", "warning_signs": ["Expert worship", "No verification", "Outsourcing thinking"], "safeguards": ["Verify expert claims", "Understand reasoning", "Multiple experts"], "quantitative_threshold": "Experts are wrong 30-40% on complex issues"},
+        {"mode": "Manufactured social proof", "description": "Being fooled by fake consensus", "real_world_case": "Fake reviews, astroturfing.", "warning_signs": ["Too good to be true", "Uniform opinions", "No criticism"], "safeguards": ["Verify sources", "Look for criticism", "Independent research"], "quantitative_threshold": "10-30% of online reviews are fake"}
+      ]
+    },
+    {
+      "id": 20,
+      "name": "Contrast-Misreaction Tendency",
+      "failure_modes": [
+        {"mode": "Anchoring on irrelevant comparisons", "description": "Judging by contrast, not absolute value", "real_world_case": "Expensive item seems cheap after seeing more expensive one.", "warning_signs": ["Relative judgments", "Anchor dependence", "Context manipulation"], "safeguards": ["Absolute value assessment", "Ignore anchors", "Multiple comparisons"], "quantitative_threshold": "Anchors can shift judgments by 50%+"},
+        {"mode": "Boiling frog syndrome", "description": "Not noticing gradual changes", "real_world_case": "Slowly declining business not noticed until crisis.", "warning_signs": ["Gradual decline", "Normalized deviation", "No alarm bells"], "safeguards": ["Absolute benchmarks", "Regular reviews", "External perspective"], "quantitative_threshold": "1% daily decline = 97% annual decline"},
+        {"mode": "Contrast-based pricing manipulation", "description": "Being manipulated by price contrasts", "real_world_case": "Decoy pricing making expensive option seem reasonable.", "warning_signs": ["Decoy options", "Relative value focus", "Manipulation"], "safeguards": ["Absolute value focus", "Ignore decoys", "Walk away test"], "quantitative_threshold": "Decoys can shift choice by 30-50%"},
+        {"mode": "Lifestyle inflation from contrast", "description": "Spending more because others spend more", "real_world_case": "Keeping up with wealthy neighbors.", "warning_signs": ["Comparison spending", "Lifestyle creep", "Reference group shift"], "safeguards": ["Absolute standards", "Own goals", "Ignore others"], "quantitative_threshold": "Reference group determines spending more than income"},
+        {"mode": "Performance contrast blindness", "description": "Judging performance by recent contrast", "real_world_case": "Good quarter after bad seems great, even if mediocre.", "warning_signs": ["Recency bias", "Relative performance focus", "Short memory"], "safeguards": ["Long-term benchmarks", "Absolute standards", "Historical context"], "quantitative_threshold": "Judge against long-term average, not recent past"}
+      ]
+    },
+    {
+      "id": 21,
+      "name": "Stress-Influence Tendency",
+      "failure_modes": [
+        {"mode": "Decision degradation under stress", "description": "Making worse decisions when stressed", "real_world_case": "Panic selling during market crashes.", "warning_signs": ["High stress", "Rushed decisions", "Emotional state"], "safeguards": ["Pre-commit to rules", "Cooling off periods", "Reduce stress"], "quantitative_threshold": "Stress reduces decision quality by 30-50%"},
+        {"mode": "Tunnel vision under stress", "description": "Focusing narrowly, missing big picture", "real_world_case": "Pilots fixating on one instrument in emergency.", "warning_signs": ["Narrow focus", "Missing information", "Single-minded"], "safeguards": ["Checklists", "Broaden attention", "Team input"], "quantitative_threshold": "Stress narrows attention by 50%+"},
+        {"mode": "Reverting to habits under stress", "description": "Falling back on automatic behaviors", "real_world_case": "Trained responses overriding better judgment.", "warning_signs": ["Automatic responses", "No deliberation", "Habit-driven"], "safeguards": ["Train good habits", "Pause before acting", "Override protocols"], "quantitative_threshold": "Under stress, habits dominate deliberation"},
+        {"mode": "Stress-induced compliance", "description": "Agreeing to things under pressure", "real_world_case": "Signing bad deals under time pressure.", "warning_signs": ["Time pressure", "Urgency creation", "Pressure tactics"], "safeguards": ["Never decide under pressure", "Walk away", "Cooling off"], "quantitative_threshold": "Artificial urgency is manipulation signal"},
+        {"mode": "Chronic stress blindness", "description": "Not recognizing chronic stress effects", "real_world_case": "Burnout affecting all decisions.", "warning_signs": ["Persistent fatigue", "Declining performance", "Health issues"], "safeguards": ["Monitor stress levels", "Recovery time", "Boundaries"], "quantitative_threshold": "Chronic stress reduces cognitive function 20-40%"}
+      ]
+    },
+    {
+      "id": 22,
+      "name": "Availability-Misweighing Tendency",
+      "failure_modes": [
+        {"mode": "Recency bias", "description": "Overweighting recent events", "real_world_case": "Overreacting to recent market moves.", "warning_signs": ["Recent focus", "Short memory", "Trend extrapolation"], "safeguards": ["Long-term data", "Base rates", "Historical perspective"], "quantitative_threshold": "Recent events are overweighted 3-5x"},
+        {"mode": "Vividness bias", "description": "Overweighting vivid, memorable events", "real_world_case": "Fear of plane crashes vs car accidents.", "warning_signs": ["Emotional memories", "Vivid examples", "Ignoring statistics"], "safeguards": ["Use statistics", "Ignore vividness", "Base rates"], "quantitative_threshold": "Vivid events overweighted 10x+ vs statistics"},
+        {"mode": "Media availability bias", "description": "Overweighting what media covers", "real_world_case": "Overestimating crime because of news coverage.", "warning_signs": ["News-driven fears", "Sensationalism", "Distorted reality"], "safeguards": ["Seek data", "Ignore news", "Base rates"], "quantitative_threshold": "News coverage ≠ actual frequency"},
+        {"mode": "Personal experience overweighting", "description": "Overweighting own experience vs data", "real_world_case": "Judging market by own portfolio performance.", "warning_signs": ["Anecdotal reasoning", "Sample of one", "Ignoring data"], "safeguards": ["Use large samples", "Seek data", "Recognize limits"], "quantitative_threshold": "Personal experience is tiny, biased sample"},
+        {"mode": "Ease of recall bias", "description": "Overweighting easily recalled information", "real_world_case": "Overestimating risks that are easy to imagine.", "warning_signs": ["Easy examples", "Imagination-driven", "Ignoring hard-to-imagine"], "safeguards": ["Systematic analysis", "Consider all risks", "Data over imagination"], "quantitative_threshold": "Easy to recall ≠ likely to occur"}
+      ]
+    },
+    {
+      "id": 23,
+      "name": "Authority-Misinfluence Tendency",
+      "failure_modes": [
+        {"mode": "Blind obedience to authority", "description": "Following authority without question", "real_world_case": "Milgram experiment - shocking others on authority.", "warning_signs": ["No questioning", "Deference", "Obedience"], "safeguards": ["Question authority", "Independent judgment", "Ethical lines"], "quantitative_threshold": "65% will follow authority to harm others"},
+        {"mode": "Expert authority confusion", "description": "Assuming expertise in one area transfers", "real_world_case": "Celebrity endorsements outside expertise.", "warning_signs": ["Out-of-domain authority", "Halo effect", "No verification"], "safeguards": ["Check domain expertise", "Verify credentials", "Independent analysis"], "quantitative_threshold": "Expertise doesn't transfer across domains"},
+        {"mode": "Authority symbols over substance", "description": "Responding to symbols of authority", "real_world_case": "Trusting people in suits, uniforms.", "warning_signs": ["Symbol focus", "Appearance over substance", "No verification"], "safeguards": ["Verify substance", "Ignore symbols", "Check credentials"], "quantitative_threshold": "Symbols are easily faked"},
+        {"mode": "Hierarchical authority bias", "description": "Deferring to organizational hierarchy", "real_world_case": "Not challenging boss even when wrong.", "warning_signs": ["Hierarchy deference", "No upward feedback", "Yes-men"], "safeguards": ["Speak truth to power", "Safe channels", "Culture of challenge"], "quantitative_threshold": "Hierarchy silences 50%+ of valid concerns"},
+        {"mode": "Historical authority bias", "description": "Following outdated authorities", "real_world_case": "Following old investment wisdom in new markets.", "warning_signs": ["Outdated sources", "No updating", "Tradition worship"], "safeguards": ["Update sources", "Current relevance", "First principles"], "quantitative_threshold": "Authority advice has half-life of 5-10 years"}
+      ]
+    },
+    {
+      "id": 24,
+      "name": "Twaddle Tendency",
+      "failure_modes": [
+        {"mode": "Confusing complexity with insight", "description": "Thinking complex = smart", "real_world_case": "Jargon-filled reports hiding lack of substance.", "warning_signs": ["Jargon", "Complexity", "No clear conclusions"], "safeguards": ["Demand clarity", "Simple explanations", "Feynman test"], "quantitative_threshold": "If you can't explain simply, you don't understand"},
+        {"mode": "Filling silence with noise", "description": "Talking without saying anything", "real_world_case": "Meetings that produce no decisions.", "warning_signs": ["Long meetings", "No outcomes", "Circular discussion"], "safeguards": ["Outcome focus", "Time limits", "Decision requirements"], "quantitative_threshold": "50%+ of meeting time is often waste"},
+        {"mode": "Credentialed twaddle", "description": "Accepting nonsense from credentialed sources", "real_world_case": "Academic papers with no practical value.", "warning_signs": ["Credentials over content", "No practical application", "Theoretical only"], "safeguards": ["Demand application", "Real-world test", "Practical value"], "quantitative_threshold": "Credentials don't guarantee value"},
+        {"mode": "Twaddle as defense", "description": "Using complexity to avoid accountability", "real_world_case": "Consultants hiding behind jargon.", "warning_signs": ["Defensive complexity", "No clear answers", "Obfuscation"], "safeguards": ["Demand clarity", "Pin down specifics", "Accountability"], "quantitative_threshold": "Complexity often hides lack of substance"},
+        {"mode": "Self-twaddle", "description": "Fooling yourself with your own nonsense", "real_world_case": "Rationalizing bad decisions with complex logic.", "warning_signs": ["Elaborate justifications", "Post-hoc reasoning", "Motivated reasoning"], "safeguards": ["Simple explanations", "Outside perspective", "Pre-commit to criteria"], "quantitative_threshold": "If explanation is complex, it's probably wrong"}
+      ]
+    },
+    {
+      "id": 25,
+      "name": "Reason-Respecting Tendency",
+      "failure_modes": [
+        {"mode": "Accepting any reason", "description": "Being satisfied with any explanation", "real_world_case": "Copy machine experiment - 'because I need to' worked.", "warning_signs": ["Accepting weak reasons", "No verification", "Reason = sufficient"], "safeguards": ["Evaluate reason quality", "Demand good reasons", "Verify logic"], "quantitative_threshold": "Any reason increases compliance 50%+"},
+        {"mode": "Reason as manipulation", "description": "Being manipulated through reasons", "real_world_case": "Sales pitches with pseudo-reasons.", "warning_signs": ["Manufactured reasons", "Logical-sounding nonsense", "Persuasion techniques"], "safeguards": ["Verify reasons", "Independent analysis", "Skepticism"], "quantitative_threshold": "Reasons can be manufactured to manipulate"},
+        {"mode": "Reason without verification", "description": "Accepting reasons without checking", "real_world_case": "Believing explanations without evidence.", "warning_signs": ["No fact-checking", "Trust without verify", "Lazy acceptance"], "safeguards": ["Verify claims", "Check evidence", "Skeptical inquiry"], "quantitative_threshold": "Verify reasons, don't just accept them"},
+        {"mode": "Reason inflation", "description": "More reasons = more convincing, regardless of quality", "real_world_case": "Long lists of weak reasons seeming strong.", "warning_signs": ["Quantity over quality", "Weak reasons", "Padding"], "safeguards": ["Quality over quantity", "Strongest reason test", "Ignore padding"], "quantitative_threshold": "One strong reason > ten weak reasons"},
+        {"mode": "Missing the real reason", "description": "Accepting stated reason, missing actual reason", "real_world_case": "Stated reasons for decisions hiding real motivations.", "warning_signs": ["Stated vs actual", "Hidden agendas", "Inconsistencies"], "safeguards": ["Look for real reasons", "Follow incentives", "Cui bono"], "quantitative_threshold": "Stated reasons often differ from actual reasons"}
+      ]
+    }
+  ]
+}

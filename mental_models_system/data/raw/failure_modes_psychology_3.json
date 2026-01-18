@@ -1,0 +1,104 @@
+{
+  "category": "Psychology",
+  "models": [
+    {
+      "id": 26,
+      "name": "Lollapalooza Tendency",
+      "failure_modes": [
+        {"mode": "Missing confluence", "description": "Not recognizing when multiple biases combine", "real_world_case": "Enron - multiple biases created perfect storm.", "warning_signs": ["Single-factor analysis", "Missing interactions", "Isolated thinking"], "safeguards": ["Multi-factor analysis", "Interaction effects", "System thinking"], "quantitative_threshold": "3+ biases = exponential effect, not additive"},
+        {"mode": "Underestimating combined effect", "description": "Adding effects when they multiply", "real_world_case": "Cult recruitment using multiple techniques.", "warning_signs": ["Linear thinking", "Underestimating combinations", "Surprise at outcomes"], "safeguards": ["Multiplicative thinking", "Scenario analysis", "Extreme outcomes"], "quantitative_threshold": "Combined biases can be 10-100x single bias"},
+        {"mode": "Creating negative lollapalooza", "description": "Accidentally combining biases against yourself", "real_world_case": "Incentive + social proof + commitment creating fraud.", "warning_signs": ["Multiple pressures", "Compounding factors", "System design flaws"], "safeguards": ["Audit for combinations", "Reduce pressure points", "System redesign"], "quantitative_threshold": "Audit systems for 3+ converging pressures"},
+        {"mode": "Missing positive lollapalooza", "description": "Not creating beneficial combinations", "real_world_case": "Missing opportunity to combine multiple advantages.", "warning_signs": ["Single-factor strategies", "Missed synergies", "Isolated efforts"], "safeguards": ["Look for combinations", "Stack advantages", "Synergy seeking"], "quantitative_threshold": "Best outcomes come from 3+ aligned factors"},
+        {"mode": "Lollapalooza blindness in others", "description": "Not seeing how others are affected by combinations", "real_world_case": "Not understanding why smart people do dumb things.", "warning_signs": ["Judging individuals", "Missing context", "Fundamental attribution error"], "safeguards": ["Analyze full context", "Multiple factors", "Empathy"], "quantitative_threshold": "Behavior is usually multi-causal"}
+      ]
+    },
+    {
+      "id": 27,
+      "name": "Use-It-Or-Lose-It Tendency",
+      "failure_modes": [
+        {"mode": "Skill atrophy", "description": "Losing skills through disuse", "real_world_case": "Doctors losing surgical skills without practice.", "warning_signs": ["Declining performance", "Rustiness", "Forgetting"], "safeguards": ["Regular practice", "Spaced repetition", "Skill maintenance"], "quantitative_threshold": "Skills decay 20-30% per year without practice"},
+        {"mode": "Knowledge obsolescence", "description": "Knowledge becoming outdated", "real_world_case": "Technical skills becoming obsolete.", "warning_signs": ["Outdated knowledge", "Industry changes", "New methods"], "safeguards": ["Continuous learning", "Stay current", "Update regularly"], "quantitative_threshold": "Technical knowledge half-life is 2-5 years"},
+        {"mode": "Relationship atrophy", "description": "Relationships weakening without maintenance", "real_world_case": "Network contacts going cold.", "warning_signs": ["Declining connections", "Lost touch", "Weak ties"], "safeguards": ["Regular contact", "Relationship maintenance", "Systematic outreach"], "quantitative_threshold": "Relationships need contact every 3-6 months"},
+        {"mode": "Mental model decay", "description": "Mental models becoming stale", "real_world_case": "Using outdated frameworks for new situations.", "warning_signs": ["Old frameworks", "Poor predictions", "Surprise failures"], "safeguards": ["Update models", "Test against reality", "Continuous learning"], "quantitative_threshold": "Review mental models annually"},
+        {"mode": "Physical capacity decline", "description": "Physical abilities declining without use", "real_world_case": "Fitness declining with sedentary lifestyle.", "warning_signs": ["Declining capacity", "Reduced performance", "Health issues"], "safeguards": ["Regular exercise", "Maintenance routines", "Use it"], "quantitative_threshold": "Physical capacity declines 1-2% per year after 30"}
+      ]
+    },
+    {
+      "id": 28,
+      "name": "Drug-Misinfluence Tendency",
+      "failure_modes": [
+        {"mode": "Substance-impaired judgment", "description": "Making decisions while impaired", "real_world_case": "Alcohol-influenced business decisions.", "warning_signs": ["Impaired state", "Lowered inhibitions", "Poor judgment"], "safeguards": ["No decisions when impaired", "Cooling off", "Sober review"], "quantitative_threshold": "Any impairment affects judgment significantly"},
+        {"mode": "Addiction to stimulants", "description": "Dependence on substances for performance", "real_world_case": "Caffeine/stimulant dependence in high-pressure jobs.", "warning_signs": ["Dependence", "Withdrawal effects", "Escalating use"], "safeguards": ["Monitor use", "Regular breaks", "Natural alternatives"], "quantitative_threshold": "Dependence develops within weeks of daily use"},
+        {"mode": "Mood-altering substance effects", "description": "Substances affecting emotional judgment", "real_world_case": "Antidepressants affecting risk perception.", "warning_signs": ["Mood changes", "Risk perception shifts", "Emotional blunting"], "safeguards": ["Awareness of effects", "Monitor decisions", "External checks"], "quantitative_threshold": "Any mood-altering substance affects judgment"},
+        {"mode": "Social drug influence", "description": "Social pressure to use substances", "real_world_case": "Drinking culture in business.", "warning_signs": ["Social pressure", "Expectation to participate", "Cultural norms"], "safeguards": ["Set boundaries", "Alternative socializing", "Culture change"], "quantitative_threshold": "Social pressure increases use 2-3x"},
+        {"mode": "Withdrawal effects on judgment", "description": "Withdrawal affecting decision-making", "real_world_case": "Caffeine withdrawal affecting morning decisions.", "warning_signs": ["Withdrawal symptoms", "Irritability", "Impaired focus"], "safeguards": ["Manage withdrawal", "Timing awareness", "Gradual reduction"], "quantitative_threshold": "Withdrawal impairs judgment as much as intoxication"}
+      ]
+    },
+    {
+      "id": 29,
+      "name": "Senescence-Misinfluence Tendency",
+      "failure_modes": [
+        {"mode": "Cognitive decline denial", "description": "Not recognizing own cognitive decline", "real_world_case": "Aging executives not recognizing slowing.", "warning_signs": ["Declining performance", "Slower processing", "Memory issues"], "safeguards": ["Regular assessment", "Honest feedback", "Succession planning"], "quantitative_threshold": "Cognitive decline starts around 45-50"},
+        {"mode": "Experience overvaluation", "description": "Overvaluing experience vs current knowledge", "real_world_case": "Experienced managers dismissing new approaches.", "warning_signs": ["Experience worship", "Dismissing new ideas", "Stuck in past"], "safeguards": ["Value both", "Continuous learning", "Openness"], "quantitative_threshold": "Experience value declines in fast-changing fields"},
+        {"mode": "Risk aversion increase", "description": "Becoming too risk-averse with age", "real_world_case": "Older investors missing opportunities.", "warning_signs": ["Excessive caution", "Missed opportunities", "Status quo bias"], "safeguards": ["Calibrate risk", "Appropriate risk-taking", "Fresh perspectives"], "quantitative_threshold": "Risk aversion increases 10-20% per decade after 40"},
+        {"mode": "Adaptation resistance", "description": "Resisting change as we age", "real_world_case": "Older workers resisting new technology.", "warning_signs": ["Change resistance", "Nostalgia", "New = bad"], "safeguards": ["Embrace change", "Continuous learning", "Openness"], "quantitative_threshold": "Adaptation ability declines with age"},
+        {"mode": "Succession failure", "description": "Not planning for own decline", "real_world_case": "Founders not preparing successors.", "warning_signs": ["No succession plan", "Indispensable thinking", "Denial"], "safeguards": ["Succession planning", "Knowledge transfer", "Graceful transition"], "quantitative_threshold": "Start succession planning at 55-60"}
+      ]
+    },
+    {
+      "id": 30,
+      "name": "Simple Pain-Avoiding Psychological Denial",
+      "failure_modes": [
+        {"mode": "Reality denial", "description": "Refusing to accept painful truths", "real_world_case": "Investors denying losses until forced to sell.", "warning_signs": ["Avoiding information", "Rationalization", "Wishful thinking"], "safeguards": ["Face reality", "Seek truth", "External checks"], "quantitative_threshold": "Denial delays action by months to years"},
+        {"mode": "Shooting the messenger", "description": "Punishing bearers of bad news", "real_world_case": "Executives punishing those who report problems.", "warning_signs": ["Messenger punishment", "Information hiding", "Yes-men culture"], "safeguards": ["Reward bad news", "Safe channels", "Culture of truth"], "quantitative_threshold": "Shooting messengers guarantees blindness"},
+        {"mode": "Selective attention to positive", "description": "Only seeing what we want to see", "real_world_case": "Confirmation bias in investment research.", "warning_signs": ["Cherry-picking", "Ignoring negatives", "Biased search"], "safeguards": ["Seek disconfirming evidence", "Devil's advocate", "Balanced view"], "quantitative_threshold": "We weight positive evidence 2-3x more"},
+        {"mode": "Delayed pain recognition", "description": "Not recognizing pain until crisis", "real_world_case": "Health problems ignored until emergency.", "warning_signs": ["Ignoring symptoms", "Delayed action", "Crisis-driven"], "safeguards": ["Early warning systems", "Regular checkups", "Proactive monitoring"], "quantitative_threshold": "Early detection saves 10x the cost"},
+        {"mode": "Vicarious denial", "description": "Denying painful truths about others", "real_world_case": "Parents denying children's problems.", "warning_signs": ["Defending others", "Ignoring evidence", "Emotional attachment"], "safeguards": ["Objective assessment", "External input", "Face facts"], "quantitative_threshold": "Emotional attachment increases denial 3-5x"}
+      ]
+    },
+    {
+      "id": 31,
+      "name": "Kantian Fairness Tendency",
+      "failure_modes": [
+        {"mode": "Fairness expectation in unfair world", "description": "Expecting fairness where it doesn't exist", "real_world_case": "Expecting markets to be fair.", "warning_signs": ["Fairness assumptions", "Surprise at unfairness", "Naive expectations"], "safeguards": ["Expect unfairness", "Protect yourself", "Reality-based"], "quantitative_threshold": "World is less fair than we expect"},
+        {"mode": "Fairness-based paralysis", "description": "Not acting because it's 'not fair'", "real_world_case": "Not negotiating because 'it should be fair'.", "warning_signs": ["Fairness paralysis", "Passive acceptance", "Waiting for fairness"], "safeguards": ["Act despite unfairness", "Negotiate anyway", "Self-advocacy"], "quantitative_threshold": "Waiting for fairness = waiting forever"},
+        {"mode": "Fairness retaliation", "description": "Punishing unfairness at own cost", "real_world_case": "Rejecting unfair offers even when beneficial.", "warning_signs": ["Spite-based rejection", "Cutting nose to spite face", "Emotional decisions"], "safeguards": ["Cost-benefit analysis", "Rational response", "Long-term thinking"], "quantitative_threshold": "Fairness retaliation often costs more than accepting"},
+        {"mode": "Fairness projection", "description": "Assuming others share fairness values", "real_world_case": "Being exploited by those who don't play fair.", "warning_signs": ["Naive trust", "Exploitation", "Repeated victimization"], "safeguards": ["Verify fairness", "Protect yourself", "Trust but verify"], "quantitative_threshold": "Not everyone plays fair - protect yourself"},
+        {"mode": "Fairness as excuse", "description": "Using fairness to avoid difficult decisions", "real_world_case": "Not firing poor performers because 'it's not fair'.", "warning_signs": ["Fairness rationalization", "Avoiding hard decisions", "Equality over merit"], "safeguards": ["Merit-based decisions", "Fair process not equal outcomes", "Courage"], "quantitative_threshold": "Fair process ≠ equal outcomes"}
+      ]
+    },
+    {
+      "id": 32,
+      "name": "Envy/Jealousy Tendency",
+      "failure_modes": [
+        {"mode": "Comparison-driven unhappiness", "description": "Being unhappy due to others' success", "real_world_case": "Unhappy despite success because others have more.", "warning_signs": ["Constant comparison", "Never satisfied", "Others' success = own failure"], "safeguards": ["Focus on own progress", "Gratitude", "Absolute not relative"], "quantitative_threshold": "Comparison is the thief of joy"},
+        {"mode": "Envy-driven bad decisions", "description": "Making decisions to match others", "real_world_case": "Buying things to keep up with neighbors.", "warning_signs": ["Keeping up", "Competitive consumption", "Status-driven"], "safeguards": ["Own values", "Ignore others", "Internal scorecard"], "quantitative_threshold": "Envy-driven decisions are usually bad"},
+        {"mode": "Schadenfreude blindness", "description": "Pleasure in others' misfortune clouding judgment", "real_world_case": "Celebrating competitor failure instead of improving.", "warning_signs": ["Competitor focus", "Pleasure in failure", "Distraction"], "safeguards": ["Focus on own improvement", "Ignore competitors", "Internal focus"], "quantitative_threshold": "Time spent on others = time not spent on self"},
+        {"mode": "Envy-driven sabotage", "description": "Undermining others due to envy", "real_world_case": "Office politics driven by jealousy.", "warning_signs": ["Undermining behavior", "Political games", "Zero-sum thinking"], "safeguards": ["Positive-sum thinking", "Collaboration", "Own success focus"], "quantitative_threshold": "Sabotage costs more than it gains"},
+        {"mode": "Hidden envy rationalization", "description": "Disguising envy as principled objection", "real_world_case": "Criticizing successful people for 'wrong' reasons.", "warning_signs": ["Rationalized criticism", "Principled objections to success", "Pattern of criticism"], "safeguards": ["Self-awareness", "Honest self-examination", "Recognize envy"], "quantitative_threshold": "Much criticism is disguised envy"}
+      ]
+    },
+    {
+      "id": 33,
+      "name": "Reciprocation Tendency",
+      "failure_modes": [
+        {"mode": "Reciprocity manipulation", "description": "Being manipulated through gifts/favors", "real_world_case": "Pharmaceutical reps giving gifts to doctors.", "warning_signs": ["Unexpected gifts", "Favors with strings", "Obligation creation"], "safeguards": ["Refuse gifts", "Recognize manipulation", "Independence"], "quantitative_threshold": "Small gifts create large obligations"},
+        {"mode": "Negative reciprocity escalation", "description": "Tit-for-tat escalating conflicts", "real_world_case": "Business disputes escalating to mutual destruction.", "warning_signs": ["Retaliation cycles", "Escalation", "Mutual harm"], "safeguards": ["Break the cycle", "De-escalate", "Bigger picture"], "quantitative_threshold": "Negative reciprocity often escalates 2-3x"},
+        {"mode": "Reciprocity debt accumulation", "description": "Accumulating obligations without realizing", "real_world_case": "Owing favors that compromise independence.", "warning_signs": ["Favor accumulation", "Obligation buildup", "Compromised independence"], "safeguards": ["Track obligations", "Pay promptly", "Limit accepting"], "quantitative_threshold": "Obligations compound like interest"},
+        {"mode": "Reciprocity expectation disappointment", "description": "Expecting reciprocity that doesn't come", "real_world_case": "Helping others expecting help back.", "warning_signs": ["Unreciprocated favors", "Disappointment", "Resentment"], "safeguards": ["Give without expectation", "Choose recipients", "Accept non-reciprocity"], "quantitative_threshold": "30-50% of favors are not reciprocated"},
+        {"mode": "Concession reciprocity manipulation", "description": "Being manipulated by fake concessions", "real_world_case": "Door-in-face technique in negotiations.", "warning_signs": ["Large then small requests", "Fake concessions", "Manipulation patterns"], "safeguards": ["Recognize technique", "Evaluate independently", "Ignore anchors"], "quantitative_threshold": "Concession technique increases compliance 50%+"}
+      ]
+    },
+    {
+      "id": 34,
+      "name": "Influence-from-Mere-Association Tendency",
+      "failure_modes": [
+        {"mode": "Halo effect", "description": "One positive trait influencing perception of all traits", "real_world_case": "Attractive people assumed to be competent.", "warning_signs": ["Single trait focus", "Assumed qualities", "Incomplete assessment"], "safeguards": ["Evaluate traits separately", "Evidence for each", "Structured assessment"], "quantitative_threshold": "Halo effect biases 30-50% of judgments"},
+        {"mode": "Negative association transfer", "description": "Negative associations spreading unfairly", "real_world_case": "Messenger blamed for bad news.", "warning_signs": ["Association blame", "Unfair attribution", "Shooting messenger"], "safeguards": ["Separate message from messenger", "Fair attribution", "Logical analysis"], "quantitative_threshold": "Bad news bearers are blamed 70%+ of time"},
+        {"mode": "Brand association manipulation", "description": "Being influenced by brand associations", "real_world_case": "Paying premium for brand without substance.", "warning_signs": ["Brand worship", "Premium without value", "Association-driven"], "safeguards": ["Evaluate substance", "Ignore brand", "Value analysis"], "quantitative_threshold": "Brand premium often exceeds value difference"},
+        {"mode": "Celebrity association effect", "description": "Being influenced by celebrity endorsements", "real_world_case": "Buying products because celebrities endorse.", "warning_signs": ["Celebrity influence", "Endorsement-driven", "No substance evaluation"], "safeguards": ["Ignore endorsements", "Evaluate product", "Independent judgment"], "quantitative_threshold": "Celebrity endorsements increase sales 20-50%"},
+        {"mode": "Past success association", "description": "Assuming past success predicts future success", "real_world_case": "Hiring from successful companies assuming competence.", "warning_signs": ["Past success worship", "No current evaluation", "Association-based hiring"], "safeguards": ["Evaluate current ability", "Ignore past associations", "Test competence"], "quantitative_threshold": "Past success is weak predictor of future success"}
+      ]
+    }
+  ]
+}
