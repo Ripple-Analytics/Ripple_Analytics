@@ -531,6 +531,34 @@ async def cmd_export_improvements(args):
     print(f"\nExported {len(pending)} pending suggestions")
 
 
+async def cmd_recommend(args):
+    """Get decision recommendations."""
+    from src.recommendation import get_recommendations, print_recommendations
+    
+    print(f"\n🎯 Analyzing decision: '{args.description}'")
+    print(f"   Domain: {args.domain} | Stakes: {args.stakes}")
+    print(f"   Time horizon: {args.time_horizon} | Reversibility: {args.reversibility}")
+    
+    recommendations = get_recommendations(
+        description=args.description,
+        domain=args.domain,
+        stakes=args.stakes,
+        time_horizon=args.time_horizon,
+        reversibility=args.reversibility
+    )
+    
+    if args.limit:
+        recommendations = recommendations[:args.limit]
+    
+    print_recommendations(recommendations)
+    
+    if args.export:
+        from src.recommendation import DecisionRecommender
+        recommender = DecisionRecommender()
+        export_path = recommender.export_recommendations(recommendations, args.export)
+        print(f"\n✅ Exported to: {export_path}")
+
+
 async def cmd_similar_cases(args):
     """Find similar historical cases."""
     from src.safeguards.failure_search import FailureModeSearchEngine
@@ -696,6 +724,24 @@ Examples:
     export_improve_parser = subparsers.add_parser("export-improvements", help="Export improvements for Manus")
     export_improve_parser.add_argument("--output", "-o", help="Output file path")
     
+    # recommend command
+    recommend_parser = subparsers.add_parser("recommend", help="Get decision recommendations")
+    recommend_parser.add_argument("description", help="Description of the decision")
+    recommend_parser.add_argument("--domain", "-d", default="business",
+                                  choices=["investment", "business", "personal", "career"],
+                                  help="Decision domain")
+    recommend_parser.add_argument("--stakes", "-s", default="medium",
+                                  choices=["low", "medium", "high", "critical"],
+                                  help="Stakes level")
+    recommend_parser.add_argument("--time-horizon", "-t", default="medium",
+                                  choices=["short", "medium", "long"],
+                                  help="Time horizon")
+    recommend_parser.add_argument("--reversibility", "-r", default="partially_reversible",
+                                  choices=["reversible", "partially_reversible", "irreversible"],
+                                  help="Decision reversibility")
+    recommend_parser.add_argument("--limit", "-l", type=int, help="Maximum recommendations")
+    recommend_parser.add_argument("--export", "-e", help="Export to file")
+    
     args = parser.parse_args()
     
     if not args.command:
@@ -731,6 +777,8 @@ Examples:
         asyncio.run(cmd_improvements(args))
     elif args.command == "export-improvements":
         asyncio.run(cmd_export_improvements(args))
+    elif args.command == "recommend":
+        asyncio.run(cmd_recommend(args))
 
 
 if __name__ == "__main__":
