@@ -1403,3 +1403,137 @@
       ;; Test with success response (should not add standardized-error)
       (let [result (middleware-fn {:status 200 :body "OK"})]
         (is (not (contains? result :standardized-error)))))))
+
+;; ============================================
+;; Async Connector Support Tests
+;; ============================================
+
+(deftest test-async-tasks-atom
+  (testing "Async tasks atom is initialized"
+    (is (instance? clojure.lang.Atom conn/async-tasks))
+    (is (map? @conn/async-tasks))))
+
+(deftest test-submit-async-task
+  (testing "Submit async task returns task-id immediately"
+    (let [task-id (conn/submit-async-task (fn [] (Thread/sleep 100) "result")
+                                          :name "test-task")]
+      (is (uuid? task-id))
+      (is (contains? @conn/async-tasks task-id))
+      (let [task (get @conn/async-tasks task-id)]
+        (is (= "test-task" (:name task)))
+        (is (= :pending (:status task)))
+        (is (instance? java.time.Instant (:submitted-at task))))
+      ;; Wait for task to complete and clean up
+      (Thread/sleep 200)
+      (swap! conn/async-tasks dissoc task-id))))
+
+(deftest test-get-async-result-pending
+  (testing "Get async result returns pending status for running task"
+    (let [task-id (conn/submit-async-task (fn [] (Thread/sleep 500) "result"))]
+      (let [result (conn/get-async-result task-id)]
+        (is (= :pending (:status result)))
+        (is (contains? result :submitted-at)))
+      ;; Clean up
+      (conn/cancel-async-task task-id)
+      (swap! conn/async-tasks dissoc task-id))))
+
+(deftest test-get-async-result-complete
+  (testing "Get async result returns result for completed task"
+    (let [task-id (conn/submit-async-task (fn [] "test-result"))]
+      ;; Wait for completion
+      (Thread/sleep 100)
+      (let [result (conn/get-async-result task-id)]
+        (is (= :success (:status result)))
+        (is (= "test-result" (:result result)))
+        (is (instance? java.time.Instant (:completed-at result))))
+      ;; Clean up
+      (swap! conn/async-tasks dissoc task-id))))
+
+(deftest test-get-async-result-not-found
+  (testing "Get async result returns not-found for unknown task"
+    (let [result (conn/get-async-result (java.util.UUID/randomUUID))]
+      (is (= :not-found (:status result)))
+      (is (contains? result :error)))))
+
+(deftest test-await-async-result
+  (testing "Await async result blocks until complete"
+    (let [task-id (conn/submit-async-task (fn [] (Thread/sleep 50) "awaited-result"))]
+      (let [result (conn/await-async-result task-id :timeout-ms 5000)]
+        (is (= :success (:status result)))
+        (is (= "awaited-result" (:result result))))
+      ;; Clean up
+      (swap! conn/async-tasks dissoc task-id))))
+
+(deftest test-await-async-result-timeout
+  (testing "Await async result returns timeout on timeout"
+    (let [task-id (conn/submit-async-task (fn [] (Thread/sleep 5000) "never"))]
+      (let [result (conn/await-async-result task-id :timeout-ms 100)]
+        (is (= :timeout (:status result))))
+      ;; Clean up
+      (conn/cancel-async-task task-id)
+      (swap! conn/async-tasks dissoc task-id))))
+
+(deftest test-cancel-async-task
+  (testing "Cancel async task cancels pending task"
+    (let [task-id (conn/submit-async-task (fn [] (Thread/sleep 5000) "never"))]
+      (let [result (conn/cancel-async-task task-id)]
+        (is (= :cancelled (:status result))))
+      (is (= :cancelled (get-in @conn/async-tasks [task-id :status])))
+      ;; Clean up
+      (swap! conn/async-tasks dissoc task-id))))
+
+(deftest test-cancel-async-task-already-complete
+  (testing "Cancel async task returns already-complete for finished task"
+    (let [task-id (conn/submit-async-task (fn [] "quick"))]
+      (Thread/sleep 100)
+      (let [result (conn/cancel-async-task task-id)]
+        (is (= :already-complete (:status result))))
+      ;; Clean up
+      (swap! conn/async-tasks dissoc task-id))))
+
+(deftest test-list-async-tasks
+  (testing "List async tasks returns all tasks"
+    ;; Clear existing tasks
+    (reset! conn/async-tasks {})
+    (let [task1 (conn/submit-async-task (fn [] "task1") :name "task1")
+          task2 (conn/submit-async-task (fn [] "task2") :name "task2")]
+      (let [tasks (conn/list-async-tasks)]
+        (is (= 2 (count tasks))))
+      ;; Clean up
+      (reset! conn/async-tasks {}))))
+
+(deftest test-list-async-tasks-by-status
+  (testing "List async tasks filters by status"
+    (reset! conn/async-tasks {})
+    (let [pending-task (conn/submit-async-task (fn [] (Thread/sleep 5000) "slow"))
+          quick-task (conn/submit-async-task (fn [] "quick"))]
+      (Thread/sleep 100)
+      ;; Check pending tasks
+      (let [pending (conn/list-async-tasks :pending)]
+        (is (>= (count pending) 1)))
+      ;; Clean up
+      (conn/cancel-async-task pending-task)
+      (reset! conn/async-tasks {}))))
+
+(deftest test-cleanup-async-tasks
+  (testing "Cleanup removes old completed tasks"
+    (reset! conn/async-tasks {})
+    (let [task-id (conn/submit-async-task (fn [] "old-task"))]
+      (Thread/sleep 100)
+      ;; Manually set submitted-at to old time
+      (swap! conn/async-tasks assoc-in [task-id :submitted-at]
+             (java.time.Instant/ofEpochMilli 0))
+      (swap! conn/async-tasks assoc-in [task-id :status] :success)
+      
+      (conn/cleanup-async-tasks :max-age-ms 1000)
+      (is (not (contains? @conn/async-tasks task-id))))))
+
+(deftest test-async-task-error-handling
+  (testing "Async task captures errors"
+    (let [task-id (conn/submit-async-task (fn [] (throw (Exception. "Test error"))))]
+      (Thread/sleep 100)
+      (let [result (conn/get-async-result task-id)]
+        (is (= :error (:status result)))
+        (is (= "Test error" (:error result))))
+      ;; Clean up
+      (swap! conn/async-tasks dissoc task-id))))
