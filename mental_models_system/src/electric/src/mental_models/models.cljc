@@ -4549,3 +4549,332 @@
 ;; New total: 147 models (in models.cljc)
 ;; Combined with new_models.cljc (12 models): 159 total models
 ;; ============================================
+
+;; ============================================
+;; Iteration 15 - High-Magnitude Enhancement
+;; ============================================
+;; Adding 10 new mental models from Renaissance Technologies (Jim Simons),
+;; Ray Dalio, and Lee Kuan Yew frameworks
+;; ============================================
+
+;; ============================================
+;; Category: Renaissance Technologies / Jim Simons
+;; ============================================
+
+(register-model
+ {:name "regime-detection"
+  :category "quantitative_analysis"
+  :originator "Jim Simons / Renaissance Technologies"
+  :description "Markets and systems operate in distinct regimes with different statistical properties; detecting regime shifts is critical for adaptation"
+  :key-insight "The same strategy that works in one regime can fail catastrophically in another; identify the regime before acting"
+  :application "Monitor statistical properties of systems; detect when fundamental dynamics change; adapt strategies to current regime"
+  :failure-modes
+  [(failure "regime-blindness" "critical"
+            "Not recognizing that system has shifted to new regime"
+            :signals ["Strategies suddenly failing" "Historical patterns breaking" "Unexpected losses" "Correlations changing"]
+            :safeguards ["Real-time regime monitoring" "Statistical tests for regime shifts" "Multiple regime indicators" "Adaptive strategies"])
+   (failure "false-regime-detection" "high"
+            "Seeing regime change in normal volatility"
+            :signals ["Excessive strategy changes" "Whipsawed by noise" "High transaction costs" "Unstable performance"]
+            :safeguards ["Statistical significance tests" "Confirmation from multiple indicators" "Regime persistence requirements" "Bayesian updating"])
+   (failure "regime-overfitting" "high"
+            "Identifying too many regimes, fragmenting data"
+            :signals ["Overly complex models" "Poor out-of-sample performance" "Data mining" "Spurious patterns"]
+            :safeguards ["Parsimony principle" "Out-of-sample validation" "Regime stability requirements" "Economic rationale"])
+   (failure "single-regime-assumption" "critical"
+            "Assuming current regime will persist indefinitely"
+            :signals ["No contingency plans" "Surprise at regime shifts" "Catastrophic losses" "Black swan events"]
+            :safeguards ["Scenario planning" "Stress testing across regimes" "Regime-conditional strategies" "Tail risk hedging"])
+   (failure "lagging-regime-detection" "high"
+            "Detecting regime change too late to adapt"
+            :signals ["Losses before adaptation" "Slow response" "Playing catch-up" "Missed opportunities"]
+            :safeguards ["Leading indicators" "Real-time monitoring" "Automated detection" "Rapid response protocols"])]})
+
+(register-model
+ {:name "factor-decomposition"
+  :category "quantitative_analysis"
+  :originator "Jim Simons / Renaissance Technologies"
+  :description "Complex outcomes can be decomposed into independent factors; understanding factor exposures enables precise risk management and alpha generation"
+  :key-insight "Returns are not monolithic; they are the sum of exposures to multiple factors; isolate and manage each factor independently"
+  :application "Decompose any outcome into constituent factors; measure exposure to each; manage factors separately; identify pure alpha"
+  :failure-modes
+  [(failure "factor-blindness" "critical"
+            "Not recognizing hidden factor exposures"
+            :signals ["Unexpected correlations" "Unintended risks" "Surprise losses" "Portfolio concentration"]
+            :safeguards ["Comprehensive factor analysis" "Regular factor decomposition" "Stress testing" "Factor attribution"])
+   (failure "incomplete-factors" "high"
+            "Missing important factors in decomposition"
+            :signals ["Unexplained variance" "Residual correlations" "Model errors" "Unexpected outcomes"]
+            :safeguards ["Thorough factor research" "Residual analysis" "Multiple factor models" "Academic literature review"])
+   (failure "factor-timing" "high"
+            "Attempting to time factor performance"
+            :signals ["Inconsistent exposures" "Market timing losses" "Whipsawed by factors" "Underperformance"]
+            :safeguards ["Consistent factor exposures" "Long-term factor investing" "Avoid market timing" "Systematic rebalancing"])
+   (failure "correlated-factors" "high"
+            "Treating correlated factors as independent"
+            :signals ["Underestimated risk" "Concentration" "Simultaneous factor losses" "Diversification illusion"]
+            :safeguards ["Factor correlation analysis" "Principal component analysis" "Independent factor construction" "Risk parity"])
+   (failure "factor-crowding" "high"
+            "Over-exposure to popular factors"
+            :signals ["Crowded trades" "Sudden reversals" "Liquidity issues" "Factor crashes"]
+            :safeguards ["Factor capacity analysis" "Contrarian factor selection" "Diversification" "Liquidity monitoring"])]})
+
+(register-model
+ {:name "mean-reversion"
+  :category "quantitative_analysis"
+  :originator "Jim Simons / Renaissance Technologies"
+  :description "Many systems exhibit mean-reverting behavior; extreme values tend to return toward the mean over time"
+  :key-insight "Trees don't grow to the sky; what goes up tends to come down; extremes are temporary; the mean is an attractor"
+  :application "Identify mean-reverting systems; measure deviation from mean; bet on reversion when deviation is extreme; define time horizon"
+  :failure-modes
+  [(failure "trending-as-reverting" "critical"
+            "Applying mean reversion to trending systems"
+            :signals ["Catching falling knives" "Averaging down losses" "Fighting the trend" "Catastrophic losses"]
+            :safeguards ["Regime detection" "Trend identification" "Stop losses" "Adaptive strategies"])
+   (failure "wrong-mean" "critical"
+            "Reverting to outdated or incorrect mean"
+            :signals ["Persistent losses" "Mean keeps shifting" "Structural changes ignored" "Regime blindness"]
+            :safeguards ["Dynamic mean estimation" "Regime-conditional means" "Structural break detection" "Adaptive means"])
+   (failure "premature-reversion" "high"
+            "Betting on reversion before extreme reached"
+            :signals ["Early entries" "Extended losses" "Trend continuation" "Opportunity cost"]
+            :safeguards ["Extreme thresholds" "Confirmation signals" "Patience" "Statistical significance"])
+   (failure "slow-reversion" "medium"
+            "Underestimating time for reversion"
+            :signals ["Holding costs" "Opportunity cost" "Margin calls" "Forced exits"]
+            :safeguards ["Time horizon analysis" "Historical reversion speeds" "Position sizing" "Patience capital"])
+   (failure "no-reversion" "critical"
+            "Assuming reversion when structural change occurred"
+            :signals ["Permanent losses" "Value traps" "Obsolete businesses" "Paradigm shifts"]
+            :safeguards ["Fundamental analysis" "Structural change detection" "Scenario analysis" "Exit criteria"])]})
+
+;; ============================================
+;; Category: Ray Dalio / Bridgewater Principles
+;; ============================================
+
+(register-model
+ {:name "radical-transparency"
+  :category "organizational_design"
+  :originator "Ray Dalio / Bridgewater Associates"
+  :description "Extreme openness and honesty in all communications; making all information accessible to all people; no hidden agendas"
+  :key-insight "Truth and transparency accelerate learning and improvement; hidden information breeds politics and poor decisions"
+  :application "Record all meetings; make all information accessible; encourage brutal honesty; eliminate politics; surface all disagreements"
+  :failure-modes
+  [(failure "transparency-overload" "high"
+            "Too much information, causing paralysis"
+            :signals ["Information overwhelm" "Decision paralysis" "Reduced productivity" "Meeting fatigue"]
+            :safeguards ["Curated information" "Relevance filtering" "Summarization" "Need-to-know with access-to-all"])
+   (failure "weaponized-transparency" "critical"
+            "Using transparency to attack rather than improve"
+            :signals ["Personal attacks" "Toxic culture" "Defensive behavior" "Attrition"]
+            :safeguards ["Idea meritocracy" "Focus on ideas not people" "Psychological safety" "Constructive criticism"])
+   (failure "false-transparency" "high"
+            "Appearance of transparency without substance"
+            :signals ["Selective disclosure" "Spin" "Hidden agendas persist" "Distrust"]
+            :safeguards ["Complete transparency" "Verification" "Anonymous feedback" "Culture enforcement"])
+   (failure "privacy-violation" "high"
+            "Transparency violating legitimate privacy"
+            :signals ["Personal information exposed" "Legal issues" "Attrition" "Resentment"]
+            :safeguards ["Clear boundaries" "Personal privacy protection" "Consent" "Professional focus"])
+   (failure "transparency-without-safety" "critical"
+            "Transparency without psychological safety"
+            :signals ["Fear of speaking up" "Self-censorship" "Political behavior" "Transparency theater"]
+            :safeguards ["Psychological safety first" "No retaliation" "Reward honesty" "Lead by example"])]})
+
+(register-model
+ {:name "idea-meritocracy"
+  :category "organizational_design"
+  :originator "Ray Dalio / Bridgewater Associates"
+  :description "The best ideas win regardless of who they come from; decisions are made by weighing people's opinions based on their track record and believability"
+  :key-insight "Hierarchy of ideas, not people; track record matters; believability-weighted decision making produces better outcomes"
+  :application "Track everyone's predictions; calculate believability scores; weight opinions by track record; let best ideas win regardless of seniority"
+  :failure-modes
+  [(failure "credibility-without-competence" "high"
+            "Giving weight to confident people without track records"
+            :signals ["Loud voices dominate" "Confidence over competence" "Poor decisions" "Meritocracy theater"]
+            :safeguards ["Rigorous track record tracking" "Prediction markets" "Anonymous voting" "Data-driven believability"])
+   (failure "narrow-believability" "high"
+            "Only valuing track record in narrow domain"
+            :signals ["Missed insights" "Siloed thinking" "Ignored perspectives" "Groupthink"]
+            :safeguards ["Domain-specific believability" "Cross-domain insights" "Diverse perspectives" "Beginner's mind"])
+   (failure "meritocracy-manipulation" "high"
+            "Gaming the believability system"
+            :signals ["Strategic voting" "Coalition building" "Politics" "System gaming"]
+            :safeguards ["Transparent algorithms" "Audit trails" "Calibration" "Skin in the game"])
+   (failure "junior-silencing" "medium"
+            "Junior people not speaking up due to low believability"
+            :signals ["Missed insights" "Conformity" "Reduced innovation" "Attrition"]
+            :safeguards ["Encourage all voices" "Anonymous input" "Idea evaluation separate from source" "Apprenticeship"])
+   (failure "believability-ossification" "medium"
+            "Past track record preventing adaptation"
+            :signals ["Outdated expertise" "Regime change ignored" "Declining performance" "Complacency"]
+            :safeguards ["Recency weighting" "Continuous learning" "Regime-conditional believability" "Humility"])]})
+
+(register-model
+ {:name "believability-weighted-decisions"
+  :category "decision_making"
+  :originator "Ray Dalio / Bridgewater Associates"
+  :description "Weight people's opinions by their believability (track record + reasoning ability) rather than treating all opinions equally or deferring to authority"
+  :key-insight "Not all opinions are equal; track record matters; aggregate believability-weighted opinions for better decisions than democracy or autocracy"
+  :application "Track prediction accuracy; calculate believability scores; weight votes by believability; aggregate for final decision"
+  :failure-modes
+  [(failure "equal-weighting" "high"
+            "Treating all opinions as equally valid"
+            :signals ["Wisdom of crowds failure" "Poor decisions" "Lowest common denominator" "Regression to mean"]
+            :safeguards ["Believability weighting" "Track records" "Domain expertise" "Meritocracy"])
+   (failure "authority-bias" "high"
+            "Weighting by seniority rather than believability"
+            :signals ["HiPPO decisions" "Ignored expertise" "Poor outcomes" "Resentment"]
+            :safeguards ["Track record over title" "Data-driven believability" "Transparent weighting" "Meritocracy"])
+   (failure "recency-bias" "medium"
+            "Over-weighting recent track record"
+            :signals ["Volatility in believability" "Overreaction to recent events" "Unstable weights"]
+            :safeguards ["Long-term track records" "Statistical smoothing" "Bayesian updating" "Regime awareness"])
+   (failure "narrow-track-record" "high"
+            "Believability based on insufficient sample size"
+            :signals ["Luck vs skill confusion" "Volatile believability" "Poor calibration"]
+            :safeguards ["Minimum sample sizes" "Statistical significance" "Confidence intervals" "Regression to mean"])
+   (failure "no-skin-in-game" "high"
+            "Believability without consequences"
+            :signals ["Reckless predictions" "No accountability" "Cheap talk" "Moral hazard"]
+            :safeguards ["Skin in the game" "Consequences for predictions" "Alignment" "Accountability"])]})
+
+;; ============================================
+;; Category: Lee Kuan Yew / Singapore Model
+;; ============================================
+
+(register-model
+ {:name "pragmatic-authoritarianism"
+  :category "governance"
+  :originator "Lee Kuan Yew / Singapore"
+  :description "Results matter more than ideology; strong centralized decision-making combined with pragmatic, evidence-based policies"
+  :key-insight "Ideology is a luxury; survival and prosperity require pragmatism; strong leadership enables rapid adaptation; results validate approach"
+  :application "Focus on outcomes not ideology; centralize critical decisions; empower execution; measure results rigorously; adapt based on evidence"
+  :failure-modes
+  [(failure "authoritarianism-without-competence" "critical"
+            "Centralized power without capability"
+            :signals ["Poor decisions" "No accountability" "Decline" "Oppression without results"]
+            :safeguards ["Meritocratic selection" "Competence requirements" "Performance measurement" "Succession planning"])
+   (failure "pragmatism-without-principles" "high"
+            "Abandoning all principles for expediency"
+            :signals ["Corruption" "Short-termism" "Moral decay" "Loss of legitimacy"]
+            :safeguards ["Core principles" "Long-term thinking" "Ethical boundaries" "Value preservation"])
+   (failure "centralization-bottleneck" "high"
+            "Over-centralization causing slow decisions"
+            :signals ["Bottlenecks" "Slow adaptation" "Missed opportunities" "Bureaucracy"]
+            :safeguards ["Selective centralization" "Delegation" "Clear decision rights" "Rapid execution"])
+   (failure "authoritarian-succession" "critical"
+            "No mechanism for leadership transition"
+            :signals ["Succession crisis" "Instability" "Decline after founder" "System collapse"]
+            :safeguards ["Institutionalization" "Succession planning" "System over person" "Smooth transitions"])
+   (failure "pragmatism-drift" "high"
+            "Losing pragmatism, becoming ideological"
+            :signals ["Dogmatism" "Evidence ignored" "Declining performance" "Rigidity"]
+            :safeguards ["Continuous learning" "Evidence-based policy" "Adaptation" "Humility"])]})
+
+(register-model
+ {:name "long-term-thinking"
+  :category "strategy"
+  :originator "Lee Kuan Yew / Singapore"
+  :description "Multi-generational planning; optimizing for 50-100 year outcomes rather than election cycles; building institutions that outlast individuals"
+  :key-insight "Short-term thinking destroys nations; compound growth requires decades; institutions matter more than individuals; plant trees you won't sit under"
+  :application "Plan for 50+ years; build institutions not cults of personality; invest in fundamentals (education, infrastructure, rule of law); sacrifice short-term for long-term"
+  :failure-modes
+  [(failure "short-termism" "critical"
+            "Optimizing for immediate results at expense of future"
+            :signals ["Deferred maintenance" "Underinvestment" "Declining fundamentals" "Future crisis"]
+            :safeguards ["Long-term metrics" "Intergenerational thinking" "Deferred gratification" "Compound thinking"])
+   (failure "infinite-horizon" "medium"
+            "Planning so long-term that present suffers"
+            :signals ["Current hardship" "Unrest" "Legitimacy loss" "Overthrow"]
+            :safeguards ["Balance short and long-term" "Minimum viable present" "Communication" "Patience building"])
+   (failure "plan-rigidity" "high"
+            "Long-term plan that doesn't adapt"
+            :signals ["Obsolete plans" "Changing conditions ignored" "Wasted effort" "Failure"]
+            :safeguards ["Adaptive planning" "Regular reviews" "Scenario planning" "Flexibility"])
+   (failure "institutional-sclerosis" "high"
+            "Institutions becoming rigid and dysfunctional"
+            :signals ["Bureaucracy" "Inability to adapt" "Declining performance" "Irrelevance"]
+            :safeguards ["Institutional renewal" "Performance management" "Adaptation mechanisms" "Creative destruction"])
+   (failure "founder-dependence" "critical"
+            "Institutions dependent on founder, not self-sustaining"
+            :signals ["Cult of personality" "Succession crisis" "Decline after founder" "System collapse"]
+            :safeguards ["Institutionalization" "System over person" "Succession planning" "Distributed leadership"])]})
+
+(register-model
+ {:name "meritocratic-governance"
+  :category "governance"
+  :originator "Lee Kuan Yew / Singapore"
+  :description "Select the best people for critical positions based on competence, not connections; pay them well; hold them accountable for results"
+  :key-insight "Quality of leadership determines outcomes; meritocracy attracts talent; high pay prevents corruption; accountability ensures performance"
+  :application "Rigorous selection processes; competitive compensation; clear performance metrics; ruthless accountability; continuous upgrading"
+  :failure-modes
+  [(failure "meritocracy-theater" "critical"
+            "Appearance of meritocracy masking nepotism"
+            :signals ["Connected people in key roles" "Poor performance tolerated" "Cynicism" "Talent exodus"]
+            :safeguards ["Transparent selection" "Objective criteria" "External validation" "Performance-based retention"])
+   (failure "narrow-merit" "high"
+            "Defining merit too narrowly (e.g., test scores only)"
+            :signals ["Lack of diversity" "Groupthink" "Missed talent" "Brittleness"]
+            :safeguards ["Holistic assessment" "Multiple dimensions of merit" "Diverse selection" "Real-world performance"])
+   (failure "insufficient-compensation" "high"
+            "Not paying enough to attract/retain top talent"
+            :signals ["Talent drain" "Corruption" "Mediocrity" "Declining performance"]
+            :safeguards ["Competitive compensation" "Market benchmarking" "Retention analysis" "Value of talent"])
+   (failure "accountability-failure" "critical"
+            "No consequences for poor performance"
+            :signals ["Declining standards" "Complacency" "Poor results" "System decay"]
+            :safeguards ["Clear metrics" "Regular reviews" "Consequences" "High standards"])
+   (failure "meritocracy-ossification" "high"
+            "Past merit preventing fresh talent"
+            :signals ["Gerontocracy" "Stagnation" "Missed innovation" "Declining performance"]
+            :safeguards ["Continuous competition" "Fresh talent infusion" "Retirement" "Renewal"])]})
+
+(register-model
+ {:name "economic-pragmatism"
+  :category "economics"
+  :originator "Lee Kuan Yew / Singapore"
+  :description "Whatever works, works; no ideological commitment to capitalism or socialism; adopt policies based on results, not theory"
+  :key-insight "Economic ideology is a luxury; survival requires pragmatism; learn from everyone; copy what works; adapt to local context"
+  :application "Test policies empirically; measure outcomes rigorously; copy successful models; adapt to context; abandon failures quickly"
+  :failure-modes
+  [(failure "ideological-rigidity" "high"
+            "Commitment to economic ideology over results"
+            :signals ["Evidence ignored" "Declining performance" "Dogmatism" "Stagnation"]
+            :safeguards ["Pragmatism" "Evidence-based policy" "Learning from all systems" "Results focus"])
+   (failure "policy-whiplash" "medium"
+            "Changing policies too frequently based on short-term results"
+            :signals ["Instability" "No long-term investment" "Confusion" "Lack of credibility"]
+            :safeguards ["Policy patience" "Long-term evaluation" "Stability" "Clear communication"])
+   (failure "context-blindness" "critical"
+            "Copying policies without adapting to local context"
+            :signals ["Policy failures" "Unintended consequences" "Wasted resources" "Disillusionment"]
+            :safeguards ["Context analysis" "Local adaptation" "Pilot programs" "Careful implementation"])
+   (failure "measurement-failure" "high"
+            "Not measuring outcomes rigorously"
+            :signals ["No learning" "Bad policies persist" "Declining performance" "Ideology over evidence"]
+            :safeguards ["Rigorous measurement" "Data-driven policy" "Experimental design" "Honest evaluation"])
+   (failure "pragmatism-without-strategy" "high"
+            "Reactive pragmatism without long-term direction"
+            :signals ["No coherence" "Contradictory policies" "Confusion" "Lack of progress"]
+            :safeguards ["Strategic pragmatism" "Long-term vision" "Coherent framework" "Principled flexibility"])]})
+
+;; ============================================
+;; Iteration 15 Summary
+;; ============================================
+;; Added 10 new mental models:
+;; 1. Regime Detection (Jim Simons) - Identifying system state changes
+;; 2. Factor Decomposition (Renaissance) - Breaking down complex outcomes
+;; 3. Mean Reversion (Renaissance) - Statistical arbitrage and reversion
+;; 4. Radical Transparency (Ray Dalio) - Extreme openness and honesty
+;; 5. Idea Meritocracy (Ray Dalio) - Best ideas win regardless of source
+;; 6. Believability-Weighted Decisions (Dalio) - Track record-based weighting
+;; 7. Pragmatic Authoritarianism (Lee Kuan Yew) - Results over ideology
+;; 8. Long-Term Thinking (LKY) - Multi-generational planning
+;; 9. Meritocratic Governance (LKY) - Best people in key positions
+;; 10. Economic Pragmatism (LKY) - Whatever works, works
+;;
+;; Previous total: 147 models (in models.cljc)
+;; New total: 157 models (in models.cljc)
+;; Combined with new_models.cljc (12 models): 169 total models
+;; ============================================

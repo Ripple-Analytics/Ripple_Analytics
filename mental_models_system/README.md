@@ -15,14 +15,14 @@ Built for 100 years. Planck knowledge, not chauffeur knowledge.
 | HTML/Templates | 1,200+ lines |
 | YAML/Config | 1,957 lines |
 | Total Files | 220+ |
-| Mental Models | 160 |
-| Failure Modes | 800 |
+| Mental Models | 169 |
+| Failure Modes | 845 |
 | Connectors | 11 |
 | Task Handlers | 9 |
 | Statistical Analysis Functions | 15+ |
 | iOS/watchOS Views | 20+ |
 
-**Last Updated:** January 18, 2026 10:00 UTC
+**Last Updated:** January 18, 2026 12:30 UTC
 
 ## Architecture
 
