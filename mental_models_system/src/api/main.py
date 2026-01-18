@@ -9,8 +9,11 @@ import sys
 from typing import List, Optional
 from datetime import date
 
+from pathlib import Path
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse, FileResponse
 from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -1148,6 +1151,94 @@ async def ingest_and_analyze_files(paths: List[str], analysis_type: str = "class
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Ingest and analyze failed: {str(e)}")
+
+
+class FailureModeCheckRequest(BaseModel):
+    content: str
+
+
+class FailureModeResult(BaseModel):
+    name: str
+    severity: str
+    description: str
+    signals: List[str]
+    prevention: List[str]
+
+
+@app.post("/failure-modes/check")
+async def check_failure_modes(request: FailureModeCheckRequest):
+    """Check content for potential failure modes."""
+    try:
+        from src.failure_modes.registry import FailureModeRegistry
+        from src.failure_modes.detector import FailureModeDetector
+        
+        registry = FailureModeRegistry()
+        detector = FailureModeDetector()
+        
+        context = {"content": request.content, "source": "web"}
+        detected_results = detector.detect_failures(context)
+        
+        detected_failures = []
+        for result in detected_results[:10]:
+            fm = result.failure_mode
+            detected_failures.append({
+                "name": fm.name,
+                "severity": fm.severity.value if hasattr(fm.severity, 'value') else str(fm.severity),
+                "description": fm.description if hasattr(fm, 'description') else "",
+                "signals": result.signals_found[:3] if result.signals_found else [],
+                "prevention": result.recommendations[:2] if result.recommendations else [],
+            })
+        
+        stats = registry.get_stats()
+        
+        return {
+            "detected_failures": detected_failures,
+            "total_checked": stats.get("total_failure_modes", 645),
+            "models_checked": stats.get("total_models_with_failure_modes", 129),
+        }
+    except Exception as e:
+        return {
+            "detected_failures": [],
+            "error": str(e),
+            "message": "Failure mode detection not fully configured. Consider common failure modes: confirmation bias, overconfidence, incomplete analysis.",
+        }
+
+
+@app.get("/failure-modes/stats")
+async def get_failure_mode_stats():
+    """Get failure mode statistics."""
+    try:
+        from src.failure_modes.registry import FailureModeRegistry
+        
+        registry = FailureModeRegistry()
+        stats = registry.get_stats()
+        
+        return stats
+    except Exception as e:
+        return {
+            "total_failure_modes": 645,
+            "total_models_with_failure_modes": 129,
+            "categories": ["data_bias", "reasoning_error", "incomplete_analysis", "overconfidence", "context_blindness"],
+            "error": str(e),
+        }
+
+
+TEMPLATES_DIR = Path(__file__).parent / "templates"
+
+
+@app.get("/dashboard", response_class=HTMLResponse)
+async def serve_dashboard():
+    """Serve the web dashboard."""
+    index_path = TEMPLATES_DIR / "index.html"
+    if index_path.exists():
+        return FileResponse(index_path, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Dashboard not found")
+
+
+@app.get("/ui", response_class=HTMLResponse)
+async def serve_ui():
+    """Alias for dashboard."""
+    return await serve_dashboard()
 
 
 if __name__ == "__main__":
