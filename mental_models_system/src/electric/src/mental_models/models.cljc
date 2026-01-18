@@ -2,7 +2,8 @@
   "Mental Models Library - Electric Clojure
    
    Complete mental models library with reactive state management.
-   All 129 mental models defined using Clojure's expressive data structures.
+   All mental models defined using Clojure's expressive data structures.
+   Model count is dynamically computed via (count @!models).
    
    This is a .cljc file - runs on both client and server!"
   #?(:clj (:require [clojure.string :as str])
@@ -2772,6 +2773,873 @@
             "Not preparing for recovery"
             :signals ["No recovery plans" "Catastrophic failures"]
             :safeguards ["Recovery planning" "Graceful degradation"])]})
+
+;; ============================================
+;; Additional Models - Batch 4 (Models 92-129)
+;; ============================================
+
+;; ---- BEHAVIORAL ECONOMICS ----
+
+(register-model
+ {:name "prospect-theory"
+  :category "behavioral-economics"
+  :originator "Kahneman & Tversky"
+  :description "People value gains and losses differently, with losses weighing more heavily"
+  :key-insight "Loss aversion is roughly 2x gain attraction"
+  :application "Frame choices considering reference points and loss aversion"
+  :failure-modes
+  [(failure "reference-point-blindness" "high"
+            "Not recognizing the reference point being used"
+            :signals ["Inconsistent preferences" "Framing effects"]
+            :safeguards ["Identify reference points" "Test multiple frames"])
+   (failure "loss-aversion-exploitation" "high"
+            "Being manipulated through loss framing"
+            :signals ["Fear-based decisions" "Status quo bias"]
+            :safeguards ["Reframe as gains" "Objective analysis"])
+   (failure "certainty-effect-trap" "medium"
+            "Overweighting certain outcomes vs probable ones"
+            :signals ["Risk aversion for gains" "Risk seeking for losses"]
+            :safeguards ["Expected value calculation" "Probability calibration"])
+   (failure "isolation-effect" "medium"
+            "Focusing on differences while ignoring commonalities"
+            :signals ["Inconsistent choices" "Context dependence"]
+            :safeguards ["Full option comparison" "Systematic evaluation"])
+   (failure "endowment-effect" "medium"
+            "Overvaluing what you already own"
+            :signals ["Reluctance to trade" "Ownership premium"]
+            :safeguards ["Objective valuation" "Ownership-blind analysis"])]})
+
+(register-model
+ {:name "hyperbolic-discounting"
+  :category "behavioral-economics"
+  :originator "Richard Thaler"
+  :description "People prefer smaller immediate rewards over larger later rewards"
+  :key-insight "Time preferences are inconsistent and favor the present"
+  :application "Design commitment devices; account for present bias"
+  :failure-modes
+  [(failure "present-bias" "high"
+            "Systematically overvaluing immediate gratification"
+            :signals ["Procrastination" "Impulsive decisions"]
+            :safeguards ["Pre-commitment" "Remove temptations"])
+   (failure "preference-reversal" "high"
+            "Changing preferences as options approach"
+            :signals ["Broken commitments" "Last-minute changes"]
+            :safeguards ["Binding commitments" "Cooling-off periods"])
+   (failure "naive-forecasting" "medium"
+            "Believing future self will be more patient"
+            :signals ["Unrealistic plans" "Repeated failures"]
+            :safeguards ["Assume present bias continues" "Build in slack"])
+   (failure "over-commitment" "medium"
+            "Committing to too much future work"
+            :signals ["Overloaded schedule" "Burnout"]
+            :safeguards ["Discount future capacity" "Buffer time"])
+   (failure "savings-failure" "high"
+            "Inability to save for future needs"
+            :signals ["No emergency fund" "Retirement shortfall"]
+            :safeguards ["Automatic savings" "Default enrollment"])]})
+
+(register-model
+ {:name "mental-accounting"
+  :category "behavioral-economics"
+  :originator "Richard Thaler"
+  :description "People treat money differently based on subjective categories"
+  :key-insight "Money is fungible but we don't treat it that way"
+  :application "Recognize mental accounts; use them strategically"
+  :failure-modes
+  [(failure "sunk-cost-accounts" "high"
+            "Continuing due to past investment in mental account"
+            :signals ["Throwing good money after bad"]
+            :safeguards ["Ignore sunk costs" "Fresh evaluation"])
+   (failure "windfall-spending" "medium"
+            "Treating unexpected money differently"
+            :signals ["Splurging bonuses" "Lottery effect"]
+            :safeguards ["All money is money" "Consistent rules"])
+   (failure "budget-rigidity" "medium"
+            "Refusing to move money between accounts"
+            :signals ["Underspending in one area while overspending in another"]
+            :safeguards ["Flexible budgeting" "Periodic rebalancing"])
+   (failure "payment-decoupling" "medium"
+            "Separating payment from consumption"
+            :signals ["Credit card overspending" "Subscription creep"]
+            :safeguards ["Link payment to consumption" "Regular review"])
+   (failure "narrow-framing" "high"
+            "Evaluating decisions in isolation"
+            :signals ["Missing portfolio effects" "Suboptimal choices"]
+            :safeguards ["Broad framing" "Portfolio view"])]})
+
+;; ---- COGNITIVE SCIENCE ----
+
+(register-model
+ {:name "cognitive-load"
+  :category "cognitive-science"
+  :originator "John Sweller"
+  :description "Working memory has limited capacity that affects learning and decision-making"
+  :key-insight "Reduce extraneous load to improve performance"
+  :application "Simplify information presentation; chunk complex tasks"
+  :failure-modes
+  [(failure "overload-blindness" "high"
+            "Not recognizing when cognitive load is too high"
+            :signals ["Errors increase" "Decision fatigue"]
+            :safeguards ["Monitor load" "Take breaks"])
+   (failure "complexity-addiction" "medium"
+            "Adding unnecessary complexity"
+            :signals ["Feature creep" "Information overload"]
+            :safeguards ["Simplify ruthlessly" "Essential only"])
+   (failure "chunking-failure" "medium"
+            "Not breaking down complex information"
+            :signals ["Overwhelm" "Poor retention"]
+            :safeguards ["Chunk information" "Progressive disclosure"])
+   (failure "multitasking-illusion" "high"
+            "Believing you can process multiple streams"
+            :signals ["Errors" "Slower performance"]
+            :safeguards ["Single-tasking" "Sequential processing"])
+   (failure "expertise-blindness" "medium"
+            "Forgetting novice cognitive load"
+            :signals ["Poor teaching" "Frustrated learners"]
+            :safeguards ["Empathy for novices" "Scaffolding"])]})
+
+(register-model
+ {:name "dual-process-theory"
+  :category "cognitive-science"
+  :originator "Daniel Kahneman"
+  :description "Two systems of thinking: fast/intuitive (System 1) and slow/deliberate (System 2)"
+  :key-insight "Know when to trust intuition vs engage deliberate analysis"
+  :application "Match thinking mode to task requirements"
+  :failure-modes
+  [(failure "system1-overreliance" "high"
+            "Using intuition for analytical problems"
+            :signals ["Quick but wrong" "Bias-driven errors"]
+            :safeguards ["Engage System 2" "Slow down"])
+   (failure "system2-overuse" "medium"
+            "Overthinking simple decisions"
+            :signals ["Analysis paralysis" "Exhaustion"]
+            :safeguards ["Trust trained intuition" "Decision rules"])
+   (failure "lazy-system2" "high"
+            "System 2 accepting System 1 suggestions uncritically"
+            :signals ["Rationalization" "Confirmation bias"]
+            :safeguards ["Devil's advocate" "Challenge intuitions"])
+   (failure "ego-depletion" "medium"
+            "Running out of System 2 capacity"
+            :signals ["Poor late-day decisions" "Willpower failure"]
+            :safeguards ["Important decisions early" "Restore energy"])
+   (failure "expertise-miscalibration" "high"
+            "Wrong assessment of when intuition is valid"
+            :signals ["Overconfident novice" "Underconfident expert"]
+            :safeguards ["Domain-specific calibration" "Feedback loops"])]})
+
+(register-model
+ {:name "attention-economy"
+  :category "cognitive-science"
+  :originator "Herbert Simon"
+  :description "Attention is the scarce resource in an information-rich world"
+  :key-insight "What you attend to shapes your reality"
+  :application "Guard attention fiercely; allocate it strategically"
+  :failure-modes
+  [(failure "attention-theft" "high"
+            "Allowing others to capture your attention"
+            :signals ["Constant interruptions" "Reactive mode"]
+            :safeguards ["Attention boundaries" "Notification control"])
+   (failure "attention-fragmentation" "high"
+            "Splitting attention across too many things"
+            :signals ["Shallow work" "No deep focus"]
+            :safeguards ["Time blocking" "Single focus"])
+   (failure "novelty-addiction" "medium"
+            "Chasing new stimuli over important work"
+            :signals ["Distraction" "Unfinished projects"]
+            :safeguards ["Novelty diet" "Completion focus"])
+   (failure "attention-residue" "medium"
+            "Previous task consuming current attention"
+            :signals ["Distracted" "Slow switching"]
+            :safeguards ["Clean transitions" "Closure rituals"])
+   (failure "inattentional-blindness" "high"
+            "Missing important things due to focus elsewhere"
+            :signals ["Surprised by obvious" "Tunnel vision"]
+            :safeguards ["Periodic scanning" "Diverse attention"])]})
+
+;; ---- SYSTEMS DYNAMICS ----
+
+(register-model
+ {:name "stocks-and-flows"
+  :category "systems-dynamics"
+  :originator "Jay Forrester"
+  :description "Systems have accumulations (stocks) changed by rates (flows)"
+  :key-insight "Stocks create delays and momentum in systems"
+  :application "Identify stocks and flows; understand system dynamics"
+  :failure-modes
+  [(failure "flow-focus" "high"
+            "Focusing on flows while ignoring stocks"
+            :signals ["Missing accumulation effects" "Surprised by delays"]
+            :safeguards ["Map stocks" "Track accumulations"])
+   (failure "stock-blindness" "high"
+            "Not seeing hidden stocks"
+            :signals ["Unexpected system behavior" "Missing variables"]
+            :safeguards ["Comprehensive mapping" "Look for accumulations"])
+   (failure "delay-ignorance" "high"
+            "Not accounting for stock-related delays"
+            :signals ["Impatience" "Overcorrection"]
+            :safeguards ["Model delays" "Patient adjustment"])
+   (failure "bathtub-fallacy" "medium"
+            "Confusing stocks and flows"
+            :signals ["Wrong mental model" "Policy errors"]
+            :safeguards ["Clear distinction" "Bathtub analogy"])
+   (failure "equilibrium-assumption" "medium"
+            "Assuming stocks are in equilibrium"
+            :signals ["Missing dynamics" "Static thinking"]
+            :safeguards ["Check for change" "Dynamic analysis"])]})
+
+(register-model
+ {:name "leverage-points"
+  :category "systems-dynamics"
+  :originator "Donella Meadows"
+  :description "Places in a system where small changes can produce large effects"
+  :key-insight "Higher leverage points are harder to find but more powerful"
+  :application "Identify and act on high-leverage intervention points"
+  :failure-modes
+  [(failure "low-leverage-focus" "high"
+            "Working on parameters instead of structure"
+            :signals ["Lots of effort, little change"]
+            :safeguards ["Seek higher leverage" "System structure"])
+   (failure "leverage-reversal" "high"
+            "Pushing leverage points in wrong direction"
+            :signals ["Counterintuitive results" "System resistance"]
+            :safeguards ["Understand system" "Test direction"])
+   (failure "single-point-focus" "medium"
+            "Ignoring multiple leverage points"
+            :signals ["Incomplete intervention" "Side effects"]
+            :safeguards ["Multiple points" "System view"])
+   (failure "paradigm-blindness" "high"
+            "Not seeing highest leverage: paradigm change"
+            :signals ["Stuck in current thinking"]
+            :safeguards ["Question assumptions" "Paradigm awareness"])
+   (failure "implementation-gap" "medium"
+            "Knowing leverage point but not acting"
+            :signals ["Analysis without action"]
+            :safeguards ["Bias to action" "Small experiments"])]})
+
+(register-model
+ {:name "system-archetypes"
+  :category "systems-dynamics"
+  :originator "Peter Senge"
+  :description "Common patterns of system behavior that recur across domains"
+  :key-insight "Recognizing archetypes enables faster diagnosis and intervention"
+  :application "Learn archetypes; recognize them in new situations"
+  :failure-modes
+  [(failure "archetype-forcing" "medium"
+            "Forcing situations into familiar archetypes"
+            :signals ["Poor fit" "Missing uniqueness"]
+            :safeguards ["Test fit" "Allow novelty"])
+   (failure "archetype-blindness" "high"
+            "Not recognizing common patterns"
+            :signals ["Reinventing wheel" "Repeated mistakes"]
+            :safeguards ["Learn archetypes" "Pattern recognition"])
+   (failure "single-archetype" "medium"
+            "Seeing only one archetype when multiple apply"
+            :signals ["Incomplete diagnosis" "Partial solutions"]
+            :safeguards ["Check multiple" "Layered analysis"])
+   (failure "static-archetype" "medium"
+            "Not seeing archetype evolution"
+            :signals ["Outdated intervention" "System changed"]
+            :safeguards ["Monitor evolution" "Adaptive response"])
+   (failure "archetype-fatalism" "medium"
+            "Believing archetypes are inevitable"
+            :signals ["No intervention" "Learned helplessness"]
+            :safeguards ["Archetypes can be broken" "Intervention points"])]})
+
+;; ---- DECISION THEORY ----
+
+(register-model
+ {:name "regret-minimization"
+  :category "decision-theory"
+  :originator "Jeff Bezos"
+  :description "Make decisions by minimizing future regret"
+  :key-insight "Project to end of life and ask what you'd regret not doing"
+  :application "Use for major life decisions; consider long-term regret"
+  :failure-modes
+  [(failure "short-term-regret" "medium"
+            "Focusing on immediate regret over long-term"
+            :signals ["Safe choices" "Missed opportunities"]
+            :safeguards ["Long time horizon" "End-of-life perspective"])
+   (failure "regret-asymmetry" "medium"
+            "Not seeing regret of inaction"
+            :signals ["Status quo bias" "Omission regret"]
+            :safeguards ["Consider both" "Action vs inaction"])
+   (failure "hindsight-contamination" "medium"
+            "Judging past decisions with current knowledge"
+            :signals ["Unfair self-criticism" "Wrong lessons"]
+            :safeguards ["Process over outcome" "Information available then"])
+   (failure "regret-paralysis" "high"
+            "Unable to decide due to potential regret"
+            :signals ["Indecision" "Anxiety"]
+            :safeguards ["Accept some regret" "Reversible choices"])
+   (failure "others-regret" "medium"
+            "Minimizing others' regret instead of own"
+            :signals ["People pleasing" "Inauthentic choices"]
+            :safeguards ["Own values" "Personal regret focus"])]})
+
+(register-model
+ {:name "reversibility"
+  :category "decision-theory"
+  :originator "Jeff Bezos"
+  :description "Distinguish between reversible (two-way door) and irreversible (one-way door) decisions"
+  :key-insight "Reversible decisions should be made quickly; irreversible ones carefully"
+  :application "Assess reversibility; match decision speed to stakes"
+  :failure-modes
+  [(failure "false-irreversibility" "high"
+            "Treating reversible decisions as permanent"
+            :signals ["Slow decisions" "Excessive analysis"]
+            :safeguards ["Test reversibility" "Bias to action"])
+   (failure "false-reversibility" "high"
+            "Treating irreversible decisions as reversible"
+            :signals ["Hasty major decisions" "Regret"]
+            :safeguards ["Assess true reversibility" "Slow down"])
+   (failure "reversal-cost-blindness" "medium"
+            "Not seeing the cost of reversal"
+            :signals ["Easy reversal assumption" "Hidden costs"]
+            :safeguards ["Full reversal cost" "Include friction"])
+   (failure "option-preservation-paralysis" "medium"
+            "Keeping options open too long"
+            :signals ["No commitment" "Opportunity cost"]
+            :safeguards ["Decide when ready" "Option value decay"])
+   (failure "sunk-cost-reversal" "high"
+            "Not reversing due to sunk costs"
+            :signals ["Continuing bad decisions"]
+            :safeguards ["Ignore sunk costs" "Fresh evaluation"])]})
+
+(register-model
+ {:name "satisficing"
+  :category "decision-theory"
+  :originator "Herbert Simon"
+  :description "Choosing an option that meets minimum criteria rather than optimizing"
+  :key-insight "Good enough is often better than best"
+  :application "Set minimum criteria; stop searching when met"
+  :failure-modes
+  [(failure "premature-satisficing" "medium"
+            "Accepting too quickly without adequate search"
+            :signals ["Poor outcomes" "Better options existed"]
+            :safeguards ["Minimum search" "Adequate criteria"])
+   (failure "criteria-creep" "medium"
+            "Raising criteria as options are found"
+            :signals ["Never satisfied" "Endless search"]
+            :safeguards ["Fix criteria upfront" "Commit to them"])
+   (failure "maximizing-disguise" "medium"
+            "Satisficing label but actually maximizing"
+            :signals ["Continued search after 'good enough'"]
+            :safeguards ["True acceptance" "Stop searching"])
+   (failure "low-standards" "medium"
+            "Setting criteria too low"
+            :signals ["Mediocre outcomes" "Regret"]
+            :safeguards ["Appropriate standards" "Calibrate criteria"])
+   (failure "context-blindness" "medium"
+            "Same criteria for all decisions"
+            :signals ["Over/under-investing in decisions"]
+            :safeguards ["Match criteria to stakes" "Flexible standards"])]})
+
+;; ---- INFORMATION THEORY ----
+
+(register-model
+ {:name "signal-vs-noise"
+  :category "information-theory"
+  :originator "Claude Shannon"
+  :description "Distinguishing meaningful information from random variation"
+  :key-insight "Most data is noise; finding signal requires filtering"
+  :application "Develop filters; focus on signal; ignore noise"
+  :failure-modes
+  [(failure "noise-as-signal" "high"
+            "Treating random variation as meaningful"
+            :signals ["Overreaction" "False patterns"]
+            :safeguards ["Statistical significance" "Base rates"])
+   (failure "signal-as-noise" "high"
+            "Dismissing real signals as noise"
+            :signals ["Missed opportunities" "Ignored warnings"]
+            :safeguards ["Anomaly investigation" "Open mind"])
+   (failure "filter-failure" "medium"
+            "Inadequate filtering mechanisms"
+            :signals ["Information overload" "Poor decisions"]
+            :safeguards ["Better filters" "Curated sources"])
+   (failure "overfitting" "high"
+            "Finding patterns in noise"
+            :signals ["Model works on past, fails on future"]
+            :safeguards ["Out-of-sample testing" "Simplicity"])
+   (failure "confirmation-filtering" "high"
+            "Filtering based on beliefs not validity"
+            :signals ["Echo chamber" "Missed disconfirming"]
+            :safeguards ["Diverse sources" "Seek disconfirmation"])]})
+
+(register-model
+ {:name "information-asymmetry"
+  :category "information-theory"
+  :originator "George Akerlof"
+  :description "When one party has more or better information than another"
+  :key-insight "Information gaps create market failures and exploitation"
+  :application "Identify asymmetries; signal quality; seek information"
+  :failure-modes
+  [(failure "adverse-selection" "high"
+            "Bad actors exploiting information advantage"
+            :signals ["Market for lemons" "Quality decline"]
+            :safeguards ["Signaling" "Screening" "Warranties"])
+   (failure "moral-hazard" "high"
+            "Changed behavior due to information gap"
+            :signals ["Hidden actions" "Risk taking"]
+            :safeguards ["Monitoring" "Incentive alignment"])
+   (failure "signaling-failure" "medium"
+            "Unable to credibly signal quality"
+            :signals ["Pooling with low quality" "Undervaluation"]
+            :safeguards ["Costly signals" "Reputation"])
+   (failure "information-hoarding" "medium"
+            "Keeping information for advantage"
+            :signals ["Distrust" "Inefficiency"]
+            :safeguards ["Transparency incentives" "Information sharing"])
+   (failure "asymmetry-blindness" "high"
+            "Not recognizing information gaps"
+            :signals ["Naive trust" "Exploitation"]
+            :safeguards ["Assume asymmetry" "Due diligence"])]})
+
+;; ---- GAME THEORY EXTENSIONS ----
+
+(register-model
+ {:name "nash-equilibrium"
+  :category "game-theory"
+  :originator "John Nash"
+  :description "A state where no player can benefit by changing strategy unilaterally"
+  :key-insight "Equilibria can be suboptimal for all players"
+  :application "Identify equilibria; design mechanisms for better outcomes"
+  :failure-modes
+  [(failure "equilibrium-trap" "high"
+            "Stuck in suboptimal equilibrium"
+            :signals ["Everyone worse off" "No one moves"]
+            :safeguards ["Coordination" "Mechanism design"])
+   (failure "multiple-equilibria" "medium"
+            "Not seeing alternative equilibria"
+            :signals ["Stuck in one" "Better possible"]
+            :safeguards ["Search for alternatives" "Focal points"])
+   (failure "equilibrium-assumption" "medium"
+            "Assuming system is in equilibrium"
+            :signals ["Missing dynamics" "Transition effects"]
+            :safeguards ["Check stability" "Dynamic analysis"])
+   (failure "rationality-assumption" "high"
+            "Assuming all players are rational"
+            :signals ["Unexpected behavior" "Model failure"]
+            :safeguards ["Bounded rationality" "Behavioral factors"])
+   (failure "static-game-thinking" "medium"
+            "Ignoring repeated game dynamics"
+            :signals ["Missing reputation" "Cooperation failure"]
+            :safeguards ["Consider repetition" "Long-term thinking"])]})
+
+(register-model
+ {:name "mechanism-design"
+  :category "game-theory"
+  :originator "Leonid Hurwicz"
+  :description "Designing rules and incentives to achieve desired outcomes"
+  :key-insight "You can design the game, not just play it"
+  :application "Design incentives that align individual and collective interests"
+  :failure-modes
+  [(failure "incentive-misalignment" "high"
+            "Incentives don't produce desired behavior"
+            :signals ["Gaming" "Unintended consequences"]
+            :safeguards ["Test incentives" "Iterate design"])
+   (failure "gaming-blindness" "high"
+            "Not anticipating how rules will be gamed"
+            :signals ["Exploitation" "Letter vs spirit"]
+            :safeguards ["Adversarial thinking" "Robust design"])
+   (failure "complexity-failure" "medium"
+            "Mechanism too complex to work"
+            :signals ["Confusion" "Non-participation"]
+            :safeguards ["Simplicity" "Clear rules"])
+   (failure "participation-constraint" "medium"
+            "People opt out of mechanism"
+            :signals ["Low adoption" "Selection effects"]
+            :safeguards ["Attractive participation" "Default enrollment"])
+   (failure "information-requirements" "medium"
+            "Mechanism requires unavailable information"
+            :signals ["Implementation failure" "Manipulation"]
+            :safeguards ["Realistic information" "Robust to uncertainty"])]})
+
+(register-model
+ {:name "coordination-games"
+  :category "game-theory"
+  :originator "Thomas Schelling"
+  :description "Situations where players benefit from making the same choice"
+  :key-insight "Focal points enable coordination without communication"
+  :application "Create focal points; establish conventions; coordinate"
+  :failure-modes
+  [(failure "coordination-failure" "high"
+            "Unable to coordinate on same choice"
+            :signals ["Mismatched actions" "Missed opportunities"]
+            :safeguards ["Communication" "Focal points"])
+   (failure "wrong-focal-point" "medium"
+            "Coordinating on suboptimal equilibrium"
+            :signals ["Everyone on same bad choice"]
+            :safeguards ["Evaluate focal points" "Better alternatives"])
+   (failure "focal-point-blindness" "medium"
+            "Not seeing obvious coordination point"
+            :signals ["Unnecessary complexity" "Failed coordination"]
+            :safeguards ["Look for obvious" "Cultural awareness"])
+   (failure "convention-lock-in" "medium"
+            "Stuck with outdated convention"
+            :signals ["Better alternatives exist" "Switching costs"]
+            :safeguards ["Periodic review" "Coordinated switching"])
+   (failure "communication-assumption" "medium"
+            "Assuming coordination requires communication"
+            :signals ["Missed silent coordination"]
+            :safeguards ["Focal point thinking" "Common knowledge"])]})
+
+;; ---- EPISTEMOLOGY ----
+
+(register-model
+ {:name "epistemic-humility"
+  :category "epistemology"
+  :originator "Socrates"
+  :description "Recognizing the limits of one's knowledge"
+  :key-insight "Knowing what you don't know is crucial wisdom"
+  :application "Map knowledge boundaries; seek to expand them"
+  :failure-modes
+  [(failure "overconfidence" "high"
+            "Believing you know more than you do"
+            :signals ["Surprised by outcomes" "Narrow confidence intervals"]
+            :safeguards ["Calibration training" "Track predictions"])
+   (failure "false-humility" "medium"
+            "Claiming ignorance to avoid responsibility"
+            :signals ["Learned helplessness" "No decisions"]
+            :safeguards ["Act on best knowledge" "Responsible uncertainty"])
+   (failure "expertise-blindspot" "high"
+            "Not knowing what you don't know"
+            :signals ["Unknown unknowns" "Blind spots"]
+            :safeguards ["Seek feedback" "Diverse perspectives"])
+   (failure "humility-paralysis" "medium"
+            "Too humble to act"
+            :signals ["Indecision" "Missed opportunities"]
+            :safeguards ["Act under uncertainty" "Reversible experiments"])
+   (failure "selective-humility" "medium"
+            "Humble in some domains, overconfident in others"
+            :signals ["Inconsistent calibration"]
+            :safeguards ["Domain-specific assessment" "Uniform standards"])]})
+
+(register-model
+ {:name "bayesian-updating"
+  :category "epistemology"
+  :originator "Thomas Bayes"
+  :description "Updating beliefs based on new evidence using probability"
+  :key-insight "Beliefs should change proportionally to evidence strength"
+  :application "Start with priors; update with evidence; avoid extremes"
+  :failure-modes
+  [(failure "prior-anchoring" "high"
+            "Not updating enough from priors"
+            :signals ["Beliefs unchanged by evidence"]
+            :safeguards ["Track updates" "Evidence sensitivity"])
+   (failure "prior-abandonment" "high"
+            "Abandoning priors too quickly"
+            :signals ["Whipsawing beliefs" "Recency bias"]
+            :safeguards ["Appropriate weighting" "Base rate respect"])
+   (failure "evidence-selection" "high"
+            "Only updating on confirming evidence"
+            :signals ["Confirmation bias" "Asymmetric updating"]
+            :safeguards ["Seek disconfirming" "Symmetric updating"])
+   (failure "base-rate-neglect" "high"
+            "Ignoring prior probabilities"
+            :signals ["Overweighting specific evidence"]
+            :safeguards ["Always consider base rates" "Reference class"])
+   (failure "update-frequency" "medium"
+            "Updating too often or too rarely"
+            :signals ["Noise-driven or stale beliefs"]
+            :safeguards ["Appropriate frequency" "Significant evidence only"])]})
+
+(register-model
+ {:name "falsificationism"
+  :category "epistemology"
+  :originator "Karl Popper"
+  :description "Knowledge advances by attempting to falsify theories"
+  :key-insight "Seek to disprove, not prove; surviving tests builds confidence"
+  :application "Design tests that could falsify; value negative results"
+  :failure-modes
+  [(failure "confirmation-seeking" "high"
+            "Looking for evidence that confirms"
+            :signals ["Only positive tests" "Weak tests"]
+            :safeguards ["Design falsifying tests" "Strong tests"])
+   (failure "unfalsifiable-beliefs" "high"
+            "Holding beliefs that can't be tested"
+            :signals ["No possible disconfirmation" "Moving goalposts"]
+            :safeguards ["Require falsifiability" "Specific predictions"])
+   (failure "premature-falsification" "medium"
+            "Abandoning theory on weak disconfirmation"
+            :signals ["Discarding good theories" "Noise sensitivity"]
+            :safeguards ["Replication" "Strong evidence required"])
+   (failure "auxiliary-hypothesis-abuse" "medium"
+            "Protecting theory with ad hoc additions"
+            :signals ["Increasingly complex" "Epicycles"]
+            :safeguards ["Parsimony" "Occam's razor"])
+   (failure "falsification-avoidance" "high"
+            "Avoiding tests that might falsify"
+            :signals ["Untested beliefs" "Comfortable ignorance"]
+            :safeguards ["Seek hard tests" "Value disconfirmation"])]})
+
+;; ---- ORGANIZATIONAL BEHAVIOR ----
+
+(register-model
+ {:name "conways-law"
+  :category "organizational"
+  :originator "Melvin Conway"
+  :description "Organizations design systems that mirror their communication structure"
+  :key-insight "To change the system, change the organization"
+  :application "Align org structure with desired system architecture"
+  :failure-modes
+  [(failure "structure-blindness" "high"
+            "Not seeing org structure in system design"
+            :signals ["Unexpected system boundaries" "Communication overhead"]
+            :safeguards ["Map org to system" "Intentional alignment"])
+   (failure "reverse-conway" "medium"
+            "Trying to change system without changing org"
+            :signals ["Resistance" "Reversion to old patterns"]
+            :safeguards ["Change org first" "Aligned transformation"])
+   (failure "over-alignment" "medium"
+            "Too tight coupling of org and system"
+            :signals ["Rigidity" "Can't evolve independently"]
+            :safeguards ["Appropriate coupling" "Interface boundaries"])
+   (failure "communication-assumption" "medium"
+            "Assuming communication follows org chart"
+            :signals ["Informal networks matter" "Shadow org"]
+            :safeguards ["Map actual communication" "Informal structure"])
+   (failure "static-thinking" "medium"
+            "Not seeing org/system co-evolution"
+            :signals ["Outdated alignment" "Drift"]
+            :safeguards ["Regular reassessment" "Dynamic alignment"])]})
+
+(register-model
+ {:name "goodharts-law"
+  :category "organizational"
+  :originator "Charles Goodhart"
+  :description "When a measure becomes a target, it ceases to be a good measure"
+  :key-insight "Metrics get gamed when they become goals"
+  :application "Use multiple metrics; measure what matters; expect gaming"
+  :failure-modes
+  [(failure "single-metric-focus" "high"
+            "Optimizing one metric at expense of others"
+            :signals ["Gaming" "Neglected dimensions"]
+            :safeguards ["Multiple metrics" "Balanced scorecard"])
+   (failure "metric-gaming" "high"
+            "Hitting metric without achieving goal"
+            :signals ["Good numbers, bad outcomes"]
+            :safeguards ["Outcome focus" "Qualitative assessment"])
+   (failure "metric-ossification" "medium"
+            "Keeping metrics past usefulness"
+            :signals ["Outdated measures" "Wrong incentives"]
+            :safeguards ["Regular review" "Metric rotation"])
+   (failure "measurement-distortion" "medium"
+            "Measurement changing the measured"
+            :signals ["Hawthorne effect" "Teaching to test"]
+            :safeguards ["Unobtrusive measures" "Multiple methods"])
+   (failure "proxy-confusion" "high"
+            "Confusing proxy metric with actual goal"
+            :signals ["Proxy optimization" "Goal displacement"]
+            :safeguards ["Remember true goal" "Direct measurement"])]})
+
+(register-model
+ {:name "parkinsons-law-bureaucracy"
+  :category "organizational"
+  :originator "C. Northcote Parkinson"
+  :description "Bureaucracies expand regardless of work to be done"
+  :key-insight "Organizations grow for internal reasons, not external needs"
+  :application "Actively prune; question growth; maintain lean structure"
+  :failure-modes
+  [(failure "growth-assumption" "high"
+            "Assuming growth is always good"
+            :signals ["Headcount as success" "Empire building"]
+            :safeguards ["Question growth" "Productivity focus"])
+   (failure "bureaucracy-creep" "high"
+            "Gradual addition of unnecessary process"
+            :signals ["Slow decisions" "Process overhead"]
+            :safeguards ["Regular pruning" "Process audits"])
+   (failure "make-work" "medium"
+            "Creating work to justify existence"
+            :signals ["Busy but unproductive" "Low value work"]
+            :safeguards ["Value focus" "Outcome measurement"])
+   (failure "coordination-overhead" "high"
+            "More people means more coordination"
+            :signals ["Meetings multiply" "Communication overhead"]
+            :safeguards ["Small teams" "Clear interfaces"])
+   (failure "pruning-resistance" "medium"
+            "Inability to shrink when needed"
+            :signals ["Overstaffed" "Defensive behavior"]
+            :safeguards ["Regular rightsizing" "Flexible structure"])]})
+
+;; ---- EVOLUTION & ADAPTATION ----
+
+(register-model
+ {:name "fitness-landscape"
+  :category "evolution"
+  :originator "Sewall Wright"
+  :description "A mapping of genotypes/strategies to fitness/success"
+  :key-insight "Local optima can trap you; landscape changes over time"
+  :application "Explore landscape; avoid local optima traps; adapt to changes"
+  :failure-modes
+  [(failure "local-optima-trap" "high"
+            "Stuck at local peak, missing global optimum"
+            :signals ["Good but not great" "Incremental only"]
+            :safeguards ["Exploration" "Radical experiments"])
+   (failure "landscape-blindness" "high"
+            "Not seeing the fitness landscape"
+            :signals ["Random search" "No strategy"]
+            :safeguards ["Map landscape" "Understand structure"])
+   (failure "static-landscape-assumption" "high"
+            "Assuming landscape doesn't change"
+            :signals ["Optimized for past" "Disrupted"]
+            :safeguards ["Monitor changes" "Adaptive strategy"])
+   (failure "peak-complacency" "medium"
+            "Stopping exploration at current peak"
+            :signals ["No innovation" "Vulnerability"]
+            :safeguards ["Continuous exploration" "Optionality"])
+   (failure "rugged-landscape-underestimation" "medium"
+            "Assuming smooth landscape when rugged"
+            :signals ["Gradient methods fail" "Unexpected valleys"]
+            :safeguards ["Test assumptions" "Multiple approaches"])]})
+
+(register-model
+ {:name "punctuated-equilibrium"
+  :category "evolution"
+  :originator "Gould & Eldredge"
+  :description "Long periods of stability punctuated by rapid change"
+  :key-insight "Change is not gradual; prepare for sudden shifts"
+  :application "Build resilience for punctuation; exploit stability periods"
+  :failure-modes
+  [(failure "gradualism-assumption" "high"
+            "Expecting change to be slow and steady"
+            :signals ["Surprised by rapid change" "Unprepared"]
+            :safeguards ["Expect punctuation" "Build resilience"])
+   (failure "stability-complacency" "high"
+            "Assuming current stability will continue"
+            :signals ["No preparation" "Fragility"]
+            :safeguards ["Scenario planning" "Optionality"])
+   (failure "punctuation-panic" "medium"
+            "Overreacting to every change as punctuation"
+            :signals ["False alarms" "Exhaustion"]
+            :safeguards ["Distinguish signal" "Appropriate response"])
+   (failure "timing-prediction" "high"
+            "Trying to predict when punctuation will occur"
+            :signals ["Failed predictions" "False confidence"]
+            :safeguards ["Accept unpredictability" "Always prepared"])
+   (failure "post-punctuation-rigidity" "medium"
+            "Not adapting after punctuation"
+            :signals ["Old strategies in new world"]
+            :safeguards ["Rapid adaptation" "Learning orientation"])]})
+
+;; ---- NETWORK SCIENCE ----
+
+(register-model
+ {:name "small-world-networks"
+  :category "network-science"
+  :originator "Duncan Watts"
+  :description "Networks with high clustering and short path lengths"
+  :key-insight "A few long-range connections dramatically reduce distances"
+  :application "Build bridges; leverage weak ties; create shortcuts"
+  :failure-modes
+  [(failure "cluster-isolation" "high"
+            "Staying within your cluster"
+            :signals ["Echo chamber" "Limited reach"]
+            :safeguards ["Bridge building" "Weak ties"])
+   (failure "bridge-neglect" "medium"
+            "Not maintaining long-range connections"
+            :signals ["Network fragmentation" "Lost reach"]
+            :safeguards ["Invest in bridges" "Diverse connections"])
+   (failure "hub-dependence" "high"
+            "Over-reliance on network hubs"
+            :signals ["Single point of failure" "Hub removal catastrophic"]
+            :safeguards ["Multiple paths" "Redundancy"])
+   (failure "path-length-blindness" "medium"
+            "Not seeing how close things are"
+            :signals ["Missed connections" "Unnecessary intermediaries"]
+            :safeguards ["Map network" "Find short paths"])
+   (failure "clustering-excess" "medium"
+            "Too much clustering, not enough bridging"
+            :signals ["Insular groups" "Slow diffusion"]
+            :safeguards ["Encourage bridging" "Cross-cluster links"])]})
+
+(register-model
+ {:name "preferential-attachment"
+  :category "network-science"
+  :originator "Barabási & Albert"
+  :description "New connections prefer already well-connected nodes"
+  :key-insight "Rich get richer; early advantage compounds"
+  :application "Get connected early; leverage existing connections"
+  :failure-modes
+  [(failure "late-entry-disadvantage" "high"
+            "Entering network late with few connections"
+            :signals ["Slow growth" "Marginalization"]
+            :safeguards ["Early entry" "Niche strategy"])
+   (failure "hub-worship" "medium"
+            "Only connecting to hubs"
+            :signals ["Crowded access" "Ignored periphery"]
+            :safeguards ["Diverse connections" "Emerging nodes"])
+   (failure "attachment-blindness" "medium"
+            "Not seeing preferential attachment dynamics"
+            :signals ["Surprised by inequality" "Wrong strategy"]
+            :safeguards ["Understand dynamics" "Strategic positioning"])
+   (failure "winner-take-all-assumption" "medium"
+            "Assuming only hubs matter"
+            :signals ["Ignored niches" "Missed opportunities"]
+            :safeguards ["Niche value" "Long tail"])
+   (failure "connection-quality" "medium"
+            "Focusing on quantity over quality"
+            :signals ["Many weak connections" "No deep relationships"]
+            :safeguards ["Quality connections" "Relationship depth"])]})
+
+;; ---- RHETORIC & PERSUASION ----
+
+(register-model
+ {:name "ethos-pathos-logos"
+  :category "rhetoric"
+  :originator "Aristotle"
+  :description "Three modes of persuasion: credibility, emotion, and logic"
+  :key-insight "Effective persuasion uses all three appropriately"
+  :application "Build credibility; connect emotionally; argue logically"
+  :failure-modes
+  [(failure "logos-only" "medium"
+            "Relying only on logic"
+            :signals ["Unpersuasive despite being right" "Ignored"]
+            :safeguards ["Add ethos and pathos" "Emotional connection"])
+   (failure "pathos-manipulation" "high"
+            "Manipulating through emotion alone"
+            :signals ["Backlash" "Distrust when discovered"]
+            :safeguards ["Ethical persuasion" "Substance backing"])
+   (failure "ethos-neglect" "high"
+            "Not establishing credibility"
+            :signals ["Dismissed" "Not taken seriously"]
+            :safeguards ["Build credibility first" "Demonstrate expertise"])
+   (failure "audience-mismatch" "medium"
+            "Wrong mix for audience"
+            :signals ["Message doesn't land" "Resistance"]
+            :safeguards ["Know audience" "Adapt approach"])
+   (failure "authenticity-gap" "high"
+            "Persuasion techniques without substance"
+            :signals ["Seen as manipulative" "Trust loss"]
+            :safeguards ["Genuine belief" "Authentic communication"])]})
+
+(register-model
+ {:name "steelmanning"
+  :category "rhetoric"
+  :originator "Philosophy tradition"
+  :description "Arguing against the strongest version of opposing view"
+  :key-insight "Defeating strong arguments is more convincing than defeating weak ones"
+  :application "Strengthen opponent's argument before countering"
+  :failure-modes
+  [(failure "strawmanning" "high"
+            "Attacking weak version of argument"
+            :signals ["Easy wins" "Unconvinced opponents"]
+            :safeguards ["Steelman first" "Strongest version"])
+   (failure "over-steelmanning" "medium"
+            "Making opponent's argument stronger than they can defend"
+            :signals ["Arguing against phantom" "Wasted effort"]
+            :safeguards ["Realistic steelman" "Actual positions"])
+   (failure "steelman-paralysis" "medium"
+            "Unable to counter after steelmanning"
+            :signals ["Convinced by opponent" "No response"]
+            :safeguards ["Prepare counter" "Know your position"])
+   (failure "performative-steelmanning" "medium"
+            "Steelmanning for show, not understanding"
+            :signals ["Superficial" "Missed nuance"]
+            :safeguards ["Genuine engagement" "Deep understanding"])
+   (failure "steelman-avoidance" "high"
+            "Avoiding steelmanning difficult positions"
+            :signals ["Weak arguments" "Echo chamber"]
+            :safeguards ["Engage strongest" "Intellectual honesty"])]})
 
 ;; ============================================
 ;; Export Functions

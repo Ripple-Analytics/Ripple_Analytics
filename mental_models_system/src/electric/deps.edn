@@ -11,11 +11,23 @@
         ring/ring-jetty-adapter {:mvn/version "1.10.0"}
         ring/ring-defaults {:mvn/version "0.4.0"}
         
+        ;; HTTP Client (for headless web scraping)
+        clj-http/clj-http {:mvn/version "3.12.3"}
+        
         ;; JSON
         cheshire/cheshire {:mvn/version "5.12.0"}
         
+        ;; Async
+        org.clojure/core.async {:mvn/version "1.6.681"}
+        
         ;; Math
         org.clojure/math.numeric-tower {:mvn/version "0.0.5"}
+        
+        ;; Database
+        com.github.seancorfield/next.jdbc {:mvn/version "1.3.909"}
+        org.postgresql/postgresql {:mvn/version "42.7.1"}
+        com.github.seancorfield/honeysql {:mvn/version "2.5.1103"}
+        hikari-cp/hikari-cp {:mvn/version "3.0.1"}
         
         ;; Logging
         org.clojure/tools.logging {:mvn/version "1.2.4"}

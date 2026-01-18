@@ -1,5 +1,56 @@
 import SwiftUI
 
+// MARK: - Design System (M&S + Costco: Monochrome + Red Accents)
+struct DesignSystem {
+    // Monochrome palette
+    static let black = Color.black
+    static let white = Color.white
+    static let gray900 = Color(white: 0.1)
+    static let gray800 = Color(white: 0.15)
+    static let gray700 = Color(white: 0.2)
+    static let gray600 = Color(white: 0.3)
+    static let gray500 = Color(white: 0.4)
+    static let gray400 = Color(white: 0.5)
+    static let gray300 = Color(white: 0.6)
+    static let gray200 = Color(white: 0.8)
+    static let gray100 = Color(white: 0.9)
+    static let gray50 = Color(white: 0.95)
+    
+    // Strategic red accent - ONLY color allowed
+    static let accent = Color(red: 0.8, green: 0.1, blue: 0.1)
+    static let accentLight = Color(red: 0.9, green: 0.2, blue: 0.2)
+    
+    // Typography - Clean, professional
+    static let titleFont = Font.system(size: 17, weight: .semibold, design: .default)
+    static let headlineFont = Font.system(size: 15, weight: .semibold, design: .default)
+    static let bodyFont = Font.system(size: 13, weight: .regular, design: .default)
+    static let captionFont = Font.system(size: 11, weight: .regular, design: .default)
+    static let metricFont = Font.system(size: 24, weight: .bold, design: .monospaced)
+    static let smallMetricFont = Font.system(size: 18, weight: .bold, design: .monospaced)
+    static let microFont = Font.system(size: 9, weight: .medium, design: .default)
+}
+
+// MARK: - Haptic Feedback Manager
+class HapticManager {
+    static let shared = HapticManager()
+    
+    func impact(_ style: UIImpactFeedbackGenerator.FeedbackStyle = .medium) {
+        let generator = UIImpactFeedbackGenerator(style: style)
+        generator.impactOccurred()
+    }
+    
+    func notification(_ type: UINotificationFeedbackGenerator.FeedbackType) {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(type)
+    }
+    
+    func selection() {
+        let generator = UISelectionFeedbackGenerator()
+        generator.selectionChanged()
+    }
+}
+
+// MARK: - Main Content View
 struct ContentView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var learningEngine: ContinuousLearningEngine
@@ -10,35 +61,31 @@ struct ContentView: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(
-                colors: [Color(.systemBackground), Color(.systemGray6)],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
+            DesignSystem.gray50
+                .ignoresSafeArea()
             
             TabView(selection: $selectedTab) {
                 DashboardView()
                     .tabItem {
-                        Label("Dashboard", systemImage: "square.grid.2x2.fill")
+                        Label("Dashboard", systemImage: "square.grid.2x2")
                     }
                     .tag(0)
                 
                 ModelsView()
                     .tabItem {
-                        Label("Models", systemImage: "brain.head.profile")
+                        Label("Models", systemImage: "list.bullet")
                     }
                     .tag(1)
                 
                 AnalyzeView()
                     .tabItem {
-                        Label("Analyze", systemImage: "waveform.circle.fill")
+                        Label("Analyze", systemImage: "magnifyingglass")
                     }
                     .tag(2)
                 
                 InsightsView()
                     .tabItem {
-                        Label("Insights", systemImage: "lightbulb.fill")
+                        Label("Insights", systemImage: "lightbulb")
                     }
                     .tag(3)
                 
@@ -48,7 +95,10 @@ struct ContentView: View {
                     }
                     .tag(4)
             }
-            .tint(.blue)
+            .tint(DesignSystem.accent)
+            .onChange(of: selectedTab) { _ in
+                HapticManager.shared.selection()
+            }
         }
         .sheet(isPresented: $showingSettings) {
             SettingsView()
@@ -56,6 +106,7 @@ struct ContentView: View {
     }
 }
 
+// MARK: - Dashboard View (Value Line Density)
 struct DashboardView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var learningEngine: ContinuousLearningEngine
@@ -65,459 +116,330 @@ struct DashboardView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
-                    heroCard
-                    
-                    LazyVGrid(columns: [
-                        GridItem(.flexible()),
-                        GridItem(.flexible())
-                    ], spacing: 16) {
-                        StatCard(
-                            title: "Models",
-                            value: "129",
-                            icon: "brain.head.profile",
-                            color: .blue
-                        )
-                        
-                        StatCard(
-                            title: "Insights",
-                            value: "\(learningEngine.insightsGenerated)",
-                            icon: "lightbulb.fill",
-                            color: .yellow
-                        )
-                        
-                        StatCard(
-                            title: "Data Points",
-                            value: formatNumber(learningEngine.dataPointsProcessed),
-                            icon: "chart.dots.scatter",
-                            color: .green
-                        )
-                        
-                        StatCard(
-                            title: "Learning Rate",
-                            value: String(format: "%.1f/s", learningEngine.learningRatePerSecond),
-                            icon: "speedometer",
-                            color: .orange
-                        )
-                    }
-                    .padding(.horizontal)
-                    
-                    recentActivitySection
-                    
+                VStack(spacing: 1) {
+                    statusBar
+                    metricsGrid
+                    activitySection
                     quickActionsSection
                 }
-                .padding(.vertical)
             }
+            .background(DesignSystem.gray100)
             .navigationTitle("Mental Models")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {}) {
-                        Image(systemName: "gearshape.fill")
-                            .font(.system(size: 18, weight: .medium))
+                    Button(action: {
+                        HapticManager.shared.impact(.light)
+                    }) {
+                        Image(systemName: "gearshape")
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(DesignSystem.gray600)
                     }
                 }
             }
         }
         .onAppear {
-            withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
+            withAnimation(.easeOut(duration: 0.3)) {
                 animateCards = true
             }
         }
     }
     
-    private var heroCard: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Learning Active")
-                        .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.8))
-                    
-                    Text("Your AI is improving")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                }
-                
-                Spacer()
-                
-                ZStack {
-                    Circle()
-                        .fill(.white.opacity(0.2))
-                        .frame(width: 60, height: 60)
-                    
-                    Image(systemName: "brain")
-                        .font(.system(size: 28))
-                        .foregroundColor(.white)
-                        .symbolEffect(.pulse, options: .repeating)
-                }
-            }
-            
-            HStack(spacing: 24) {
-                VStack(alignment: .leading) {
-                    Text("\(learningEngine.modelsUpdated)")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                    Text("Updates")
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.7))
-                }
-                
-                VStack(alignment: .leading) {
-                    Text("\(learningEngine.insightsGenerated)")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                    Text("Insights")
-                        .font(.caption)
-                        .foregroundColor(.white.opacity(0.7))
-                }
-                
-                Spacer()
-                
-                LearningIndicator(isActive: learningEngine.isLearning)
-            }
-        }
-        .padding(24)
-        .background(
-            LinearGradient(
-                colors: [Color.blue, Color.purple],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-        .shadow(color: .blue.opacity(0.3), radius: 20, x: 0, y: 10)
-        .padding(.horizontal)
-        .offset(y: animateCards ? 0 : 50)
-        .opacity(animateCards ? 1 : 0)
-    }
-    
-    private var recentActivitySection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Recent Activity")
-                .font(.headline)
-                .padding(.horizontal)
-            
-            VStack(spacing: 12) {
-                ActivityRow(
-                    icon: "doc.text.fill",
-                    title: "Document analyzed",
-                    subtitle: "3 mental models detected",
-                    time: "2m ago",
-                    color: .blue
-                )
-                
-                ActivityRow(
-                    icon: "brain.head.profile",
-                    title: "Pattern discovered",
-                    subtitle: "Confirmation bias correlation",
-                    time: "5m ago",
-                    color: .purple
-                )
-                
-                ActivityRow(
-                    icon: "chart.line.uptrend.xyaxis",
-                    title: "Insight generated",
-                    subtitle: "Lollapalooza effect detected",
-                    time: "12m ago",
-                    color: .green
-                )
-            }
-            .padding(.horizontal)
-        }
-    }
-    
-    private var quickActionsSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Quick Actions")
-                .font(.headline)
-                .padding(.horizontal)
-            
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 12) {
-                    QuickActionButton(
-                        title: "Analyze Text",
-                        icon: "doc.text.magnifyingglass",
-                        color: .blue
-                    )
-                    
-                    QuickActionButton(
-                        title: "Scan Document",
-                        icon: "doc.viewfinder",
-                        color: .green
-                    )
-                    
-                    QuickActionButton(
-                        title: "Voice Input",
-                        icon: "mic.fill",
-                        color: .orange
-                    )
-                    
-                    QuickActionButton(
-                        title: "Share Insight",
-                        icon: "square.and.arrow.up",
-                        color: .purple
-                    )
-                }
-                .padding(.horizontal)
-            }
-        }
-    }
-    
-    private func formatNumber(_ num: Int) -> String {
-        if num >= 1000000 {
-            return String(format: "%.1fM", Double(num) / 1000000)
-        } else if num >= 1000 {
-            return String(format: "%.1fK", Double(num) / 1000)
-        }
-        return "\(num)"
-    }
-}
-
-struct StatCard: View {
-    let title: String
-    let value: String
-    let icon: String
-    let color: Color
-    
-    @State private var isPressed = false
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: icon)
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundColor(color)
-                
-                Spacer()
-            }
-            
-            Text(value)
-                .font(.system(size: 28, weight: .bold, design: .rounded))
-                .foregroundColor(.primary)
-            
-            Text(title)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-        }
-        .padding(20)
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
-        .scaleEffect(isPressed ? 0.95 : 1)
-        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
-        .onTapGesture {
-            isPressed = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                isPressed = false
-            }
-        }
-    }
-}
-
-struct LearningIndicator: View {
-    let isActive: Bool
-    
-    @State private var isAnimating = false
-    
-    var body: some View {
-        HStack(spacing: 4) {
-            ForEach(0..<3) { index in
+    private var statusBar: some View {
+        HStack(spacing: 0) {
+            HStack(spacing: 6) {
                 Circle()
-                    .fill(.white)
-                    .frame(width: 8, height: 8)
-                    .scaleEffect(isAnimating ? 1 : 0.5)
-                    .opacity(isAnimating ? 1 : 0.3)
-                    .animation(
-                        .easeInOut(duration: 0.6)
-                        .repeatForever()
-                        .delay(Double(index) * 0.2),
-                        value: isAnimating
-                    )
-            }
-        }
-        .onAppear {
-            if isActive {
-                isAnimating = true
-            }
-        }
-        .onChange(of: isActive) { newValue in
-            isAnimating = newValue
-        }
-    }
-}
-
-struct ActivityRow: View {
-    let icon: String
-    let title: String
-    let subtitle: String
-    let time: String
-    let color: Color
-    
-    var body: some View {
-        HStack(spacing: 16) {
-            ZStack {
-                Circle()
-                    .fill(color.opacity(0.1))
-                    .frame(width: 44, height: 44)
+                    .fill(learningEngine.isLearning ? DesignSystem.accent : DesignSystem.gray400)
+                    .frame(width: 6, height: 6)
                 
-                Image(systemName: icon)
-                    .font(.system(size: 18, weight: .medium))
-                    .foregroundColor(color)
-            }
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(title)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                
-                Text(subtitle)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+                Text(learningEngine.isLearning ? "LEARNING" : "IDLE")
+                    .font(DesignSystem.microFont)
+                    .foregroundColor(learningEngine.isLearning ? DesignSystem.accent : DesignSystem.gray500)
             }
             
             Spacer()
             
-            Text(time)
-                .font(.caption2)
-                .foregroundColor(.secondary)
+            Text("Updated \(formatTime(Date()))")
+                .font(DesignSystem.microFont)
+                .foregroundColor(DesignSystem.gray500)
         }
-        .padding(16)
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .shadow(color: .black.opacity(0.03), radius: 8, x: 0, y: 4)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(DesignSystem.white)
+    }
+    
+    private var metricsGrid: some View {
+        VStack(spacing: 1) {
+            HStack(spacing: 1) {
+                MetricCell(label: "MODELS", value: "129", change: nil, isHighlighted: false)
+                MetricCell(label: "FAILURES", value: "645", change: nil, isHighlighted: false)
+                MetricCell(label: "CATEGORIES", value: "34", change: nil, isHighlighted: false)
+            }
+            
+            HStack(spacing: 1) {
+                MetricCell(label: "INSIGHTS", value: "\(learningEngine.insightsGenerated)", change: "+12", isHighlighted: true)
+                MetricCell(label: "DATA PTS", value: formatCompact(learningEngine.dataPointsProcessed), change: nil, isHighlighted: false)
+                MetricCell(label: "RATE/SEC", value: String(format: "%.1f", learningEngine.learningRatePerSecond), change: nil, isHighlighted: false)
+            }
+            
+            HStack(spacing: 1) {
+                MetricCell(label: "UPDATES", value: "\(learningEngine.modelsUpdated)", change: nil, isHighlighted: false)
+                MetricCell(label: "COVERAGE", value: "100%", change: nil, isHighlighted: false)
+                MetricCell(label: "ACCURACY", value: "94.2%", change: "+0.3", isHighlighted: true)
+            }
+        }
+        .background(DesignSystem.gray200)
+    }
+    
+    private var activitySection: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text("RECENT ACTIVITY")
+                    .font(DesignSystem.microFont)
+                    .foregroundColor(DesignSystem.gray500)
+                Spacer()
+                Text("VIEW ALL")
+                    .font(DesignSystem.microFont)
+                    .foregroundColor(DesignSystem.accent)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(DesignSystem.gray100)
+            
+            VStack(spacing: 0) {
+                ActivityItem(time: "2m", title: "Document analyzed", detail: "3 models detected", isNew: true)
+                Divider().background(DesignSystem.gray200)
+                ActivityItem(time: "5m", title: "Pattern discovered", detail: "Confirmation bias", isNew: true)
+                Divider().background(DesignSystem.gray200)
+                ActivityItem(time: "12m", title: "Lollapalooza detected", detail: "High confidence", isNew: false)
+                Divider().background(DesignSystem.gray200)
+                ActivityItem(time: "1h", title: "Sync completed", detail: "847 items", isNew: false)
+            }
+            .background(DesignSystem.white)
+        }
+        .padding(.top, 12)
+    }
+    
+    private var quickActionsSection: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text("QUICK ACTIONS")
+                    .font(DesignSystem.microFont)
+                    .foregroundColor(DesignSystem.gray500)
+                Spacer()
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(DesignSystem.gray100)
+            
+            HStack(spacing: 0) {
+                QuickAction(icon: "doc.text.magnifyingglass", label: "Analyze")
+                Divider().frame(height: 40).background(DesignSystem.gray200)
+                QuickAction(icon: "doc.viewfinder", label: "Scan")
+                Divider().frame(height: 40).background(DesignSystem.gray200)
+                QuickAction(icon: "mic", label: "Voice")
+                Divider().frame(height: 40).background(DesignSystem.gray200)
+                QuickAction(icon: "square.and.arrow.up", label: "Share")
+            }
+            .background(DesignSystem.white)
+        }
+        .padding(.top, 12)
+        .padding(.bottom, 20)
+    }
+    
+    private func formatTime(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH:mm"
+        return formatter.string(from: date)
+    }
+    
+    private func formatCompact(_ num: Int) -> String {
+        if num >= 1000000 { return String(format: "%.1fM", Double(num) / 1000000) }
+        else if num >= 1000 { return String(format: "%.1fK", Double(num) / 1000) }
+        return "\(num)"
     }
 }
 
-struct QuickActionButton: View {
-    let title: String
-    let icon: String
-    let color: Color
-    
-    @State private var isPressed = false
+// MARK: - Metric Cell (Value Line Style)
+struct MetricCell: View {
+    let label: String
+    let value: String
+    let change: String?
+    let isHighlighted: Bool
     
     var body: some View {
-        VStack(spacing: 12) {
-            ZStack {
-                Circle()
-                    .fill(color.gradient)
-                    .frame(width: 56, height: 56)
-                
-                Image(systemName: icon)
-                    .font(.system(size: 24, weight: .medium))
-                    .foregroundColor(.white)
-            }
+        VStack(spacing: 2) {
+            Text(label)
+                .font(DesignSystem.microFont)
+                .foregroundColor(DesignSystem.gray500)
             
-            Text(title)
-                .font(.caption)
-                .fontWeight(.medium)
-                .foregroundColor(.primary)
-                .multilineTextAlignment(.center)
-        }
-        .frame(width: 80)
-        .scaleEffect(isPressed ? 0.9 : 1)
-        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
-        .onTapGesture {
-            let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-            impactFeedback.impactOccurred()
+            Text(value)
+                .font(DesignSystem.smallMetricFont)
+                .foregroundColor(isHighlighted ? DesignSystem.accent : DesignSystem.gray900)
             
-            isPressed = true
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                isPressed = false
+            if let change = change {
+                Text(change)
+                    .font(DesignSystem.microFont)
+                    .foregroundColor(DesignSystem.accent)
+            } else {
+                Text(" ")
+                    .font(DesignSystem.microFont)
             }
         }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+        .background(DesignSystem.white)
     }
 }
 
+// MARK: - Activity Item
+struct ActivityItem: View {
+    let time: String
+    let title: String
+    let detail: String
+    let isNew: Bool
+    
+    var body: some View {
+        HStack(spacing: 12) {
+            Text(time)
+                .font(DesignSystem.captionFont)
+                .foregroundColor(DesignSystem.gray500)
+                .frame(width: 30, alignment: .trailing)
+            
+            if isNew {
+                Circle().fill(DesignSystem.accent).frame(width: 4, height: 4)
+            } else {
+                Circle().fill(Color.clear).frame(width: 4, height: 4)
+            }
+            
+            VStack(alignment: .leading, spacing: 1) {
+                Text(title)
+                    .font(DesignSystem.bodyFont)
+                    .foregroundColor(DesignSystem.gray900)
+                Text(detail)
+                    .font(DesignSystem.captionFont)
+                    .foregroundColor(DesignSystem.gray500)
+            }
+            
+            Spacer()
+            
+            Image(systemName: "chevron.right")
+                .font(.system(size: 10, weight: .medium))
+                .foregroundColor(DesignSystem.gray400)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .contentShape(Rectangle())
+        .onTapGesture { HapticManager.shared.impact(.light) }
+    }
+}
+
+// MARK: - Quick Action
+struct QuickAction: View {
+    let icon: String
+    let label: String
+    
+    var body: some View {
+        Button(action: { HapticManager.shared.impact(.medium) }) {
+            VStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.system(size: 20, weight: .regular))
+                    .foregroundColor(DesignSystem.gray700)
+                Text(label)
+                    .font(DesignSystem.microFont)
+                    .foregroundColor(DesignSystem.gray600)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+}
+
+// MARK: - Models View (High Density Table)
 struct ModelsView: View {
     @State private var searchText = ""
     @State private var selectedCategory: String?
+    @State private var sortOrder: SortOrder = .name
     
-    let categories = [
-        "Psychology", "Thinking Tools", "Economics", 
-        "Competitive Advantage", "Mathematics", 
-        "Physics/Systems", "Biology", "Organizational"
-    ]
+    enum SortOrder { case name, category, failures }
+    
+    let categories = ["Mathematics", "Accounting", "Physics", "Chemistry", "Engineering", "Biology", "Psychology", "Economics"]
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 20) {
-                    categoryPicker
-                    
-                    modelsList
-                }
-                .padding(.vertical)
+            VStack(spacing: 0) {
+                categoryBar
+                sortBar
+                modelsList
             }
-            .navigationTitle("Mental Models")
-            .searchable(text: $searchText, prompt: "Search 129 models...")
+            .background(DesignSystem.gray100)
+            .navigationTitle("129 Models")
+            .navigationBarTitleDisplayMode(.inline)
+            .searchable(text: $searchText, prompt: "Search models...")
         }
     }
     
-    private var categoryPicker: some View {
+    private var categoryBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 12) {
-                CategoryChip(
-                    title: "All",
-                    isSelected: selectedCategory == nil,
-                    color: .blue
-                ) {
-                    withAnimation(.spring(response: 0.3)) {
-                        selectedCategory = nil
-                    }
+            HStack(spacing: 0) {
+                CategoryTab(title: "ALL", isSelected: selectedCategory == nil) {
+                    HapticManager.shared.selection()
+                    selectedCategory = nil
                 }
-                
                 ForEach(categories, id: \.self) { category in
-                    CategoryChip(
-                        title: category,
-                        isSelected: selectedCategory == category,
-                        color: colorForCategory(category)
-                    ) {
-                        withAnimation(.spring(response: 0.3)) {
-                            selectedCategory = category
-                        }
+                    CategoryTab(title: category.uppercased(), isSelected: selectedCategory == category) {
+                        HapticManager.shared.selection()
+                        selectedCategory = category
                     }
                 }
             }
-            .padding(.horizontal)
+            .padding(.horizontal, 8)
         }
+        .padding(.vertical, 8)
+        .background(DesignSystem.white)
+    }
+    
+    private var sortBar: some View {
+        HStack(spacing: 0) {
+            Text("NAME").font(DesignSystem.microFont).foregroundColor(sortOrder == .name ? DesignSystem.accent : DesignSystem.gray500).frame(maxWidth: .infinity, alignment: .leading)
+            Text("CATEGORY").font(DesignSystem.microFont).foregroundColor(sortOrder == .category ? DesignSystem.accent : DesignSystem.gray500).frame(width: 80)
+            Text("FAIL").font(DesignSystem.microFont).foregroundColor(sortOrder == .failures ? DesignSystem.accent : DesignSystem.gray500).frame(width: 40, alignment: .trailing)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
+        .background(DesignSystem.gray200)
     }
     
     private var modelsList: some View {
-        LazyVStack(spacing: 12) {
-            ForEach(sampleModels, id: \.name) { model in
-                ModelCard(model: model)
+        ScrollView {
+            LazyVStack(spacing: 0) {
+                ForEach(sampleModels, id: \.name) { model in
+                    ModelRow(model: model)
+                    Divider().background(DesignSystem.gray200)
+                }
             }
-        }
-        .padding(.horizontal)
-    }
-    
-    private func colorForCategory(_ category: String) -> Color {
-        switch category {
-        case "Psychology": return .purple
-        case "Thinking Tools": return .blue
-        case "Economics": return .green
-        case "Competitive Advantage": return .orange
-        case "Mathematics": return .red
-        case "Physics/Systems": return .cyan
-        case "Biology": return .mint
-        case "Organizational": return .indigo
-        default: return .gray
+            .background(DesignSystem.white)
         }
     }
     
     private var sampleModels: [MentalModelItem] {
         [
-            MentalModelItem(name: "Circle of Competence", category: "Thinking Tools", thinker: "Warren Buffett"),
-            MentalModelItem(name: "Inversion", category: "Thinking Tools", thinker: "Charlie Munger"),
-            MentalModelItem(name: "First Principles", category: "Thinking Tools", thinker: "Aristotle"),
-            MentalModelItem(name: "Confirmation Bias", category: "Psychology", thinker: "Peter Wason"),
-            MentalModelItem(name: "Compound Interest", category: "Mathematics", thinker: "Albert Einstein"),
-            MentalModelItem(name: "Network Effects", category: "Economics", thinker: "Robert Metcalfe"),
-            MentalModelItem(name: "Margin of Safety", category: "Competitive Advantage", thinker: "Benjamin Graham"),
-            MentalModelItem(name: "Second-Order Thinking", category: "Thinking Tools", thinker: "Howard Marks")
+            MentalModelItem(name: "Circle of Competence", category: "Thinking", thinker: "Buffett", failures: 5),
+            MentalModelItem(name: "Inversion", category: "Thinking", thinker: "Munger", failures: 5),
+            MentalModelItem(name: "First Principles", category: "Thinking", thinker: "Aristotle", failures: 5),
+            MentalModelItem(name: "Confirmation Bias", category: "Psychology", thinker: "Wason", failures: 5),
+            MentalModelItem(name: "Compound Interest", category: "Math", thinker: "Einstein", failures: 5),
+            MentalModelItem(name: "Network Effects", category: "Economics", thinker: "Metcalfe", failures: 5),
+            MentalModelItem(name: "Margin of Safety", category: "Investing", thinker: "Graham", failures: 5),
+            MentalModelItem(name: "Second-Order Thinking", category: "Thinking", thinker: "Marks", failures: 5),
+            MentalModelItem(name: "Incentives", category: "Psychology", thinker: "Munger", failures: 5),
+            MentalModelItem(name: "Opportunity Cost", category: "Economics", thinker: "Various", failures: 5),
+            MentalModelItem(name: "Occam's Razor", category: "Thinking", thinker: "Ockham", failures: 5),
+            MentalModelItem(name: "Hanlon's Razor", category: "Thinking", thinker: "Hanlon", failures: 5),
+            MentalModelItem(name: "Survivorship Bias", category: "Statistics", thinker: "Wald", failures: 5),
+            MentalModelItem(name: "Regression to Mean", category: "Statistics", thinker: "Galton", failures: 5),
+            MentalModelItem(name: "Pareto Principle", category: "Math", thinker: "Pareto", failures: 5)
         ]
     }
 }
@@ -526,103 +448,49 @@ struct MentalModelItem {
     let name: String
     let category: String
     let thinker: String
+    let failures: Int
 }
 
-struct CategoryChip: View {
+struct CategoryTab: View {
     let title: String
     let isSelected: Bool
-    let color: Color
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.subheadline)
-                .fontWeight(.medium)
-                .foregroundColor(isSelected ? .white : .primary)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
-                .background(isSelected ? color : Color(.systemGray6))
-                .clipShape(Capsule())
+                .font(DesignSystem.microFont)
+                .foregroundColor(isSelected ? DesignSystem.white : DesignSystem.gray600)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(isSelected ? DesignSystem.gray900 : Color.clear)
+                .cornerRadius(4)
         }
     }
 }
 
-struct ModelCard: View {
+struct ModelRow: View {
     let model: MentalModelItem
     
     var body: some View {
-        HStack(spacing: 16) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(colorForCategory(model.category).opacity(0.1))
-                    .frame(width: 48, height: 48)
-                
-                Image(systemName: iconForCategory(model.category))
-                    .font(.system(size: 20, weight: .medium))
-                    .foregroundColor(colorForCategory(model.category))
+        HStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(model.name).font(DesignSystem.bodyFont).foregroundColor(DesignSystem.gray900)
+                Text(model.thinker).font(DesignSystem.captionFont).foregroundColor(DesignSystem.gray500)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
-            VStack(alignment: .leading, spacing: 4) {
-                Text(model.name)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                
-                HStack(spacing: 8) {
-                    Text(model.category)
-                        .font(.caption)
-                        .foregroundColor(colorForCategory(model.category))
-                    
-                    Text("•")
-                        .foregroundColor(.secondary)
-                    
-                    Text(model.thinker)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-            
-            Spacer()
-            
-            Image(systemName: "chevron.right")
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.secondary)
+            Text(model.category).font(DesignSystem.captionFont).foregroundColor(DesignSystem.gray600).frame(width: 80)
+            Text("\(model.failures)").font(DesignSystem.captionFont).foregroundColor(DesignSystem.accent).frame(width: 40, alignment: .trailing)
         }
-        .padding(16)
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .shadow(color: .black.opacity(0.03), radius: 8, x: 0, y: 4)
-    }
-    
-    private func colorForCategory(_ category: String) -> Color {
-        switch category {
-        case "Psychology": return .purple
-        case "Thinking Tools": return .blue
-        case "Economics": return .green
-        case "Competitive Advantage": return .orange
-        case "Mathematics": return .red
-        case "Physics/Systems": return .cyan
-        case "Biology": return .mint
-        case "Organizational": return .indigo
-        default: return .gray
-        }
-    }
-    
-    private func iconForCategory(_ category: String) -> String {
-        switch category {
-        case "Psychology": return "brain"
-        case "Thinking Tools": return "lightbulb"
-        case "Economics": return "chart.line.uptrend.xyaxis"
-        case "Competitive Advantage": return "trophy"
-        case "Mathematics": return "function"
-        case "Physics/Systems": return "atom"
-        case "Biology": return "leaf"
-        case "Organizational": return "person.3"
-        default: return "questionmark"
-        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .contentShape(Rectangle())
+        .onTapGesture { HapticManager.shared.impact(.light) }
     }
 }
 
+// MARK: - Analyze View
 struct AnalyzeView: View {
     @State private var inputText = ""
     @State private var isAnalyzing = false
@@ -630,83 +498,116 @@ struct AnalyzeView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    inputSection
-                    
-                    if let result = analysisResult {
-                        resultsSection(result)
-                    }
+            VStack(spacing: 0) {
+                inputSection
+                if let result = analysisResult {
+                    resultsSection(result)
+                } else {
+                    emptyState
                 }
-                .padding()
             }
+            .background(DesignSystem.gray100)
             .navigationTitle("Analyze")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
     
     private var inputSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Enter text to analyze")
-                .font(.headline)
-            
+        VStack(spacing: 0) {
             TextEditor(text: $inputText)
-                .frame(minHeight: 150)
+                .font(DesignSystem.bodyFont)
+                .foregroundColor(DesignSystem.gray900)
+                .frame(height: 120)
                 .padding(12)
-                .background(Color(.systemGray6))
-                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .background(DesignSystem.white)
+                .overlay(
+                    Group {
+                        if inputText.isEmpty {
+                            Text("Enter text to analyze with 129 mental models...")
+                                .font(DesignSystem.bodyFont)
+                                .foregroundColor(DesignSystem.gray400)
+                                .padding(16)
+                        }
+                    },
+                    alignment: .topLeading
+                )
             
-            Button(action: analyze) {
-                HStack {
-                    if isAnalyzing {
-                        ProgressView()
-                            .tint(.white)
-                    } else {
-                        Image(systemName: "waveform.circle.fill")
-                    }
-                    Text(isAnalyzing ? "Analyzing..." : "Analyze with Mental Models")
+            HStack {
+                Text("\(inputText.count) characters").font(DesignSystem.microFont).foregroundColor(DesignSystem.gray500)
+                Spacer()
+                Button(action: { HapticManager.shared.impact(.medium); analyze() }) {
+                    Text("ANALYZE")
+                        .font(DesignSystem.microFont)
                         .fontWeight(.semibold)
+                        .foregroundColor(DesignSystem.white)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 8)
+                        .background(inputText.isEmpty ? DesignSystem.gray400 : DesignSystem.accent)
+                        .cornerRadius(4)
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 16)
-                .background(inputText.isEmpty ? Color.gray : Color.blue)
-                .foregroundColor(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                .disabled(inputText.isEmpty)
             }
-            .disabled(inputText.isEmpty || isAnalyzing)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(DesignSystem.gray100)
+        }
+    }
+    
+    private var emptyState: some View {
+        VStack(spacing: 16) {
+            Spacer()
+            Image(systemName: "magnifyingglass").font(.system(size: 40, weight: .thin)).foregroundColor(DesignSystem.gray400)
+            Text("Enter text above to analyze").font(DesignSystem.bodyFont).foregroundColor(DesignSystem.gray500)
+            Text("All 129 mental models will be applied").font(DesignSystem.captionFont).foregroundColor(DesignSystem.gray400)
+            Spacer()
         }
     }
     
     private func resultsSection(_ result: AnalysisResult) -> some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("Analysis Results")
-                .font(.headline)
-            
-            ForEach(result.models, id: \.name) { model in
-                ResultCard(model: model)
+        ScrollView {
+            VStack(spacing: 1) {
+                HStack {
+                    Text("ANALYSIS RESULTS").font(DesignSystem.microFont).foregroundColor(DesignSystem.gray500)
+                    Spacer()
+                    Text("\(result.modelsDetected.count) models detected").font(DesignSystem.microFont).foregroundColor(DesignSystem.accent)
+                }
+                .padding(.horizontal, 16).padding(.vertical, 10).background(DesignSystem.gray100)
+                
+                ForEach(result.modelsDetected, id: \.name) { model in
+                    ResultRow(model: model)
+                    Divider().background(DesignSystem.gray200)
+                }
+                
+                if !result.biasesDetected.isEmpty {
+                    HStack {
+                        Text("BIASES DETECTED").font(DesignSystem.microFont).foregroundColor(DesignSystem.gray500)
+                        Spacer()
+                        Text("\(result.biasesDetected.count)").font(DesignSystem.microFont).foregroundColor(DesignSystem.accent)
+                    }
+                    .padding(.horizontal, 16).padding(.vertical, 10).background(DesignSystem.gray100)
+                    
+                    ForEach(result.biasesDetected, id: \.self) { bias in
+                        BiasRow(bias: bias)
+                        Divider().background(DesignSystem.gray200)
+                    }
+                }
             }
-            
-            if !result.biases.isEmpty {
-                BiasesCard(biases: result.biases)
-            }
-            
-            if result.lollapalooza {
-                LollapaloozaCard()
-            }
+            .background(DesignSystem.white)
         }
     }
     
     private func analyze() {
         isAnalyzing = true
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+        HapticManager.shared.notification(.success)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             analysisResult = AnalysisResult(
-                models: [
-                    ModelResult(name: "Confirmation Bias", relevance: 0.85, category: "Psychology"),
-                    ModelResult(name: "Incentive Effects", relevance: 0.72, category: "Psychology"),
-                    ModelResult(name: "Second-Order Thinking", relevance: 0.68, category: "Thinking Tools")
+                modelsDetected: [
+                    ModelResult(name: "Confirmation Bias", confidence: 0.92, category: "Psychology"),
+                    ModelResult(name: "Incentives", confidence: 0.87, category: "Psychology"),
+                    ModelResult(name: "Second-Order Thinking", confidence: 0.78, category: "Thinking")
                 ],
-                biases: ["Confirmation Bias", "Availability Heuristic"],
-                lollapalooza: true
+                biasesDetected: ["Recency Bias", "Availability Heuristic"],
+                lollapaloozaScore: 0.65
             )
             isAnalyzing = false
         }
@@ -714,191 +615,126 @@ struct AnalyzeView: View {
 }
 
 struct AnalysisResult {
-    let models: [ModelResult]
-    let biases: [String]
-    let lollapalooza: Bool
+    let modelsDetected: [ModelResult]
+    let biasesDetected: [String]
+    let lollapaloozaScore: Double
 }
 
 struct ModelResult {
     let name: String
-    let relevance: Double
+    let confidence: Double
     let category: String
 }
 
-struct ResultCard: View {
+struct ResultRow: View {
     let model: ModelResult
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text(model.name)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                
-                Spacer()
-                
-                Text("\(Int(model.relevance * 100))%")
-                    .font(.subheadline)
-                    .fontWeight(.bold)
-                    .foregroundColor(.blue)
+        HStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(model.name).font(DesignSystem.bodyFont).foregroundColor(DesignSystem.gray900)
+                Text(model.category).font(DesignSystem.captionFont).foregroundColor(DesignSystem.gray500)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             
-            GeometryReader { geometry in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color(.systemGray5))
-                        .frame(height: 8)
-                    
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.blue.gradient)
-                        .frame(width: geometry.size.width * model.relevance, height: 8)
-                }
-            }
-            .frame(height: 8)
-            
-            Text(model.category)
-                .font(.caption)
-                .foregroundColor(.secondary)
+            Text("\(Int(model.confidence * 100))%")
+                .font(DesignSystem.smallMetricFont)
+                .foregroundColor(model.confidence > 0.8 ? DesignSystem.accent : DesignSystem.gray600)
         }
-        .padding(16)
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .shadow(color: .black.opacity(0.03), radius: 8, x: 0, y: 4)
+        .padding(.horizontal, 16).padding(.vertical, 10)
     }
 }
 
-struct BiasesCard: View {
-    let biases: [String]
+struct BiasRow: View {
+    let bias: String
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundColor(.orange)
-                Text("Biases Detected")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-            }
-            
-            ForEach(biases, id: \.self) { bias in
-                HStack {
-                    Circle()
-                        .fill(Color.orange)
-                        .frame(width: 6, height: 6)
-                    Text(bias)
-                        .font(.subheadline)
-                }
-            }
+        HStack {
+            Circle().fill(DesignSystem.accent).frame(width: 4, height: 4)
+            Text(bias).font(DesignSystem.bodyFont).foregroundColor(DesignSystem.gray900)
+            Spacer()
         }
-        .padding(16)
-        .background(Color.orange.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .padding(.horizontal, 16).padding(.vertical, 10).background(DesignSystem.white)
     }
 }
 
-struct LollapaloozaCard: View {
-    var body: some View {
-        HStack(spacing: 16) {
-            Image(systemName: "sparkles")
-                .font(.system(size: 32))
-                .foregroundColor(.purple)
-            
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Lollapalooza Effect!")
-                    .font(.headline)
-                    .foregroundColor(.purple)
-                
-                Text("Multiple mental models are interacting to create a powerful combined effect.")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-        }
-        .padding(16)
-        .background(Color.purple.opacity(0.1))
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-    }
-}
-
+// MARK: - Insights View
 struct InsightsView: View {
+    @EnvironmentObject var learningEngine: ContinuousLearningEngine
+    
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 20) {
-                    InsightCard(
-                        title: "Pattern Discovered",
-                        description: "Your decision-making shows strong correlation with confirmation bias when under time pressure.",
-                        icon: "brain.head.profile",
-                        color: .purple,
-                        time: "2 hours ago"
-                    )
-                    
-                    InsightCard(
-                        title: "Learning Milestone",
-                        description: "You've analyzed 100 documents this week, improving pattern recognition by 15%.",
-                        icon: "chart.line.uptrend.xyaxis",
-                        color: .green,
-                        time: "Yesterday"
-                    )
-                    
-                    InsightCard(
-                        title: "Model Recommendation",
-                        description: "Based on your recent analyses, consider applying 'Inversion' more frequently.",
-                        icon: "lightbulb.fill",
-                        color: .yellow,
-                        time: "2 days ago"
-                    )
+            VStack(spacing: 0) {
+                HStack {
+                    Text("TOTAL INSIGHTS").font(DesignSystem.microFont).foregroundColor(DesignSystem.gray500)
+                    Spacer()
+                    Text("\(learningEngine.insightsGenerated)").font(DesignSystem.smallMetricFont).foregroundColor(DesignSystem.accent)
                 }
-                .padding()
+                .padding(.horizontal, 16).padding(.vertical, 12).background(DesignSystem.white)
+                
+                ScrollView {
+                    LazyVStack(spacing: 0) {
+                        ForEach(sampleInsights, id: \.title) { insight in
+                            InsightRow(insight: insight)
+                            Divider().background(DesignSystem.gray200)
+                        }
+                    }
+                    .background(DesignSystem.white)
+                }
             }
+            .background(DesignSystem.gray100)
             .navigationTitle("Insights")
+            .navigationBarTitleDisplayMode(.inline)
         }
+    }
+    
+    private var sampleInsights: [Insight] {
+        [
+            Insight(title: "Lollapalooza Effect Detected", detail: "Multiple biases reinforcing each other", time: "2m ago", isImportant: true),
+            Insight(title: "Pattern: Confirmation Bias", detail: "Detected in 73% of documents this week", time: "1h ago", isImportant: false),
+            Insight(title: "Model Correlation Found", detail: "Incentives and Social Proof often appear together", time: "3h ago", isImportant: false),
+            Insight(title: "Learning Milestone", detail: "10,000 data points processed", time: "1d ago", isImportant: true)
+        ]
     }
 }
 
-struct InsightCard: View {
+struct Insight {
     let title: String
-    let description: String
-    let icon: String
-    let color: Color
+    let detail: String
     let time: String
+    let isImportant: Bool
+}
+
+struct InsightRow: View {
+    let insight: Insight
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                ZStack {
-                    Circle()
-                        .fill(color.opacity(0.1))
-                        .frame(width: 44, height: 44)
-                    
-                    Image(systemName: icon)
-                        .font(.system(size: 20, weight: .medium))
-                        .foregroundColor(color)
-                }
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                        .font(.headline)
-                    
-                    Text(time)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                
-                Spacer()
+        HStack(spacing: 12) {
+            if insight.isImportant {
+                Rectangle().fill(DesignSystem.accent).frame(width: 3)
             }
             
-            Text(description)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .lineSpacing(4)
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text(insight.title)
+                        .font(DesignSystem.bodyFont)
+                        .fontWeight(insight.isImportant ? .semibold : .regular)
+                        .foregroundColor(DesignSystem.gray900)
+                    Spacer()
+                    Text(insight.time).font(DesignSystem.captionFont).foregroundColor(DesignSystem.gray500)
+                }
+                Text(insight.detail).font(DesignSystem.captionFont).foregroundColor(DesignSystem.gray600)
+            }
+            .padding(.vertical, 12)
+            .padding(.trailing, 16)
+            .padding(.leading, insight.isImportant ? 8 : 16)
         }
-        .padding(20)
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
+        .contentShape(Rectangle())
+        .onTapGesture { HapticManager.shared.impact(.light) }
     }
 }
 
+// MARK: - Learning View
 struct LearningView: View {
     @EnvironmentObject var learningEngine: ContinuousLearningEngine
     @EnvironmentObject var sensorManager: SensorDataManager
@@ -906,210 +742,160 @@ struct LearningView: View {
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 24) {
-                    learningStatusCard
-                    
-                    sensorDataCard
-                    
-                    learningStatsGrid
+                VStack(spacing: 1) {
+                    learningStatusSection
+                    learningMetricsSection
+                    sensorsSection
                 }
-                .padding()
             }
+            .background(DesignSystem.gray100)
             .navigationTitle("Learning")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
     
-    private var learningStatusCard: some View {
-        VStack(spacing: 20) {
+    private var learningStatusSection: some View {
+        VStack(spacing: 0) {
             HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(learningEngine.isLearning ? "Learning Active" : "Learning Paused")
-                        .font(.headline)
-                    
-                    Text("Continuously improving from your data")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                
+                Text("STATUS").font(DesignSystem.microFont).foregroundColor(DesignSystem.gray500)
                 Spacer()
-                
-                Toggle("", isOn: .constant(learningEngine.isLearning))
-                    .labelsHidden()
             }
+            .padding(.horizontal, 16).padding(.vertical, 10).background(DesignSystem.gray100)
             
-            HStack(spacing: 32) {
-                VStack {
-                    Text("\(learningEngine.dataPointsProcessed)")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                    Text("Data Points")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                
-                VStack {
-                    Text(String(format: "%.1f/s", learningEngine.learningRatePerSecond))
-                        .font(.title2)
-                        .fontWeight(.bold)
-                    Text("Learn Rate")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                
-                VStack {
-                    Text("\(learningEngine.insightsGenerated)")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                    Text("Insights")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+            HStack {
+                Circle().fill(learningEngine.isLearning ? DesignSystem.accent : DesignSystem.gray400).frame(width: 8, height: 8)
+                Text(learningEngine.isLearning ? "CONTINUOUS LEARNING ACTIVE" : "LEARNING PAUSED")
+                    .font(DesignSystem.bodyFont)
+                    .foregroundColor(learningEngine.isLearning ? DesignSystem.accent : DesignSystem.gray600)
+                Spacer()
+                Button(action: { HapticManager.shared.impact(.medium) }) {
+                    Text(learningEngine.isLearning ? "PAUSE" : "START")
+                        .font(DesignSystem.microFont)
+                        .fontWeight(.semibold)
+                        .foregroundColor(DesignSystem.white)
+                        .padding(.horizontal, 16).padding(.vertical, 6)
+                        .background(learningEngine.isLearning ? DesignSystem.gray600 : DesignSystem.accent)
+                        .cornerRadius(4)
                 }
             }
+            .padding(.horizontal, 16).padding(.vertical, 12).background(DesignSystem.white)
         }
-        .padding(20)
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
     }
     
-    private var sensorDataCard: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Active Sensors")
-                .font(.headline)
-            
-            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                SensorIndicator(name: "Accelerometer", isActive: true, icon: "move.3d")
-                SensorIndicator(name: "Gyroscope", isActive: true, icon: "gyroscope")
-                SensorIndicator(name: "Location", isActive: true, icon: "location.fill")
-                SensorIndicator(name: "Health", isActive: true, icon: "heart.fill")
-                SensorIndicator(name: "Pedometer", isActive: true, icon: "figure.walk")
-                SensorIndicator(name: "Altimeter", isActive: true, icon: "mountain.2.fill")
+    private var learningMetricsSection: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text("METRICS").font(DesignSystem.microFont).foregroundColor(DesignSystem.gray500)
+                Spacer()
             }
+            .padding(.horizontal, 16).padding(.vertical, 10).background(DesignSystem.gray100)
+            
+            VStack(spacing: 1) {
+                HStack(spacing: 1) {
+                    MetricCell(label: "DATA POINTS", value: formatCompact(learningEngine.dataPointsProcessed), change: nil, isHighlighted: false)
+                    MetricCell(label: "INSIGHTS", value: "\(learningEngine.insightsGenerated)", change: nil, isHighlighted: true)
+                    MetricCell(label: "UPDATES", value: "\(learningEngine.modelsUpdated)", change: nil, isHighlighted: false)
+                }
+                HStack(spacing: 1) {
+                    MetricCell(label: "RATE/SEC", value: String(format: "%.1f", learningEngine.learningRatePerSecond), change: nil, isHighlighted: false)
+                    MetricCell(label: "ACCURACY", value: "94.2%", change: nil, isHighlighted: false)
+                    MetricCell(label: "UPTIME", value: "24h", change: nil, isHighlighted: false)
+                }
+            }
+            .background(DesignSystem.gray200)
         }
-        .padding(20)
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
     }
     
-    private var learningStatsGrid: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Learning Statistics")
-                .font(.headline)
-            
-            VStack(spacing: 12) {
-                StatRow(label: "Patterns Detected", value: "47")
-                StatRow(label: "Correlations Found", value: "23")
-                StatRow(label: "Anomalies Identified", value: "8")
-                StatRow(label: "Models Updated", value: "\(learningEngine.modelsUpdated)")
+    private var sensorsSection: some View {
+        VStack(spacing: 0) {
+            HStack {
+                Text("SENSORS").font(DesignSystem.microFont).foregroundColor(DesignSystem.gray500)
+                Spacer()
             }
+            .padding(.horizontal, 16).padding(.vertical, 10).background(DesignSystem.gray100)
+            
+            VStack(spacing: 0) {
+                SensorRow(name: "Motion", status: sensorManager.motionEnabled ? "Active" : "Inactive", isActive: sensorManager.motionEnabled)
+                Divider().background(DesignSystem.gray200)
+                SensorRow(name: "Location", status: sensorManager.locationEnabled ? "Active" : "Inactive", isActive: sensorManager.locationEnabled)
+                Divider().background(DesignSystem.gray200)
+                SensorRow(name: "Health", status: sensorManager.healthEnabled ? "Active" : "Inactive", isActive: sensorManager.healthEnabled)
+            }
+            .background(DesignSystem.white)
         }
-        .padding(20)
-        .background(Color(.systemBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 5)
+    }
+    
+    private func formatCompact(_ num: Int) -> String {
+        if num >= 1000000 { return String(format: "%.1fM", Double(num) / 1000000) }
+        else if num >= 1000 { return String(format: "%.1fK", Double(num) / 1000) }
+        return "\(num)"
     }
 }
 
-struct SensorIndicator: View {
+struct SensorRow: View {
     let name: String
+    let status: String
     let isActive: Bool
-    let icon: String
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            Image(systemName: icon)
-                .font(.system(size: 16, weight: .medium))
-                .foregroundColor(isActive ? .green : .gray)
-            
-            VStack(alignment: .leading, spacing: 2) {
-                Text(name)
-                    .font(.caption)
-                    .fontWeight(.medium)
-                
-                Text(isActive ? "Active" : "Inactive")
-                    .font(.caption2)
-                    .foregroundColor(isActive ? .green : .secondary)
-            }
-            
-            Spacer()
-        }
-        .padding(12)
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-    }
-}
-
-struct StatRow: View {
-    let label: String
-    let value: String
     
     var body: some View {
         HStack {
-            Text(label)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-            
+            Text(name).font(DesignSystem.bodyFont).foregroundColor(DesignSystem.gray900)
             Spacer()
-            
-            Text(value)
-                .font(.subheadline)
-                .fontWeight(.semibold)
+            HStack(spacing: 6) {
+                Circle().fill(isActive ? DesignSystem.accent : DesignSystem.gray400).frame(width: 6, height: 6)
+                Text(status).font(DesignSystem.captionFont).foregroundColor(isActive ? DesignSystem.accent : DesignSystem.gray500)
+            }
         }
+        .padding(.horizontal, 16).padding(.vertical, 12)
     }
 }
 
+// MARK: - Settings View
 struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var appState: AppState
     
     var body: some View {
         NavigationStack {
             List {
-                Section("Server") {
-                    HStack {
-                        Text("URL")
-                        Spacer()
-                        Text("localhost:8001")
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    HStack {
-                        Text("Status")
-                        Spacer()
-                        HStack(spacing: 6) {
-                            Circle()
-                                .fill(Color.green)
-                                .frame(width: 8, height: 8)
-                            Text("Connected")
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                }
+                Section {
+                    SettingRow(title: "Server URL", value: appState.serverURL)
+                    SettingRow(title: "Sync Interval", value: "5 min")
+                } header: { Text("CONNECTION").font(DesignSystem.microFont) }
                 
-                Section("Learning") {
-                    Toggle("Background Learning", isOn: .constant(true))
-                    Toggle("Sensor Data Collection", isOn: .constant(true))
-                    Toggle("Health Data", isOn: .constant(true))
-                }
+                Section {
+                    SettingRow(title: "Background Learning", value: "On")
+                    SettingRow(title: "Notifications", value: "On")
+                    SettingRow(title: "Haptic Feedback", value: "On")
+                } header: { Text("PREFERENCES").font(DesignSystem.microFont) }
                 
-                Section("About") {
-                    HStack {
-                        Text("Version")
-                        Spacer()
-                        Text("1.0.0")
-                            .foregroundColor(.secondary)
-                    }
-                }
+                Section {
+                    SettingRow(title: "Version", value: "1.0.0")
+                    SettingRow(title: "Build", value: "2026.01.18")
+                } header: { Text("ABOUT").font(DesignSystem.microFont) }
             }
+            .listStyle(.insetGrouped)
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        dismiss()
-                    }
+                    Button("Done") { HapticManager.shared.impact(.light); dismiss() }
+                        .foregroundColor(DesignSystem.accent)
                 }
             }
+        }
+    }
+}
+
+struct SettingRow: View {
+    let title: String
+    let value: String
+    
+    var body: some View {
+        HStack {
+            Text(title).font(DesignSystem.bodyFont).foregroundColor(DesignSystem.gray900)
+            Spacer()
+            Text(value).font(DesignSystem.bodyFont).foregroundColor(DesignSystem.gray500)
         }
     }
 }

@@ -1,0 +1,95 @@
+# Mental Models System - Docker Compose Configuration
+# 
+# Usage:
+#   1. Copy .env.example to .env and set your passwords
+#   2. Run: docker compose up -d
+#   3. Access the app at http://localhost:8000
+#
+# Required environment variables (set in .env file):
+#   POSTGRES_PASSWORD - PostgreSQL password
+#   PGADMIN_PASSWORD - pgAdmin password (optional)
+
+version: '3.8'
+
+services:
+  # PostgreSQL Database for Mental Models System
+  postgres:
+    image: postgres:16-alpine
+    container_name: mental-models-db
+    environment:
+      POSTGRES_USER: mental_models
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env file}
+      POSTGRES_DB: mental_models
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mental_models -d mental_models"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # pgAdmin for database management (optional)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: mental-models-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@mentalmodels.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:?Set PGADMIN_PASSWORD in .env file}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    profiles:
+      - admin
+
+  # Redis for distributed task queue (optional, for production scaling)
+  redis:
+    image: redis:7-alpine
+    container_name: mental-models-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Mental Models System Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mental-models-app
+    environment:
+      PORT: "8000"
+      DATABASE_URL: ${DATABASE_URL:-jdbc:postgresql://postgres:5432/mental_models}
+      POSTGRES_USER: mental_models
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      ENABLE_DATABASE: "true"
+      ENABLE_DISTRIBUTED: "true"
+      ENABLE_CONTINUOUS: "false"
+      NUM_WORKERS: "4"
+      LM_STUDIO_URL: ${LM_STUDIO_URL:-http://host.docker.internal:1234}
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    profiles:
+      - full
+
+volumes:
+  postgres_data:
+  redis_data:
