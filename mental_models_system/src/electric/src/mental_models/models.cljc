@@ -1,51 +1,46 @@
 (ns mental-models.models
-  "Complete Mental Models Library in Clojure
-   All 129 mental models defined using Clojure's expressive data structures
+  "Mental Models Library - Electric Clojure
    
-   This is the core knowledge base - all models defined in
-   idiomatic Clojure for rapid extension and modification")
+   Complete mental models library with reactive state management.
+   All 129 mental models defined using Clojure's expressive data structures.
+   
+   This is a .cljc file - runs on both client and server!"
+  #?(:clj (:require [clojure.string :as str])
+     :cljs (:require [clojure.string :as str])))
 
 ;; ============================================
-;; Model Registry (Atoms for state)
+;; Model Registry (Atoms for reactive state)
 ;; ============================================
 
-(def models (atom {}))
-(def failure-modes (atom {}))
-(def categories (atom {}))
+(defonce !models (atom {}))
+(defonce !failure-modes (atom {}))
+(defonce !categories (atom {}))
 
 (defn register-model
   "Register a model in the global registry."
   [model]
   (let [name (:name model)
         category (get model :category "general")]
-    (swap! models assoc name model)
-    (swap! categories update category (fnil conj []) name)
+    (swap! !models assoc name model)
+    (swap! !categories update category (fnil conj []) name)
     (doseq [fm (:failure-modes model)]
-      (swap! failure-modes assoc (str name "_" (:name fm)) fm))
+      (swap! !failure-modes assoc (str name "_" (:name fm)) fm))
     model))
 
-(defn get-model
-  "Get a model by name."
-  [name]
-  (get @models name))
-
-(defn get-models-by-category
-  "Get all models in a category."
-  [category]
-  (map get-model (get @categories category [])))
-
-(defn get-all-models
-  "Get all registered models."
-  []
-  (vals @models))
+(defn get-model [name] (get @!models name))
+(defn get-models-by-category [category] (map get-model (get @!categories category [])))
+(defn get-all-models [] (vals @!models))
+(defn get-all-categories [] (keys @!categories))
 
 (defn search-models
   "Search models by name or description."
   [query]
-  (let [q (clojure.string/lower-case query)]
-    (filter #(or (clojure.string/includes? (clojure.string/lower-case (:name %)) q)
-                 (clojure.string/includes? (clojure.string/lower-case (get % :description "")) q))
-            (vals @models))))
+  (let [q (str/lower-case (or query ""))]
+    (if (empty? q)
+      (vals @!models)
+      (filter #(or (str/includes? (str/lower-case (or (:name %) "")) q)
+                   (str/includes? (str/lower-case (or (:description %) "")) q))
+              (vals @!models)))))
 
 ;; ============================================
 ;; Failure Mode Helper
@@ -638,12 +633,11 @@
 (defn export-all-models
   "Export all models and metadata."
   []
-  {:models @models
-   :categories @categories
-   :failure-modes @failure-modes
-   :total-models (count @models)
-   :total-failure-modes (count @failure-modes)
-   :timestamp (java.time.Instant/now)})
+  {:models @!models
+   :categories @!categories
+   :failure-modes @!failure-modes
+   :total-models (count @!models)
+   :total-failure-modes (count @!failure-modes)})
 
 (defn model-summary
   "Get a summary of a model."
@@ -658,4 +652,4 @@
 (defn all-model-summaries
   "Get summaries of all models."
   []
-  (map #(model-summary (:name %)) (vals @models)))
+  (map #(model-summary (:name %)) (vals @!models)))

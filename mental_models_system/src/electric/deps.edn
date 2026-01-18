@@ -1,0 +1,33 @@
+{:paths ["src" "resources"]
+ 
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}
+        org.clojure/clojurescript {:mvn/version "1.11.60"}
+        
+        ;; Electric Clojure - Reactive full-stack framework
+        com.hyperfiddle/electric {:mvn/version "v2-alpha-540-g0e0a8f8d"}
+        
+        ;; Server
+        ring/ring-core {:mvn/version "1.10.0"}
+        ring/ring-jetty-adapter {:mvn/version "1.10.0"}
+        ring/ring-defaults {:mvn/version "0.4.0"}
+        
+        ;; JSON
+        cheshire/cheshire {:mvn/version "5.12.0"}
+        
+        ;; Math
+        org.clojure/math.numeric-tower {:mvn/version "0.0.5"}
+        
+        ;; Logging
+        org.clojure/tools.logging {:mvn/version "1.2.4"}
+        ch.qos.logback/logback-classic {:mvn/version "1.4.11"}}
+ 
+ :aliases
+ {:dev {:extra-paths ["dev"]
+        :extra-deps {nrepl/nrepl {:mvn/version "1.1.0"}
+                     cider/cider-nrepl {:mvn/version "0.44.0"}}}
+  
+  :build {:deps {io.github.clojure/tools.build {:mvn/version "0.9.6"}
+                 com.hyperfiddle/electric-build {:mvn/version "v2-alpha-540-g0e0a8f8d"}}
+          :ns-default build}
+  
+  :prod {:main-opts ["-m" "mental-models.main"]}}}
