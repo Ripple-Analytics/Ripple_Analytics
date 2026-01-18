@@ -743,6 +743,185 @@
      {:status :shutdown :timestamp (java.time.Instant/now)}))
 
 ;; ============================================
+;; Request/Response Logging
+;; ============================================
+
+(def request-log
+  "Atom storing recent request/response logs for debugging."
+  (atom []))
+
+(def log-config
+  "Configuration for request logging."
+  {:max-entries 1000
+   :log-request-body true
+   :log-response-body true
+   :redact-headers #{"authorization" "x-api-key" "api-key" "token"}})
+
+#?(:clj
+   (defn redact-sensitive
+     "Redact sensitive information from headers."
+     [headers]
+     (reduce (fn [h key]
+               (if (contains? h key)
+                 (assoc h key "[REDACTED]")
+                 h))
+             headers
+             (:redact-headers log-config))))
+
+#?(:clj
+   (defn log-request
+     "Log a request for debugging and auditing."
+     [connector-type method url & {:keys [headers body]}]
+     (let [entry {:id (java.util.UUID/randomUUID)
+                  :timestamp (java.time.Instant/now)
+                  :connector-type connector-type
+                  :method method
+                  :url url
+                  :headers (redact-sensitive headers)
+                  :body (when (:log-request-body log-config) body)
+                  :type :request}]
+       (swap! request-log
+              (fn [log]
+                (let [new-log (conj log entry)]
+                  (if (> (count new-log) (:max-entries log-config))
+                    (vec (drop (- (count new-log) (:max-entries log-config)) new-log))
+                    new-log))))
+       (:id entry))))
+
+#?(:clj
+   (defn log-response
+     "Log a response for debugging and auditing."
+     [request-id status & {:keys [headers body latency-ms error]}]
+     (let [entry {:id (java.util.UUID/randomUUID)
+                  :request-id request-id
+                  :timestamp (java.time.Instant/now)
+                  :status status
+                  :headers (redact-sensitive headers)
+                  :body (when (:log-response-body log-config) body)
+                  :latency-ms latency-ms
+                  :error error
+                  :type :response}]
+       (swap! request-log
+              (fn [log]
+                (let [new-log (conj log entry)]
+                  (if (> (count new-log) (:max-entries log-config))
+                    (vec (drop (- (count new-log) (:max-entries log-config)) new-log))
+                    new-log))))
+       (:id entry))))
+
+#?(:clj
+   (defn get-request-log
+     "Get recent request/response logs.
+      Options: :connector-type, :limit, :since (timestamp)"
+     [& {:keys [connector-type limit since]}]
+     (cond->> @request-log
+       connector-type (filter #(= connector-type (:connector-type %)))
+       since (filter #(.isAfter (:timestamp %) since))
+       limit (take-last limit)
+       true vec)))
+
+#?(:clj
+   (defn get-request-by-id
+     "Get a specific request and its response by request ID."
+     [request-id]
+     (let [request (first (filter #(and (= :request (:type %))
+                                        (= request-id (:id %)))
+                                  @request-log))
+           response (first (filter #(and (= :response (:type %))
+                                         (= request-id (:request-id %)))
+                                   @request-log))]
+       {:request request :response response})))
+
+#?(:clj
+   (defn clear-request-log
+     "Clear all request/response logs."
+     []
+     (reset! request-log [])))
+
+#?(:clj
+   (defn get-log-stats
+     "Get statistics about the request log."
+     []
+     (let [logs @request-log
+           requests (filter #(= :request (:type %)) logs)
+           responses (filter #(= :response (:type %)) logs)
+           by-connector (group-by :connector-type requests)
+           error-responses (filter :error responses)]
+       {:total-entries (count logs)
+        :total-requests (count requests)
+        :total-responses (count responses)
+        :error-count (count error-responses)
+        :by-connector (into {} (map (fn [[k v]] [k (count v)]) by-connector))
+        :avg-latency-ms (when (seq responses)
+                          (let [latencies (keep :latency-ms responses)]
+                            (when (seq latencies)
+                              (/ (reduce + latencies) (count latencies)))))})))
+
+;; ============================================
+;; Logged HTTP Request Wrapper
+;; ============================================
+
+#?(:clj
+   (defn logged-http-request
+     "Execute an HTTP request with logging, metrics, and circuit breaker protection."
+     [connector-type method url & {:keys [headers body query-params timeout-ms]
+                                   :or {timeout-ms 30000}}]
+     (let [request-id (log-request connector-type method url :headers headers :body body)
+           start-time (System/currentTimeMillis)]
+       (try
+         (wait-for-rate-limit connector-type)
+         (record-request connector-type)
+         (let [result (with-circuit-breaker connector-type
+                        #(let [response (case method
+                                          :get (http/get url (merge default-http-opts
+                                                                    {:headers headers
+                                                                     :query-params query-params
+                                                                     :socket-timeout timeout-ms}))
+                                          :post (http/post url (merge default-http-opts
+                                                                      {:headers headers
+                                                                       :body body
+                                                                       :content-type :json
+                                                                       :socket-timeout timeout-ms}))
+                                          :put (http/put url (merge default-http-opts
+                                                                    {:headers headers
+                                                                     :body body
+                                                                     :content-type :json
+                                                                     :socket-timeout timeout-ms}))
+                                          :delete (http/delete url (merge default-http-opts
+                                                                          {:headers headers
+                                                                           :socket-timeout timeout-ms})))]
+                            response))
+               latency (- (System/currentTimeMillis) start-time)]
+           (record-latency connector-type latency)
+           (if (:success result)
+             (do
+               (log-response request-id (:status (:value result))
+                             :headers (:headers (:value result))
+                             :body (:body (:value result))
+                             :latency-ms latency)
+               {:success true
+                :status (:status (:value result))
+                :body (:body (:value result))
+                :headers (:headers (:value result))
+                :latency-ms latency
+                :request-id request-id})
+             (do
+               (record-error connector-type :circuit-breaker)
+               (log-response request-id nil :error (:error result) :latency-ms latency)
+               {:success false
+                :error (:error result)
+                :latency-ms latency
+                :request-id request-id})))
+         (catch Exception e
+           (let [latency (- (System/currentTimeMillis) start-time)]
+             (record-error connector-type :exception)
+             (log-response request-id nil :error (.getMessage e) :latency-ms latency)
+             {:success false
+              :error (.getMessage e)
+              :latency-ms latency
+              :request-id request-id}))))))
+
+;; ============================================
 ;; Base Connector Protocol
 ;; ============================================
 
