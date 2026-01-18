@@ -1550,6 +1550,268 @@ async def analyze_mental_model_correlations(request: StatisticalAnalysisRequest)
         return {"success": False, "error": str(e)}
 
 
+@app.get("/metrics/code-quality")
+async def get_code_quality_metrics(path: str = Query(None, description="Project path to analyze")):
+    """Get comprehensive code quality metrics for the project."""
+    try:
+        from src.metrics import analyze_project, get_metric_summary
+        
+        project_path = path or str(Path(__file__).parent.parent.parent)
+        report = analyze_project(project_path)
+        
+        return {
+            "success": True,
+            "summary": report.get("summary", {}),
+            "project_metrics": report.get("project_metrics", {}),
+            "metrics_by_category": report.get("metrics_by_category", {}),
+            "total_metrics": len(report.get("all_metrics", [])),
+            "total_issues": len(report.get("all_issues", []))
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/code-quality/full")
+async def get_full_code_quality_report(path: str = Query(None, description="Project path to analyze")):
+    """Get full code quality report with all metrics and issues."""
+    try:
+        from src.metrics import analyze_project
+        
+        project_path = path or str(Path(__file__).parent.parent.parent)
+        report = analyze_project(project_path)
+        
+        return {
+            "success": True,
+            **report
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/code-quality/issues")
+async def get_code_issues(
+    path: str = Query(None, description="Project path to analyze"),
+    severity: str = Query(None, description="Filter by severity: critical, high, medium, low, info"),
+    category: str = Query(None, description="Filter by category")
+):
+    """Get code issues found during analysis."""
+    try:
+        from src.metrics import analyze_project
+        
+        project_path = path or str(Path(__file__).parent.parent.parent)
+        report = analyze_project(project_path)
+        
+        issues = report.get("all_issues", [])
+        
+        if severity:
+            issues = [i for i in issues if i.get("severity") == severity]
+        if category:
+            issues = [i for i in issues if i.get("category") == category]
+        
+        return {
+            "success": True,
+            "total_issues": len(issues),
+            "issues": issues
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/development")
+async def get_development_metrics(path: str = Query(None, description="Repository path")):
+    """Get git and development velocity metrics."""
+    try:
+        from src.metrics import collect_development_metrics
+        
+        repo_path = path or str(Path(__file__).parent.parent.parent.parent)
+        metrics = collect_development_metrics(repo_path)
+        
+        return {
+            "success": True,
+            **metrics
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/development/velocity")
+async def get_velocity_metrics(
+    path: str = Query(None, description="Repository path"),
+    period: str = Query("weekly", description="Period: daily, weekly, monthly, quarterly, yearly")
+):
+    """Get development velocity metrics for a specific period."""
+    try:
+        from src.metrics import GitMetricsCollector, VelocityPeriod
+        
+        repo_path = path or str(Path(__file__).parent.parent.parent.parent)
+        collector = GitMetricsCollector(repo_path)
+        collector.collect_all()
+        
+        period_enum = VelocityPeriod(period)
+        velocity = collector.get_velocity_metrics(period_enum)
+        
+        return {
+            "success": True,
+            "velocity": velocity
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/development/hotspots")
+async def get_code_hotspots(
+    path: str = Query(None, description="Repository path"),
+    limit: int = Query(20, ge=1, le=100)
+):
+    """Get code hotspots (files with high churn rate)."""
+    try:
+        from src.metrics import collect_development_metrics
+        
+        repo_path = path or str(Path(__file__).parent.parent.parent.parent)
+        metrics = collect_development_metrics(repo_path)
+        
+        hotspots = metrics.get("git_metrics", {}).get("hotspots", [])[:limit]
+        
+        return {
+            "success": True,
+            "hotspots": hotspots
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/development/contributors")
+async def get_contributor_metrics(path: str = Query(None, description="Repository path")):
+    """Get contributor metrics and statistics."""
+    try:
+        from src.metrics import collect_development_metrics
+        
+        repo_path = path or str(Path(__file__).parent.parent.parent.parent)
+        metrics = collect_development_metrics(repo_path)
+        
+        return {
+            "success": True,
+            "top_contributors": metrics.get("git_metrics", {}).get("top_contributors", []),
+            "all_authors": metrics.get("git_metrics", {}).get("all_authors", {})
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/runtime")
+async def get_runtime_metrics():
+    """Get runtime metrics (counters, gauges, histograms)."""
+    try:
+        from src.metrics import get_metrics_report
+        
+        report = get_metrics_report()
+        
+        return {
+            "success": True,
+            **report
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/runtime/prometheus")
+async def get_prometheus_metrics():
+    """Get metrics in Prometheus format."""
+    try:
+        from src.metrics import get_prometheus_metrics
+        from fastapi.responses import PlainTextResponse
+        
+        metrics = get_prometheus_metrics()
+        return PlainTextResponse(content=metrics, media_type="text/plain")
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.post("/metrics/runtime/start")
+async def start_runtime_collection(interval: float = Query(5.0, ge=1.0, le=60.0)):
+    """Start runtime metrics collection."""
+    try:
+        from src.metrics import start_metrics_collection
+        
+        collector = start_metrics_collection(interval)
+        
+        return {
+            "success": True,
+            "message": f"Runtime metrics collection started with {interval}s interval"
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/summary")
+async def get_metrics_summary(path: str = Query(None, description="Project/repo path")):
+    """Get a summary of all metrics across all categories."""
+    try:
+        from src.metrics import (
+            analyze_project, 
+            collect_development_metrics, 
+            get_metrics_report,
+            list_all_metrics,
+            get_total_metric_count
+        )
+        
+        project_path = path or str(Path(__file__).parent.parent.parent)
+        repo_path = path or str(Path(__file__).parent.parent.parent.parent)
+        
+        code_quality = analyze_project(project_path)
+        dev_metrics = collect_development_metrics(repo_path)
+        runtime = get_metrics_report()
+        
+        total_code_metrics = len(code_quality.get("all_metrics", []))
+        total_dev_metrics = len(dev_metrics.get("git_metrics", {}).get("recent_commits", [])) + \
+                          len(dev_metrics.get("git_metrics", {}).get("hotspots", [])) + \
+                          len(dev_metrics.get("git_metrics", {}).get("top_contributors", []))
+        total_runtime_metrics = len(runtime.get("counters", {})) + \
+                               len(runtime.get("gauges", {})) + \
+                               len(runtime.get("histograms", {}))
+        
+        return {
+            "success": True,
+            "total_metrics_tracked": total_code_metrics + total_dev_metrics + total_runtime_metrics,
+            "available_metric_types": get_total_metric_count(),
+            "code_quality": {
+                "metrics_count": total_code_metrics,
+                "issues_count": len(code_quality.get("all_issues", [])),
+                "files_analyzed": code_quality.get("summary", {}).get("files_analyzed", 0),
+                "total_lines": code_quality.get("project_metrics", {}).get("total_lines", 0)
+            },
+            "development": {
+                "commits_analyzed": len(dev_metrics.get("git_metrics", {}).get("recent_commits", [])),
+                "contributors": len(dev_metrics.get("git_metrics", {}).get("all_authors", {})),
+                "iteration_speed": dev_metrics.get("iteration_speed", {})
+            },
+            "runtime": {
+                "counters": len(runtime.get("counters", {})),
+                "gauges": len(runtime.get("gauges", {})),
+                "histograms": len(runtime.get("histograms", {})),
+                "uptime_seconds": runtime.get("summary", {}).get("uptime_seconds", 0)
+            }
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@app.get("/metrics/list")
+async def list_available_metrics():
+    """List all available metric types that can be tracked."""
+    try:
+        from src.metrics import list_all_metrics, METRIC_CATEGORIES
+        
+        return {
+            "success": True,
+            "categories": METRIC_CATEGORIES,
+            "all_metrics": list_all_metrics(),
+            "total_metric_types": len(list_all_metrics())
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
 TEMPLATES_DIR = Path(__file__).parent / "templates"
 
 
