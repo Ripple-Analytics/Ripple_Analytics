@@ -850,6 +850,204 @@ async def cmd_webhook_stats(args):
             print(f"   {status} {delivery['target']} - {delivery['event_type']} ({delivery['timestamp']})")
 
 
+async def cmd_data_export(args):
+    """Export system data."""
+    from src.data import DataExporter
+    
+    exporter = DataExporter()
+    
+    print(f"\n📤 Exporting data...")
+    print(f"Format: {args.format}")
+    print(f"Output: {args.output}")
+    
+    if args.format == 'json':
+        path = exporter.export_to_json(args.output)
+    elif args.format == 'sqlite':
+        path = exporter.export_to_sqlite(args.output)
+    elif args.format == 'csv':
+        path = exporter.export_to_csv(args.output)
+    elif args.format == 'parquet':
+        path = exporter.export_to_parquet(args.output)
+    else:
+        print(f"❌ Unknown format: {args.format}")
+        return
+    
+    print(f"✅ Exported to: {path}")
+    
+    # Show export stats
+    stats = exporter.get_export_stats()
+    print(f"\n📊 Export Statistics:")
+    print(f"   Mental models: {stats.get('mental_models', 0)}")
+    print(f"   Failure modes: {stats.get('failure_modes', 0)}")
+    print(f"   Case studies: {stats.get('case_studies', 0)}")
+    print(f"   Decisions: {stats.get('decisions', 0)}")
+
+
+async def cmd_data_import(args):
+    """Import system data."""
+    from src.data import DataImporter
+    
+    importer = DataImporter()
+    
+    print(f"\n📥 Importing data...")
+    print(f"Source: {args.source}")
+    
+    if args.merge:
+        print("Mode: Merge (keep existing data)")
+    else:
+        print("Mode: Replace (overwrite existing data)")
+    
+    if args.source.endswith('.json'):
+        result = importer.import_from_json(args.source, merge=args.merge)
+    elif args.source.endswith('.db') or args.source.endswith('.sqlite'):
+        result = importer.import_from_sqlite(args.source, merge=args.merge)
+    elif args.source.endswith('.csv'):
+        result = importer.import_from_csv(args.source, merge=args.merge)
+    else:
+        print(f"❌ Unknown file format")
+        return
+    
+    print(f"✅ Import complete")
+    print(f"\n📊 Import Results:")
+    print(f"   Records imported: {result.get('imported', 0)}")
+    print(f"   Records skipped: {result.get('skipped', 0)}")
+    print(f"   Errors: {result.get('errors', 0)}")
+
+
+async def cmd_audit_query(args):
+    """Query audit logs."""
+    from src.audit import audit_logger
+    
+    print(f"\n📋 Audit Log Query")
+    print("=" * 60)
+    
+    events = audit_logger.query(
+        event_type=args.type,
+        actor=args.actor,
+        resource_type=args.resource,
+        limit=args.limit
+    )
+    
+    if not events:
+        print("No events found")
+        return
+    
+    print(f"Found {len(events)} events:\n")
+    
+    for event in events:
+        status = "✅" if event.outcome == "success" else "❌" if event.outcome == "failure" else "⏳"
+        print(f"{status} [{event.timestamp.strftime('%Y-%m-%d %H:%M:%S')}] {event.event_type}")
+        print(f"   Actor: {event.actor}")
+        print(f"   Action: {event.action} on {event.resource_type}")
+        if args.verbose and event.details:
+            print(f"   Details: {event.details}")
+
+
+async def cmd_audit_stats(args):
+    """Show audit statistics."""
+    from src.audit import audit_logger
+    
+    stats = audit_logger.get_stats()
+    
+    print(f"\n📊 Audit Statistics")
+    print("=" * 60)
+    print(f"Total events: {stats['total_events']}")
+    print(f"Buffer size: {stats['buffer_size']}")
+    print(f"Log file: {stats['log_file']}")
+    print(f"Retention: {stats['retention_days']} days")
+    
+    print(f"\n📈 Events by Type:")
+    for event_type, count in sorted(stats['events_by_type'].items(), key=lambda x: x[1], reverse=True)[:10]:
+        bar = '█' * min(count, 20)
+        print(f"   {event_type}: {bar} {count}")
+    
+    print(f"\n📊 Outcomes:")
+    for outcome, count in stats['outcomes'].items():
+        print(f"   {outcome}: {count}")
+
+
+async def cmd_security_stats(args):
+    """Show security statistics."""
+    from src.api.security import RateLimiter, APIKeyManager
+    
+    rate_limiter = RateLimiter()
+    key_manager = APIKeyManager()
+    
+    print(f"\n🔒 Security Statistics")
+    print("=" * 60)
+    
+    # Rate limiting stats
+    rl_stats = rate_limiter.get_stats()
+    print(f"\n📊 Rate Limiting:")
+    print(f"   Total requests: {rl_stats.get('total_requests', 0)}")
+    print(f"   Blocked requests: {rl_stats.get('blocked_requests', 0)}")
+    print(f"   Blocked IPs: {len(rl_stats.get('blocked_ips', []))}")
+    
+    # API key stats
+    key_stats = key_manager.get_stats()
+    print(f"\n🔑 API Keys:")
+    print(f"   Total keys: {key_stats.get('total_keys', 0)}")
+    print(f"   Active keys: {key_stats.get('active_keys', 0)}")
+    print(f"   Expired keys: {key_stats.get('expired_keys', 0)}")
+
+
+async def cmd_apikey_create(args):
+    """Create a new API key."""
+    from src.api.security import APIKeyManager
+    
+    manager = APIKeyManager()
+    
+    scopes = args.scopes.split(',') if args.scopes else ['read']
+    
+    key_info = manager.create_key(
+        name=args.name,
+        scopes=scopes,
+        expires_days=args.expires
+    )
+    
+    print(f"\n🔑 API Key Created")
+    print("=" * 60)
+    print(f"Name: {args.name}")
+    print(f"Key: {key_info['key']}")
+    print(f"Scopes: {', '.join(scopes)}")
+    if args.expires:
+        print(f"Expires: {key_info['expires_at']}")
+    print(f"\n⚠️  Save this key - it cannot be retrieved later!")
+
+
+async def cmd_apikey_list(args):
+    """List all API keys."""
+    from src.api.security import APIKeyManager
+    
+    manager = APIKeyManager()
+    keys = manager.list_keys()
+    
+    print(f"\n🔑 API Keys ({len(keys)} total)")
+    print("=" * 60)
+    
+    for key in keys:
+        status = "✅" if key['active'] else "❌"
+        print(f"\n{status} {key['name']}")
+        print(f"   ID: {key['id']}")
+        print(f"   Scopes: {', '.join(key['scopes'])}")
+        print(f"   Created: {key['created_at']}")
+        if key.get('expires_at'):
+            print(f"   Expires: {key['expires_at']}")
+        print(f"   Usage: {key.get('usage_count', 0)} requests")
+
+
+async def cmd_apikey_revoke(args):
+    """Revoke an API key."""
+    from src.api.security import APIKeyManager
+    
+    manager = APIKeyManager()
+    
+    if manager.revoke_key(args.key_id):
+        print(f"✅ Revoked API key: {args.key_id}")
+    else:
+        print(f"❌ Key not found: {args.key_id}")
+
+
 async def cmd_similar_cases(args):
     """Find similar historical cases."""
     from src.safeguards.failure_search import FailureModeSearchEngine
@@ -1071,6 +1269,48 @@ Examples:
     # webhook-stats command
     wh_stats_parser = subparsers.add_parser("webhook-stats", help="Show webhook statistics")
     
+    # data-export command
+    data_export_parser = subparsers.add_parser("data-export", help="Export system data")
+    data_export_parser.add_argument("--format", "-f", default="json",
+                                    choices=["json", "sqlite", "csv", "parquet"],
+                                    help="Export format")
+    data_export_parser.add_argument("--output", "-o", required=True, help="Output path")
+    
+    # data-import command
+    data_import_parser = subparsers.add_parser("data-import", help="Import system data")
+    data_import_parser.add_argument("source", help="Source file path")
+    data_import_parser.add_argument("--merge", "-m", action="store_true",
+                                    help="Merge with existing data instead of replacing")
+    
+    # audit-query command
+    audit_query_parser = subparsers.add_parser("audit-query", help="Query audit logs")
+    audit_query_parser.add_argument("--type", "-t", help="Filter by event type")
+    audit_query_parser.add_argument("--actor", "-a", help="Filter by actor")
+    audit_query_parser.add_argument("--resource", "-r", help="Filter by resource type")
+    audit_query_parser.add_argument("--limit", "-l", type=int, default=20, help="Maximum results")
+    audit_query_parser.add_argument("--verbose", "-v", action="store_true", help="Show details")
+    
+    # audit-stats command
+    audit_stats_parser = subparsers.add_parser("audit-stats", help="Show audit statistics")
+    
+    # security-stats command
+    security_stats_parser = subparsers.add_parser("security-stats", help="Show security statistics")
+    
+    # apikey-create command
+    apikey_create_parser = subparsers.add_parser("apikey-create", help="Create a new API key")
+    apikey_create_parser.add_argument("name", help="Key name")
+    apikey_create_parser.add_argument("--scopes", "-s", default="read",
+                                      help="Comma-separated scopes (read,write,admin)")
+    apikey_create_parser.add_argument("--expires", "-e", type=int,
+                                      help="Days until expiration")
+    
+    # apikey-list command
+    apikey_list_parser = subparsers.add_parser("apikey-list", help="List all API keys")
+    
+    # apikey-revoke command
+    apikey_revoke_parser = subparsers.add_parser("apikey-revoke", help="Revoke an API key")
+    apikey_revoke_parser.add_argument("key_id", help="Key ID to revoke")
+    
     # recommend command
     recommend_parser = subparsers.add_parser("recommend", help="Get decision recommendations")
     recommend_parser.add_argument("description", help="Description of the decision")
@@ -1148,6 +1388,22 @@ Examples:
         asyncio.run(cmd_webhook_test(args))
     elif args.command == "webhook-stats":
         asyncio.run(cmd_webhook_stats(args))
+    elif args.command == "data-export":
+        asyncio.run(cmd_data_export(args))
+    elif args.command == "data-import":
+        asyncio.run(cmd_data_import(args))
+    elif args.command == "audit-query":
+        asyncio.run(cmd_audit_query(args))
+    elif args.command == "audit-stats":
+        asyncio.run(cmd_audit_stats(args))
+    elif args.command == "security-stats":
+        asyncio.run(cmd_security_stats(args))
+    elif args.command == "apikey-create":
+        asyncio.run(cmd_apikey_create(args))
+    elif args.command == "apikey-list":
+        asyncio.run(cmd_apikey_list(args))
+    elif args.command == "apikey-revoke":
+        asyncio.run(cmd_apikey_revoke(args))
 
 
 if __name__ == "__main__":
