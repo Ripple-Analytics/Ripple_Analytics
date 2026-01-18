@@ -206,11 +206,14 @@ class HMMRegimeDetector:
             
             # Assign label based on dominant characteristics
             # Features: [models_involved, severity, log_financial_impact, lollapalooza_score, season]
-            if mean_features[3] > 0.5:  # High lollapalooza score
+            # Handle variable feature dimensions
+            n_features = len(mean_features)
+            
+            if n_features >= 4 and mean_features[3] > 0.5:  # High lollapalooza score
                 label = "Lollapalooza Regime"
-            elif mean_features[1] > 0.5:  # High severity
+            elif n_features >= 2 and mean_features[1] > 0.5:  # High severity
                 label = "Crisis Regime"
-            elif mean_features[0] > 0.5:  # High model involvement
+            elif n_features >= 1 and mean_features[0] > 0.5:  # High model involvement
                 label = "Complex Decision Regime"
             else:
                 label = "Stable Regime"

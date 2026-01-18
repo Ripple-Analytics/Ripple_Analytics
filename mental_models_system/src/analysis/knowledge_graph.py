@@ -861,9 +861,14 @@ class KnowledgeGraph:
         Returns:
             List of related models with relationship strength
         """
-        # Find the model node
-        model_id = self._generate_id("model", model_name)
-        if model_id not in self._model_nodes:
+        # Find the model node by name (search through all model nodes)
+        model_id = None
+        for node_id, node in self._model_nodes.items():
+            if node.name == model_name:
+                model_id = node_id
+                break
+        
+        if model_id is None:
             return []
         
         # Find documents that use this model
@@ -876,6 +881,18 @@ class KnowledgeGraph:
             for other_model_id in other_models:
                 if other_model_id != model_id:
                     related_models[other_model_id] += 1
+        
+        # If no documents exist, find related models by category
+        if not docs_with_model:
+            model_node = self._model_nodes.get(model_id)
+            if model_node:
+                model_category = model_node.properties.get('category')
+                # Find other models in the same category
+                for other_model_id, other_node in self._model_nodes.items():
+                    if other_model_id != model_id:
+                        other_category = other_node.properties.get('category')
+                        if other_category == model_category:
+                            related_models[other_model_id] += 2
         
         # If max_distance > 1, also find models related to related models
         if max_distance > 1:
