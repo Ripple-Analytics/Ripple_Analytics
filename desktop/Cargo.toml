@@ -1,0 +1,32 @@
+[package]
+name = "mental-models-desktop"
+version = "1.0.0"
+description = "Mental Models Desktop App - Distributed Compute Mesh"
+authors = ["Mental Models Team"]
+license = "MIT"
+repository = "https://github.com/Ripple-Analytics/Ripple_Analytics"
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "1.5", features = [] }
+
+[dependencies]
+tauri = { version = "1.5", features = ["shell-open", "system-tray"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+uuid = { version = "1.0", features = ["v4"] }
+num_cpus = "1.16"
+hostname = "0.3"
+tokio = { version = "1", features = ["full"] }
+reqwest = { version = "0.11", features = ["json"] }
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "z"
+strip = true
