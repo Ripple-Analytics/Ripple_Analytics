@@ -1,0 +1,228 @@
+groups:
+  # ===========================================================================
+  # API ALERTS
+  # ===========================================================================
+  - name: api_alerts
+    rules:
+      - alert: APIHighErrorRate
+        expr: |
+          sum(rate(http_requests_total{status=~"5.."}[5m])) 
+          / sum(rate(http_requests_total[5m])) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High API error rate detected"
+          description: "Error rate is {{ $value | humanizePercentage }} over the last 5 minutes"
+
+      - alert: APIHighLatency
+        expr: |
+          histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le)) > 2
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High API latency detected"
+          description: "95th percentile latency is {{ $value }}s"
+
+      - alert: APIDown
+        expr: up{job="api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API service is down"
+          description: "API has been unreachable for more than 1 minute"
+
+  # ===========================================================================
+  # LLM ALERTS
+  # ===========================================================================
+  - name: llm_alerts
+    rules:
+      - alert: OllamaDown
+        expr: up{job="ollama"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Ollama LLM service is down"
+          description: "Ollama has been unreachable for more than 2 minutes"
+
+      - alert: LLMHighLatency
+        expr: |
+          histogram_quantile(0.95, sum(rate(llm_request_duration_seconds_bucket[5m])) by (le)) > 30
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High LLM inference latency"
+          description: "95th percentile LLM latency is {{ $value }}s"
+
+      - alert: LLMHighErrorRate
+        expr: |
+          sum(rate(llm_requests_total{status="error"}[5m])) 
+          / sum(rate(llm_requests_total[5m])) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High LLM error rate"
+          description: "LLM error rate is {{ $value | humanizePercentage }}"
+
+  # ===========================================================================
+  # DATABASE ALERTS
+  # ===========================================================================
+  - name: database_alerts
+    rules:
+      - alert: PostgresDown
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL has been unreachable for more than 1 minute"
+
+      - alert: PostgresHighConnections
+        expr: |
+          sum(pg_stat_activity_count) / pg_settings_max_connections > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PostgreSQL connection pool nearly exhausted"
+          description: "{{ $value | humanizePercentage }} of connections in use"
+
+      - alert: PostgresSlowQueries
+        expr: |
+          rate(pg_stat_statements_seconds_total[5m]) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow PostgreSQL queries detected"
+          description: "Query execution time is high"
+
+  # ===========================================================================
+  # MENTAL MODELS SYSTEM ALERTS
+  # ===========================================================================
+  - name: mental_models_alerts
+    rules:
+      - alert: LollapaloozaDetected
+        expr: |
+          mental_models_lollapalooza_score > 0.85
+        for: 1m
+        labels:
+          severity: info
+        annotations:
+          summary: "High Lollapalooza score detected"
+          description: "Document {{ $labels.document_id }} has Lollapalooza score of {{ $value }}"
+
+      - alert: HighRiskDecision
+        expr: |
+          mental_models_decision_risk_score > 0.8
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High-risk decision detected"
+          description: "Decision {{ $labels.decision_id }} has risk score of {{ $value }}"
+
+      - alert: AnalysisQueueBacklog
+        expr: |
+          mental_models_analysis_queue_size > 100
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Analysis queue backlog growing"
+          description: "{{ $value }} documents waiting for analysis"
+
+      - alert: ModelEffectivenessDecline
+        expr: |
+          avg(mental_models_model_effectiveness) < 0.6
+        for: 1h
+        labels:
+          severity: info
+        annotations:
+          summary: "Model effectiveness declining"
+          description: "Average model effectiveness is {{ $value }}"
+
+  # ===========================================================================
+  # INFRASTRUCTURE ALERTS
+  # ===========================================================================
+  - name: infrastructure_alerts
+    rules:
+      - alert: HighCPUUsage
+        expr: |
+          100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is {{ $value }}%"
+
+      - alert: HighMemoryUsage
+        expr: |
+          (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is {{ $value }}%"
+
+      - alert: DiskSpaceLow
+        expr: |
+          (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 15
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space on {{ $labels.instance }}"
+          description: "Only {{ $value }}% disk space remaining"
+
+      - alert: DiskSpaceCritical
+        expr: |
+          (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 5
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Critical disk space on {{ $labels.instance }}"
+          description: "Only {{ $value }}% disk space remaining"
+
+  # ===========================================================================
+  # SIGNAL HARVESTER ALERTS
+  # ===========================================================================
+  - name: harvester_alerts
+    rules:
+      - alert: SignalHarvesterDown
+        expr: up{job="signal_harvester"} == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Signal harvester is not running"
+          description: "Signal harvester has been down for more than 5 minutes"
+
+      - alert: HighPrioritySignalDetected
+        expr: |
+          mental_models_signal_priority == 1
+        for: 0m
+        labels:
+          severity: info
+        annotations:
+          summary: "High priority signal detected"
+          description: "Signal: {{ $labels.signal_title }}"
+
+      - alert: HarvesterErrorRate
+        expr: |
+          sum(rate(harvester_errors_total[5m])) > 0.1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Signal harvester experiencing errors"
+          description: "Error rate: {{ $value }} per second"
