@@ -22,6 +22,9 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, UploadFile, File, Query, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.docs import get_swagger_ui_html, get_redoc_html
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
 # Import our modules
@@ -118,10 +121,54 @@ def create_app(
 ) -> FastAPI:
     """Create the FastAPI application."""
     
+    # OpenAPI documentation
+    description = """
+## Mental Models Analysis API
+
+Analyze documents through the lens of Charlie Munger's **129 mental models**.
+
+### Features
+- 🧠 **Mental Model Analysis**: Identify which models apply to any text
+- ⚡ **Lollapalooza Detection**: Detect when multiple models converge
+- 📊 **Knowledge Graph**: Build searchable graphs from analyses
+- 🛡️ **Failure Mode Detection**: Identify potential failure modes
+- 📈 **Decision Tracking**: Track decisions and outcomes
+- 🔔 **Webhooks**: Real-time notifications
+- ⏰ **Scheduled Jobs**: Automated analysis
+
+### Authentication
+Most endpoints require an API key in the `X-API-Key` header.
+
+### Rate Limiting
+- Default: 100 requests/minute
+- Authenticated: 1000 requests/minute
+    """
+    
     app = FastAPI(
         title="Mental Models Analysis API",
-        description="Analyze documents through the lens of 129 mental models",
-        version="1.0.0"
+        description=description,
+        version="1.0.0",
+        docs_url="/docs",
+        redoc_url="/redoc",
+        openapi_url="/openapi.json",
+        openapi_tags=[
+            {"name": "Analysis", "description": "Document analysis endpoints"},
+            {"name": "Models", "description": "Mental model operations"},
+            {"name": "Failure Modes", "description": "Failure mode detection"},
+            {"name": "Knowledge Graph", "description": "Graph operations"},
+            {"name": "Decisions", "description": "Decision tracking"},
+            {"name": "Scheduler", "description": "Job scheduling"},
+            {"name": "Webhooks", "description": "Webhook management"},
+            {"name": "Health", "description": "System health"},
+        ],
+        contact={
+            "name": "Ripple Analytics",
+            "url": "https://github.com/Ripple-Analytics/Ripple_Analytics"
+        },
+        license_info={
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
     )
     
     # CORS
