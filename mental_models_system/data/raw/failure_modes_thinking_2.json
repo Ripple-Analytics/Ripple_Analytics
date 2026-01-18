@@ -1,0 +1,115 @@
+{
+  "category": "Thinking Tools",
+  "models": [
+    {
+      "id": 35,
+      "name": "Inversion",
+      "failure_modes": [
+        {"mode": "Incomplete inversion", "description": "Not fully inverting the problem", "real_world_case": "Asking how to succeed without asking how to fail.", "warning_signs": ["Partial analysis", "Missing failure modes", "Optimism bias"], "safeguards": ["Complete the inversion", "List all failure modes", "Pre-mortem"], "quantitative_threshold": "Invert every major decision"},
+        {"mode": "Inversion paralysis", "description": "So focused on avoiding failure that you don't act", "real_world_case": "Analysis paralysis from too many failure scenarios.", "warning_signs": ["Excessive caution", "No action", "Fear-driven"], "safeguards": ["Balance with action", "Acceptable risk", "Move forward"], "quantitative_threshold": "Inversion should inform action, not prevent it"},
+        {"mode": "Inverting wrong variable", "description": "Inverting something that doesn't matter", "real_world_case": "Avoiding wrong failures while missing real risks.", "warning_signs": ["Wrong focus", "Irrelevant inversions", "Missing key risks"], "safeguards": ["Identify key variables", "Prioritize inversions", "Focus on critical"], "quantitative_threshold": "Invert the 20% that matters most"},
+        {"mode": "Assuming inversion is complete", "description": "Thinking you've found all failure modes", "real_world_case": "Black swan events not in inversion list.", "warning_signs": ["Overconfidence", "Closed list", "No unknown unknowns"], "safeguards": ["Assume incompleteness", "Unknown unknowns", "Margin of safety"], "quantitative_threshold": "Your inversion list is always incomplete"},
+        {"mode": "Inversion without action", "description": "Identifying failures but not preventing them", "real_world_case": "Risk registers that gather dust.", "warning_signs": ["Documentation without action", "No prevention", "Checkbox exercise"], "safeguards": ["Action for each failure", "Prevention plans", "Follow through"], "quantitative_threshold": "Every identified failure needs a mitigation"}
+      ]
+    },
+    {
+      "id": 36,
+      "name": "First Principles Thinking",
+      "failure_modes": [
+        {"mode": "False first principles", "description": "Assuming something is fundamental when it's not", "real_world_case": "Assuming industry practices are laws of physics.", "warning_signs": ["Unquestioned assumptions", "Industry norms as truth", "No deeper questioning"], "safeguards": ["Question everything", "Physics test", "Why 5 times"], "quantitative_threshold": "Most 'first principles' are actually conventions"},
+        {"mode": "Reinventing the wheel", "description": "Ignoring valid existing solutions", "real_world_case": "Rebuilding what already works well.", "warning_signs": ["NIH syndrome", "Ignoring prior art", "Wasted effort"], "safeguards": ["Learn from existing", "Build on shoulders", "Selective first principles"], "quantitative_threshold": "Only first-principles when existing solutions fail"},
+        {"mode": "Analysis paralysis from depth", "description": "Going too deep, never concluding", "real_world_case": "Endless questioning without action.", "warning_signs": ["Infinite regress", "No conclusions", "Philosophical spirals"], "safeguards": ["Practical stopping point", "Good enough depth", "Action orientation"], "quantitative_threshold": "Stop when you have actionable insight"},
+        {"mode": "Missing emergent properties", "description": "Breaking down loses system effects", "real_world_case": "Analyzing parts but missing how they interact.", "warning_signs": ["Reductionism", "Missing interactions", "System blindness"], "safeguards": ["System thinking", "Emergence awareness", "Holistic view"], "quantitative_threshold": "Whole is often more than sum of parts"},
+        {"mode": "First principles arrogance", "description": "Dismissing expertise because you 'figured it out'", "real_world_case": "Newcomers dismissing industry knowledge.", "warning_signs": ["Expert dismissal", "Overconfidence", "Ignoring experience"], "safeguards": ["Respect expertise", "Combine approaches", "Humility"], "quantitative_threshold": "First principles + expertise > either alone"}
+      ]
+    },
+    {
+      "id": 37,
+      "name": "Second-Order Thinking",
+      "failure_modes": [
+        {"mode": "Stopping at first order", "description": "Not thinking beyond immediate effects", "real_world_case": "Rent control reducing housing supply.", "warning_signs": ["Immediate focus only", "Unintended consequences", "Surprise effects"], "safeguards": ["And then what?", "Chain of effects", "System thinking"], "quantitative_threshold": "Always ask 'and then what?' at least twice"},
+        {"mode": "Infinite regress", "description": "Going too many orders deep", "real_world_case": "Paralysis from considering all possible effects.", "warning_signs": ["Endless chains", "No decision", "Complexity overload"], "safeguards": ["Practical limits", "Key effects focus", "Diminishing returns"], "quantitative_threshold": "2-3 orders usually sufficient"},
+        {"mode": "Wrong second-order effects", "description": "Predicting wrong downstream effects", "real_world_case": "Predicting effects that don't materialize.", "warning_signs": ["Wrong predictions", "Surprise outcomes", "Model failure"], "safeguards": ["Multiple scenarios", "Uncertainty acknowledgment", "Feedback loops"], "quantitative_threshold": "Second-order predictions are less accurate"},
+        {"mode": "Ignoring feedback loops", "description": "Missing how effects circle back", "real_world_case": "Actions that change the system that made them work.", "warning_signs": ["Linear thinking", "Missing feedback", "System changes"], "safeguards": ["Identify feedback loops", "Dynamic thinking", "Adaptation"], "quantitative_threshold": "Most systems have feedback loops"},
+        {"mode": "Second-order thinking as excuse", "description": "Using complexity to avoid action", "real_world_case": "Not acting because 'it's complicated'.", "warning_signs": ["Complexity excuse", "Inaction", "Overthinking"], "safeguards": ["Bias to action", "Good enough analysis", "Learn by doing"], "quantitative_threshold": "Imperfect action > perfect analysis"}
+      ]
+    },
+    {
+      "id": 38,
+      "name": "Probabilistic Thinking",
+      "failure_modes": [
+        {"mode": "False precision", "description": "Assigning precise probabilities to uncertain events", "real_world_case": "Saying 73.2% chance when you really mean 'probably'.", "warning_signs": ["Decimal probabilities", "Overconfident estimates", "False precision"], "safeguards": ["Ranges not points", "Acknowledge uncertainty", "Calibration"], "quantitative_threshold": "Use ranges: low/medium/high or 10-30%"},
+        {"mode": "Base rate neglect", "description": "Ignoring prior probabilities", "real_world_case": "Ignoring that most startups fail.", "warning_signs": ["Ignoring base rates", "Special case thinking", "Overconfidence"], "safeguards": ["Start with base rates", "Adjust from there", "Reference class"], "quantitative_threshold": "Base rate is your starting point"},
+        {"mode": "Conjunction fallacy", "description": "Thinking specific scenarios more likely than general", "real_world_case": "Detailed story seeming more probable than simple one.", "warning_signs": ["Detailed scenarios", "Story preference", "Specificity bias"], "safeguards": ["Simpler = more likely", "Probability math", "Occam's razor"], "quantitative_threshold": "P(A and B) ≤ P(A)"},
+        {"mode": "Outcome bias", "description": "Judging probability by outcome", "real_world_case": "Thinking risky bet was good because it worked.", "warning_signs": ["Outcome focus", "Process ignored", "Hindsight bias"], "safeguards": ["Judge process not outcome", "Expected value", "Repeatable decisions"], "quantitative_threshold": "Good process can have bad outcomes"},
+        {"mode": "Probability neglect for rare events", "description": "Treating unlikely events as impossible or certain", "real_world_case": "Ignoring tail risks or obsessing over them.", "warning_signs": ["Binary thinking", "Ignoring small probabilities", "Overweighting rare"], "safeguards": ["Consider all probabilities", "Expected value", "Tail risk awareness"], "quantitative_threshold": "Low probability ≠ zero probability"}
+      ]
+    },
+    {
+      "id": 39,
+      "name": "Thought Experiments",
+      "failure_modes": [
+        {"mode": "Unrealistic assumptions", "description": "Thought experiment assumptions don't hold", "real_world_case": "Frictionless physics problems vs real world.", "warning_signs": ["Idealized conditions", "Missing variables", "Oversimplification"], "safeguards": ["Reality check", "Add friction", "Test assumptions"], "quantitative_threshold": "Thought experiments are starting points, not answers"},
+        {"mode": "Confusing thought with reality", "description": "Treating thought experiment as evidence", "real_world_case": "Armchair theorizing without empirical test.", "warning_signs": ["No empirical test", "Theory worship", "Untested conclusions"], "safeguards": ["Empirical validation", "Real-world test", "Data over theory"], "quantitative_threshold": "Thought experiments need empirical validation"},
+        {"mode": "Wrong intuition pump", "description": "Thought experiment misleads intuition", "real_world_case": "Trolley problem not matching real moral decisions.", "warning_signs": ["Misleading framing", "Wrong intuitions", "Artificial scenarios"], "safeguards": ["Multiple framings", "Real-world analogues", "Question the setup"], "quantitative_threshold": "Framing affects conclusions"},
+        {"mode": "Thought experiment cherry-picking", "description": "Choosing thought experiments that support conclusion", "real_world_case": "Selecting examples that prove your point.", "warning_signs": ["Confirmation bias", "Selective examples", "One-sided"], "safeguards": ["Counter-examples", "Steel man", "Multiple perspectives"], "quantitative_threshold": "Consider thought experiments that challenge your view"},
+        {"mode": "Infinite regress in thought", "description": "Thought experiments leading to more thought experiments", "real_world_case": "Philosophical debates that never resolve.", "warning_signs": ["Endless debate", "No resolution", "Theoretical spirals"], "safeguards": ["Practical grounding", "Decision forcing", "Action orientation"], "quantitative_threshold": "Thought experiments should lead to action"}
+      ]
+    },
+    {
+      "id": 40,
+      "name": "Hanlon's Razor",
+      "failure_modes": [
+        {"mode": "Naively assuming incompetence", "description": "Assuming stupidity when malice is real", "real_world_case": "Being exploited by assuming good faith.", "warning_signs": ["Repeated 'mistakes'", "Pattern of harm", "Convenient incompetence"], "safeguards": ["Pattern recognition", "Verify intent", "Protect yourself"], "quantitative_threshold": "Three 'mistakes' in same direction = intent"},
+        {"mode": "Excusing actual malice", "description": "Giving benefit of doubt to bad actors", "real_world_case": "Fraud excused as incompetence.", "warning_signs": ["Repeated harm", "Benefiting from 'mistakes'", "No correction"], "safeguards": ["Follow incentives", "Cui bono", "Pattern analysis"], "quantitative_threshold": "If they benefit from 'mistakes', suspect intent"},
+        {"mode": "Incompetence as strategy", "description": "Not recognizing strategic incompetence", "real_world_case": "Playing dumb to avoid responsibility.", "warning_signs": ["Selective incompetence", "Convenient failures", "No accountability"], "safeguards": ["Track patterns", "Accountability", "Consequences"], "quantitative_threshold": "Incompetence in one area, competence in others = suspicious"},
+        {"mode": "Over-applying Hanlon's Razor", "description": "Using it to avoid conflict", "real_world_case": "Not confronting bad behavior.", "warning_signs": ["Conflict avoidance", "Endless excuses", "No accountability"], "safeguards": ["Address behavior regardless of intent", "Consequences", "Boundaries"], "quantitative_threshold": "Intent doesn't matter if behavior continues"},
+        {"mode": "Hanlon's Razor for systems", "description": "Attributing system failures to individual incompetence", "real_world_case": "Blaming individuals for system design failures.", "warning_signs": ["Individual blame", "System unchanged", "Repeated failures"], "safeguards": ["System analysis", "Root cause", "Design fixes"], "quantitative_threshold": "If multiple people fail, it's the system"}
+      ]
+    },
+    {
+      "id": 41,
+      "name": "Occam's Razor",
+      "failure_modes": [
+        {"mode": "Oversimplification", "description": "Making things too simple", "real_world_case": "Simple explanation missing key factors.", "warning_signs": ["Missing variables", "Poor predictions", "Oversimplified"], "safeguards": ["Test against reality", "Add complexity if needed", "Iterate"], "quantitative_threshold": "As simple as possible, but no simpler"},
+        {"mode": "Simplicity bias", "description": "Preferring simple even when complex is right", "real_world_case": "Simple model failing in complex reality.", "warning_signs": ["Model failure", "Unexplained variance", "Surprise outcomes"], "safeguards": ["Accept necessary complexity", "Reality over elegance", "Empirical test"], "quantitative_threshold": "Reality is often complex"},
+        {"mode": "Wrong simplicity metric", "description": "Simplifying wrong dimension", "real_world_case": "Fewer variables but wrong variables.", "warning_signs": ["Wrong focus", "Missing key factors", "Elegant but wrong"], "safeguards": ["Right variables", "Predictive power", "Reality check"], "quantitative_threshold": "Simplicity in right dimensions"},
+        {"mode": "Occam's Razor as laziness", "description": "Using simplicity to avoid deep analysis", "real_world_case": "Simple answer because complex is hard.", "warning_signs": ["Lazy analysis", "Premature simplicity", "Avoiding work"], "safeguards": ["Earn simplicity", "Understand first", "Simplify after"], "quantitative_threshold": "Simplicity should emerge from understanding"},
+        {"mode": "Context-dependent simplicity", "description": "Simple in one context, complex in another", "real_world_case": "Solution simple for experts, complex for novices.", "warning_signs": ["Audience mismatch", "Communication failure", "Assumed knowledge"], "safeguards": ["Know audience", "Appropriate level", "Test understanding"], "quantitative_threshold": "Simplicity is relative to audience"}
+      ]
+    },
+    {
+      "id": 42,
+      "name": "Map vs Territory",
+      "failure_modes": [
+        {"mode": "Confusing map for territory", "description": "Treating model as reality", "real_world_case": "Financial models treated as truth before 2008.", "warning_signs": ["Model worship", "Ignoring anomalies", "Overconfidence"], "safeguards": ["Models are approximations", "Reality check", "Update models"], "quantitative_threshold": "All models are wrong, some are useful"},
+        {"mode": "Outdated maps", "description": "Using old models for new reality", "real_world_case": "Using pre-internet business models.", "warning_signs": ["Stale models", "Poor predictions", "Changed reality"], "safeguards": ["Update regularly", "Reality testing", "Fresh data"], "quantitative_threshold": "Update maps when territory changes"},
+        {"mode": "Map resolution mismatch", "description": "Wrong level of detail for the task", "real_world_case": "Using world map for city navigation.", "warning_signs": ["Wrong granularity", "Missing details", "Too much detail"], "safeguards": ["Match resolution to task", "Zoom in/out", "Appropriate detail"], "quantitative_threshold": "Resolution should match decision needs"},
+        {"mode": "Single map dependence", "description": "Relying on one model only", "real_world_case": "Single valuation method for investments.", "warning_signs": ["One model", "No triangulation", "Blind spots"], "safeguards": ["Multiple models", "Triangulation", "Diverse perspectives"], "quantitative_threshold": "Use 3+ models for important decisions"},
+        {"mode": "Map-making as procrastination", "description": "Endlessly refining models instead of acting", "real_world_case": "Perfecting analysis instead of deciding.", "warning_signs": ["Endless refinement", "No action", "Perfectionism"], "safeguards": ["Good enough maps", "Action orientation", "Iterate"], "quantitative_threshold": "Map should enable action, not delay it"}
+      ]
+    },
+    {
+      "id": 43,
+      "name": "Circle of Competence",
+      "failure_modes": [
+        {"mode": "Overestimating circle", "description": "Thinking you know more than you do", "real_world_case": "Experts in one field opining on others.", "warning_signs": ["Overconfidence", "No humility", "Expert creep"], "safeguards": ["Define boundaries", "Seek feedback", "Stay humble"], "quantitative_threshold": "Your circle is smaller than you think"},
+        {"mode": "Not expanding circle", "description": "Staying too narrow", "real_world_case": "Never learning new domains.", "warning_signs": ["Stagnation", "Narrow focus", "No growth"], "safeguards": ["Continuous learning", "Adjacent expansion", "Deliberate practice"], "quantitative_threshold": "Expand circle 10% per year"},
+        {"mode": "Circle shrinkage", "description": "Knowledge becoming obsolete", "real_world_case": "Skills becoming irrelevant.", "warning_signs": ["Declining relevance", "Outdated knowledge", "Industry changes"], "safeguards": ["Stay current", "Update skills", "Monitor relevance"], "quantitative_threshold": "Knowledge has half-life of 5-10 years"},
+        {"mode": "False circle boundaries", "description": "Wrong understanding of what you know", "real_world_case": "Thinking you understand when you don't.", "warning_signs": ["Surprise failures", "Blind spots", "Overconfidence"], "safeguards": ["Test knowledge", "Seek challenges", "Honest assessment"], "quantitative_threshold": "Test your knowledge against reality"},
+        {"mode": "Circle of competence as excuse", "description": "Using it to avoid learning", "real_world_case": "Not learning because 'not my circle'.", "warning_signs": ["Avoidance", "No growth", "Comfort zone"], "safeguards": ["Deliberate expansion", "Growth mindset", "Challenge yourself"], "quantitative_threshold": "Circle should grow, not be excuse"}
+      ]
+    },
+    {
+      "id": 44,
+      "name": "Falsifiability",
+      "failure_modes": [
+        {"mode": "Unfalsifiable beliefs", "description": "Holding beliefs that can't be disproven", "real_world_case": "Investment thesis that explains all outcomes.", "warning_signs": ["Explains everything", "No possible disconfirmation", "Moving goalposts"], "safeguards": ["Define falsification criteria", "Pre-commit to tests", "Intellectual honesty"], "quantitative_threshold": "If nothing can disprove it, it's not useful"},
+        {"mode": "Ignoring falsification", "description": "Ignoring evidence that disproves belief", "real_world_case": "Holding losing positions despite evidence.", "warning_signs": ["Ignoring evidence", "Rationalization", "Confirmation bias"], "safeguards": ["Pre-commit to criteria", "Honor the test", "Update beliefs"], "quantitative_threshold": "Honor your falsification criteria"},
+        {"mode": "Weak falsification tests", "description": "Tests that are too easy to pass", "real_world_case": "Setting low bars for success.", "warning_signs": ["Easy tests", "Always passing", "No real challenge"], "safeguards": ["Strong tests", "High bars", "Real challenges"], "quantitative_threshold": "Tests should have real chance of failure"},
+        {"mode": "Post-hoc falsification criteria", "description": "Changing criteria after seeing results", "real_world_case": "Moving goalposts to claim success.", "warning_signs": ["Changing criteria", "Post-hoc rationalization", "Never wrong"], "safeguards": ["Pre-commit to criteria", "Write it down", "No changes"], "quantitative_threshold": "Criteria must be set before test"},
+        {"mode": "Falsification as nihilism", "description": "Rejecting everything because nothing is certain", "real_world_case": "Paralysis from inability to prove anything.", "warning_signs": ["Excessive skepticism", "No beliefs", "Nihilism"], "safeguards": ["Practical certainty", "Good enough evidence", "Action despite uncertainty"], "quantitative_threshold": "Falsifiability enables better beliefs, not no beliefs"}
+      ]
+    }
+  ]
+}
