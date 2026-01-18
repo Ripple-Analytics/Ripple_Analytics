@@ -26,7 +26,10 @@ src/electric/
     ├── statistics.cljc                   # Statistical functions (shared)
     ├── data_processing.cljc              # Text processing (shared)
     ├── tech_debt.cljc                    # Tech Debt Eliminator (shared)
-    └── ui.cljc                           # Reactive UI components (shared)
+    ├── ui.cljc                           # Reactive UI components (shared)
+    ├── db.clj                            # Database persistence (PostgreSQL)
+    ├── distributed.clj                   # Petabyte-scale distributed processing
+    └── continuous.clj                    # 24/7 continuous learning system
 ```
 
 ## Quick Start
@@ -103,6 +106,27 @@ clj -M:dev
 - **Refactoring Plans** - Prioritized steps to reduce tech debt
 - **LLM Integration** - AI-powered refactoring suggestions
 - **Visualization** - D3.js-compatible DAG export
+
+### Petabyte-Scale Distributed Processing
+- **Distributed Worker Architecture** - Scales across unlimited compute nodes
+- **Auto-Scaling** - Automatically adjusts workers based on queue depth
+- **Device Coordination** - Desktop, phone, watch, servers all working together
+- **Maximum Utilization** - All devices run at 90%+ capacity continuously
+- **Batch Processing** - Handle terabyte to petabyte datasets efficiently
+
+### Continuous Learning System
+- **24/7 Web Scrapers** - Headless scraping with rate limiting
+- **File Watchers** - Automatic processing of new files
+- **Sensor Collection** - Real-time data from all device sensors
+- **Pattern Detection** - Continuous learning from all data sources
+- **Insight Generation** - Automatic insight generation using mental models
+
+### Database Persistence
+- **PostgreSQL with next.jdbc** - Production-ready database layer
+- **Connection Pooling** - HikariCP for high performance
+- **Analysis Storage** - Store and query analysis results
+- **Learning History** - Track all processed content
+- **Usage Statistics** - Monitor model usage patterns
 
 ## API Endpoints
 
@@ -190,8 +214,8 @@ Each model includes:
 - Application guidance
 - 5 failure modes with signals and safeguards
 
-**Last updated**: January 18, 2026 09:44 UTC
-**Lines of code**: 6,500+ (Electric Clojure modules)
+**Last updated**: January 18, 2026 09:53 UTC
+**Lines of code**: 8,500+ (Electric Clojure modules)
 
 ## Design Philosophy
 
