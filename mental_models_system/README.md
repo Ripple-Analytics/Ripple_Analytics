@@ -8,18 +8,21 @@ Built for 100 years. Planck knowledge, not chauffeur knowledge.
 
 | Metric | Value |
 |--------|-------|
-| Total Lines of Code | 80,118 |
-| Python Code | 55,906 lines |
+| Total Lines of Code | 86,051 |
+| Python Code | 60,000+ lines |
+| Swift Code | 4,000+ lines |
 | JSON Data | 22,395 lines |
-| HTML/Templates | 860 lines |
+| HTML/Templates | 1,200+ lines |
 | YAML/Config | 1,957 lines |
-| Total Files | 200+ |
+| Total Files | 220+ |
 | Mental Models | 129 |
 | Failure Modes | 645 |
 | Connectors | 11 |
 | Task Handlers | 9 |
+| Statistical Analysis Functions | 15+ |
+| iOS/watchOS Views | 20+ |
 
-**Last Updated:** January 18, 2026
+**Last Updated:** January 18, 2026 08:18 UTC
 
 ## Architecture
 
@@ -109,6 +112,58 @@ The system includes a FastAPI REST API for querying the database:
 | `POST /huggingface/classify-mental-models` | Classify by mental model categories |
 | `POST /huggingface/detect-biases` | Detect cognitive biases |
 | `GET /huggingface/search-models` | Search Huggingface Hub |
+
+### Statistical Analysis
+
+| Endpoint | Description |
+|----------|-------------|
+| `POST /statistics/synthesize` | Multi-variable synthesis with full statistical analysis |
+| `POST /statistics/correlations` | Calculate correlation matrix (Pearson/Spearman) |
+| `POST /statistics/regression` | Simple and multiple regression analysis |
+| `POST /statistics/covariates` | Analyze covariate effects on target variable |
+| `POST /statistics/factor-analysis` | Factor analysis with eigenvalues and loadings |
+| `POST /statistics/covariance-matrix` | Calculate covariance matrix |
+| `GET /statistics/descriptive/{var}` | Descriptive statistics for a variable |
+| `POST /statistics/mental-model-correlations` | Cross-model correlation analysis |
+
+## iOS/watchOS Apps
+
+Native Apple apps with Steve Jobs-level design for continuous learning:
+
+### iOS App Features
+- SwiftUI dashboard with real-time learning stats
+- Sensor data collection (accelerometer, gyroscope, GPS, HealthKit)
+- Background learning with BGTaskScheduler
+- 129 mental models browser with category filtering
+- Document analysis with bias detection
+- Insights feed with pattern discovery
+- iOS Shortcuts integration for automation
+
+### watchOS App Features
+- Glanceable learning status
+- Health data monitoring (heart rate, steps, calories)
+- Quick access to top mental models
+- Continuous background learning
+- Phone sync via WatchConnectivity
+
+## Continuous Learning Pipeline
+
+24/7 desktop service that learns and improves automatically:
+
+- **Web Scrapers**: Headless Selenium scrapers for mental models content
+- **Pattern Detection**: Automatic pattern and anomaly detection
+- **Insight Generation**: Mental model keyword matching and correlation
+- **SQLite Persistence**: Resumable processing with checkpoint/resume
+- **Callback System**: Notify on new insights and patterns
+
+## AI Agent Integration
+
+Automated improvement cycles with Devin and Manus:
+
+- **AutomatedImprovementCycle**: Coordinate multiple AI agents
+- **ImprovementRequest/Result**: Track improvement lifecycle
+- **Agent Selection**: Route tasks to appropriate agent by type
+- **Learning Integration**: Generate improvements from insights
 
 ## Connectors
 
