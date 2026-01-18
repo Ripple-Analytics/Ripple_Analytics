@@ -1188,3 +1188,97 @@
     
     ;; Clean up
     (conn/clear-hooks)))
+
+;; ============================================
+;; Connector Factory Pattern Tests
+;; ============================================
+
+(deftest test-connector-registry-atom
+  (testing "Connector registry atom is initialized"
+    (is (instance? clojure.lang.Atom conn/connector-registry))
+    (is (map? @conn/connector-registry))))
+
+(deftest test-built-in-connector-types-registered
+  (testing "Built-in connector types are registered"
+    (is (contains? @conn/connector-registry :github))
+    (is (contains? @conn/connector-registry :slack))
+    (is (contains? @conn/connector-registry :huggingface))
+    (is (contains? @conn/connector-registry :lm-studio))
+    (is (contains? @conn/connector-registry :zapier))
+    (is (contains? @conn/connector-registry :web-scraper))
+    (is (contains? @conn/connector-registry :file))))
+
+(deftest test-register-connector-type
+  (testing "Register connector type adds to registry"
+    (conn/register-connector-type :test-connector
+      (fn [config] {:type :test :config config})
+      :description "Test connector"
+      :required-config [:test-key])
+    
+    (is (contains? @conn/connector-registry :test-connector))
+    (let [type-info (get @conn/connector-registry :test-connector)]
+      (is (fn? (:factory-fn type-info)))
+      (is (= "Test connector" (:description type-info)))
+      (is (= [:test-key] (:required-config type-info))))
+    
+    ;; Clean up
+    (conn/unregister-connector-type :test-connector)))
+
+(deftest test-unregister-connector-type
+  (testing "Unregister connector type removes from registry"
+    (conn/register-connector-type :temp-connector
+      (fn [_] {:type :temp})
+      :description "Temporary connector")
+    
+    (is (contains? @conn/connector-registry :temp-connector))
+    (conn/unregister-connector-type :temp-connector)
+    (is (not (contains? @conn/connector-registry :temp-connector)))))
+
+(deftest test-list-connector-types
+  (testing "List connector types returns all registered types"
+    (let [types (conn/list-connector-types)]
+      (is (vector? types))
+      (is (pos? (count types)))
+      (is (every? #(contains? % :type) types))
+      (is (every? #(contains? % :description) types))
+      (is (every? #(contains? % :required-config) types)))))
+
+(deftest test-create-connector-success
+  (testing "Create connector with valid config succeeds"
+    (let [connector (conn/create-connector :file {:base-path "/tmp"})]
+      (is (map? connector))
+      (is (= :file (:type connector)))
+      (is (not (contains? connector :error))))))
+
+(deftest test-create-connector-missing-config
+  (testing "Create connector with missing required config fails"
+    (let [result (conn/create-connector :github {})]
+      (is (map? result))
+      (is (= :error (:status result)))
+      (is (str/includes? (:error result) "Missing required config")))))
+
+(deftest test-create-connector-unknown-type
+  (testing "Create connector with unknown type fails"
+    (let [result (conn/create-connector :nonexistent {:key "value"})]
+      (is (map? result))
+      (is (= :error (:status result)))
+      (is (str/includes? (:error result) "Unknown connector type")))))
+
+(deftest test-create-and-register
+  (testing "Create and register connector in one step"
+    (conn/shutdown-all-connectors)
+    (let [result (conn/create-and-register "test-file" :file {:base-path "/tmp"})]
+      (is (map? result))
+      (is (= :success (:status result)))
+      (is (= "test-file" (:name result)))
+      (is (= :file (:connector-type result)))
+      (is (contains? @conn/active-connectors "test-file")))
+    ;; Clean up
+    (conn/shutdown-all-connectors)))
+
+(deftest test-create-and-register-with-error
+  (testing "Create and register with missing config returns error"
+    (let [result (conn/create-and-register "test-github" :github {})]
+      (is (map? result))
+      (is (= :error (:status result)))
+      (is (not (contains? @conn/active-connectors "test-github"))))))
