@@ -4,9 +4,9 @@
 ;; This is the core knowledge base - all models defined in
 ;; expressive Lisp syntax for rapid extension and modification
 
-(import [typing [Dict List Any Optional]])
-(import [datetime [datetime]])
-(import [enum [Enum]])
+(import typing [Dict List Any Optional])
+(import datetime [datetime])
+(import enum [Enum])
 
 ;; ============================================
 ;; Model Registry
@@ -32,11 +32,11 @@
 ;; Model Definition Macro
 ;; ============================================
 
-(defmacro model [name &rest body]
+(defmacro model [name #* body]
   "Define a mental model with all its properties."
   `(register {"name" ~(str name) ~@body}))
 
-(defmacro failure [name severity description &rest body]
+(defmacro failure [name severity description #* body]
   "Define a failure mode."
   `{"name" ~(str name)
     "severity" ~severity

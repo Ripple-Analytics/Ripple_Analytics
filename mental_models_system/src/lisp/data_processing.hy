@@ -8,12 +8,12 @@
 ;; - Data transformation
 ;; - Embedding preparation
 
-(import [typing [Dict List Any Optional Tuple]])
-(import [datetime [datetime]])
-(import [functools [reduce]])
-(import [collections [Counter defaultdict]])
-(import [re])
-(import [hashlib [md5]])
+(import typing [Dict List Any Optional Tuple])
+(import datetime [datetime])
+(import functools [reduce])
+(import collections [Counter defaultdict])
+(import re)
+(import hashlib [md5])
 (import os)
 
 ;; ============================================
@@ -194,13 +194,13 @@
 (defn interpret-flesch [score]
   "Interpret Flesch reading ease score."
   (cond
-    [(>= score 90) "Very easy - 5th grade"]
-    [(>= score 80) "Easy - 6th grade"]
-    [(>= score 70) "Fairly easy - 7th grade"]
-    [(>= score 60) "Standard - 8th-9th grade"]
-    [(>= score 50) "Fairly difficult - 10th-12th grade"]
-    [(>= score 30) "Difficult - College"]
-    [True "Very difficult - College graduate"]))
+    (>= score 90) "Very easy - 5th grade"
+    (>= score 80) "Easy - 6th grade"
+    (>= score 70) "Fairly easy - 7th grade"
+    (>= score 60) "Standard - 8th-9th grade"
+    (>= score 50) "Fairly difficult - 10th-12th grade"
+    (>= score 30) "Difficult - College"
+    True "Very difficult - College graduate"))
 
 ;; ============================================
 ;; Data Transformation
@@ -319,7 +319,7 @@
         results []
         processed 0
         errors 0]
-    (for [root dirs files] (os.walk dirpath)
+    (for [#(root dirs files) (os.walk dirpath)]
       (for [filename files]
         (when (any (lfor ext extensions (.endswith filename ext)))
           (let [filepath (os.path.join root filename)
@@ -327,11 +327,11 @@
             (.append results result)
             (if (= (get result "status") "success")
                 (setv processed (+ processed 1))
-                (setv errors (+ errors 1)))))))
+                (setv errors (+ errors 1))))))
     {"directory" dirpath
      "files_processed" processed
      "errors" errors
-     "results" results}))
+     "results" results})))
 
 ;; ============================================
 ;; Mental Model Document Classification

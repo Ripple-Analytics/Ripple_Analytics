@@ -9,10 +9,10 @@
 ;; - Descriptive statistics
 ;; - Hypothesis testing
 
-(import [typing [Dict List Any Optional Tuple Union]])
-(import [datetime [datetime]])
-(import [functools [reduce]])
-(import [collections [Counter]])
+(import typing [Dict List Any Optional Tuple Union])
+(import datetime [datetime])
+(import functools [reduce])
+(import collections [Counter])
 (import math)
 
 ;; Try to import numpy/scipy, fall back to pure Lisp implementations
@@ -26,7 +26,7 @@
     None))
 
 (try
-  (import [scipy.stats :as stats])
+  (import scipy.stats :as stats)
   (setv SCIPY_AVAILABLE True)
   (except [ImportError]
     None))
@@ -213,11 +213,11 @@
   "Interpret correlation coefficient strength."
   (let [abs-r (abs r)]
     (cond
-      [(>= abs-r 0.9) "very strong"]
-      [(>= abs-r 0.7) "strong"]
-      [(>= abs-r 0.5) "moderate"]
-      [(>= abs-r 0.3) "weak"]
-      [True "very weak or none"])))
+      (>= abs-r 0.9) "very strong"
+      (>= abs-r 0.7) "strong"
+      (>= abs-r 0.5) "moderate"
+      (>= abs-r 0.3) "weak"
+      True "very weak or none")))
 
 ;; ============================================
 ;; Regression Analysis

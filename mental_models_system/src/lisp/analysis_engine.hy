@@ -9,11 +9,11 @@
 ;; - Bias detection
 ;; - Pattern recognition
 
-(import [typing [Dict List Any Optional Tuple Set]])
-(import [datetime [datetime]])
-(import [functools [reduce partial]])
-(import [itertools [combinations permutations]])
-(import [collections [Counter defaultdict]])
+(import typing [Dict List Any Optional Tuple Set])
+(import datetime [datetime])
+(import functools [reduce partial])
+(import itertools [combinations permutations])
+(import collections [Counter defaultdict])
 (import math)
 
 ;; ============================================
@@ -205,13 +205,13 @@
    
    When models reinforce each other, the effect is multiplicative,
    not additive. This calculates that multiplier."
-  (let [n (len high-confidence-results)]
-    (cond
-      [(>= n 5) 3.0]
-      [(>= n 4) 2.5]
-      [(>= n 3) 2.0]
-      [(>= n 2) 1.5]
-      [True 1.0])))
+    (let [n (len high-confidence-results)]
+      (cond
+        (>= n 5) 3.0
+        (>= n 4) 2.5
+        (>= n 3) 2.0
+        (>= n 2) 1.5
+        True 1.0)))
 
 ;; ============================================
 ;; Inversion Analysis
@@ -401,10 +401,10 @@
     {"text_analyzed" (cut text 0 200)
      "biases_detected" detected
      "total_biases" (len detected)
-     "risk_level" (cond
-                   [(>= (len detected) 3) "high"]
-                   [(>= (len detected) 1) "medium"]
-                   [True "low"])
+          "risk_level" (cond
+                        (>= (len detected) 3) "high"
+                        (>= (len detected) 1) "medium"
+                        True "low")
      "recommendation" (if detected
                         "Review reasoning for identified biases"
                         "No obvious bias patterns detected")}))
@@ -416,11 +416,11 @@
 (defn find-patterns [data pattern-type]
   "Find patterns in data based on pattern type."
   (cond
-    [(= pattern-type "trend") (find-trend-patterns data)]
-    [(= pattern-type "cycle") (find-cycle-patterns data)]
-    [(= pattern-type "anomaly") (find-anomaly-patterns data)]
-    [(= pattern-type "correlation") (find-correlation-patterns data)]
-    [True {"error" "Unknown pattern type"}]))
+    (= pattern-type "trend") (find-trend-patterns data)
+    (= pattern-type "cycle") (find-cycle-patterns data)
+    (= pattern-type "anomaly") (find-anomaly-patterns data)
+    (= pattern-type "correlation") (find-correlation-patterns data)
+    True {"error" "Unknown pattern type"}))
 
 (defn find-trend-patterns [data]
   "Find trend patterns in sequential data."
@@ -428,10 +428,10 @@
       (let [diffs (lfor [a b] (zip data (cut data 1))
                        (- b a))
             avg-diff (/ (sum diffs) (len diffs))
-            trend (cond
-                   [(> avg-diff 0.1) "increasing"]
-                   [(< avg-diff -0.1) "decreasing"]
-                   [True "stable"])]
+                        trend (cond
+                               (> avg-diff 0.1) "increasing"
+                               (< avg-diff -0.1) "decreasing"
+                               True "stable")]
         {"pattern_type" "trend"
          "direction" trend
          "average_change" avg-diff
