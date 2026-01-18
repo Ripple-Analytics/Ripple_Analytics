@@ -76,7 +76,7 @@ clj -M:dev
 - Bias detection
 
 ### Models Browser
-- Search and filter 129 mental models
+- Search and filter all registered mental models (dynamically counted)
 - Detailed view with failure modes
 - Category grouping
 
@@ -169,7 +169,7 @@ export LM_STUDIO_MODEL=local-model
 
 ## Mental Models Included
 
-The system includes **129 mental models** with **645 failure modes** across 34 categories:
+The system includes mental models with failure modes across multiple categories (counts are dynamically computed from the actual registered models):
 
 - **Decision Making**: Circle of Competence, Margin of Safety, Second-Order Thinking, Inversion, Opportunity Cost
 - **Psychology**: Incentives, Social Proof, Commitment/Consistency, Availability Heuristic, Loss Aversion, Confirmation Bias, Hindsight Bias, Dunning-Kruger, Status Quo Bias, Narrative Fallacy

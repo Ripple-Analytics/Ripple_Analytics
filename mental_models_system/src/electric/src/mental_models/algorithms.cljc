@@ -1,8 +1,9 @@
 (ns mental-models.algorithms
   "Mental Models Algorithms - Electric Clojure
    
-   Individual algorithms and LM Studio prompts for each of 129 mental models.
+   Individual algorithms and LM Studio prompts for all registered mental models.
    Uses a single LM Studio model with different prompts to save memory.
+   Model count is dynamically computed from the models registry.
    
    Each model has:
    1. Pattern detection algorithm (rule-based)

@@ -256,7 +256,7 @@
         <div class=\"flex justify-between items-center\" style=\"background: var(--gray-900);\">
             <div class=\"px-4 py-2\">
                 <h1 class=\"text-lg font-bold\" style=\"color: var(--white);\">MENTAL MODELS SYSTEM</h1>
-                <p class=\"text-xs\" style=\"color: var(--gray-400);\">Electric Clojure - Reactive Full-Stack | 129 Models | 645 Failure Modes</p>
+                <p class=\"text-xs\" style=\"color: var(--gray-400);\">Electric Clojure - Reactive Full-Stack | <span id=\"header-models\">...</span> Models | <span id=\"header-failures\">...</span> Failure Modes</p>
             </div>
             <div class=\"beast-mode-toggle\" id=\"beast-mode-btn\" onclick=\"toggleBeastMode()\">
                 <span class=\"beast-mode-label\">BEAST MODE</span>
@@ -1071,15 +1071,20 @@
         // Store models data globally for map dropdown
         window.modelsData = {};
         
-        // Modified loadData to store models
-        async function loadDataAndStore() {
-            const response = await fetch('/api/models');
-            const data = await response.json();
-            window.modelsData = data.models;
+                // Modified loadData to store models
+                async function loadDataAndStore() {
+                    const response = await fetch('/api/models');
+                    const data = await response.json();
+                    window.modelsData = data.models;
             
-            document.getElementById('total-models').textContent = data.total_models;
-            document.getElementById('total-failures').textContent = data.total_failure_modes;
-            document.getElementById('total-categories').textContent = Object.keys(data.categories).length;
+                    // Update dashboard counts from REAL API data
+                    document.getElementById('total-models').textContent = data.total_models;
+                    document.getElementById('total-failures').textContent = data.total_failure_modes;
+                    document.getElementById('total-categories').textContent = Object.keys(data.categories).length;
+            
+                    // Update header counts dynamically from REAL data
+                    document.getElementById('header-models').textContent = data.total_models;
+                    document.getElementById('header-failures').textContent = data.total_failure_modes;
             
             // Populate categories table
             const categoriesTable = document.getElementById('categories-table');

@@ -2,7 +2,8 @@
   "Mental Models Library - Electric Clojure
    
    Complete mental models library with reactive state management.
-   All 129 mental models defined using Clojure's expressive data structures.
+   All mental models defined using Clojure's expressive data structures.
+   Model count is dynamically computed via (count @!models).
    
    This is a .cljc file - runs on both client and server!"
   #?(:clj (:require [clojure.string :as str])
