@@ -23,6 +23,66 @@
       ],
       "enabled": true,
       "usage_count": 1
+    },
+    {
+      "key_hash": "278ce9abdfb639c383c15dbecad860078be28cb695aa631023b62bf7fbbe46f2",
+      "name": "test_key",
+      "created_at": "2026-01-18T00:56:18.210554",
+      "expires_at": null,
+      "rate_limit_multiplier": 1.0,
+      "scopes": [
+        "read"
+      ],
+      "enabled": true,
+      "usage_count": 0
+    },
+    {
+      "key_hash": "1593ce3f2425f7a27b551cb25cee7201ef23ba4db1aee924772f67b19d672ad4",
+      "name": "test_key",
+      "created_at": "2026-01-18T00:56:46.240769",
+      "expires_at": null,
+      "rate_limit_multiplier": 1.0,
+      "scopes": [
+        "read"
+      ],
+      "enabled": true,
+      "usage_count": 0
+    },
+    {
+      "key_hash": "b26847136d6bd4a46214ee755861f3d3f0710b56d49cc38ece781ada46838586",
+      "name": "test_key",
+      "created_at": "2026-01-18T00:57:17.631636",
+      "expires_at": null,
+      "rate_limit_multiplier": 1.0,
+      "scopes": [
+        "read"
+      ],
+      "enabled": true,
+      "usage_count": 0
+    },
+    {
+      "key_hash": "11138a6bbce9bdb77969bc278ff7ab6c2cfad950b634bcac2f1bb92936078dbd",
+      "name": "test_key",
+      "created_at": "2026-01-18T00:57:38.874341",
+      "expires_at": null,
+      "rate_limit_multiplier": 1.0,
+      "scopes": [
+        "read"
+      ],
+      "enabled": true,
+      "usage_count": 0
+    },
+    {
+      "key_hash": "c010716e1dbbafa8e3ae6a084c055b241768fefc7b9046434e9ed77fe336dac1",
+      "name": "test_key",
+      "created_at": "2026-01-18T00:57:55.699734",
+      "expires_at": null,
+      "rate_limit_multiplier": 1.0,
+      "scopes": [
+        "read"
+      ],
+      "enabled": true,
+      "usage_count": 0
     }
   ]
 }
