@@ -293,18 +293,43 @@
             </div>
         </div>
         
-        <!-- Navigation - Monochrome with Red Accent -->
-        <div class=\"flex border-b\" style=\"border-color: var(--gray-200); background: var(--gray-100);\">
-            <button class=\"nav-tab active px-4 py-2 text-xs\" onclick=\"showTab('dashboard')\">DASHBOARD</button>
-            <button class=\"nav-tab px-4 py-2 text-xs\" onclick=\"showTab('models')\">MODELS</button>
-            <button class=\"nav-tab px-4 py-2 text-xs\" onclick=\"showTab('analysis')\">ANALYSIS</button>
-            <button class=\"nav-tab px-4 py-2 text-xs\" onclick=\"showTab('statistics')\">STATISTICS</button>
-            <button class=\"nav-tab px-4 py-2 text-xs\" onclick=\"showTab('data')\">DATA</button>
-            <button class=\"nav-tab px-4 py-2 text-xs\" onclick=\"showTab('map')\">WORLD MAP</button>
-            <button class=\"nav-tab px-4 py-2 text-xs\" onclick=\"showTab('llm')\">LLM</button>
-            <button class=\"nav-tab px-4 py-2 text-xs\" onclick=\"showTab('techdebt')\">TECH DEBT</button>
-            <button class=\"nav-tab px-4 py-2 text-xs\" onclick=\"showTab('distributed')\">DISTRIBUTED</button>
-        </div>
+                <!-- Navigation - Munger's Latticework Organization -->
+                <!-- Organized by: 1) Overview, 2) INVERSION (failures first!), 3) Latticework (models), 4) Multi-disciplinary Analysis, 5) Tools -->
+                <div class=\"flex flex-wrap border-b\" style=\"border-color: var(--gray-200); background: var(--gray-100);\">
+                    <!-- OVERVIEW: Start with the big picture -->
+                    <div class=\"flex items-center\" style=\"border-right: 1px solid var(--gray-300);\">
+                        <span class=\"px-2 text-xs font-bold\" style=\"color: var(--gray-500);\">OVERVIEW</span>
+                        <button class=\"nav-tab active px-3 py-2 text-xs\" onclick=\"showTab('dashboard')\" title=\"Big picture metrics and status\">DASHBOARD</button>
+                    </div>
+                    <!-- INVERSION: What can go wrong? (Munger: 'Invert, always invert') -->
+                    <div class=\"flex items-center\" style=\"border-right: 1px solid var(--gray-300);\">
+                        <span class=\"px-2 text-xs font-bold\" style=\"color: var(--accent-red);\">INVERSION</span>
+                        <button class=\"nav-tab px-3 py-2 text-xs\" onclick=\"showTab('models')\" title=\"Mental models with failure modes - what can go wrong?\">MODELS + FAILURES</button>
+                        <button class=\"nav-tab px-3 py-2 text-xs\" onclick=\"showTab('techdebt')\" title=\"Technical debt - what's broken or fragile?\">TECH DEBT</button>
+                    </div>
+                    <!-- LATTICEWORK: Multi-disciplinary analysis -->
+                    <div class=\"flex items-center\" style=\"border-right: 1px solid var(--gray-300);\">
+                        <span class=\"px-2 text-xs font-bold\" style=\"color: var(--gray-500);\">LATTICEWORK</span>
+                        <button class=\"nav-tab px-3 py-2 text-xs\" onclick=\"showTab('analysis')\" title=\"Cross-disciplinary analysis\">ANALYSIS</button>
+                        <button class=\"nav-tab px-3 py-2 text-xs\" onclick=\"showTab('statistics')\" title=\"Quantitative reasoning\">STATISTICS</button>
+                        <button class=\"nav-tab px-3 py-2 text-xs\" onclick=\"showTab('map')\" title=\"Spatial/geographic patterns\">WORLD MAP</button>
+                    </div>
+                    <!-- TOOLS: Processing and automation -->
+                    <div class=\"flex items-center\">
+                        <span class=\"px-2 text-xs font-bold\" style=\"color: var(--gray-500);\">TOOLS</span>
+                        <button class=\"nav-tab px-3 py-2 text-xs\" onclick=\"showTab('data')\" title=\"Data ingestion and processing\">DATA</button>
+                        <button class=\"nav-tab px-3 py-2 text-xs\" onclick=\"showTab('llm')\" title=\"LLM-powered analysis\">LLM</button>
+                        <button class=\"nav-tab px-3 py-2 text-xs\" onclick=\"showTab('distributed')\" title=\"Distributed processing at scale\">DISTRIBUTED</button>
+                    </div>
+                </div>
+                <!-- Munger's Organizing Principles Legend -->
+                <div class=\"px-4 py-1 text-xs\" style=\"background: var(--gray-50); border-bottom: 1px solid var(--gray-200); color: var(--gray-500);\">
+                    <strong>Munger's Latticework:</strong> 
+                    <span style=\"color: var(--black);\">OVERVIEW</span> (big picture) | 
+                    <span style=\"color: var(--accent-red);\">INVERSION</span> (what can go wrong - always invert!) | 
+                    <span style=\"color: var(--black);\">LATTICEWORK</span> (multi-disciplinary connections) | 
+                    <span style=\"color: var(--black);\">TOOLS</span> (processing power)
+                </div>
         
         <!-- Dashboard -->
         <div id=\"dashboard\" class=\"p-4\">
