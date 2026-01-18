@@ -36,6 +36,7 @@ from src.analysis import (
 )
 from src.llm.local_llm import create_llm_client
 from src.api.failure_mode_routes import router as failure_mode_router
+from src.api.scheduler_routes import router as scheduler_router, webhook_router
 
 
 # =============================================================================
@@ -402,6 +403,10 @@ def create_app(
     
     # Include failure mode routes
     app.include_router(failure_mode_router)
+    
+    # Include scheduler and webhook routes
+    app.include_router(scheduler_router)
+    app.include_router(webhook_router)
     
     return app
 
