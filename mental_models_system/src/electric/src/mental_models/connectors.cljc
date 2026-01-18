@@ -3429,6 +3429,352 @@
                         (/ (reduce + (map :duration-ms completed)) (count completed))
                         0)}))
 
+;; ============================================
+;; Request Compression
+;; ============================================
+
+(def compression-config
+  "Configuration for request/response compression."
+  (atom {:enabled true
+         :min-size-bytes 1024
+         :algorithms [:gzip :deflate]
+         :prefer :gzip}))
+
+(defn get-compression-config
+  "Get current compression configuration."
+  []
+  @compression-config)
+
+(defn set-compression-config
+  "Update compression configuration."
+  [config]
+  (swap! compression-config merge config))
+
+#?(:clj
+   (defn compress-data
+     "Compress data using the specified algorithm."
+     [data algorithm]
+     (let [bytes (.getBytes (if (string? data) data (pr-str data)) "UTF-8")]
+       (if (< (count bytes) (:min-size-bytes @compression-config))
+         {:compressed false :data data :original-size (count bytes)}
+         (let [baos (java.io.ByteArrayOutputStream.)
+               gzos (case algorithm
+                      :gzip (java.util.zip.GZIPOutputStream. baos)
+                      :deflate (java.util.zip.DeflaterOutputStream. baos)
+                      (java.util.zip.GZIPOutputStream. baos))]
+           (.write gzos bytes)
+           (.close gzos)
+           {:compressed true
+            :algorithm algorithm
+            :data (.toByteArray baos)
+            :original-size (count bytes)
+            :compressed-size (count (.toByteArray baos))
+            :ratio (double (/ (count (.toByteArray baos)) (count bytes)))})))))
+
+#?(:clj
+   (defn decompress-data
+     "Decompress data using the specified algorithm."
+     [compressed-bytes algorithm]
+     (let [bais (java.io.ByteArrayInputStream. compressed-bytes)
+           gzis (case algorithm
+                  :gzip (java.util.zip.GZIPInputStream. bais)
+                  :deflate (java.util.zip.InflaterInputStream. bais)
+                  (java.util.zip.GZIPInputStream. bais))
+           baos (java.io.ByteArrayOutputStream.)]
+       (let [buffer (byte-array 1024)]
+         (loop []
+           (let [len (.read gzis buffer)]
+             (when (pos? len)
+               (.write baos buffer 0 len)
+               (recur)))))
+       (.close gzis)
+       (String. (.toByteArray baos) "UTF-8"))))
+
+(defn with-compression
+  "Execute a request with compression support."
+  [request-fn & {:keys [compress-request decompress-response] :or {compress-request false decompress-response true}}]
+  #?(:clj
+     (if-not (:enabled @compression-config)
+       (request-fn)
+       (request-fn))
+     :cljs
+     (request-fn)))
+
+(def compression-stats
+  "Statistics for compression operations."
+  (atom {:requests-compressed 0
+         :responses-decompressed 0
+         :bytes-saved 0}))
+
+(defn get-compression-stats
+  "Get compression statistics."
+  []
+  @compression-stats)
+
+(defn reset-compression-stats
+  "Reset compression statistics."
+  []
+  (reset! compression-stats {:requests-compressed 0
+                             :responses-decompressed 0
+                             :bytes-saved 0}))
+
+;; ============================================
+;; Response Streaming
+;; ============================================
+
+(def streaming-config
+  "Configuration for response streaming."
+  (atom {:enabled true
+         :buffer-size 8192
+         :timeout-ms 30000}))
+
+(defn get-streaming-config
+  "Get current streaming configuration."
+  []
+  @streaming-config)
+
+(defn set-streaming-config
+  "Update streaming configuration."
+  [config]
+  (swap! streaming-config merge config))
+
+(def active-streams
+  "Registry of active streaming connections."
+  (atom {}))
+
+(defn register-stream
+  "Register an active stream."
+  [stream-id stream-info]
+  (swap! active-streams assoc stream-id
+         (merge stream-info
+                {:started-at (System/currentTimeMillis)
+                 :status :active})))
+
+(defn unregister-stream
+  "Unregister a stream."
+  [stream-id]
+  (swap! active-streams dissoc stream-id))
+
+(defn get-active-streams
+  "Get all active streams."
+  []
+  @active-streams)
+
+#?(:clj
+   (defn create-stream-handler
+     "Create a handler for streaming responses."
+     [stream-id callback]
+     (let [buffer (java.io.ByteArrayOutputStream.)]
+       (register-stream stream-id {:buffer buffer :callback callback})
+       (fn [chunk]
+         (when chunk
+           (.write buffer (.getBytes chunk "UTF-8"))
+           (when callback
+             (callback chunk)))))))
+
+(defn close-stream
+  "Close a streaming connection."
+  [stream-id]
+  (when-let [stream (get @active-streams stream-id)]
+    (swap! active-streams update stream-id assoc :status :closed :ended-at (System/currentTimeMillis))
+    (unregister-stream stream-id)
+    {:stream-id stream-id :status :closed}))
+
+(defn get-stream-stats
+  "Get statistics about streaming."
+  []
+  (let [streams (vals @active-streams)]
+    {:active-count (count (filter #(= (:status %) :active) streams))
+     :total-streams (count streams)}))
+
+;; ============================================
+;; Connector Versioning
+;; ============================================
+
+(def connector-versions
+  "Version registry for connectors."
+  (atom {}))
+
+(def versioning-config
+  "Configuration for connector versioning."
+  (atom {:enabled true
+         :default-version "1.0.0"
+         :version-header "X-Connector-Version"
+         :deprecation-warning-days 30}))
+
+(defn get-versioning-config
+  "Get current versioning configuration."
+  []
+  @versioning-config)
+
+(defn set-versioning-config
+  "Update versioning configuration."
+  [config]
+  (swap! versioning-config merge config))
+
+(defn register-connector-version
+  "Register a version for a connector."
+  [connector-type version & {:keys [deprecated deprecated-date replacement-version changelog]}]
+  (swap! connector-versions assoc-in [connector-type version]
+         {:version version
+          :registered-at (System/currentTimeMillis)
+          :deprecated (boolean deprecated)
+          :deprecated-date deprecated-date
+          :replacement-version replacement-version
+          :changelog changelog}))
+
+(defn get-connector-version
+  "Get version info for a connector."
+  [connector-type version]
+  (get-in @connector-versions [connector-type version]))
+
+(defn get-latest-version
+  "Get the latest non-deprecated version for a connector."
+  [connector-type]
+  (let [versions (get @connector-versions connector-type {})]
+    (->> versions
+         (filter (fn [[_ v]] (not (:deprecated v))))
+         (sort-by (fn [[k _]] k))
+         last
+         first)))
+
+(defn is-version-deprecated?
+  "Check if a connector version is deprecated."
+  [connector-type version]
+  (get-in @connector-versions [connector-type version :deprecated] false))
+
+(defn get-deprecation-warning
+  "Get deprecation warning if applicable."
+  [connector-type version]
+  (when (is-version-deprecated? connector-type version)
+    (let [info (get-connector-version connector-type version)]
+      {:warning (str "Connector " (name connector-type) " version " version " is deprecated")
+       :deprecated-date (:deprecated-date info)
+       :replacement-version (:replacement-version info)})))
+
+(defn list-connector-versions
+  "List all versions for a connector."
+  [connector-type]
+  (let [versions (get @connector-versions connector-type {})]
+    (mapv (fn [[k v]] (assoc v :version k)) versions)))
+
+(defn get-version-stats
+  "Get statistics about connector versions."
+  []
+  {:connectors (count @connector-versions)
+   :total-versions (reduce + (map count (vals @connector-versions)))
+   :deprecated-versions (count (filter :deprecated (mapcat vals (vals @connector-versions))))})
+
+;; ============================================
+;; Request Signing
+;; ============================================
+
+(def signing-config
+  "Configuration for request signing."
+  (atom {:enabled true
+         :algorithm :hmac-sha256
+         :timestamp-tolerance-ms 300000
+         :include-headers [:host :date :content-type]
+         :signature-header "X-Signature"}))
+
+(defn get-signing-config
+  "Get current signing configuration."
+  []
+  @signing-config)
+
+(defn set-signing-config
+  "Update signing configuration."
+  [config]
+  (swap! signing-config merge config))
+
+(def signing-keys
+  "Registry of signing keys per connector."
+  (atom {}))
+
+(defn register-signing-key
+  "Register a signing key for a connector."
+  [connector-type key-id secret]
+  (swap! signing-keys assoc-in [connector-type key-id]
+         {:key-id key-id
+          :secret secret
+          :registered-at (System/currentTimeMillis)}))
+
+(defn get-signing-key
+  "Get a signing key for a connector."
+  [connector-type key-id]
+  (get-in @signing-keys [connector-type key-id :secret]))
+
+#?(:clj
+   (defn compute-signature
+     "Compute HMAC signature for request."
+     [secret string-to-sign algorithm]
+     (let [mac (javax.crypto.Mac/getInstance
+                (case algorithm
+                  :hmac-sha256 "HmacSHA256"
+                  :hmac-sha512 "HmacSHA512"
+                  "HmacSHA256"))
+           secret-key (javax.crypto.spec.SecretKeySpec.
+                       (.getBytes secret "UTF-8")
+                       (.getAlgorithm mac))]
+       (.init mac secret-key)
+       (let [signature (.doFinal mac (.getBytes string-to-sign "UTF-8"))]
+         (.encodeToString (java.util.Base64/getEncoder) signature)))))
+
+(defn create-string-to-sign
+  "Create the canonical string to sign."
+  [method path headers timestamp]
+  (let [config @signing-config
+        header-values (map #(get headers % "") (:include-headers config))]
+    (str method "\n"
+         path "\n"
+         timestamp "\n"
+         (clojure.string/join "\n" header-values))))
+
+#?(:clj
+   (defn sign-request
+     "Sign a request with the connector's signing key."
+     [connector-type key-id method path headers body]
+     (if-not (:enabled @signing-config)
+       {:signed false}
+       (if-let [secret (get-signing-key connector-type key-id)]
+         (let [timestamp (System/currentTimeMillis)
+               string-to-sign (create-string-to-sign method path headers timestamp)
+               signature (compute-signature secret string-to-sign (:algorithm @signing-config))]
+           {:signed true
+            :signature signature
+            :timestamp timestamp
+            :algorithm (:algorithm @signing-config)
+            :key-id key-id})
+         {:signed false :error "Signing key not found"}))))
+
+#?(:clj
+   (defn verify-signature
+     "Verify a request signature."
+     [connector-type key-id method path headers timestamp provided-signature]
+     (if-not (:enabled @signing-config)
+       {:valid true :reason "Signing disabled"}
+       (let [config @signing-config
+             now (System/currentTimeMillis)]
+         (cond
+           (> (Math/abs (- now timestamp)) (:timestamp-tolerance-ms config))
+           {:valid false :reason "Timestamp outside tolerance"}
+           
+           :else
+           (if-let [secret (get-signing-key connector-type key-id)]
+             (let [string-to-sign (create-string-to-sign method path headers timestamp)
+                   expected-signature (compute-signature secret string-to-sign (:algorithm config))]
+               (if (= expected-signature provided-signature)
+                 {:valid true}
+                 {:valid false :reason "Signature mismatch"}))
+             {:valid false :reason "Signing key not found"}))))))
+
+(defn get-signing-stats
+  "Get statistics about request signing."
+  []
+  {:connectors-with-keys (count @signing-keys)
+   :total-keys (reduce + (map count (vals @signing-keys)))
+   :config @signing-config})
+
 (def connector-registry
   "Registry of all available connectors."
   {:zapier {:create create-zapier-connector
