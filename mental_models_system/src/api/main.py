@@ -9,8 +9,11 @@ import sys
 from typing import List, Optional
 from datetime import date
 
+from pathlib import Path
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse, FileResponse
 from pydantic import BaseModel
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -539,6 +542,703 @@ async def get_relevant_models(
         return models
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get models: {str(e)}")
+
+
+class IngestRequest(BaseModel):
+    paths: List[str]
+
+
+class IngestResponse(BaseModel):
+    documents_processed: int
+    chunks_created: int
+    status: str
+
+
+class SearchRequest(BaseModel):
+    query: str
+    limit: int = 10
+    min_similarity: float = 0.5
+
+
+class SearchResult(BaseModel):
+    id: str
+    document_path: str
+    content: str
+    chunk_index: int
+    similarity: float
+    metadata: dict
+
+
+class KnowledgeQueryRequest(BaseModel):
+    query: str
+    context: Optional[str] = None
+    max_sources: int = 10
+
+
+class KnowledgeQueryResponse(BaseModel):
+    query: str
+    answer: str
+    sources: List[dict]
+    confidence: float
+
+
+class ImprovementRequest(BaseModel):
+    type: str
+    title: str
+    description: str
+    proposed_changes: dict
+    source_insights: Optional[List[str]] = None
+
+
+class ImprovementResponse(BaseModel):
+    id: str
+    type: str
+    title: str
+    status: str
+
+
+@app.post("/ingest/files", response_model=IngestResponse)
+async def ingest_files(request: IngestRequest):
+    """Ingest TXT files from specified paths."""
+    try:
+        from src.ingestion import DataIngestionPipeline
+        from pathlib import Path
+        
+        pipeline = DataIngestionPipeline()
+        pipeline.setup_database()
+        
+        paths = [Path(p) for p in request.paths]
+        chunks = pipeline.process_files(paths)
+        pipeline.close()
+        
+        return IngestResponse(
+            documents_processed=len(request.paths),
+            chunks_created=len(chunks),
+            status="success"
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ingestion failed: {str(e)}")
+
+
+@app.post("/ingest/watch")
+async def start_watching(paths: List[str]):
+    """Start watching folders for new TXT files."""
+    try:
+        from src.ingestion import DataIngestionPipeline
+        
+        pipeline = DataIngestionPipeline(watch_paths=paths)
+        pipeline.setup_database()
+        pipeline.start_watching()
+        
+        return {
+            "status": "watching",
+            "paths": paths,
+            "message": "Folder watcher started. New files will be automatically processed."
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to start watcher: {str(e)}")
+
+
+@app.get("/ingest/stats")
+async def get_ingestion_stats():
+    """Get data ingestion statistics."""
+    try:
+        from src.ingestion import DataIngestionPipeline
+        
+        pipeline = DataIngestionPipeline()
+        stats = pipeline.get_stats()
+        pipeline.close()
+        
+        return stats
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get stats: {str(e)}")
+
+
+@app.post("/ingest/search", response_model=List[SearchResult])
+async def search_documents(request: SearchRequest):
+    """Semantic search over ingested documents."""
+    try:
+        from src.ingestion import DataIngestionPipeline
+        
+        pipeline = DataIngestionPipeline()
+        results = pipeline.semantic_search(
+            query=request.query,
+            limit=request.limit,
+            min_similarity=request.min_similarity
+        )
+        pipeline.close()
+        
+        return [
+            SearchResult(
+                id=r["id"],
+                document_path=r["document_path"],
+                content=r["content"],
+                chunk_index=r["chunk_index"],
+                similarity=r["similarity"],
+                metadata=r.get("metadata", {})
+            )
+            for r in results
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
+
+
+@app.post("/feedback/query", response_model=KnowledgeQueryResponse)
+async def query_knowledge(request: KnowledgeQueryRequest):
+    """Query the knowledge base with natural language and get synthesized answers."""
+    try:
+        from src.ingestion import FeedbackLoop
+        
+        feedback = FeedbackLoop()
+        feedback.setup_database()
+        result = feedback.query_knowledge(
+            query=request.query,
+            context=request.context,
+            max_sources=request.max_sources
+        )
+        feedback.close()
+        
+        return KnowledgeQueryResponse(
+            query=result["query"],
+            answer=result["answer"],
+            sources=result["sources"],
+            confidence=result["confidence"]
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Query failed: {str(e)}")
+
+
+@app.post("/feedback/improve", response_model=ImprovementResponse)
+async def propose_improvement(request: ImprovementRequest):
+    """Propose an improvement based on insights from the knowledge base."""
+    try:
+        from src.ingestion import FeedbackLoop, ImprovementType
+        
+        feedback = FeedbackLoop()
+        feedback.setup_database()
+        
+        improvement_type = ImprovementType(request.type)
+        improvement = feedback.propose_improvement(
+            improvement_type=improvement_type,
+            title=request.title,
+            description=request.description,
+            proposed_changes=request.proposed_changes,
+            source_insights=request.source_insights
+        )
+        feedback.close()
+        
+        return ImprovementResponse(
+            id=improvement.id,
+            type=improvement.type.value,
+            title=improvement.title,
+            status=improvement.status.value
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to propose improvement: {str(e)}")
+
+
+@app.get("/feedback/improvements")
+async def get_pending_improvements():
+    """Get all pending improvements."""
+    try:
+        from src.ingestion import FeedbackLoop
+        
+        feedback = FeedbackLoop()
+        improvements = feedback.get_pending_improvements()
+        feedback.close()
+        
+        return [
+            {
+                "id": imp.id,
+                "type": imp.type.value,
+                "title": imp.title,
+                "description": imp.description,
+                "status": imp.status.value,
+                "created_at": imp.created_at.isoformat() if imp.created_at else None
+            }
+            for imp in improvements
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get improvements: {str(e)}")
+
+
+@app.post("/feedback/improvements/{improvement_id}/approve")
+async def approve_improvement(improvement_id: str):
+    """Approve a proposed improvement."""
+    try:
+        from src.ingestion import FeedbackLoop
+        
+        feedback = FeedbackLoop()
+        success = feedback.approve_improvement(improvement_id)
+        feedback.close()
+        
+        if success:
+            return {"status": "approved", "improvement_id": improvement_id}
+        else:
+            raise HTTPException(status_code=404, detail="Improvement not found or already processed")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to approve: {str(e)}")
+
+
+@app.post("/feedback/improvements/{improvement_id}/reject")
+async def reject_improvement(improvement_id: str, reason: Optional[str] = None):
+    """Reject a proposed improvement."""
+    try:
+        from src.ingestion import FeedbackLoop
+        
+        feedback = FeedbackLoop()
+        success = feedback.reject_improvement(improvement_id, reason)
+        feedback.close()
+        
+        if success:
+            return {"status": "rejected", "improvement_id": improvement_id}
+        else:
+            raise HTTPException(status_code=404, detail="Improvement not found or already processed")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to reject: {str(e)}")
+
+
+@app.post("/feedback/improvements/{improvement_id}/implemented")
+async def mark_improvement_implemented(improvement_id: str):
+    """Mark an approved improvement as implemented."""
+    try:
+        from src.ingestion import FeedbackLoop
+        
+        feedback = FeedbackLoop()
+        success = feedback.mark_implemented(improvement_id)
+        feedback.close()
+        
+        if success:
+            return {"status": "implemented", "improvement_id": improvement_id}
+        else:
+            raise HTTPException(status_code=404, detail="Improvement not found or not approved")
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to mark implemented: {str(e)}")
+
+
+@app.get("/feedback/analyze")
+async def analyze_for_improvements(topic: Optional[str] = None):
+    """Analyze the knowledge base for potential improvements."""
+    try:
+        from src.ingestion import FeedbackLoop
+        
+        feedback = FeedbackLoop()
+        feedback.setup_database()
+        suggestions = feedback.analyze_for_improvements(topic)
+        feedback.close()
+        
+        return {"suggestions": suggestions}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+
+
+@app.get("/feedback/stats")
+async def get_feedback_stats():
+    """Get feedback loop statistics."""
+    try:
+        from src.ingestion import FeedbackLoop
+        
+        feedback = FeedbackLoop()
+        stats = feedback.get_stats()
+        feedback.close()
+        
+        return stats
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get stats: {str(e)}")
+
+
+class AnalyzeContentRequest(BaseModel):
+    content: str
+    document_id: Optional[str] = ""
+    document_path: Optional[str] = ""
+
+
+class ModelMatchResponse(BaseModel):
+    model_name: str
+    relevance_score: float
+    explanation: str
+    evidence: List[str]
+    category: str
+
+
+class BiasDetectionResponse(BaseModel):
+    bias_name: str
+    confidence: float
+    evidence: str
+    mitigation: str
+
+
+class DocumentAnalysisResponse(BaseModel):
+    document_id: str
+    document_path: str
+    content_preview: str
+    applicable_models: List[ModelMatchResponse]
+    detected_biases: List[BiasDetectionResponse]
+    patterns: List[str]
+    lollapalooza_score: float
+    lollapalooza_models: List[str]
+    key_insights: List[str]
+    inverted_perspective: str
+
+
+class ClassifyRequest(BaseModel):
+    content: str
+    target_models: Optional[List[str]] = None
+
+
+class BatchAnalyzeRequest(BaseModel):
+    documents: List[dict]
+    analysis_type: str = "classify"
+
+
+@app.post("/analyze/document", response_model=DocumentAnalysisResponse)
+async def analyze_document_with_models(request: AnalyzeContentRequest):
+    """Analyze a document using mental models via local LLM (LM Studio)."""
+    try:
+        from src.analysis.mental_model_analyzer import MentalModelAnalyzer
+        
+        analyzer = MentalModelAnalyzer()
+        analysis = analyzer.analyze_document(
+            content=request.content,
+            document_id=request.document_id or "",
+            document_path=request.document_path or "",
+        )
+        analyzer.close()
+        
+        return DocumentAnalysisResponse(
+            document_id=analysis.document_id,
+            document_path=analysis.document_path,
+            content_preview=analysis.content_preview,
+            applicable_models=[
+                ModelMatchResponse(
+                    model_name=m.model_name,
+                    relevance_score=m.relevance_score,
+                    explanation=m.explanation,
+                    evidence=m.evidence,
+                    category=m.category,
+                )
+                for m in analysis.applicable_models
+            ],
+            detected_biases=[
+                BiasDetectionResponse(
+                    bias_name=b.bias_name,
+                    confidence=b.confidence,
+                    evidence=b.evidence,
+                    mitigation=b.mitigation,
+                )
+                for b in analysis.detected_biases
+            ],
+            patterns=analysis.patterns,
+            lollapalooza_score=analysis.lollapalooza_score,
+            lollapalooza_models=analysis.lollapalooza_models,
+            key_insights=analysis.key_insights,
+            inverted_perspective=analysis.inverted_perspective,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+
+
+@app.post("/analyze/classify", response_model=List[ModelMatchResponse])
+async def classify_content(request: ClassifyRequest):
+    """Classify content by applicable mental models."""
+    try:
+        from src.analysis.mental_model_analyzer import MentalModelAnalyzer
+        
+        analyzer = MentalModelAnalyzer()
+        matches = analyzer.classify_by_model(
+            content=request.content,
+            target_models=request.target_models,
+        )
+        analyzer.close()
+        
+        return [
+            ModelMatchResponse(
+                model_name=m.model_name,
+                relevance_score=m.relevance_score,
+                explanation=m.explanation,
+                evidence=m.evidence,
+                category=m.category,
+            )
+            for m in matches
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Classification failed: {str(e)}")
+
+
+@app.post("/analyze/biases", response_model=List[BiasDetectionResponse])
+async def detect_biases_in_content(request: AnalyzeContentRequest):
+    """Detect cognitive biases in content using Munger's framework."""
+    try:
+        from src.analysis.mental_model_analyzer import MentalModelAnalyzer
+        
+        analyzer = MentalModelAnalyzer()
+        biases = analyzer.detect_biases(request.content)
+        analyzer.close()
+        
+        return [
+            BiasDetectionResponse(
+                bias_name=b.bias_name,
+                confidence=b.confidence,
+                evidence=b.evidence,
+                mitigation=b.mitigation,
+            )
+            for b in biases
+        ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Bias detection failed: {str(e)}")
+
+
+@app.post("/analyze/lollapalooza")
+async def find_lollapalooza_effects(request: AnalyzeContentRequest):
+    """Find lollapalooza effects (multiple interacting mental models)."""
+    try:
+        from src.analysis.mental_model_analyzer import MentalModelAnalyzer
+        
+        analyzer = MentalModelAnalyzer()
+        result = analyzer.find_lollapalooza(request.content)
+        analyzer.close()
+        
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lollapalooza analysis failed: {str(e)}")
+
+
+@app.post("/analyze/invert")
+async def invert_analysis(request: AnalyzeContentRequest, question: Optional[str] = None):
+    """Apply Munger's inversion technique to analyze what could go wrong."""
+    try:
+        from src.analysis.mental_model_analyzer import MentalModelAnalyzer
+        
+        analyzer = MentalModelAnalyzer()
+        result = analyzer.invert_analysis(request.content, question or "")
+        analyzer.close()
+        
+        return {"inverted_analysis": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Inversion analysis failed: {str(e)}")
+
+
+@app.post("/analyze/batch")
+async def batch_analyze_documents(request: BatchAnalyzeRequest):
+    """Batch analyze multiple documents with mental models."""
+    try:
+        from src.analysis.mental_model_analyzer import MentalModelAnalyzer, AnalysisType
+        
+        analyzer = MentalModelAnalyzer()
+        
+        analysis_type_map = {
+            "classify": AnalysisType.CLASSIFY,
+            "detect_bias": AnalysisType.DETECT_BIAS,
+            "find_patterns": AnalysisType.FIND_PATTERNS,
+            "lollapalooza": AnalysisType.LOLLAPALOOZA,
+            "full": AnalysisType.FULL,
+        }
+        analysis_type = analysis_type_map.get(request.analysis_type, AnalysisType.CLASSIFY)
+        
+        results = analyzer.batch_analyze(request.documents, analysis_type)
+        analyzer.close()
+        
+        return {
+            "analyzed_count": len(results),
+            "results": [
+                {
+                    "document_id": r.document_id,
+                    "document_path": r.document_path,
+                    "applicable_models": [
+                        {"model_name": m.model_name, "relevance_score": m.relevance_score}
+                        for m in r.applicable_models
+                    ],
+                    "detected_biases": [
+                        {"bias_name": b.bias_name, "confidence": b.confidence}
+                        for b in r.detected_biases
+                    ],
+                    "lollapalooza_score": r.lollapalooza_score,
+                    "key_insights": r.key_insights,
+                }
+                for r in results
+            ],
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Batch analysis failed: {str(e)}")
+
+
+@app.get("/analyze/query-by-model")
+async def query_documents_by_model(
+    model_name: str = Query(..., description="Mental model name to search for"),
+    min_relevance: float = Query(0.5, ge=0, le=1),
+    limit: int = Query(50, ge=1, le=500),
+):
+    """Query analyzed documents by mental model."""
+    try:
+        from src.analysis.mental_model_analyzer import MentalModelAnalyzer
+        
+        analyzer = MentalModelAnalyzer()
+        results = analyzer.query_by_model(model_name, min_relevance, limit)
+        analyzer.close()
+        
+        return {"model_name": model_name, "results": results}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Query failed: {str(e)}")
+
+
+@app.get("/analyze/stats")
+async def get_analysis_stats():
+    """Get mental model analysis statistics."""
+    try:
+        from src.analysis.mental_model_analyzer import MentalModelAnalyzer
+        
+        analyzer = MentalModelAnalyzer()
+        stats = analyzer.get_analysis_stats()
+        analyzer.close()
+        
+        return stats
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get stats: {str(e)}")
+
+
+@app.post("/analyze/ingest-and-analyze")
+async def ingest_and_analyze_files(paths: List[str], analysis_type: str = "classify"):
+    """Ingest files and automatically analyze them with mental models."""
+    try:
+        from src.ingestion import DataIngestionPipeline
+        from src.analysis.mental_model_analyzer import MentalModelAnalyzer, AnalysisType
+        from pathlib import Path
+        
+        pipeline = DataIngestionPipeline()
+        pipeline.setup_database()
+        
+        file_paths = [Path(p) for p in paths]
+        chunks = pipeline.process_files(file_paths)
+        pipeline.close()
+        
+        analyzer = MentalModelAnalyzer()
+        
+        analysis_type_map = {
+            "classify": AnalysisType.CLASSIFY,
+            "detect_bias": AnalysisType.DETECT_BIAS,
+            "full": AnalysisType.FULL,
+        }
+        at = analysis_type_map.get(analysis_type, AnalysisType.CLASSIFY)
+        
+        documents = [
+            {
+                "id": chunk.document_id,
+                "path": chunk.document_path,
+                "chunk_id": chunk.id,
+                "content": chunk.content,
+            }
+            for chunk in chunks
+        ]
+        
+        analyses = analyzer.batch_analyze(documents, at)
+        
+        for analysis in analyses:
+            analyzer.store_analysis(analysis)
+        
+        analyzer.close()
+        
+        return {
+            "files_processed": len(paths),
+            "chunks_created": len(chunks),
+            "analyses_stored": len(analyses),
+            "status": "success",
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Ingest and analyze failed: {str(e)}")
+
+
+class FailureModeCheckRequest(BaseModel):
+    content: str
+
+
+class FailureModeResult(BaseModel):
+    name: str
+    severity: str
+    description: str
+    signals: List[str]
+    prevention: List[str]
+
+
+@app.post("/failure-modes/check")
+async def check_failure_modes(request: FailureModeCheckRequest):
+    """Check content for potential failure modes."""
+    try:
+        from src.failure_modes.registry import FailureModeRegistry
+        from src.failure_modes.detector import FailureModeDetector
+        
+        registry = FailureModeRegistry()
+        detector = FailureModeDetector()
+        
+        context = {"content": request.content, "source": "web"}
+        detected_results = detector.detect_failures(context)
+        
+        detected_failures = []
+        for result in detected_results[:10]:
+            fm = result.failure_mode
+            detected_failures.append({
+                "name": fm.name,
+                "severity": fm.severity.value if hasattr(fm.severity, 'value') else str(fm.severity),
+                "description": fm.description if hasattr(fm, 'description') else "",
+                "signals": result.signals_found[:3] if result.signals_found else [],
+                "prevention": result.recommendations[:2] if result.recommendations else [],
+            })
+        
+        stats = registry.get_stats()
+        
+        return {
+            "detected_failures": detected_failures,
+            "total_checked": stats.get("total_failure_modes", 645),
+            "models_checked": stats.get("total_models_with_failure_modes", 129),
+        }
+    except Exception as e:
+        return {
+            "detected_failures": [],
+            "error": str(e),
+            "message": "Failure mode detection not fully configured. Consider common failure modes: confirmation bias, overconfidence, incomplete analysis.",
+        }
+
+
+@app.get("/failure-modes/stats")
+async def get_failure_mode_stats():
+    """Get failure mode statistics."""
+    try:
+        from src.failure_modes.registry import FailureModeRegistry
+        
+        registry = FailureModeRegistry()
+        stats = registry.get_stats()
+        
+        return stats
+    except Exception as e:
+        return {
+            "total_failure_modes": 645,
+            "total_models_with_failure_modes": 129,
+            "categories": ["data_bias", "reasoning_error", "incomplete_analysis", "overconfidence", "context_blindness"],
+            "error": str(e),
+        }
+
+
+TEMPLATES_DIR = Path(__file__).parent / "templates"
+
+
+@app.get("/dashboard", response_class=HTMLResponse)
+async def serve_dashboard():
+    """Serve the web dashboard."""
+    index_path = TEMPLATES_DIR / "index.html"
+    if index_path.exists():
+        return FileResponse(index_path, media_type="text/html")
+    raise HTTPException(status_code=404, detail="Dashboard not found")
+
+
+@app.get("/ui", response_class=HTMLResponse)
+async def serve_ui():
+    """Alias for dashboard."""
+    return await serve_dashboard()
 
 
 if __name__ == "__main__":

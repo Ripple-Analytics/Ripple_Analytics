@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Models System - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .nav-tab.active { background-color: rgb(59 130 246); color: white; }
+        .connector-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .loading { opacity: 0.6; pointer-events: none; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <nav class="bg-gray-900 text-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <i data-lucide="brain" class="w-8 h-8 text-blue-400"></i>
+                    <div>
+                        <h1 class="text-xl font-bold">Mental Models System</h1>
+                        <p class="text-xs text-gray-400">The Oligarch's Operating System</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="status-indicator" class="flex items-center text-sm">
+                        <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
+                        <span>Connected</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-6">
+        <div class="flex space-x-1 mb-6 bg-gray-200 p-1 rounded-lg">
+            <button class="nav-tab active px-4 py-2 rounded-md text-sm font-medium transition-all" data-tab="dashboard">
+                <i data-lucide="layout-dashboard" class="w-4 h-4 inline mr-1"></i> Dashboard
+            </button>
+            <button class="nav-tab px-4 py-2 rounded-md text-sm font-medium transition-all" data-tab="analyze">
+                <i data-lucide="search" class="w-4 h-4 inline mr-1"></i> Analyze
+            </button>
+            <button class="nav-tab px-4 py-2 rounded-md text-sm font-medium transition-all" data-tab="models">
+                <i data-lucide="list" class="w-4 h-4 inline mr-1"></i> Models
+            </button>
+            <button class="nav-tab px-4 py-2 rounded-md text-sm font-medium transition-all" data-tab="failures">
+                <i data-lucide="alert-triangle" class="w-4 h-4 inline mr-1"></i> Failure Modes
+            </button>
+            <button class="nav-tab px-4 py-2 rounded-md text-sm font-medium transition-all" data-tab="connectors">
+                <i data-lucide="plug" class="w-4 h-4 inline mr-1"></i> Connectors
+            </button>
+        </div>
+
+        <div id="dashboard" class="tab-content active fade-in">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Mental Models</p>
+                            <p id="stat-models" class="text-3xl font-bold text-blue-600">--</p>
+                        </div>
+                        <i data-lucide="brain" class="w-10 h-10 text-blue-200"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Failure Modes</p>
+                            <p id="stat-failures" class="text-3xl font-bold text-red-600">645</p>
+                        </div>
+                        <i data-lucide="alert-triangle" class="w-10 h-10 text-red-200"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Principles</p>
+                            <p id="stat-principles" class="text-3xl font-bold text-green-600">--</p>
+                        </div>
+                        <i data-lucide="book-open" class="w-10 h-10 text-green-200"></i>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Case Studies</p>
+                            <p id="stat-cases" class="text-3xl font-bold text-purple-600">--</p>
+                        </div>
+                        <i data-lucide="folder" class="w-10 h-10 text-purple-200"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center">
+                        <i data-lucide="zap" class="w-5 h-5 mr-2 text-yellow-500"></i>
+                        Quick Analysis
+                    </h3>
+                    <textarea id="quick-analysis-input" class="w-full border rounded-lg p-3 h-24 text-sm" placeholder="Enter text to analyze through mental models..."></textarea>
+                    <button onclick="quickAnalyze()" class="mt-3 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        <i data-lucide="play" class="w-4 h-4 inline mr-1"></i> Analyze
+                    </button>
+                    <div id="quick-analysis-result" class="mt-4 text-sm"></div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h3 class="text-lg font-semibold mb-4 flex items-center">
+                        <i data-lucide="rotate-ccw" class="w-5 h-5 mr-2 text-orange-500"></i>
+                        Inversion Tool
+                    </h3>
+                    <textarea id="inversion-input" class="w-full border rounded-lg p-3 h-24 text-sm" placeholder="Enter a problem or goal to invert..."></textarea>
+                    <button onclick="invertProblem()" class="mt-3 bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors">
+                        <i data-lucide="refresh-cw" class="w-4 h-4 inline mr-1"></i> Invert
+                    </button>
+                    <div id="inversion-result" class="mt-4 text-sm"></div>
+                </div>
+            </div>
+
+            <div class="mt-6 bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold mb-4 flex items-center">
+                    <i data-lucide="users" class="w-5 h-5 mr-2 text-indigo-500"></i>
+                    Thinkers & Frameworks
+                </h3>
+                <div id="thinkers-list" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                    <div class="text-center text-gray-400">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="analyze" class="tab-content fade-in">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-4">Full Document Analysis</h2>
+                <p class="text-gray-600 mb-4">Analyze text through the lens of 129 mental models from 17 legendary thinkers.</p>
+                
+                <textarea id="full-analysis-input" class="w-full border rounded-lg p-4 h-48 text-sm" placeholder="Paste your document, article, or text here for comprehensive analysis..."></textarea>
+                
+                <div class="flex space-x-3 mt-4">
+                    <button onclick="fullAnalyze()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        <i data-lucide="search" class="w-4 h-4 inline mr-1"></i> Full Analysis
+                    </button>
+                    <button onclick="detectBiases()" class="bg-yellow-600 text-white px-6 py-2 rounded-lg hover:bg-yellow-700 transition-colors">
+                        <i data-lucide="eye" class="w-4 h-4 inline mr-1"></i> Detect Biases
+                    </button>
+                    <button onclick="findLollapalooza()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors">
+                        <i data-lucide="sparkles" class="w-4 h-4 inline mr-1"></i> Find Lollapalooza
+                    </button>
+                </div>
+                
+                <div id="full-analysis-result" class="mt-6"></div>
+            </div>
+        </div>
+
+        <div id="models" class="tab-content fade-in">
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold">Mental Models Library</h2>
+                    <div class="flex space-x-2">
+                        <input type="text" id="model-search" class="border rounded-lg px-3 py-2 text-sm" placeholder="Search models..." onkeyup="searchModels()">
+                        <select id="model-category" class="border rounded-lg px-3 py-2 text-sm" onchange="filterModels()">
+                            <option value="">All Categories</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="models-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="text-center text-gray-400 col-span-3">Loading models...</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="failures" class="tab-content fade-in">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-4">Failure Mode Detection</h2>
+                <p class="text-gray-600 mb-4">The system tracks 645 failure modes (5 per model) with detection signals and prevention strategies.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="font-semibold mb-3">Check for Failure Modes</h3>
+                        <textarea id="failure-check-input" class="w-full border rounded-lg p-3 h-32 text-sm" placeholder="Enter analysis or decision to check for potential failure modes..."></textarea>
+                        <button onclick="checkFailures()" class="mt-3 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                            <i data-lucide="shield-alert" class="w-4 h-4 inline mr-1"></i> Check Failures
+                        </button>
+                        <div id="failure-check-result" class="mt-4"></div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="font-semibold mb-3">Failure Mode Categories</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between p-2 bg-gray-50 rounded"><span>Data Bias</span><span class="text-gray-500">Biased input data</span></div>
+                            <div class="flex justify-between p-2 bg-gray-50 rounded"><span>Reasoning Error</span><span class="text-gray-500">Logical fallacies</span></div>
+                            <div class="flex justify-between p-2 bg-gray-50 rounded"><span>Incomplete Analysis</span><span class="text-gray-500">Missing factors</span></div>
+                            <div class="flex justify-between p-2 bg-gray-50 rounded"><span>Overconfidence</span><span class="text-gray-500">Excessive certainty</span></div>
+                            <div class="flex justify-between p-2 bg-gray-50 rounded"><span>Context Blindness</span><span class="text-gray-500">Ignoring context</span></div>
+                            <div class="flex justify-between p-2 bg-gray-50 rounded"><span>Temporal Error</span><span class="text-gray-500">Timing mistakes</span></div>
+                            <div class="flex justify-between p-2 bg-gray-50 rounded"><span>Scale Mismatch</span><span class="text-gray-500">Wrong scale applied</span></div>
+                            <div class="flex justify-between p-2 bg-gray-50 rounded"><span>Feedback Loop</span><span class="text-gray-500">Self-reinforcing errors</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="connectors" class="tab-content fade-in">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-4">Data Connectors</h2>
+                <p class="text-gray-600 mb-6">Connect to various data sources to feed the Mental Models System.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500" onclick="openConnectorModal('github')">
+                        <div class="flex items-center mb-3">
+                            <i data-lucide="github" class="w-8 h-8 text-gray-800 mr-3"></i>
+                            <div>
+                                <h4 class="font-semibold">GitHub</h4>
+                                <span id="github-status" class="text-xs text-gray-500">Not configured</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600">Connect to repositories, issues, PRs, and commits for analysis.</p>
+                        <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
+                    </div>
+                    
+                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500" onclick="openConnectorModal('slack')">
+                        <div class="flex items-center mb-3">
+                            <i data-lucide="slack" class="w-8 h-8 text-purple-600 mr-3"></i>
+                            <div>
+                                <h4 class="font-semibold">Slack</h4>
+                                <span id="slack-status" class="text-xs text-gray-500">Not configured</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600">Analyze conversations and run commands via Slack bot.</p>
+                        <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
+                    </div>
+                    
+                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500" onclick="openConnectorModal('gdrive')">
+                        <div class="flex items-center mb-3">
+                            <i data-lucide="hard-drive" class="w-8 h-8 text-blue-600 mr-3"></i>
+                            <div>
+                                <h4 class="font-semibold">Google Drive</h4>
+                                <span id="gdrive-status" class="text-xs text-gray-500">Not configured</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600">Import documents and files from Google Drive.</p>
+                        <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
+                    </div>
+                    
+                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500" onclick="openConnectorModal('database')">
+                        <div class="flex items-center mb-3">
+                            <i data-lucide="database" class="w-8 h-8 text-green-600 mr-3"></i>
+                            <div>
+                                <h4 class="font-semibold">Database</h4>
+                                <span id="database-status" class="text-xs text-gray-500">Not configured</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600">Connect to PostgreSQL, MySQL, or SQLite databases.</p>
+                        <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
+                    </div>
+                    
+                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500" onclick="openConnectorModal('webscraper')">
+                        <div class="flex items-center mb-3">
+                            <i data-lucide="globe" class="w-8 h-8 text-orange-600 mr-3"></i>
+                            <div>
+                                <h4 class="font-semibold">Web Scraper</h4>
+                                <span id="webscraper-status" class="text-xs text-gray-500">Not configured</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600">Scrape web pages using BeautifulSoup, Scrapy, or Selenium.</p>
+                        <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
+                    </div>
+                    
+                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500" onclick="openConnectorModal('files')">
+                        <div class="flex items-center mb-3">
+                            <i data-lucide="file-text" class="w-8 h-8 text-gray-600 mr-3"></i>
+                            <div>
+                                <h4 class="font-semibold">Local Files</h4>
+                                <span id="files-status" class="text-xs text-gray-500">Not configured</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600">Process TXT, PDF, and DOCX files from local storage.</p>
+                        <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
+                    </div>
+                    
+                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500" onclick="openConnectorModal('api')">
+                        <div class="flex items-center mb-3">
+                            <i data-lucide="link" class="w-8 h-8 text-indigo-600 mr-3"></i>
+                            <div>
+                                <h4 class="font-semibold">REST API</h4>
+                                <span id="api-status" class="text-xs text-gray-500">Not configured</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600">Connect to any REST or GraphQL API endpoint.</p>
+                        <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
+                    </div>
+                    
+                    <div class="connector-card border rounded-lg p-4 transition-all cursor-pointer hover:border-blue-500" onclick="openConnectorModal('lmstudio')">
+                        <div class="flex items-center mb-3">
+                            <i data-lucide="cpu" class="w-8 h-8 text-cyan-600 mr-3"></i>
+                            <div>
+                                <h4 class="font-semibold">LM Studio</h4>
+                                <span id="lmstudio-status" class="text-xs text-yellow-600">Requires Local</span>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600">Connect to local LLM via LM Studio at localhost:1234.</p>
+                        <button class="mt-3 text-sm text-blue-600 hover:underline">Configure</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="connector-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="modal-title" class="text-lg font-semibold">Configure Connector</h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div id="modal-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-gray-100 border-t mt-8 py-4">
+        <div class="max-w-7xl mx-auto px-4 text-center text-sm text-gray-500">
+            Mental Models System - Open Source (MIT License) | 
+            <a href="https://github.com/Ripple-Analytics/Ripple_Analytics" class="text-blue-600 hover:underline">GitHub</a>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE = window.location.origin;
+        let allModels = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            loadStats();
+            loadThinkers();
+            loadModels();
+            
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    tab.classList.add('active');
+                    document.getElementById(tab.dataset.tab).classList.add('active');
+                });
+            });
+        });
+
+        async function loadStats() {
+            try {
+                const resp = await fetch(`${API_BASE}/stats`);
+                const data = await resp.json();
+                document.getElementById('stat-models').textContent = data.total_models || 129;
+                document.getElementById('stat-principles').textContent = data.total_principles || '--';
+                document.getElementById('stat-cases').textContent = data.total_cases || '--';
+            } catch (e) {
+                console.log('Stats endpoint not available, using defaults');
+                document.getElementById('stat-models').textContent = '129';
+            }
+        }
+
+        async function loadThinkers() {
+            try {
+                const resp = await fetch(`${API_BASE}/frameworks`);
+                const data = await resp.json();
+                const container = document.getElementById('thinkers-list');
+                container.innerHTML = data.map(t => `
+                    <div class="bg-gray-50 rounded-lg p-3 text-center hover:bg-gray-100 cursor-pointer">
+                        <p class="font-medium text-sm">${t.name}</p>
+                    </div>
+                `).join('');
+            } catch (e) {
+                document.getElementById('thinkers-list').innerHTML = `
+                    <div class="bg-gray-50 rounded-lg p-3 text-center">Charlie Munger</div>
+                    <div class="bg-gray-50 rounded-lg p-3 text-center">George Soros</div>
+                    <div class="bg-gray-50 rounded-lg p-3 text-center">Ray Dalio</div>
+                    <div class="bg-gray-50 rounded-lg p-3 text-center">Jim Simons</div>
+                    <div class="bg-gray-50 rounded-lg p-3 text-center">Peter Thiel</div>
+                    <div class="bg-gray-50 rounded-lg p-3 text-center">Elon Musk</div>
+                `;
+            }
+        }
+
+        async function loadModels() {
+            try {
+                const resp = await fetch(`${API_BASE}/models?limit=200`);
+                allModels = await resp.json();
+                renderModels(allModels);
+                
+                const catResp = await fetch(`${API_BASE}/models/categories`);
+                const categories = await catResp.json();
+                const select = document.getElementById('model-category');
+                categories.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.category;
+                    opt.textContent = `${c.category} (${c.count})`;
+                    select.appendChild(opt);
+                });
+            } catch (e) {
+                document.getElementById('models-list').innerHTML = '<div class="text-gray-500">Unable to load models. API may not be running.</div>';
+            }
+        }
+
+        function renderModels(models) {
+            const container = document.getElementById('models-list');
+            if (models.length === 0) {
+                container.innerHTML = '<div class="text-gray-500 col-span-3">No models found.</div>';
+                return;
+            }
+            container.innerHTML = models.map(m => `
+                <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                    <h4 class="font-semibold text-blue-600">${m.name}</h4>
+                    <p class="text-xs text-gray-500 mb-2">${m.category || 'Uncategorized'}</p>
+                    <p class="text-sm text-gray-600 line-clamp-3">${m.description || 'No description available.'}</p>
+                    ${m.originator ? `<p class="text-xs text-gray-400 mt-2">Origin: ${m.originator}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function searchModels() {
+            const query = document.getElementById('model-search').value.toLowerCase();
+            const filtered = allModels.filter(m => 
+                m.name.toLowerCase().includes(query) || 
+                (m.description && m.description.toLowerCase().includes(query))
+            );
+            renderModels(filtered);
+        }
+
+        function filterModels() {
+            const category = document.getElementById('model-category').value;
+            const filtered = category ? allModels.filter(m => m.category === category) : allModels;
+            renderModels(filtered);
+        }
+
+        async function quickAnalyze() {
+            const input = document.getElementById('quick-analysis-input').value;
+            if (!input.trim()) return;
+            
+            const resultDiv = document.getElementById('quick-analysis-result');
+            resultDiv.innerHTML = '<div class="text-gray-500">Analyzing...</div>';
+            
+            try {
+                const resp = await fetch(`${API_BASE}/analyze/document`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: input })
+                });
+                const data = await resp.json();
+                
+                let html = '<div class="bg-blue-50 rounded-lg p-4">';
+                if (data.applicable_models && data.applicable_models.length > 0) {
+                    html += '<p class="font-semibold mb-2">Applicable Models:</p><ul class="list-disc list-inside text-sm">';
+                    data.applicable_models.slice(0, 5).forEach(m => {
+                        html += `<li>${m.model_name} (${Math.round(m.relevance_score * 100)}%)</li>`;
+                    });
+                    html += '</ul>';
+                }
+                if (data.key_insights && data.key_insights.length > 0) {
+                    html += '<p class="font-semibold mt-3 mb-2">Key Insights:</p><ul class="list-disc list-inside text-sm">';
+                    data.key_insights.forEach(i => html += `<li>${i}</li>`);
+                    html += '</ul>';
+                }
+                html += '</div>';
+                resultDiv.innerHTML = html;
+            } catch (e) {
+                resultDiv.innerHTML = '<div class="text-red-500">Analysis failed. Ensure LM Studio is running at localhost:1234.</div>';
+            }
+        }
+
+        async function invertProblem() {
+            const input = document.getElementById('inversion-input').value;
+            if (!input.trim()) return;
+            
+            const resultDiv = document.getElementById('inversion-result');
+            resultDiv.innerHTML = '<div class="text-gray-500">Inverting...</div>';
+            
+            try {
+                const resp = await fetch(`${API_BASE}/analyze/invert?content=${encodeURIComponent(input)}`);
+                const data = await resp.json();
+                resultDiv.innerHTML = `<div class="bg-orange-50 rounded-lg p-4 text-sm">${data.inverted_analysis || data}</div>`;
+            } catch (e) {
+                resultDiv.innerHTML = '<div class="text-red-500">Inversion failed. Ensure LM Studio is running.</div>';
+            }
+        }
+
+        async function fullAnalyze() {
+            const input = document.getElementById('full-analysis-input').value;
+            if (!input.trim()) return;
+            
+            const resultDiv = document.getElementById('full-analysis-result');
+            resultDiv.innerHTML = '<div class="text-gray-500 p-4">Performing full analysis...</div>';
+            
+            try {
+                const resp = await fetch(`${API_BASE}/analyze/document`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: input })
+                });
+                const data = await resp.json();
+                
+                let html = '<div class="space-y-4">';
+                
+                if (data.applicable_models && data.applicable_models.length > 0) {
+                    html += '<div class="bg-blue-50 rounded-lg p-4"><h4 class="font-semibold mb-2">Applicable Mental Models</h4><div class="grid grid-cols-2 gap-2">';
+                    data.applicable_models.forEach(m => {
+                        html += `<div class="bg-white rounded p-2 text-sm"><span class="font-medium">${m.model_name}</span> <span class="text-gray-500">(${Math.round(m.relevance_score * 100)}%)</span><p class="text-xs text-gray-600 mt-1">${m.explanation || ''}</p></div>`;
+                    });
+                    html += '</div></div>';
+                }
+                
+                if (data.detected_biases && data.detected_biases.length > 0) {
+                    html += '<div class="bg-yellow-50 rounded-lg p-4"><h4 class="font-semibold mb-2">Detected Biases</h4><ul class="space-y-2">';
+                    data.detected_biases.forEach(b => {
+                        html += `<li class="text-sm"><span class="font-medium">${b.bias_name}</span> (${Math.round(b.confidence * 100)}%)<p class="text-gray-600">${b.evidence}</p></li>`;
+                    });
+                    html += '</ul></div>';
+                }
+                
+                if (data.key_insights && data.key_insights.length > 0) {
+                    html += '<div class="bg-green-50 rounded-lg p-4"><h4 class="font-semibold mb-2">Key Insights</h4><ul class="list-disc list-inside text-sm">';
+                    data.key_insights.forEach(i => html += `<li>${i}</li>`);
+                    html += '</ul></div>';
+                }
+                
+                if (data.inverted_perspective) {
+                    html += `<div class="bg-orange-50 rounded-lg p-4"><h4 class="font-semibold mb-2">Inverted Perspective</h4><p class="text-sm">${data.inverted_perspective}</p></div>`;
+                }
+                
+                html += '</div>';
+                resultDiv.innerHTML = html;
+            } catch (e) {
+                resultDiv.innerHTML = '<div class="text-red-500 p-4">Full analysis failed. Ensure LM Studio is running at localhost:1234.</div>';
+            }
+        }
+
+        async function detectBiases() {
+            const input = document.getElementById('full-analysis-input').value;
+            if (!input.trim()) return;
+            
+            const resultDiv = document.getElementById('full-analysis-result');
+            resultDiv.innerHTML = '<div class="text-gray-500 p-4">Detecting biases...</div>';
+            
+            try {
+                const resp = await fetch(`${API_BASE}/analyze/biases`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: input })
+                });
+                const data = await resp.json();
+                
+                let html = '<div class="bg-yellow-50 rounded-lg p-4"><h4 class="font-semibold mb-3">Detected Cognitive Biases</h4>';
+                if (data.biases && data.biases.length > 0) {
+                    html += '<div class="space-y-3">';
+                    data.biases.forEach(b => {
+                        html += `<div class="bg-white rounded p-3"><p class="font-medium">${b.bias_name} <span class="text-sm text-gray-500">(${Math.round(b.confidence * 100)}% confidence)</span></p><p class="text-sm text-gray-600 mt-1">${b.evidence}</p><p class="text-sm text-green-600 mt-1"><strong>Mitigation:</strong> ${b.mitigation}</p></div>`;
+                    });
+                    html += '</div>';
+                } else {
+                    html += '<p class="text-gray-600">No obvious biases detected.</p>';
+                }
+                html += '</div>';
+                resultDiv.innerHTML = html;
+            } catch (e) {
+                resultDiv.innerHTML = '<div class="text-red-500 p-4">Bias detection failed.</div>';
+            }
+        }
+
+        async function findLollapalooza() {
+            const input = document.getElementById('full-analysis-input').value;
+            if (!input.trim()) return;
+            
+            const resultDiv = document.getElementById('full-analysis-result');
+            resultDiv.innerHTML = '<div class="text-gray-500 p-4">Finding lollapalooza effects...</div>';
+            
+            try {
+                const resp = await fetch(`${API_BASE}/analyze/lollapalooza`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: input })
+                });
+                const data = await resp.json();
+                
+                let html = '<div class="bg-purple-50 rounded-lg p-4"><h4 class="font-semibold mb-3">Lollapalooza Effect Analysis</h4>';
+                html += `<p class="text-lg mb-2">Score: <span class="font-bold">${Math.round((data.score || 0) * 100)}%</span></p>`;
+                if (data.models && data.models.length > 0) {
+                    html += '<p class="font-medium mt-3">Interacting Models:</p><div class="flex flex-wrap gap-2 mt-2">';
+                    data.models.forEach(m => html += `<span class="bg-purple-200 px-2 py-1 rounded text-sm">${m}</span>`);
+                    html += '</div>';
+                }
+                if (data.explanation) {
+                    html += `<p class="mt-3 text-sm text-gray-700">${data.explanation}</p>`;
+                }
+                html += '</div>';
+                resultDiv.innerHTML = html;
+            } catch (e) {
+                resultDiv.innerHTML = '<div class="text-red-500 p-4">Lollapalooza analysis failed.</div>';
+            }
+        }
+
+        async function checkFailures() {
+            const input = document.getElementById('failure-check-input').value;
+            if (!input.trim()) return;
+            
+            const resultDiv = document.getElementById('failure-check-result');
+            resultDiv.innerHTML = '<div class="text-gray-500">Checking for failure modes...</div>';
+            
+            try {
+                const resp = await fetch(`${API_BASE}/failure-modes/check`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: input })
+                });
+                const data = await resp.json();
+                
+                let html = '<div class="bg-red-50 rounded-lg p-4 mt-3">';
+                if (data.detected_failures && data.detected_failures.length > 0) {
+                    html += '<h4 class="font-semibold mb-2 text-red-700">Potential Failure Modes Detected</h4><div class="space-y-2">';
+                    data.detected_failures.forEach(f => {
+                        html += `<div class="bg-white rounded p-2 text-sm border-l-4 border-red-400"><p class="font-medium">${f.name} <span class="text-xs text-gray-500">(${f.severity})</span></p><p class="text-gray-600 text-xs mt-1">${f.description || ''}</p></div>`;
+                    });
+                    html += '</div>';
+                } else {
+                    html += '<p class="text-gray-600">No obvious failure modes detected. Consider reviewing for confirmation bias, overconfidence, and incomplete analysis.</p>';
+                }
+                html += '</div>';
+                resultDiv.innerHTML = html;
+            } catch (e) {
+                resultDiv.innerHTML = '<div class="bg-yellow-50 rounded-lg p-4 mt-3"><p class="text-yellow-700">Failure mode API not available. Consider these common failure modes:</p><ul class="list-disc list-inside text-sm mt-2"><li>Confirmation bias</li><li>Overconfidence</li><li>Incomplete analysis</li><li>Context blindness</li></ul></div>';
+            }
+        }
+
+        const connectorConfigs = {
+            github: {
+                title: 'GitHub Connector',
+                fields: [
+                    { name: 'token', label: 'Personal Access Token', type: 'password', placeholder: 'ghp_xxxxxxxxxxxx' },
+                    { name: 'owner', label: 'Repository Owner', type: 'text', placeholder: 'username or org' },
+                    { name: 'repo', label: 'Repository Name', type: 'text', placeholder: 'repository-name' }
+                ]
+            },
+            slack: {
+                title: 'Slack Connector',
+                fields: [
+                    { name: 'bot_token', label: 'Bot Token', type: 'password', placeholder: 'xoxb-xxxxxxxxxxxx' },
+                    { name: 'app_token', label: 'App Token (optional)', type: 'password', placeholder: 'xapp-xxxxxxxxxxxx' },
+                    { name: 'channel', label: 'Default Channel', type: 'text', placeholder: '#general' }
+                ]
+            },
+            gdrive: {
+                title: 'Google Drive Connector',
+                fields: [
+                    { name: 'credentials', label: 'Service Account JSON', type: 'textarea', placeholder: '{"type": "service_account", ...}' },
+                    { name: 'folder_id', label: 'Folder ID (optional)', type: 'text', placeholder: 'folder-id-from-url' }
+                ]
+            },
+            database: {
+                title: 'Database Connector',
+                fields: [
+                    { name: 'type', label: 'Database Type', type: 'select', options: ['PostgreSQL', 'MySQL', 'SQLite'] },
+                    { name: 'host', label: 'Host', type: 'text', placeholder: 'localhost' },
+                    { name: 'port', label: 'Port', type: 'text', placeholder: '5432' },
+                    { name: 'database', label: 'Database Name', type: 'text', placeholder: 'mental_models' },
+                    { name: 'username', label: 'Username', type: 'text', placeholder: 'postgres' },
+                    { name: 'password', label: 'Password', type: 'password', placeholder: '' }
+                ]
+            },
+            webscraper: {
+                title: 'Web Scraper Connector',
+                fields: [
+                    { name: 'engine', label: 'Scraping Engine', type: 'select', options: ['BeautifulSoup', 'Scrapy', 'Selenium (Headless)'] },
+                    { name: 'urls', label: 'URLs to Scrape (one per line)', type: 'textarea', placeholder: 'https://example.com\nhttps://example.org' },
+                    { name: 'selectors', label: 'CSS Selectors (optional)', type: 'text', placeholder: 'article, .content, #main' }
+                ]
+            },
+            files: {
+                title: 'Local Files Connector',
+                fields: [
+                    { name: 'paths', label: 'Watch Paths (one per line)', type: 'textarea', placeholder: '/path/to/documents\n/path/to/data' },
+                    { name: 'extensions', label: 'File Extensions', type: 'text', placeholder: '.txt, .pdf, .docx' },
+                    { name: 'recursive', label: 'Recursive Search', type: 'checkbox' }
+                ]
+            },
+            api: {
+                title: 'REST API Connector',
+                fields: [
+                    { name: 'base_url', label: 'Base URL', type: 'text', placeholder: 'https://api.example.com' },
+                    { name: 'auth_type', label: 'Authentication', type: 'select', options: ['None', 'API Key', 'Bearer Token', 'Basic Auth'] },
+                    { name: 'auth_value', label: 'Auth Value', type: 'password', placeholder: 'API key or token' },
+                    { name: 'headers', label: 'Custom Headers (JSON)', type: 'textarea', placeholder: '{"X-Custom-Header": "value"}' }
+                ]
+            },
+            lmstudio: {
+                title: 'LM Studio Connector',
+                fields: [
+                    { name: 'url', label: 'LM Studio URL', type: 'text', placeholder: 'http://localhost:1234' },
+                    { name: 'model', label: 'Model Name (optional)', type: 'text', placeholder: 'auto-detect' },
+                    { name: 'timeout', label: 'Timeout (seconds)', type: 'text', placeholder: '60' }
+                ]
+            }
+        };
+
+        let connectorSettings = JSON.parse(localStorage.getItem('connectorSettings') || '{}');
+
+        function openConnectorModal(connectorType) {
+            const config = connectorConfigs[connectorType];
+            if (!config) return;
+            
+            document.getElementById('modal-title').textContent = config.title;
+            const saved = connectorSettings[connectorType] || {};
+            
+            let html = '<form id="connector-form" class="space-y-4">';
+            config.fields.forEach(field => {
+                const value = saved[field.name] || '';
+                html += `<div>`;
+                html += `<label class="block text-sm font-medium text-gray-700 mb-1">${field.label}</label>`;
+                
+                if (field.type === 'select') {
+                    html += `<select name="${field.name}" class="w-full border rounded-lg px-3 py-2 text-sm">`;
+                    field.options.forEach(opt => {
+                        html += `<option value="${opt}" ${value === opt ? 'selected' : ''}>${opt}</option>`;
+                    });
+                    html += `</select>`;
+                } else if (field.type === 'textarea') {
+                    html += `<textarea name="${field.name}" class="w-full border rounded-lg px-3 py-2 text-sm h-24" placeholder="${field.placeholder || ''}">${value}</textarea>`;
+                } else if (field.type === 'checkbox') {
+                    html += `<input type="checkbox" name="${field.name}" class="rounded" ${value ? 'checked' : ''}>`;
+                } else {
+                    html += `<input type="${field.type}" name="${field.name}" value="${value}" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="${field.placeholder || ''}">`;
+                }
+                html += `</div>`;
+            });
+            
+            html += `<div class="flex space-x-3 pt-4">`;
+            html += `<button type="submit" class="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">Save</button>`;
+            html += `<button type="button" onclick="testConnector('${connectorType}')" class="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">Test</button>`;
+            html += `</div>`;
+            html += `<div id="connector-status" class="text-sm mt-2"></div>`;
+            html += `</form>`;
+            
+            document.getElementById('modal-content').innerHTML = html;
+            document.getElementById('connector-modal').classList.remove('hidden');
+            lucide.createIcons();
+            
+            document.getElementById('connector-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                saveConnector(connectorType);
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('connector-modal').classList.add('hidden');
+        }
+
+        function saveConnector(connectorType) {
+            const form = document.getElementById('connector-form');
+            const formData = new FormData(form);
+            const settings = {};
+            
+            for (let [key, value] of formData.entries()) {
+                settings[key] = value;
+            }
+            
+            connectorSettings[connectorType] = settings;
+            localStorage.setItem('connectorSettings', JSON.stringify(connectorSettings));
+            
+            const statusEl = document.getElementById(`${connectorType}-status`);
+            if (statusEl) {
+                statusEl.textContent = 'Configured';
+                statusEl.className = 'text-xs text-green-600';
+            }
+            
+            document.getElementById('connector-status').innerHTML = '<span class="text-green-600">Settings saved!</span>';
+            setTimeout(closeModal, 1000);
+        }
+
+        async function testConnector(connectorType) {
+            const statusDiv = document.getElementById('connector-status');
+            statusDiv.innerHTML = '<span class="text-gray-500">Testing connection...</span>';
+            
+            try {
+                const resp = await fetch(`${API_BASE}/connectors/${connectorType}/test`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(connectorSettings[connectorType] || {})
+                });
+                
+                if (resp.ok) {
+                    statusDiv.innerHTML = '<span class="text-green-600">Connection successful!</span>';
+                } else {
+                    const data = await resp.json();
+                    statusDiv.innerHTML = `<span class="text-red-600">Connection failed: ${data.detail || 'Unknown error'}</span>`;
+                }
+            } catch (e) {
+                statusDiv.innerHTML = '<span class="text-yellow-600">Test endpoint not available. Settings saved locally.</span>';
+            }
+        }
+
+        function loadConnectorStatuses() {
+            Object.keys(connectorSettings).forEach(type => {
+                const statusEl = document.getElementById(`${type}-status`);
+                if (statusEl && Object.keys(connectorSettings[type]).length > 0) {
+                    statusEl.textContent = 'Configured';
+                    statusEl.className = 'text-xs text-green-600';
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadConnectorStatuses);
+    </script>
+</body>
+</html>
