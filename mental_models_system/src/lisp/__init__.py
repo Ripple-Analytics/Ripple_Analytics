@@ -1,18 +1,29 @@
 """
 Lisp (Hy) Integration Module
 
-This module provides a bridge between Python and the Hy-based mental models DSL.
+This module provides a bridge between Python and the Hy-based mental models system.
 Hy is a Lisp dialect that compiles to Python, giving us:
 - Homoiconicity (code as data) for self-modifying systems
 - Powerful macros for domain-specific abstractions
 - REPL-driven development for rapid iteration
 - Functional programming paradigms
 
+The system is now primarily written in Lisp (Hy) for faster feature development.
+Python serves as a thin wrapper for FastAPI endpoints and external integrations.
+
+Modules:
+- mental_models_dsl.hy: Core DSL with defmodel, defrule, deffailure macros
+- mental_models_library.hy: Complete library of 129+ mental models
+- analysis_engine.hy: Latticework, lollapalooza, inversion, two-track analysis
+- statistical_engine.hy: Correlations, regression, factor analysis
+- data_processing.hy: Text chunking, pattern matching, document analysis
+
 Usage:
     from mental_models_system.src.lisp import LispBridge
     
     bridge = LispBridge()
     result = bridge.analyze_context({"situation": "Investment decision"})
+    stats = bridge.statistical_analysis({"var1": [1,2,3], "var2": [4,5,6]})
 """
 
 import os
@@ -25,10 +36,11 @@ from datetime import datetime
 import json
 
 HY_AVAILABLE = False
+HY_MODULES = {}
+
 try:
     import hy
-    from hy.compiler import hy_compile
-    from hy.reader import HyReader
+    import hy.importer
     HY_AVAILABLE = True
 except ImportError:
     pass
