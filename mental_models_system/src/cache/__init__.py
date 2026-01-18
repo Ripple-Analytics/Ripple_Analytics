@@ -1,12 +1,11 @@
 from .redis_cache import (
     RedisCache,
-    CacheConfig,
-    CacheStats,
-    InMemoryCache,
     LLMCache,
     AnalysisCache,
     SearchCache,
-    get_cache,
+    InMemoryCache,
+    CacheConfig,
+    get_cache as get_redis_cache,
     get_llm_cache,
     get_analysis_cache,
     get_search_cache,
@@ -14,18 +13,40 @@ from .redis_cache import (
     cached_analysis
 )
 
+from .performance_cache import (
+    LRUCache,
+    DiskCache,
+    MultiLevelCache,
+    CacheEntry,
+    CacheStats,
+    cached,
+    async_cached,
+    get_cache,
+    init_cache
+)
+
 __all__ = [
+    # Redis cache
     "RedisCache",
-    "CacheConfig",
-    "CacheStats",
-    "InMemoryCache",
     "LLMCache",
     "AnalysisCache",
     "SearchCache",
-    "get_cache",
+    "InMemoryCache",
+    "CacheConfig",
+    "get_redis_cache",
     "get_llm_cache",
     "get_analysis_cache",
     "get_search_cache",
     "cached_llm",
-    "cached_analysis"
+    "cached_analysis",
+    # Performance cache
+    "LRUCache",
+    "DiskCache",
+    "MultiLevelCache",
+    "CacheEntry",
+    "CacheStats",
+    "cached",
+    "async_cached",
+    "get_cache",
+    "init_cache"
 ]
