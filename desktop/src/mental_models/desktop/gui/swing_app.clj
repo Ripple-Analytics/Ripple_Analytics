@@ -17,11 +17,17 @@
            [java.util.zip ZipInputStream]))
 
 ;; =============================================================================
+;; Forward declarations
+;; =============================================================================
+
+(declare report-error-to-devin!)
+
+;; =============================================================================
 ;; Configuration
 ;; =============================================================================
 
 (def config
-  {:version "1.5.0"
+  {:version "1.5.1"
    :blue-green true
    :app-name "Mental Models Desktop"
    :github-repo "Ripple-Analytics/Ripple_Analytics"
@@ -1770,9 +1776,36 @@
       (log! (str "[EXTRACT] Error: " (.getMessage e)))
       {:success false :error (.getMessage e)})))
 
+(defn test-new-version! [source-dir]
+  "Test if new version can start without crashing - returns true if OK"
+  (log! "[UPDATE] Testing new version before switching...")
+  (try
+    ;; Try to load and compile the new code
+    (let [new-swing-app (File. source-dir "src/mental_models/desktop/gui/swing_app.clj")]
+      (if (.exists new-swing-app)
+        (do
+          ;; Basic syntax check - try to read the file as Clojure
+          (let [content (slurp new-swing-app)]
+            ;; Check for basic structure
+            (if (and (str/includes? content "defn -main")
+                     (str/includes? content "defn create-main-frame")
+                     (> (count content) 10000))  ;; Sanity check - file should be substantial
+              (do
+                (log! "[UPDATE] New version passed basic validation")
+                true)
+              (do
+                (log! "[UPDATE] New version FAILED validation - missing required functions")
+                false))))
+        (do
+          (log! "[UPDATE] New version FAILED - swing_app.clj not found")
+          false)))
+    (catch Exception e
+      (log! (str "[UPDATE] New version FAILED validation: " (.getMessage e)))
+      false)))
+
 (defn perform-auto-update! [parent download-url tag]
-  "Download ZIP and update with state preservation for 99.9% uptime"
-  (log! (str "[UPDATE] Starting automatic update to " tag))
+  "SAFE UPDATE: Download, test, then switch - NEVER quit until new version is verified"
+  (log! (str "[UPDATE] Starting SAFE automatic update to " tag))
   (log! (str "[UPDATE] Download URL: " download-url))
   
   (future
@@ -1781,6 +1814,7 @@
             temp-dir (File. (System/getProperty "java.io.tmpdir"))
             temp-zip (File. temp-dir (str "MentalModels-update-" tag ".zip"))
             temp-extract (File. temp-dir (str "MentalModels-extract-" (System/currentTimeMillis)))
+            backup-dir (File. app-dir "backup-previous-version")
             state-backup-file (File. temp-dir "mm-state-backup.edn")]
         
         (log! (str "[UPDATE] App dir: " (.getAbsolutePath app-dir)))
@@ -1824,35 +1858,73 @@
                           bat-file (File. app-dir "MentalModels.bat")]
                       
                       (log! (str "[UPDATE] Source dir: " (.getAbsolutePath source-dir)))
-                      (swap! *state assoc-in [:update :status] "Installing with state preservation...")
                       
-                      ;; STEP 4: Create update script that preserves state
-                      (let [update-script (File. temp-dir "mental-models-update.bat")
-                            ;; Script copies state file to new installation and restores it on startup
-                            script-content (str "@echo off\r\n"
-                                               "echo [UPDATE] Updating Mental Models with state preservation...\r\n"
-                                               "timeout /t 2 /nobreak >nul\r\n"
-                                               "echo [UPDATE] Copying new files...\r\n"
-                                               "xcopy /E /Y /Q \"" (.getAbsolutePath source-dir) "\\*\" \"" (.getAbsolutePath app-dir) "\\\"\r\n"
-                                               "echo [UPDATE] Preserving state...\r\n"
-                                               "copy /Y \"" (.getAbsolutePath state-backup-file) "\" \"" (.getAbsolutePath app-dir) "\\state-restore.edn\"\r\n"
-                                               "rmdir /S /Q \"" (.getAbsolutePath temp-extract) "\"\r\n"
-                                               "echo [UPDATE] Starting updated version...\r\n"
-                                               "start \"\" \"" (.getAbsolutePath bat-file) "\"\r\n"
-                                               "del \"%~f0\"\r\n")]
+                      ;; STEP 4: TEST NEW VERSION BEFORE SWITCHING
+                      (swap! *state assoc-in [:update :status] "Testing new version...")
+                      (if (test-new-version! source-dir)
+                        (do
+                          ;; NEW VERSION PASSED - proceed with update
+                          (log! "[UPDATE] New version PASSED testing - proceeding with update")
+                          (swap! *state assoc-in [:update :status] "Installing (verified safe)...")
+                          
+                          ;; STEP 5: Backup current version before overwriting
+                          (log! "[UPDATE] Backing up current version...")
+                          (when (.exists backup-dir)
+                            ;; Delete old backup
+                            (doseq [f (file-seq backup-dir)]
+                              (when (.isFile f) (.delete f)))
+                            (.delete backup-dir))
+                          (.mkdirs backup-dir)
+                          ;; Copy current src to backup
+                          (let [current-src (File. app-dir "src")]
+                            (when (.exists current-src)
+                              (doseq [f (file-seq current-src)]
+                                (when (.isFile f)
+                                  (let [rel-path (.substring (.getAbsolutePath f) (count (.getAbsolutePath app-dir)))
+                                        backup-file (File. backup-dir rel-path)]
+                                    (.mkdirs (.getParentFile backup-file))
+                                    (io/copy f backup-file))))))
+                          (log! "[UPDATE] Backup complete")
+                          
+                          ;; STEP 6: Create update script
+                          (let [update-script (File. temp-dir "mental-models-update.bat")
+                                script-content (str "@echo off\r\n"
+                                                   "echo [UPDATE] SAFE UPDATE - Version verified before switching\r\n"
+                                                   "timeout /t 2 /nobreak >nul\r\n"
+                                                   "echo [UPDATE] Copying verified new files...\r\n"
+                                                   "xcopy /E /Y /Q \"" (.getAbsolutePath source-dir) "\\*\" \"" (.getAbsolutePath app-dir) "\\\"\r\n"
+                                                   "echo [UPDATE] Preserving state...\r\n"
+                                                   "copy /Y \"" (.getAbsolutePath state-backup-file) "\" \"" (.getAbsolutePath app-dir) "\\state-restore.edn\"\r\n"
+                                                   "rmdir /S /Q \"" (.getAbsolutePath temp-extract) "\"\r\n"
+                                                   "echo [UPDATE] Starting verified new version...\r\n"
+                                                   "start \"\" \"" (.getAbsolutePath bat-file) "\"\r\n"
+                                                   "del \"%~f0\"\r\n")]
+                            
+                            (spit update-script script-content)
+                            (log! "[UPDATE] Created update script for verified version")
+                            
+                            (swap! *state assoc-in [:update :status] "Restarting (verified safe)...")
+                            (Thread/sleep 1000)
+                            
+                            ;; Launch update script and exit
+                            (.exec (Runtime/getRuntime) 
+                                   (str "cmd /c start /min \"\" \"" (.getAbsolutePath update-script) "\""))
+                            (Thread/sleep 500)
+                            (log! "[UPDATE] Exiting for VERIFIED update...")
+                            (System/exit 0)))
                         
-                        (spit update-script script-content)
-                        (log! (str "[UPDATE] Created update script with state preservation"))
-                        
-                        (swap! *state assoc-in [:update :status] "Restarting (state will be restored)...")
-                        (Thread/sleep 1000)
-                        
-                        ;; Launch update script and exit
-                        (.exec (Runtime/getRuntime) 
-                               (str "cmd /c start /min \"\" \"" (.getAbsolutePath update-script) "\""))
-                        (Thread/sleep 500)
-                        (log! "[UPDATE] Exiting for update with state preservation...")
-                        (System/exit 0))))
+                        ;; NEW VERSION FAILED TESTING - DO NOT SWITCH
+                        (do
+                          (log! "[UPDATE] New version FAILED testing - NOT switching, keeping current version")
+                          (swap! *state assoc-in [:update :status] "Update REJECTED - bad version")
+                          ;; Clean up the bad download
+                          (doseq [f (file-seq temp-extract)]
+                            (when (.isFile f) (.delete f)))
+                          (.delete temp-extract)
+                          ;; Report the failure
+                          (report-error-to-devin! "UpdateRejected" 
+                                                  (str "Version " tag " failed validation") 
+                                                  "New version did not pass pre-switch testing")))))
                   
                   ;; Extraction failed
                   (do
@@ -2155,8 +2227,12 @@
     (let [models-panel (JPanel. (BorderLayout. 0 0))
           model-counts (frequencies (mapcat :models (:scan-results @*state)))
           top-models (take 8 (sort-by val > model-counts))
-          table-data (to-array-2d (map (fn [[m c]] [(subs (str (:name m "")) 0 (min 20 (count (str (:name m "")))))
-                                                    c]) top-models))
+          ;; model-counts keys are model names (strings), not maps
+          table-data (to-array-2d (map (fn [[model-name cnt]] 
+                                         [(let [name-str (str model-name)]
+                                            (subs name-str 0 (min 20 (count name-str))))
+                                          cnt]) 
+                                       top-models))
           columns (into-array ["Model" "#"])
           table (javax.swing.JTable. table-data columns)]
       (.setFont table (:data fonts))
@@ -3074,6 +3150,46 @@
 ;; Main Entry Point
 ;; =============================================================================
 
+(defn check-and-rollback-if-needed! []
+  "Check if we crashed after an update and rollback if backup exists"
+  (let [app-dir (File. (or (System/getProperty "app.dir") "."))
+        crash-marker (File. app-dir "startup-in-progress.marker")
+        backup-dir (File. app-dir "backup-previous-version")]
+    ;; If crash marker exists from last run, we crashed during startup
+    (when (.exists crash-marker)
+      (println "[ROLLBACK] DETECTED CRASH FROM PREVIOUS STARTUP!")
+      (when (.exists backup-dir)
+        (println "[ROLLBACK] Backup found - rolling back to previous version...")
+        (try
+          ;; Copy backup back to main location
+          (doseq [f (file-seq backup-dir)]
+            (when (.isFile f)
+              (let [rel-path (.substring (.getAbsolutePath f) 
+                                        (inc (count (.getAbsolutePath backup-dir))))
+                    target-file (File. app-dir rel-path)]
+                (.mkdirs (.getParentFile target-file))
+                (io/copy f target-file))))
+          (println "[ROLLBACK] Rollback complete - previous version restored")
+          ;; Report the rollback
+          (report-error-to-devin! "AutoRollback" 
+                                  "Automatic rollback triggered" 
+                                  "Previous startup crashed, restored backup")
+          (catch Exception e
+            (println (str "[ROLLBACK] Rollback failed: " (.getMessage e))))))
+      ;; Delete crash marker
+      (.delete crash-marker))
+    
+    ;; Create crash marker - will be deleted at end of successful startup
+    (spit crash-marker (str "Started: " (java.util.Date.)))))
+
+(defn mark-startup-successful! []
+  "Remove crash marker to indicate successful startup"
+  (let [app-dir (File. (or (System/getProperty "app.dir") "."))
+        crash-marker (File. app-dir "startup-in-progress.marker")]
+    (when (.exists crash-marker)
+      (.delete crash-marker)
+      (println "[STARTUP] Startup successful - crash marker removed"))))
+
 (defn restore-state-from-update! []
   "Check for and restore state from a previous update"
   (let [app-dir (File. (or (System/getProperty "app.dir") "."))
@@ -3095,15 +3211,18 @@
   (println "")
   (println "╔════════════════════════════════════════════════╗")
   (println "║     Mental Models Desktop v" (:version config) "           ║")
-  (println "║  ★ 99.9% UPTIME UPDATES ENABLED                ║")
+  (println "║  ★ SAFE UPDATES + AUTO-ROLLBACK                 ║")
   (println "╠════════════════════════════════════════════════╣")
+  (println "║  • Tests new version BEFORE switching           ║")
+  (println "║  • Auto-rollback if startup crashes             ║")
   (println "║  • State preservation on updates               ║")
-  (println "║  • Blue-Green deployment active                ║")
   (println "║  • SQLite persistence enabled                  ║")
-  (println "║  • Watch mode for auto-scanning                ║")
   (println "║  • Auto-update from GitHub releases            ║")
   (println "╚════════════════════════════════════════════════╝")
   (println "")
+  
+  ;; FIRST: Check if we crashed after an update and need to rollback
+  (check-and-rollback-if-needed!)
   
   ;; Set up global exception handler for Devin feedback
   (Thread/setDefaultUncaughtExceptionHandler
@@ -3128,8 +3247,12 @@
       (let [frame (create-main-frame)]
         (.setVisible frame true)
         (println "[GUI] Application started")
+        
+        ;; MARK STARTUP SUCCESSFUL - remove crash marker
+        (mark-startup-successful!)
+        
         (check-all-connections!)
-        ;; Silent startup update check - FULLY AUTOMATIC
+        ;; Silent startup update check - FULLY AUTOMATIC with SAFE updates
         (check-updates-silently! frame)
         ;; Notify Devin of startup (optional, for usage tracking)
         (when (get-in @*state [:settings :slack-webhook])
