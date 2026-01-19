@@ -1,13 +1,19 @@
 (ns mental-models.desktop.gui.scanner
-  "Scanner integration for GUI - connects UI to actual file scanning"
+  "Scanner integration for GUI - connects UI to actual file scanning.
+   Includes web app sync, LM Studio integration with retry/fallback,
+   and offline mode support."
   (:require [mental-models.desktop.gui.app :as app]
             [mental-models.desktop.extractor :as extractor]
             [mental-models.desktop.db :as db]
             [mental-models.desktop.watcher :as watcher]
+            [mental-models.desktop.api.web-client :as api]
             [mental-models.services.lm-studio :as lm]
             [clojure.java.io :as io]
+            [clojure.string :as str]
             [clojure.core.async :as async :refer [go go-loop <! >! chan close!]])
-  (:import [java.io File]))
+  (:import [java.io File]
+           [java.security MessageDigest]
+           [java.time Instant]))
 
 ;; =============================================================================
 ;; File Discovery
@@ -27,6 +33,130 @@
          (filter supported-file?)
          (map #(.getAbsolutePath %))
          (vec))))
+
+;; =============================================================================
+;; File Hashing (for duplicate detection)
+;; =============================================================================
+
+(defn file-hash
+  "Calculate SHA-256 hash of file content for duplicate detection"
+  [file-path]
+  (try
+    (let [digest (MessageDigest/getInstance "SHA-256")
+          file (io/file file-path)
+          buffer (byte-array 8192)]
+      (with-open [is (io/input-stream file)]
+        (loop []
+          (let [bytes-read (.read is buffer)]
+            (when (pos? bytes-read)
+              (.update digest buffer 0 bytes-read)
+              (recur)))))
+      (apply str (map #(format "%02x" %) (.digest digest))))
+    (catch Exception e
+      (println "Error hashing file:" (.getMessage e))
+      nil)))
+
+;; =============================================================================
+;; Sync State Management
+;; =============================================================================
+
+(def sync-state (atom {:pending []
+                       :synced []
+                       :failed []
+                       :last-sync nil}))
+
+(defn add-to-sync-queue!
+  "Add scan result to sync queue"
+  [result]
+  (swap! sync-state update :pending conj result))
+
+(defn mark-synced!
+  "Mark a result as successfully synced"
+  [result-id]
+  (swap! sync-state
+         (fn [state]
+           (let [result (first (filter #(= (:id %) result-id) (:pending state)))]
+             (-> state
+                 (update :pending #(vec (remove (fn [r] (= (:id r) result-id)) %)))
+                 (update :synced conj (assoc result :synced-at (str (Instant/now)))))))))
+
+(defn mark-sync-failed!
+  "Mark a result as failed to sync"
+  [result-id error]
+  (swap! sync-state
+         (fn [state]
+           (let [result (first (filter #(= (:id %) result-id) (:pending state)))]
+             (-> state
+                 (update :pending #(vec (remove (fn [r] (= (:id r) result-id)) %)))
+                 (update :failed conj (assoc result :error error :failed-at (str (Instant/now)))))))))
+
+(defn get-sync-status
+  "Get current sync status"
+  []
+  {:pending-count (count (:pending @sync-state))
+   :synced-count (count (:synced @sync-state))
+   :failed-count (count (:failed @sync-state))
+   :last-sync (:last-sync @sync-state)
+   :online (api/is-online?)})
+
+(defn retry-failed-syncs!
+  "Retry all failed syncs"
+  []
+  (let [failed (:failed @sync-state)]
+    (swap! sync-state assoc :failed [])
+    (doseq [result failed]
+      (add-to-sync-queue! (dissoc result :error :failed-at)))))
+
+;; =============================================================================
+;; Web App Sync
+;; =============================================================================
+
+(defn sync-scan-result!
+  "Sync a single scan result to the web app"
+  [result]
+  (try
+    (when (api/is-online?)
+      (let [sync-data {:file-path (:file-path result)
+                       :file-name (.getName (io/file (:file-path result)))
+                       :file-hash (:file-hash result)
+                       :models (:models result)
+                       :lollapalooza (:lollapalooza result)
+                       :analyzed-at (str (:analyzed-at result))
+                       :ai-analysis (:ai-analysis result)}
+            success (api/sync-scan-results [sync-data])]
+        (if success
+          (do
+            (mark-synced! (:id result))
+            (app/add-log! :info (str "Synced: " (:file-path result)))
+            true)
+          (do
+            (mark-sync-failed! (:id result) "API returned failure")
+            false))))
+    (catch Exception e
+      (mark-sync-failed! (:id result) (.getMessage e))
+      false)))
+
+(defn process-sync-queue!
+  "Process all pending sync items"
+  []
+  (when (and (api/is-online?) (pos? (count (:pending @sync-state))))
+    (app/add-log! :info (str "Syncing " (count (:pending @sync-state)) " results to web app..."))
+    (doseq [result (:pending @sync-state)]
+      (sync-scan-result! result))
+    (swap! sync-state assoc :last-sync (str (Instant/now)))
+    (app/add-log! :success "Sync complete")))
+
+(defn start-sync-processor!
+  "Start background sync processor"
+  []
+  (future
+    (loop []
+      (Thread/sleep 30000) ;; Check every 30 seconds
+      (try
+        (process-sync-queue!)
+        (catch Exception e
+          (println "Sync processor error:" (.getMessage e))))
+      (recur))))
 
 ;; =============================================================================
 ;; LM Studio Analysis
@@ -81,25 +211,119 @@ TEXT TO ANALYZE:
       {:models [] :error (.getMessage e)})))
 
 ;; =============================================================================
+;; LM Studio Integration with Retry and Fallback
+;; =============================================================================
+
+(def lm-studio-state (atom {:connected false
+                            :last-check nil
+                            :retry-count 0
+                            :models-available []}))
+
+(defn check-lm-studio-available
+  "Check if LM Studio is available with retry logic"
+  [lm-url]
+  (loop [attempt 0]
+    (if (>= attempt 3)
+      (do
+        (swap! lm-studio-state assoc :connected false)
+        false)
+      (try
+        (let [response (lm/health-check lm-url)]
+          (if (:ok response)
+            (do
+              (swap! lm-studio-state assoc
+                     :connected true
+                     :last-check (str (Instant/now))
+                     :retry-count 0)
+              true)
+            (do
+              (Thread/sleep (* 1000 (Math/pow 2 attempt)))
+              (recur (inc attempt)))))
+        (catch Exception _
+          (Thread/sleep (* 1000 (Math/pow 2 attempt)))
+          (recur (inc attempt)))))))
+
+(defn keyword-fallback-analysis
+  "Fallback to keyword-based detection when LM Studio is unavailable"
+  [text]
+  (let [keyword-patterns
+        {"Confirmation Bias" #"(?i)confirm|bias|believe|evidence"
+         "Sunk Cost Fallacy" #"(?i)sunk cost|already invested|too late"
+         "Availability Heuristic" #"(?i)recent|remember|vivid|example"
+         "Anchoring" #"(?i)anchor|initial|first impression|starting point"
+         "Loss Aversion" #"(?i)loss|lose|risk|avoid"
+         "Survivorship Bias" #"(?i)survivor|success|fail|selection"
+         "Dunning-Kruger" #"(?i)overconfident|incompetent|expert"
+         "Hindsight Bias" #"(?i)knew it|obvious|predictable"
+         "Bandwagon Effect" #"(?i)everyone|popular|trend|follow"
+         "Recency Bias" #"(?i)recent|latest|new|current"}
+        detected (for [[model pattern] keyword-patterns
+                       :when (re-find pattern text)]
+                   {:name model
+                    :category "Psychology"
+                    :confidence 0.5
+                    :explanation "Detected via keyword matching (LM Studio unavailable)"
+                    :detection-method :keyword})]
+    {:models (vec detected)
+     :lollapalooza (>= (count detected) 3)
+     :summary "Keyword-based analysis (AI unavailable)"
+     :detection-method :keyword}))
+
+(defn analyze-with-retry
+  "Analyze text with LM Studio, with retry logic and fallback"
+  [text lm-url]
+  (if (check-lm-studio-available lm-url)
+    (loop [attempt 0]
+      (if (>= attempt 3)
+        (do
+          (app/add-log! :warning "LM Studio failed after 3 attempts, using keyword fallback")
+          (keyword-fallback-analysis text))
+        (let [result (analyze-with-lm-studio text lm-url)]
+          (if (:error result)
+            (do
+              (Thread/sleep (* 1000 (Math/pow 2 attempt)))
+              (recur (inc attempt)))
+            (assoc result :detection-method :ai)))))
+    (do
+      (app/add-log! :warning "LM Studio unavailable, using keyword fallback")
+      (keyword-fallback-analysis text))))
+
+;; =============================================================================
 ;; Scan Pipeline
 ;; =============================================================================
 
 (defn scan-file! [file-path lm-url]
-  "Scan a single file and update GUI state"
+  "Scan a single file and update GUI state, with sync to web app"
   (app/add-log! :info (str "Scanning: " file-path))
   (swap! app/*state assoc-in [:scan :current-file] file-path)
   
   (try
-    ;; Extract text
-    (let [text (extractor/extract-text file-path)
+    ;; Calculate file hash for duplicate detection
+    (let [hash (file-hash file-path)
+          _ (app/add-log! :info (str "File hash: " (subs (or hash "unknown") 0 (min 16 (count (or hash ""))))))
+          
+          ;; Extract text
+          text (extractor/extract-text file-path)
           _ (app/add-log! :info (str "Extracted " (count text) " characters"))
           
-          ;; Analyze with LM Studio
+          ;; Analyze with LM Studio (with retry and fallback)
           analysis (when (and text (> (count text) 100))
-                     (analyze-with-lm-studio (subs text 0 (min 8000 (count text))) lm-url))
+                     (analyze-with-retry (subs text 0 (min 8000 (count text))) lm-url))
           
           models (get analysis :models [])
-          lollapalooza? (get analysis :lollapalooza false)]
+          lollapalooza? (get analysis :lollapalooza false)
+          detection-method (get analysis :detection-method :unknown)
+          
+          ;; Create result with unique ID
+          result-id (str (java.util.UUID/randomUUID))
+          result {:id result-id
+                  :file-path file-path
+                  :file-hash hash
+                  :models models
+                  :lollapalooza lollapalooza?
+                  :analyzed-at (Instant/now)
+                  :detection-method detection-method
+                  :ai-analysis (:summary analysis)}]
       
       ;; Update stats
       (app/update-stat! :files-scanned 1)
@@ -113,16 +337,23 @@ TEXT TO ANALYZE:
       ;; Log found models
       (doseq [model models]
         (app/add-log! :model (str "Found: " (:name model) " (" (:category model) ") - " 
-                                  (int (* 100 (:confidence model))) "% confidence"))
+                                  (int (* 100 (or (:confidence model) 0))) "% confidence"
+                                  (when (= detection-method :keyword) " [keyword]")))
         (swap! app/*state update-in [:scan :found-models] conj model))
       
       ;; Save to local database
       (db/save-analysis! {:file-path file-path
-                          :models models
+                          :file-name (.getName (io/file file-path))
+                          :file-hash hash
+                          :mental-models models
                           :lollapalooza lollapalooza?
-                          :analyzed-at (java.time.Instant/now)})
+                          :analyzed-at (str (Instant/now))})
       
-      {:success true :models models :lollapalooza lollapalooza?})
+      ;; Add to sync queue for web app
+      (add-to-sync-queue! result)
+      (app/add-log! :info (str "Queued for sync: " file-path))
+      
+      {:success true :models models :lollapalooza lollapalooza? :id result-id})
     
     (catch Exception e
       (app/add-log! :error (str "Error scanning " file-path ": " (.getMessage e)))

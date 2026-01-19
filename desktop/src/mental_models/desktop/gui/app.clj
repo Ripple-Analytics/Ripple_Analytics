@@ -4,7 +4,9 @@
             [clojure.core.async :as async :refer [go go-loop <! >! chan]]
             [clojure.java.io :as io]
             [clojure.string :as str]
-            [mental-models.desktop.error-handler :as errors])
+            [mental-models.desktop.error-handler :as errors]
+            [mental-models.desktop.gui.panels :as panels]
+            [mental-models.desktop.api.web-client :as api])
   (:import [javafx.stage Stage FileChooser DirectoryChooser]
            [javafx.scene.control Alert Alert$AlertType]
            [javafx.application Platform]
@@ -141,25 +143,40 @@
                                    :-fx-font-weight :bold
                                    :-fx-text-fill (:text-primary colors)}}]}
               
-              ;; Navigation
-              {:fx/type :v-box
-               :spacing 4
-               :padding {:left 8 :right 8}
-               :children [(sidebar-item {:icon "📊" :label "Dashboard" :view :dashboard
-                                         :active? (= current-view :dashboard)
-                                         :on-click {:event/type ::navigate :view :dashboard}})
-                          (sidebar-item {:icon "📁" :label "Scan Folder" :view :scan
-                                         :active? (= current-view :scan)
-                                         :on-click {:event/type ::navigate :view :scan}})
-                          (sidebar-item {:icon "👁" :label "Watch Mode" :view :watch
-                                         :active? (= current-view :watch)
-                                         :on-click {:event/type ::navigate :view :watch}})
-                          (sidebar-item {:icon "📋" :label "Live Logs" :view :logs
-                                         :active? (= current-view :logs)
-                                         :on-click {:event/type ::navigate :view :logs}})
-                          (sidebar-item {:icon "⚙️" :label "Settings" :view :settings
-                                         :active? (= current-view :settings)
-                                         :on-click {:event/type ::navigate :view :settings}})]}
+                            ;; Navigation
+                            {:fx/type :v-box
+                             :spacing 4
+                             :padding {:left 8 :right 8}
+                             :children [(sidebar-item {:icon "📊" :label "Dashboard" :view :dashboard
+                                                       :active? (= current-view :dashboard)
+                                                       :on-click {:event/type ::navigate :view :dashboard}})
+                                        (sidebar-item {:icon "📁" :label "Scan Folder" :view :scan
+                                                       :active? (= current-view :scan)
+                                                       :on-click {:event/type ::navigate :view :scan}})
+                                        (sidebar-item {:icon "👁" :label "Watch Mode" :view :watch
+                                                       :active? (= current-view :watch)
+                                                       :on-click {:event/type ::navigate :view :watch}})
+                                        (sidebar-item {:icon "📚" :label "Case Studies" :view :case-studies
+                                                       :active? (= current-view :case-studies)
+                                                       :on-click {:event/type ::navigate :view :case-studies}})
+                                        (sidebar-item {:icon "📡" :label "Signals" :view :signals
+                                                       :active? (= current-view :signals)
+                                                       :on-click {:event/type ::navigate :view :signals}})
+                                        (sidebar-item {:icon "📈" :label "Effectiveness" :view :effectiveness
+                                                       :active? (= current-view :effectiveness)
+                                                       :on-click {:event/type ::navigate :view :effectiveness}})
+                                        (sidebar-item {:icon "🕸" :label "Knowledge Graph" :view :knowledge-graph
+                                                       :active? (= current-view :knowledge-graph)
+                                                       :on-click {:event/type ::navigate :view :knowledge-graph}})
+                                        (sidebar-item {:icon "📝" :label "Decisions" :view :decisions
+                                                       :active? (= current-view :decisions)
+                                                       :on-click {:event/type ::navigate :view :decisions}})
+                                        (sidebar-item {:icon "📋" :label "Live Logs" :view :logs
+                                                       :active? (= current-view :logs)
+                                                       :on-click {:event/type ::navigate :view :logs}})
+                                        (sidebar-item {:icon "⚙️" :label "Settings" :view :settings
+                                                       :active? (= current-view :settings)
+                                                       :on-click {:event/type ::navigate :view :settings}})]}
               
               ;; Spacer
               {:fx/type :region
@@ -243,72 +260,105 @@
                        :-fx-text-fill (or color (:text-primary colors))}}]})
 
 (defn dashboard-view [{:keys [stats scan updates]}]
-  {:fx/type :scroll-pane
-   :fit-to-width true
-   :style {:-fx-background-color (:bg-primary colors)}
-   :content
-   {:fx/type :v-box
-    :padding 24
-    :spacing 24
-    :children [;; Header
-               {:fx/type :h-box
-                :alignment :center-left
-                :children [{:fx/type :v-box
-                            :h-box/hgrow :always
-                            :children [{:fx/type :label
-                                        :text "Dashboard"
-                                        :style {:-fx-font-size 24
-                                                :-fx-font-weight :bold
-                                                :-fx-text-fill (:text-primary colors)}}
-                                       {:fx/type :h-box
-                                        :spacing 12
-                                        :alignment :center-left
-                                        :children [{:fx/type :label
-                                                    :text (str "Last sync: " (or (:last-sync stats) "Never"))
-                                                    :style {:-fx-font-size 12
-                                                            :-fx-text-fill (:text-muted colors)}}
-                                                   {:fx/type :label
-                                                    :text "•"
-                                                    :style {:-fx-text-fill (:text-muted colors)}}
-                                                   {:fx/type :label
-                                                    :text (str "Code updated: " 
-                                                               (if-let [updated (:last-updated updates)]
-                                                                 (str updated 
-                                                                      (when (> (:outdated-days updates) 0)
-                                                                        (str " (" (:outdated-days updates) " days ago)")))
-                                                                 "Never"))
-                                                    :style {:-fx-font-size 12
-                                                            :-fx-text-fill (if (> (or (:outdated-days updates) 0) 7)
-                                                                             (:warning colors)
-                                                                             (:text-muted colors))}}
-                                                   (when (:available updates)
-                                                     {:fx/type :label
-                                                      :text "⚠️ Update available!"
+  (let [online? (api/is-online?)
+        sync-status (api/get-online-status)
+        pending-count (api/get-pending-count)]
+    {:fx/type :scroll-pane
+     :fit-to-width true
+     :style {:-fx-background-color (:bg-primary colors)}
+     :content
+     {:fx/type :v-box
+      :padding 24
+      :spacing 24
+      :children [;; Header
+                 {:fx/type :h-box
+                  :alignment :center-left
+                  :children [{:fx/type :v-box
+                              :h-box/hgrow :always
+                              :children [{:fx/type :label
+                                          :text "Dashboard"
+                                          :style {:-fx-font-size 24
+                                                  :-fx-font-weight :bold
+                                                  :-fx-text-fill (:text-primary colors)}}
+                                         {:fx/type :h-box
+                                          :spacing 12
+                                          :alignment :center-left
+                                          :children [{:fx/type :label
+                                                      :text (str "Last sync: " (or (:last-sync stats) "Never"))
                                                       :style {:-fx-font-size 12
-                                                              :-fx-font-weight :bold
-                                                              :-fx-text-fill (:warning colors)}})]}]}
-                           ;; Update button
-                           {:fx/type :button
-                            :text (cond
-                                    (:checking updates) "Checking..."
-                                    (:available updates) "Update Now"
-                                    :else "Check for Updates")
-                            :disable (:checking updates)
-                            :on-action {:event/type ::check-updates}
-                            :style {:-fx-background-color (if (:available updates)
-                                                            (:success colors)
-                                                            (:accent colors))
-                                    :-fx-text-fill :white
-                                    :-fx-background-radius 6
-                                    :-fx-padding "8 16"}}]}
-               
-               ;; Stats Grid
-               {:fx/type :h-box
-                :spacing 16
-                :children [(stat-card {:icon "📄" :label "Files Scanned" :value (:files-scanned stats)})
-                           (stat-card {:icon "🧠" :label "Models Found" :value (:models-found stats) :color (:accent colors)})
-                           (stat-card {:icon "📊" :label "Analyzed" :value (:documents-analyzed stats)})
-                           (stat-card {:icon "🎯" :label "Lollapalooza" :value (:lollapalooza-events stats) :color (:purple colors)})]}
+                                                              :-fx-text-fill (:text-muted colors)}}
+                                                     {:fx/type :label
+                                                      :text "•"
+                                                      :style {:-fx-text-fill (:text-muted colors)}}
+                                                     {:fx/type :label
+                                                      :text (if online? "Online" "Offline")
+                                                      :style {:-fx-font-size 12
+                                                              :-fx-text-fill (if online? (:success colors) (:error colors))
+                                                              :-fx-font-weight :bold}}
+                                                     (when (pos? pending-count)
+                                                       {:fx/type :label
+                                                        :text (str pending-count " pending sync")
+                                                        :style {:-fx-font-size 12
+                                                                :-fx-text-fill (:warning colors)}})
+                                                     {:fx/type :label
+                                                      :text "•"
+                                                      :style {:-fx-text-fill (:text-muted colors)}}
+                                                     {:fx/type :label
+                                                      :text (str "Code updated: " 
+                                                                 (if-let [updated (:last-updated updates)]
+                                                                   (str updated 
+                                                                        (when (> (:outdated-days updates) 0)
+                                                                          (str " (" (:outdated-days updates) " days ago)")))
+                                                                   "Never"))
+                                                      :style {:-fx-font-size 12
+                                                              :-fx-text-fill (if (> (or (:outdated-days updates) 0) 7)
+                                                                               (:warning colors)
+                                                                               (:text-muted colors))}}
+                                                     (when (:available updates)
+                                                       {:fx/type :label
+                                                        :text "Update available!"
+                                                        :style {:-fx-font-size 12
+                                                                :-fx-font-weight :bold
+                                                                :-fx-text-fill (:warning colors)}})]}]}
+                             ;; Buttons
+                             {:fx/type :h-box
+                              :spacing 8
+                              :children [{:fx/type :button
+                                          :text "Sync Now"
+                                          :disable (or (not online?) (zero? pending-count))
+                                          :on-action {:event/type ::manual-sync}
+                                          :style {:-fx-background-color (:accent colors)
+                                                  :-fx-text-fill :white
+                                                  :-fx-background-radius 6
+                                                  :-fx-padding "8 16"}}
+                                         {:fx/type :button
+                                          :text "Refresh Stats"
+                                          :on-action {:event/type ::refresh-dashboard-stats}
+                                          :style {:-fx-background-color (:bg-tertiary colors)
+                                                  :-fx-text-fill (:text-primary colors)
+                                                  :-fx-background-radius 6
+                                                  :-fx-padding "8 16"}}
+                                         {:fx/type :button
+                                          :text (cond
+                                                  (:checking updates) "Checking..."
+                                                  (:available updates) "Update Now"
+                                                  :else "Check for Updates")
+                                          :disable (:checking updates)
+                                          :on-action {:event/type ::check-updates}
+                                          :style {:-fx-background-color (if (:available updates)
+                                                                          (:success colors)
+                                                                          (:bg-tertiary colors))
+                                                  :-fx-text-fill (if (:available updates) :white (:text-primary colors))
+                                                  :-fx-background-radius 6
+                                                  :-fx-padding "8 16"}}]}]}
+                 
+                 ;; Stats Grid
+                 {:fx/type :h-box
+                  :spacing 16
+                  :children [(stat-card {:icon "📄" :label "Files Scanned" :value (:files-scanned stats)})
+                             (stat-card {:icon "🧠" :label "Models Found" :value (:models-found stats) :color (:accent colors)})
+                             (stat-card {:icon "📊" :label "Analyzed" :value (:documents-analyzed stats)})
+                             (stat-card {:icon "🎯" :label "Lollapalooza" :value (:lollapalooza-events stats) :color (:purple colors)})]}
                
                ;; Current Activity
                {:fx/type :v-box
@@ -798,8 +848,8 @@
   {:fx/type :stage
    :showing true
    :title "Mental Models Desktop"
-   :width 1200
-   :height 800
+   :width 1400
+   :height 900
    :scene {:fx/type :scene
            :stylesheets [(::css (meta *state))]
            :root {:fx/type :h-box
@@ -811,6 +861,11 @@
                                            :dashboard (dashboard-view {:stats stats :scan scan :updates updates})
                                            :scan (scan-view {:scan scan :watched-folders watched-folders})
                                            :watch (watch-view {:scan scan :watched-folders watched-folders})
+                                           :case-studies (panels/case-studies-panel {:state @panels/panel-state})
+                                           :signals (panels/signals-panel {:state @panels/panel-state})
+                                           :effectiveness (panels/effectiveness-panel {:state @panels/panel-state})
+                                           :knowledge-graph (panels/knowledge-graph-panel {:state @panels/panel-state})
+                                           :decisions (panels/decisions-panel {:state @panels/panel-state})
                                            :logs (logs-view {:logs logs :log-filter log-filter})
                                            :settings (settings-view {:settings settings :updates updates})
                                            (dashboard-view {:stats stats :scan scan :updates updates}))]}]}}})
@@ -882,6 +937,28 @@
     (set-connection! :lm-studio :connected)
     (add-log! :success "LM Studio connected!")))
 
+(defmethod event-handler ::manual-sync [_]
+  (add-log! :info "Starting manual sync...")
+  (future
+    (try
+      (api/process-queue!)
+      (add-log! :success "Manual sync complete")
+      (swap! *state assoc-in [:stats :last-sync] (str (java.time.LocalDateTime/now)))
+      (catch Exception e
+        (add-log! :error (str "Sync failed: " (.getMessage e)))))))
+
+(defmethod event-handler ::refresh-dashboard-stats [_]
+  (add-log! :info "Refreshing dashboard stats from web app...")
+  (future
+    (try
+      (when (api/is-online?)
+        (let [stats (api/get-dashboard-stats)]
+          (when stats
+            (swap! *state update :stats merge stats)
+            (add-log! :success "Dashboard stats refreshed"))))
+      (catch Exception e
+        (add-log! :error (str "Failed to refresh stats: " (.getMessage e)))))))
+
 (defmethod event-handler :default [event]
   (println "Unhandled event:" event))
 
@@ -897,7 +974,14 @@
 (defn -main [& args]
   (Platform/setImplicitExit true)
   (add-log! :info "Mental Models Desktop started")
-  (add-log! :info "Checking connections...")
+  (add-log! :info "Initializing web client...")
+  
+  ;; Initialize web client (auth, offline queue)
+  (api/init!)
+  
+  ;; Initialize panels (fetch data from web app)
+  (add-log! :info "Loading data from web app...")
+  (panels/init-panels!)
   
   ;; Start the renderer
   (fx/mount-renderer *state renderer)
@@ -908,4 +992,15 @@
     (set-connection! :lm-studio :connecting)
     (Thread/sleep 1000)
     (set-connection! :lm-studio :connected)
-    (add-log! :success "LM Studio connected")))
+    (add-log! :success "LM Studio connected")
+    
+    ;; Check web app connection
+    (set-connection! :web-app :connecting)
+    (let [status (api/test-connection)]
+      (if (:connected? status)
+        (do
+          (set-connection! :web-app :connected)
+          (add-log! :success "Web app connected"))
+        (do
+          (set-connection! :web-app :disconnected)
+          (add-log! :warning "Web app not available - working offline"))))))
