@@ -1,0 +1,134 @@
+{;; Strict linting configuration for Mental Models System
+ ;; This configuration enforces high code quality standards
+ 
+ :linters
+ {;; =============================================================================
+  ;; ERROR-LEVEL LINTERS (will fail CI)
+  ;; =============================================================================
+  
+  ;; Unused bindings - helps catch dead code and typos
+  :unused-binding {:level :warning}
+  
+  ;; Unused imports - keeps imports clean
+  :unused-import {:level :warning}
+  
+  ;; Unused namespaces - keeps requires clean
+  :unused-namespace {:level :warning}
+  
+  ;; Unused private vars - dead code detection
+  :unused-private-var {:level :warning}
+  
+  ;; Unused referred vars - keeps requires clean
+  :unused-referred-var {:level :warning}
+  
+  ;; Unresolved symbols - catches typos and missing requires
+  :unresolved-symbol {:level :error}
+  
+  ;; Unresolved namespaces - catches missing requires
+  :unresolved-namespace {:level :error}
+  
+  ;; Unresolved vars - catches typos in qualified symbols
+  :unresolved-var {:level :warning}
+  
+  ;; Wrong arity - catches function call errors
+  :invalid-arity {:level :error}
+  
+  ;; Type mismatch - catches obvious type errors
+  :type-mismatch {:level :error}
+  
+  ;; Missing else branch in if - encourages explicit handling
+  :missing-else-branch {:level :off}
+  
+  ;; Redundant expression - catches unnecessary code
+  :redundant-expression {:level :warning}
+  
+  ;; Redundant let - catches unnecessary bindings
+  :redundant-let {:level :warning}
+  
+  ;; Redundant do - catches unnecessary do blocks
+  :redundant-do {:level :warning}
+  
+  ;; Inline def - catches def inside functions
+  :inline-def {:level :warning}
+  
+  ;; Misplaced docstring - catches docstrings in wrong position
+  :misplaced-docstring {:level :warning}
+  
+  ;; Deprecated var - warns about deprecated functions
+  :deprecated-var {:level :warning}
+  
+  ;; Duplicate map key - catches duplicate keys in maps
+  :duplicate-map-key {:level :error}
+  
+  ;; Duplicate set key - catches duplicate values in sets
+  :duplicate-set-key {:level :error}
+  
+  ;; Missing map value - catches incomplete map literals
+  :missing-map-value {:level :error}
+  
+  ;; Shadowed var - warns when local shadows global
+  :shadowed-var {:level :warning}
+  
+  ;; Single operand comparison - catches (< x) instead of (< x y)
+  :single-operand-comparison {:level :warning}
+  
+  ;; Unsorted required namespaces - keeps requires organized
+  :unsorted-required-namespaces {:level :off}
+  
+  ;; Consistent alias - enforces consistent namespace aliases
+  :consistent-alias {:level :warning}
+  
+  ;; =============================================================================
+  ;; STYLE LINTERS
+  ;; =============================================================================
+  
+  ;; Docstring blank - warns about empty docstrings
+  :docstring-blank {:level :warning}
+  
+  ;; Docstring no summary - warns about docstrings without summary
+  :docstring-no-summary {:level :off}
+  
+  ;; Format - warns about format string issues
+  :format {:level :error}
+  
+  ;; =============================================================================
+  ;; PERFORMANCE LINTERS
+  ;; =============================================================================
+  
+  ;; Reduce without init - warns about reduce without initial value
+  :reduce-without-init {:level :warning}
+  
+  ;; =============================================================================
+  ;; SECURITY LINTERS
+  ;; =============================================================================
+  
+  ;; Discouraged namespace - can be used to ban dangerous namespaces
+  :discouraged-namespace {:level :warning}
+  
+  ;; Discouraged var - can be used to ban dangerous functions
+  :discouraged-var {:level :warning}}
+ 
+ ;; =============================================================================
+ ;; LINT AS CONFIGURATIONS
+ ;; =============================================================================
+ 
+ :lint-as
+ {;; Electric Clojure macros
+  hyperfiddle.electric/defn clojure.core/defn
+  hyperfiddle.electric/fn clojure.core/fn
+  hyperfiddle.electric/for clojure.core/for
+  hyperfiddle.electric/let clojure.core/let
+  hyperfiddle.electric/when clojure.core/when
+  hyperfiddle.electric/if clojure.core/if
+  hyperfiddle.electric/cond clojure.core/cond
+  
+  ;; cljfx macros
+  cljfx.api/on-fx-thread clojure.core/do}
+ 
+ ;; =============================================================================
+ ;; OUTPUT CONFIGURATION
+ ;; =============================================================================
+ 
+ :output
+ {:progress true
+  :canonical-paths true}}

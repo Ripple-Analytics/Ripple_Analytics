@@ -70,6 +70,7 @@ secrets.json
 target/
 .nrepl-port
 .lsp/
+.clj-kondo/.cache/
 
 # Node.js
 node_modules/
