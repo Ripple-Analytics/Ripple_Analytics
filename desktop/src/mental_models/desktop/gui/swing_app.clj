@@ -1,6 +1,7 @@
 (ns mental-models.desktop.gui.swing-app
   (:require [clojure.string :as str]
             [clojure.java.io :as io]
+            [cheshire.core :as json]
             [mental-models.analytics.engine :as analytics]
             [mental-models.analytics.anomaly :as anomaly]
             [mental-models.analytics.monitor :as monitor]
@@ -10,7 +11,8 @@
   (:import [javax.swing JFrame JPanel JLabel JButton JTextField JTextArea JScrollPane
                         JFileChooser JProgressBar JOptionPane SwingUtilities UIManager
                         BorderFactory JList DefaultListModel JMenuBar JMenu JMenuItem
-                        JDialog Timer Box BoxLayout JComboBox ListSelectionModel]
+                        JDialog Timer Box BoxLayout JComboBox ListSelectionModel JTable JSplitPane]
+           [javax.swing.table DefaultTableModel]
            [javax.swing.border TitledBorder EmptyBorder]
            [java.awt BorderLayout GridLayout FlowLayout Color Font Dimension CardLayout
                      Desktop GridBagLayout GridBagConstraints Insets Cursor Graphics2D RenderingHints BasicStroke]
@@ -3377,7 +3379,7 @@
           result (http-get url {:headers {"x-desktop-api-key" "mm-desktop-2026-ripple"}})]
       (log! "[CASE-STUDIES] Fetching from web app...")
       (if (:success result)
-        (get-in (json/read-str (:body result) :key-fn keyword) [:result :data :json] [])
+        (get-in (json/parse-string (:body result) :key-fn keyword) [:result :data :json] [])
         []))
     (catch Exception e
       (log! (str "[CASE-STUDIES] Error fetching: " (.getMessage e)))
@@ -3391,7 +3393,7 @@
           result (http-get url {:headers {"x-desktop-api-key" "mm-desktop-2026-ripple"}})]
       (log! "[SIGNALS] Fetching from web app...")
       (if (:success result)
-        (get-in (json/read-str (:body result) :key-fn keyword) [:result :data :json] [])
+        (get-in (json/parse-string (:body result) :key-fn keyword) [:result :data :json] [])
         []))
     (catch Exception e
       (log! (str "[SIGNALS] Error fetching: " (.getMessage e)))
@@ -3405,7 +3407,7 @@
           result (http-get url {:headers {"x-desktop-api-key" "mm-desktop-2026-ripple"}})]
       (log! "[EFFECTIVENESS] Fetching from web app...")
       (if (:success result)
-        (get-in (json/read-str (:body result) :key-fn keyword) [:result :data :json] {})
+        (get-in (json/parse-string (:body result) :key-fn keyword) [:result :data :json] {})
         {}))
     (catch Exception e
       (log! (str "[EFFECTIVENESS] Error fetching: " (.getMessage e)))
@@ -3418,7 +3420,7 @@
                    "/api/trpc/effectiveness.topCombinations?input=%7B%22limit%22%3A10%7D")
           result (http-get url {:headers {"x-desktop-api-key" "mm-desktop-2026-ripple"}})]
       (if (:success result)
-        (get-in (json/read-str (:body result) :key-fn keyword) [:result :data :json] [])
+        (get-in (json/parse-string (:body result) :key-fn keyword) [:result :data :json] [])
         []))
     (catch Exception e
       (log! (str "[COMBINATIONS] Error fetching: " (.getMessage e)))
@@ -3432,7 +3434,7 @@
           result (http-get url {:headers {"x-desktop-api-key" "mm-desktop-2026-ripple"}})]
       (log! "[KNOWLEDGE-GRAPH] Fetching from web app...")
       (if (:success result)
-        (get-in (json/read-str (:body result) :key-fn keyword) [:result :data :json] {:nodes [] :edges []})
+        (get-in (json/parse-string (:body result) :key-fn keyword) [:result :data :json] {:nodes [] :edges []})
         {:nodes [] :edges []}))
     (catch Exception e
       (log! (str "[KNOWLEDGE-GRAPH] Error fetching: " (.getMessage e)))
@@ -3445,7 +3447,7 @@
                    "/api/trpc/dashboard.stats")
           result (http-get url {:headers {"x-desktop-api-key" "mm-desktop-2026-ripple"}})]
       (if (:success result)
-        (get-in (json/read-str (:body result) :key-fn keyword) [:result :data :json] {})
+        (get-in (json/parse-string (:body result) :key-fn keyword) [:result :data :json] {})
         {}))
     (catch Exception e
       (log! (str "[DASHBOARD] Error fetching: " (.getMessage e)))
@@ -3458,7 +3460,7 @@
                    "/api/trpc/lollapalooza.recent")
           result (http-get url {:headers {"x-desktop-api-key" "mm-desktop-2026-ripple"}})]
       (if (:success result)
-        (get-in (json/read-str (:body result) :key-fn keyword) [:result :data :json] [])
+        (get-in (json/parse-string (:body result) :key-fn keyword) [:result :data :json] [])
         []))
     (catch Exception e
       (log! (str "[LOLLAPALOOZA] Error fetching: " (.getMessage e)))
@@ -3469,7 +3471,7 @@
   (try
     (let [url (str (or (get-in @*state [:settings :web-app-url]) (:web-app-url config))
                    "/api/trpc/desktop.syncResults")
-          body (json/write-str {:results scan-result})
+          body (json/generate-string {:results scan-result})
           result (http-post url body {:headers {"x-desktop-api-key" "mm-desktop-2026-ripple"
                                                 "Content-Type" "application/json"}})]
       (log! (str "[SYNC] Result: " (:success result)))
