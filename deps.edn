@@ -1,47 +1,143 @@
-{:paths ["src" "resources" "mental_models_system/src/electric/src" "mental_models_system/src/electric/test"]
+{:paths ["src" "resources" "test" "mental_models_system/src/electric/src" "mental_models_system/src/electric/test"]
  
- :deps {;; Electric Clojure
+ :deps {;; ============================================================
+        ;; ELECTRIC CLOJURE - Reactive full-stack framework
+        ;; ============================================================
         com.hyperfiddle/electric {:mvn/version "v2-alpha-540-ga4699532"}
         
-        ;; Server
+        ;; ============================================================
+        ;; SERVER - Ring + Jetty + Routing
+        ;; ============================================================
         ring/ring-core {:mvn/version "1.11.0"}
         ring/ring-jetty-adapter {:mvn/version "1.11.0"}
+        ring/ring-json {:mvn/version "0.5.1"}
         metosin/reitit {:mvn/version "0.7.0"}
         
-        ;; Database
+        ;; ============================================================
+        ;; DATABASE - MySQL/TiDB with HikariCP connection pooling
+        ;; ============================================================
         com.github.seancorfield/next.jdbc {:mvn/version "1.3.909"}
         com.mysql/mysql-connector-j {:mvn/version "8.2.0"}
         com.github.seancorfield/honeysql {:mvn/version "2.5.1103"}
+        com.zaxxer/HikariCP {:mvn/version "5.1.0"}
         
-        ;; JSON & HTTP
-        metosin/jsonista {:mvn/version "0.3.8"}
+        ;; ============================================================
+        ;; HTTP CLIENT - For API integrations and web scraping
+        ;; ============================================================
         clj-http/clj-http {:mvn/version "3.12.3"}
         
-        ;; Logging & Utils
+        ;; ============================================================
+        ;; JSON - Fast JSON processing
+        ;; ============================================================
+        metosin/jsonista {:mvn/version "0.3.8"}
+        cheshire/cheshire {:mvn/version "5.12.0"}
+        
+        ;; ============================================================
+        ;; WEB SCRAPING - HTML parsing with Enlive and Hickory
+        ;; ============================================================
+        enlive/enlive {:mvn/version "1.1.6"}
+        org.clj-commons/hickory {:mvn/version "0.7.4"}
+        
+        ;; ============================================================
+        ;; LOGGING & CONFIGURATION
+        ;; ============================================================
         com.taoensso/timbre {:mvn/version "6.3.1"}
         environ/environ {:mvn/version "1.2.0"}
+        aero/aero {:mvn/version "1.1.6"}
         
-        ;; Statistics & Analysis
+        ;; ============================================================
+        ;; STATISTICS & NUMERICAL ANALYSIS
+        ;; ============================================================
         net.mikera/core.matrix {:mvn/version "0.63.0"}
         net.mikera/vectorz-clj {:mvn/version "0.48.0"}
         org.apache.commons/commons-math3 {:mvn/version "3.6.1"}
+        incanter/incanter-core {:mvn/version "1.9.3"}
         
-        ;; File Processing
-        org.apache.pdfbox/pdfbox {:mvn/version "3.0.0"}
-        org.apache.poi/poi-ooxml {:mvn/version "5.0.0"}
+        ;; ============================================================
+        ;; FILE PROCESSING - PDF, Word, Excel
+        ;; ============================================================
+        org.apache.pdfbox/pdfbox {:mvn/version "3.0.1"}
+        org.apache.poi/poi-ooxml {:mvn/version "5.2.5"}
+        org.apache.tika/tika-core {:mvn/version "2.9.1"}
+        org.apache.tika/tika-parsers-standard-package {:mvn/version "2.9.1"}
         
-        ;; Async
-        org.clojure/core.async {:mvn/version "1.6.681"}}
+        ;; ============================================================
+        ;; FILE WATCHING - Java WatchService wrapper
+        ;; ============================================================
+        hawk/hawk {:mvn/version "0.0.11"}
+        juxt/dirwatch {:mvn/version "0.2.5"}
+        
+        ;; ============================================================
+        ;; ASYNC & CONCURRENCY
+        ;; ============================================================
+        org.clojure/core.async {:mvn/version "1.6.681"}
+        manifold/manifold {:mvn/version "0.4.2"}
+        
+        ;; ============================================================
+        ;; SCHEDULING
+        ;; ============================================================
+        jarohen/chime {:mvn/version "0.3.3"}
+        
+        ;; ============================================================
+        ;; CACHING
+        ;; ============================================================
+        org.clojure/core.cache {:mvn/version "1.0.225"}
+        org.clojure/core.memoize {:mvn/version "1.0.257"}
+        
+        ;; ============================================================
+        ;; SPEC & VALIDATION
+        ;; ============================================================
+        metosin/malli {:mvn/version "0.14.0"}
+        
+        ;; ============================================================
+        ;; WEBSOCKETS
+        ;; ============================================================
+        info.sunng/ring-jetty9-adapter {:mvn/version "0.30.0"}
+        
+        ;; ============================================================
+        ;; NLP & TEXT PROCESSING
+        ;; ============================================================
+        clojure-opennlp/clojure-opennlp {:mvn/version "0.5.0"}}
  
  :aliases
- {:dev {:extra-paths ["dev"]
+ {;; Development with nREPL
+  :dev {:extra-paths ["dev"]
         :extra-deps {nrepl/nrepl {:mvn/version "1.1.0"}
-                     cider/cider-nrepl {:mvn/version "0.45.0"}}}
+                     cider/cider-nrepl {:mvn/version "0.45.0"}
+                     hashp/hashp {:mvn/version "0.2.2"}
+                     djblue/portal {:mvn/version "0.55.1"}}}
+  
+  ;; Production build
   :prod {:main-opts ["-m" "mental-models.main"]}
-  :test {:extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1"
-                                                             :git/sha "dfb30dd"}}
+  
+  ;; Run tests
+  :test {:extra-paths ["test"]
+         :extra-deps {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1"
+                                                            :git/sha "dfb30dd"}
+                      nubank/matcher-combinators {:mvn/version "3.9.1"}}
          :main-opts ["-m" "cognitect.test-runner"]}
+  
+  ;; Linting with clj-kondo
   :lint {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2024.01.01"}}
-         :main-opts ["-m" "clj-kondo.main" "--lint" "src"]}
+         :main-opts ["-m" "clj-kondo.main" "--lint" "src" "test"]}
+  
+  ;; Code formatting
   :format {:extra-deps {cljfmt/cljfmt {:mvn/version "0.9.2"}}
-           :main-opts ["-m" "cljfmt.main" "fix" "src"]}}}
+           :main-opts ["-m" "cljfmt.main" "fix" "src" "test"]}
+  
+  ;; CLJFX Desktop App
+  :desktop {:extra-deps {cljfx/cljfx {:mvn/version "1.7.24"}
+                         org.openjfx/javafx-controls {:mvn/version "21"}
+                         org.openjfx/javafx-base {:mvn/version "21"}
+                         org.openjfx/javafx-graphics {:mvn/version "21"}
+                         org.openjfx/javafx-web {:mvn/version "21"}}
+            :main-opts ["-m" "mental-models.desktop.core"]}
+  
+  ;; Build uberjar
+  :uberjar {:extra-deps {com.github.seancorfield/depstar {:mvn/version "2.1.303"}}
+            :main-opts ["-m" "hf.depstar.uberjar" "mental-models.jar"
+                        "-C" "-m" "mental-models.main"]}
+  
+  ;; REPL with rebel-readline
+  :rebel {:extra-deps {com.bhauman/rebel-readline {:mvn/version "0.1.4"}}
+          :main-opts ["-m" "rebel-readline.main"]}}}
