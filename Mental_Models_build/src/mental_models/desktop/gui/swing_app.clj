@@ -1096,6 +1096,271 @@
     :keywords ["independent" "avoiding" "maintain" "groupthink" "crowds" "in" "resist" "madness"]
     :failure-modes []
     :safeguards []}
+   
+   ;; =============================================================================
+   ;; JIM SIMONS MODELS - Renaissance Technologies (66% annualized returns)
+   ;; =============================================================================
+   {:id 130
+    :name "Beauty and Elegance as Signal"
+    :category "Decision Making"
+    :description "Elegant solutions and beautiful ideas signal hidden value and profound truth. Beauty in mathematics, science, and business indicates deep structural efficiency, scalability, and robustness. The most profitable trading signals at Renaissance were often the most mathematically elegant ones."
+    :keywords ["elegance" "beauty" "signal" "simplicity" "structure" "simons" "renaissance" "elegant" "beautiful"]
+    :failure-modes ["Mistaking Complexity for Sophistication" "Ignoring Practical Constraints" "Beauty Without Substance" "Elegance Paralysis" "Context-Free Elegance"]
+    :safeguards ["Apply Occam's Razor" "Test explanatory power" "Measure complexity metrics" "Test with real conditions" "Ship minimum viable elegant solution"]}
+   {:id 131
+    :name "Data Over Intuition"
+    :category "Decision Making"
+    :description "Let data drive decisions rather than human intuition or expert opinion. Renaissance Technologies succeeded by removing human judgment from trading decisions entirely. Simons hired mathematicians and scientists, not Wall Street traders, because they trusted data over gut feelings."
+    :keywords ["data" "intuition" "evidence" "quantitative" "empirical" "simons" "renaissance" "scientific" "measurement"]
+    :failure-modes ["Data Without Context" "Overfitting to Historical Data" "Measurement Bias" "Data Quality Blindness" "Correlation-Causation Confusion"]
+    :safeguards ["Out-of-sample testing" "Multiple data sources" "Understand data generation process" "Test causal hypotheses" "Regular model validation"]}
+   {:id 132
+    :name "Hire Smart People and Let Them Work"
+    :category "Organizational & Institutional"
+    :description "Hire the smartest people you can find, give them interesting problems, and get out of their way. Renaissance hired PhDs in mathematics, physics, and computer science—not finance people. They created an environment where brilliant minds could collaborate without bureaucracy."
+    :keywords ["hiring" "talent" "autonomy" "collaboration" "smart" "simons" "renaissance" "team" "culture"]
+    :failure-modes ["Hiring for Credentials Over Ability" "Micromanagement" "Bureaucratic Overhead" "Talent Hoarding" "Culture Mismatch"]
+    :safeguards ["Test problem-solving ability" "Minimize hierarchy" "Protect research time" "Foster collaboration" "Align incentives with outcomes"]}
+   {:id 133
+    :name "Secrecy and Information Asymmetry"
+    :category "Strategy & Competition"
+    :description "Protect valuable information ruthlessly. Renaissance's edge came from proprietary algorithms and data—they maintained extreme secrecy. Employees sign strict NDAs, and the firm rarely discusses methods. Information asymmetry is a sustainable competitive advantage."
+    :keywords ["secrecy" "information" "asymmetry" "competitive" "advantage" "simons" "renaissance" "proprietary" "edge"]
+    :failure-modes ["Over-Secrecy Hindering Collaboration" "Secrecy Without Substance" "Information Hoarding Within Organization" "Paranoia" "Missing External Insights"]
+    :safeguards ["Balance internal sharing vs external secrecy" "Identify truly proprietary information" "Build trust internally" "Monitor for leaks" "Stay connected to external developments"]}
+   {:id 134
+    :name "Continuous Improvement Through Iteration"
+    :category "Systems & Processes"
+    :description "Success comes from relentless, incremental improvement over time. Renaissance continuously refined their models, adding small improvements that compounded. They didn't seek breakthrough discoveries—they sought consistent, measurable improvements that accumulated."
+    :keywords ["iteration" "improvement" "continuous" "incremental" "compound" "simons" "renaissance" "refinement" "optimization"]
+    :failure-modes ["Premature Optimization" "Improvement Without Measurement" "Local Maximum Trap" "Change for Change's Sake" "Ignoring Diminishing Returns"]
+    :safeguards ["Measure improvement rigorously" "A/B test changes" "Track cumulative gains" "Question assumptions periodically" "Know when to stop optimizing"]}
+   {:id 135
+    :name "Pattern Recognition Across Domains"
+    :category "Learning & Knowledge"
+    :description "Patterns discovered in one domain often apply to others. Simons applied techniques from code-breaking and speech recognition to financial markets. Renaissance hired scientists from diverse fields because they brought fresh pattern-recognition approaches."
+    :keywords ["pattern" "recognition" "cross-domain" "transfer" "analogy" "simons" "renaissance" "interdisciplinary" "synthesis"]
+    :failure-modes ["False Pattern Recognition" "Overgeneralization" "Domain Blindness" "Pattern Forcing" "Ignoring Domain-Specific Constraints"]
+    :safeguards ["Test patterns in new domains" "Understand domain differences" "Seek disconfirming evidence" "Collaborate with domain experts" "Validate with out-of-sample data"]}
+   {:id 136
+    :name "Embrace Uncertainty with Probability"
+    :category "Decision Making"
+    :description "Think in probabilities, not certainties. Renaissance's models didn't predict with certainty—they identified slight statistical edges that, repeated thousands of times, generated enormous returns. Accept that you'll be wrong often, but ensure your edge compounds over many decisions."
+    :keywords ["probability" "uncertainty" "edge" "statistics" "expected" "value" "simons" "renaissance" "bayesian"]
+    :failure-modes ["Certainty Illusion" "Probability Neglect" "Small Sample Overconfidence" "Base Rate Neglect" "Outcome Bias"]
+    :safeguards ["Track prediction accuracy" "Think in expected value" "Ensure sufficient sample size" "Update probabilities with new information" "Separate decision quality from outcomes"]}
+   {:id 137
+    :name "Systematic Over Discretionary"
+    :category "Systems & Processes"
+    :description "Build systems that make decisions consistently, removing human emotion and bias. Renaissance's trading is fully automated—no human decides individual trades. Systematic approaches scale better, are more consistent, and can be improved methodically."
+    :keywords ["systematic" "automation" "system" "process" "consistent" "simons" "renaissance" "algorithmic" "rules"]
+    :failure-modes ["Over-Automation" "System Rigidity" "Black Box Blindness" "Automation Complacency" "Edge Cases"]
+    :safeguards ["Monitor system performance" "Build in circuit breakers" "Understand system logic" "Plan for edge cases" "Regular system audits"]}
+   {:id 138
+    :name "Compounding Small Edges"
+    :category "Strategy & Competition"
+    :description "Small advantages, consistently applied over time, compound into enormous results. Renaissance's individual trades had tiny edges—often less than 1%—but executed millions of times, these compounded to 66% annual returns. Focus on repeatable small wins, not occasional big wins."
+    :keywords ["compounding" "edge" "consistency" "small" "wins" "simons" "renaissance" "accumulation" "repetition"]
+    :failure-modes ["Seeking Home Runs" "Ignoring Transaction Costs" "Edge Decay Blindness" "Overtrading" "Inconsistent Application"]
+    :safeguards ["Calculate true edge after costs" "Monitor edge persistence" "Ensure sufficient repetitions" "Track compound growth" "Resist temptation for bigger bets"]}
+   {:id 139
+    :name "Scientific Method in Business"
+    :category "Learning & Knowledge"
+    :description "Apply rigorous scientific methodology to business decisions. Form hypotheses, design experiments, collect data, analyze results, and iterate. Renaissance operated more like a research lab than a hedge fund—every trading idea was a hypothesis to be tested."
+    :keywords ["scientific" "method" "hypothesis" "experiment" "test" "simons" "renaissance" "research" "empirical"]
+    :failure-modes ["Confirmation Bias in Testing" "P-Hacking" "Publication Bias" "Hypothesis-Free Data Mining" "Ignoring Negative Results"]
+    :safeguards ["Pre-register hypotheses" "Use proper statistical methods" "Report all results" "Replicate findings" "Seek peer review"]}
+   
+   ;; =============================================================================
+   ;; CHARLIE MUNGER DEEP PRINCIPLES - From actual writings and case studies
+   ;; =============================================================================
+   {:id 140
+    :name "Float Management"
+    :category "Finance & Economics"
+    :description "Use of other people's money at zero or negative cost to generate investment returns. Float is not just free money—it's better than free if you can invest it well while the liability is deferred. The key is ensuring the cost of float remains low."
+    :keywords ["float" "insurance" "deferred" "liability" "investment" "munger" "buffett" "capital" "leverage"]
+    :failure-modes ["Float Mispricing" "Float Speculation" "Shrinking Float" "Float Dependency" "Negative Cost Illusion"]
+    :safeguards ["Conservative liability estimation" "Regular actuarial review" "Stress testing" "Conservative investment policy" "Match duration"]}
+   {:id 141
+    :name "Customer Fanaticism"
+    :category "Business Strategy"
+    :description "Building extreme customer loyalty through fanatical commitment to quality, even at high cost. Customer fanaticism is rewarded by extraordinary economics: sales per square foot, pricing power, repeat purchases. The cost of quality is repaid many times over."
+    :keywords ["customer" "fanaticism" "loyalty" "quality" "premium" "munger" "sees" "candy" "brand"]
+    :failure-modes ["Quality Drift" "Fanaticism Without Economics" "Scale Dilution" "Founder Dependence" "Premium Without Differentiation"]
+    :safeguards ["Quality audits" "Customer feedback" "Founder principles" "Long-term thinking" "Controlled growth"]}
+   {:id 142
+    :name "Honest Assessment"
+    :category "Decision Making"
+    :description "Brutally honest evaluation of situations, especially failures and risks. No sugarcoating, no wishful thinking, no self-deception. The first step to solving a problem is admitting you have one."
+    :keywords ["honest" "assessment" "truth" "reality" "munger" "buffett" "candor" "transparency" "evaluation"]
+    :failure-modes ["Toxic Positivity" "Honesty Without Action" "Public Honesty Private Delusion" "Assessment Paralysis" "Honesty as Excuse"]
+    :safeguards ["Reward honesty" "Pre-mortems" "Anonymous feedback" "Leadership modeling" "Action plans"]}
+   {:id 143
+    :name "Litigation Hazard"
+    :category "Risk Management"
+    :description "Understanding that competitors may seek protection from competition in the courts. Litigation is time-consuming, inefficient, costly, and unpredictable. It can destroy or delay otherwise sound business decisions."
+    :keywords ["litigation" "legal" "lawsuit" "court" "risk" "munger" "competition" "regulatory" "defense"]
+    :failure-modes ["Litigation Naivety" "Settlement Weakness" "Litigation Hubris" "Business Paralysis" "Litigation Cost Underestimation"]
+    :safeguards ["Legal risk assessment" "Competitor analysis" "Regulatory review" "Fight frivolous suits" "Expert legal counsel"]}
+   {:id 144
+    :name "Multi-Year Performance View"
+    :category "Measurement & Evaluation"
+    :description "Evaluating performance over multiple years rather than quarterly or annually. Our objective is to earn a fluctuating return that amounts to a respectable average annual return over a period of years. Short-term volatility is acceptable if long-term average is strong."
+    :keywords ["multi-year" "long-term" "performance" "volatility" "average" "munger" "buffett" "patience" "returns"]
+    :failure-modes ["Quarterly Capitalism" "Volatility Panic" "Multi-Year Excuse" "Short-Term Pressure" "Earnings Management"]
+    :safeguards ["Long-term incentives" "Multi-year targets" "Owner-operator mindset" "Patient capital" "Stakeholder education"]}
+   {:id 145
+    :name "Circle of Competence"
+    :category "Decision Making"
+    :description "Know what you know and what you don't know. Stay within your circle of competence. The size of the circle is not as important as knowing its boundaries. Expanding the circle takes years of dedicated learning."
+    :keywords ["circle" "competence" "expertise" "knowledge" "boundaries" "munger" "buffett" "specialization" "limits"]
+    :failure-modes ["Competence Overestimation" "Circle Stagnation" "Boundary Blindness" "Expert Arrogance" "Competence Drift"]
+    :safeguards ["Honest self-assessment" "Seek feedback" "Document decisions" "Track outcomes" "Continuous learning"]}
+   {:id 146
+    :name "Margin of Safety"
+    :category "Risk Management"
+    :description "Never pay full price. Always leave room for error, bad luck, and the unknown. The margin of safety is the difference between intrinsic value and price paid. It protects against both analytical errors and unforeseen events."
+    :keywords ["margin" "safety" "buffer" "conservative" "protection" "munger" "buffett" "graham" "value"]
+    :failure-modes ["Margin Erosion" "False Precision" "Margin Neglect" "Over-Conservatism" "Margin Calculation Error"]
+    :safeguards ["Conservative assumptions" "Multiple scenarios" "Stress testing" "Independent verification" "Patience for opportunities"]}
+   {:id 147
+    :name "Inversion"
+    :category "Problem Solving"
+    :description "Invert, always invert. Instead of asking how to succeed, ask how to fail and avoid those things. Many problems are best solved by thinking backwards. Figure out what you don't want and work backwards from there."
+    :keywords ["inversion" "backwards" "avoid" "failure" "reverse" "munger" "jacobi" "negative" "prevention"]
+    :failure-modes ["Inversion Paralysis" "Negative Obsession" "Missing Positive Opportunities" "Over-Inversion" "Inversion Without Action"]
+    :safeguards ["Balance positive and negative thinking" "Use inversion as one tool" "Act on insights" "Combine with forward thinking" "Focus on actionable avoidances"]}
+   {:id 148
+    :name "Lollapalooza Effect"
+    :category "Systems Thinking"
+    :description "When multiple mental models or tendencies combine and reinforce each other, they create extreme outcomes—the Lollapalooza effect. These combinations can be powerfully positive or devastatingly negative. Understanding this helps predict extreme results."
+    :keywords ["lollapalooza" "combination" "confluence" "synergy" "extreme" "munger" "compound" "multiple" "reinforcing"]
+    :failure-modes ["Missing Combinations" "False Lollapalooza" "Negative Lollapalooza Blindness" "Combination Complexity" "Timing Misjudgment"]
+    :safeguards ["Map interacting factors" "Look for reinforcing loops" "Consider both positive and negative combinations" "Study historical lollapaloozas" "Build positive combinations intentionally"]}
+   {:id 149
+    :name "Worldly Wisdom"
+    :category "Learning & Knowledge"
+    :description "Build a latticework of mental models from multiple disciplines. The models must hang together in a latticework structure. You can't just have a few models—you need many, from many disciplines, and you must use them together."
+    :keywords ["worldly" "wisdom" "latticework" "multidisciplinary" "models" "munger" "disciplines" "synthesis" "integration"]
+    :failure-modes ["Single Model Thinking" "Superficial Knowledge" "Model Collection Without Integration" "Discipline Silos" "Wisdom Without Application"]
+    :safeguards ["Study multiple disciplines" "Practice model application" "Seek connections between models" "Test models against reality" "Continuous learning"]}
+   
+   ;; =============================================================================
+   ;; NASSIM TALEB MODELS - Antifragility and Risk
+   ;; =============================================================================
+   {:id 150
+    :name "Skin in the Game"
+    :category "Decision Making"
+    :description "Exposure to real-world consequences of one's decisions. When you have skin in the game, you share risk and reward, creating proper incentive alignment. Those without skin in the game have no incentive to be right and every incentive to be overconfident."
+    :keywords ["skin" "game" "risk" "consequences" "taleb" "accountability" "incentives" "alignment" "exposure"]
+    :failure-modes ["Asymmetric Risk Transfer" "False Skin" "Expert Without Consequences" "Principal-Agent Misalignment" "Bailout Expectation"]
+    :safeguards ["Verify advisor has personal investment" "Require equity ownership for executives" "Track prediction accuracy" "Clawback provisions" "Long-term incentive alignment"]}
+   {:id 151
+    :name "Antifragility"
+    :category "Systems Thinking"
+    :description "Some things benefit from shocks; they thrive and grow when exposed to volatility, randomness, disorder, and stressors. Antifragile systems gain from disorder up to a point. The opposite of fragile is not robust—it's antifragile."
+    :keywords ["antifragile" "volatility" "disorder" "stress" "taleb" "robust" "resilience" "shocks" "adaptation"]
+    :failure-modes ["Fragility Blindness" "Over-Optimization" "Removing Beneficial Stressors" "Confusing Robust with Antifragile" "Excessive Intervention"]
+    :safeguards ["Introduce controlled stressors" "Avoid over-optimization" "Build optionality" "Embrace small failures" "Maintain slack in systems"]}
+   {:id 152
+    :name "Black Swan"
+    :category "Risk Management"
+    :description "Rare, unpredictable events with massive impact that we rationalize after the fact. Black Swans are impossible to predict but possible to prepare for. The key is building systems that survive or benefit from extreme events."
+    :keywords ["black" "swan" "rare" "unpredictable" "impact" "taleb" "extreme" "outlier" "tail"]
+    :failure-modes ["Black Swan Blindness" "Narrative Fallacy" "Ludic Fallacy" "Turkey Problem" "Prediction Overconfidence"]
+    :safeguards ["Build redundancy" "Avoid single points of failure" "Maintain cash reserves" "Diversify across uncorrelated risks" "Prepare for unknown unknowns"]}
+   {:id 153
+    :name "Lindy Effect"
+    :category "Prediction & Forecasting"
+    :description "For non-perishable things, every additional period of survival implies a longer remaining life expectancy. A book that has been in print for 100 years will likely be in print for another 100. Old technologies that survive are more robust."
+    :keywords ["lindy" "effect" "survival" "longevity" "taleb" "time" "robust" "durable" "persistence"]
+    :failure-modes ["Lindy Misapplication" "Ignoring Context Changes" "Survivorship Bias" "Confusing Perishable with Non-Perishable" "Novelty Bias"]
+    :safeguards ["Distinguish perishable from non-perishable" "Consider context changes" "Account for survivorship bias" "Prefer time-tested solutions" "Be skeptical of new"]}
+   {:id 154
+    :name "Via Negativa"
+    :category "Problem Solving"
+    :description "Improvement by subtraction rather than addition. Often the best way to improve is to remove what's harmful rather than add what's beneficial. Knowing what to avoid is often more valuable than knowing what to do."
+    :keywords ["via" "negativa" "subtraction" "removal" "taleb" "simplify" "eliminate" "avoid" "less"]
+    :failure-modes ["Addition Bias" "Intervention Bias" "Complexity Creep" "Removing Essential Elements" "Over-Simplification"]
+    :safeguards ["Ask what to remove before what to add" "Identify harmful elements first" "Simplify before optimizing" "Preserve essential complexity" "Test removals carefully"]}
+   
+   ;; =============================================================================
+   ;; DANIEL KAHNEMAN MODELS - Behavioral Economics
+   ;; =============================================================================
+   {:id 155
+    :name "System 1 and System 2"
+    :category "Psychology: Cognition"
+    :description "Two modes of thinking: System 1 is fast, automatic, intuitive, and emotional. System 2 is slow, deliberate, analytical, and rational. Most errors come from System 1 making judgments that should be made by System 2."
+    :keywords ["system" "thinking" "fast" "slow" "kahneman" "intuition" "deliberate" "automatic" "rational"]
+    :failure-modes ["System 1 Override" "System 2 Laziness" "Cognitive Strain Avoidance" "WYSIATI" "Substitution"]
+    :safeguards ["Slow down for important decisions" "Use checklists" "Seek outside view" "Sleep on major decisions" "Create decision friction"]}
+   {:id 156
+    :name "Loss Aversion"
+    :category "Psychology: Biases"
+    :description "Losses loom larger than gains. The pain of losing $100 is about twice as intense as the pleasure of gaining $100. This asymmetry drives much irrational behavior, from holding losing investments to avoiding beneficial risks."
+    :keywords ["loss" "aversion" "pain" "gain" "kahneman" "tversky" "prospect" "theory" "asymmetry"]
+    :failure-modes ["Holding Losers Too Long" "Selling Winners Too Early" "Risk Aversion for Gains" "Risk Seeking for Losses" "Status Quo Bias"]
+    :safeguards ["Frame decisions in terms of final states" "Use pre-commitment" "Automate rebalancing" "Consider opportunity cost" "Evaluate from zero base"]}
+   {:id 157
+    :name "Anchoring"
+    :category "Psychology: Biases"
+    :description "The tendency to rely too heavily on the first piece of information encountered. Initial values serve as anchors that bias subsequent judgments, even when the anchor is arbitrary or irrelevant."
+    :keywords ["anchoring" "anchor" "first" "initial" "kahneman" "bias" "reference" "adjustment" "starting"]
+    :failure-modes ["Arbitrary Anchor Influence" "Insufficient Adjustment" "Self-Generated Anchors" "Anchor Manipulation" "Historical Anchor Bias"]
+    :safeguards ["Generate own estimate first" "Consider multiple anchors" "Use base rates" "Question anchor relevance" "Adjust more than feels right"]}
+   {:id 158
+    :name "Availability Heuristic"
+    :category "Psychology: Biases"
+    :description "Judging probability by how easily examples come to mind. Vivid, recent, or emotionally charged events seem more probable because they're more available in memory, leading to systematic misjudgment of risk."
+    :keywords ["availability" "heuristic" "memory" "vivid" "kahneman" "probability" "recall" "recent" "salient"]
+    :failure-modes ["Recency Bias" "Vividness Bias" "Media Influence" "Personal Experience Overweight" "Frequency Misjudgment"]
+    :safeguards ["Use base rates" "Seek statistical data" "Question memory-based judgments" "Consider what's not easily recalled" "Adjust for media exposure"]}
+   {:id 159
+    :name "Planning Fallacy"
+    :category "Psychology: Biases"
+    :description "The tendency to underestimate time, costs, and risks while overestimating benefits of planned actions. People focus on the specific plan rather than distributional information from similar past projects."
+    :keywords ["planning" "fallacy" "optimism" "underestimate" "kahneman" "time" "cost" "overrun" "forecast"]
+    :failure-modes ["Inside View Dominance" "Best Case Planning" "Ignoring Base Rates" "Scope Creep Blindness" "Optimism Bias"]
+    :safeguards ["Use reference class forecasting" "Take outside view" "Add buffer time" "Track past accuracy" "Use pre-mortem"]}
+   
+   ;; =============================================================================
+   ;; ADDITIONAL CORE MODELS
+   ;; =============================================================================
+   {:id 160
+    :name "Ergodicity"
+    :category "Risk Management"
+    :description "The difference between ensemble probability and time probability. What works for a group on average may not work for an individual over time. A 50% chance of doubling or losing everything is NOT a good bet repeated over time."
+    :keywords ["ergodicity" "time" "average" "ensemble" "peters" "risk" "ruin" "sequence" "path"]
+    :failure-modes ["Ensemble Thinking for Individual" "Ignoring Path Dependence" "Ruin Blindness" "Expected Value Fallacy" "Ignoring Sequence Risk"]
+    :safeguards ["Think in terms of survival" "Avoid ruin at all costs" "Consider path dependence" "Use Kelly criterion" "Distinguish ensemble from time averages"]}
+   {:id 161
+    :name "Second-Order Thinking"
+    :category "Decision Making"
+    :description "Considering the consequences of consequences. First-order thinking asks 'What happens if I do this?' Second-order thinking asks 'And then what?' Most competitive advantage comes from thinking further ahead than others."
+    :keywords ["second" "order" "thinking" "consequences" "downstream" "effects" "chain" "reaction" "future"]
+    :failure-modes ["First-Order Only" "Infinite Regress" "Analysis Paralysis" "Missing Key Chains" "Overconfidence in Predictions"]
+    :safeguards ["Ask 'and then what?' repeatedly" "Map causal chains" "Consider unintended consequences" "Think in time horizons" "Seek diverse perspectives"]}
+   {:id 162
+    :name "Opportunity Cost"
+    :category "Economics & Finance"
+    :description "The value of the best alternative foregone. Every choice has a cost—not just what you pay, but what you give up. The true cost of anything is what you sacrifice to get it."
+    :keywords ["opportunity" "cost" "alternative" "foregone" "tradeoff" "sacrifice" "choice" "economics" "value"]
+    :failure-modes ["Ignoring Alternatives" "Sunk Cost Focus" "Status Quo Bias" "Narrow Framing" "Time Blindness"]
+    :safeguards ["Always identify alternatives" "Compare to best alternative" "Include time value" "Consider reversibility" "Evaluate from zero base"]}
+   {:id 163
+    :name "Feedback Loops"
+    :category "Systems Thinking"
+    :description "Circular causal relationships where outputs become inputs. Positive feedback amplifies change (virtuous or vicious cycles). Negative feedback stabilizes systems. Understanding loops is key to predicting system behavior."
+    :keywords ["feedback" "loop" "cycle" "amplify" "stabilize" "system" "circular" "reinforcing" "balancing"]
+    :failure-modes ["Missing Hidden Loops" "Ignoring Delays" "Linear Thinking" "Intervention Backfire" "Loop Blindness"]
+    :safeguards ["Map feedback loops explicitly" "Identify delays in loops" "Look for reinforcing cycles" "Test interventions carefully" "Consider second-order effects"]}
+   {:id 164
+    :name "Regression to the Mean"
+    :category "Statistics & Probability"
+    :description "Extreme outcomes tend to be followed by more moderate ones. Exceptional performance is often partly due to luck and will regress toward average. This explains why the 'hot hand' often cools and why interventions after extremes seem effective."
+    :keywords ["regression" "mean" "average" "extreme" "luck" "statistics" "reversion" "normal" "moderate"]
+    :failure-modes ["Attributing Regression to Intervention" "Ignoring Base Rates" "Hot Hand Fallacy" "Overreacting to Extremes" "Talent Misjudgment"]
+    :safeguards ["Expect regression after extremes" "Separate skill from luck" "Use larger samples" "Wait before judging" "Consider base rates"]}
   ])
 (defn detect-models [text]
   "Detect mental models in text using keyword matching"
