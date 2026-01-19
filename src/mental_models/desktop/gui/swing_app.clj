@@ -33,8 +33,7 @@
 ;; =============================================================================
 
 (def config
-  {:version "2.0.4"
-   :blue-green true
+  {:version "v2.0.5"   :blue-green true
    :app-name "Mental Models Desktop"
    :github-repo "Ripple-Analytics/Ripple_Analytics"
    :github-api "https://api.github.com"
@@ -3838,37 +3837,61 @@
     (log! "[POLLER] Stopped")))
 
 (defn check-updates-silently! [frame]
-  "Check for updates on startup and AUTO-DOWNLOAD without user interaction"
+  "Check for updates on startup - tries web app config first, then GitHub"
   (future
     (try
       (Thread/sleep 3000) ;; Wait for UI to load
       ;; Start continuous polling
       (start-update-poller!)
       (println "[AUTO-UPDATE] Checking for updates...")
-      (let [github-token (or (get-in @*state [:settings :github-token]) (:github-token config))
-            url (str (:github-api config) "/repos/" (:github-repo config) "/releases/latest")
-            headers {"Accept" "application/vnd.github.v3+json"
-                     "Authorization" (str "token " github-token)}
-            result (http-get url :headers headers)]
-        (println "[AUTO-UPDATE] GitHub response status:" (:status result) "success:" (:success result))
-        (if (:success result)
-          (let [body (:body result)
-                tag (second (re-find #"\"tag_name\"\s*:\s*\"([^\"]+)\"" body))
-                download-url (second (re-find #"\"browser_download_url\"\s*:\s*\"([^\"]+\.zip)\"" body))
-                newer? (version-newer? tag (:version config))]
-            (println "[AUTO-UPDATE] Current:" (:version config) "Latest:" tag "Newer?" newer?)
-            (println "[AUTO-UPDATE] Download URL:" download-url)
-            (if (and newer? download-url)
-              (do
-                (println "[AUTO-UPDATE] *** NEW VERSION DETECTED - AUTO-DOWNLOADING ***")
-                (log! (str "[AUTO-UPDATE] New version " tag " found - downloading automatically..."))
-                (swap! *state assoc-in [:update :available] true)
-                (swap! *state assoc-in [:update :latest-version] tag)
-                (swap! *state assoc-in [:update :download-url] download-url)
-                ;; AUTO-DOWNLOAD without asking - fully automatic!
-                (perform-auto-update! frame download-url tag))
-              (println "[AUTO-UPDATE] Already on latest version or no download URL")))
-          (println "[AUTO-UPDATE] Failed to check - response:" (:error result))))
+      
+      ;; TRY WEB APP CONFIG FIRST (has CDN URLs, no auth needed)
+      (let [web-config (fetch-remote-config)]
+        (if (and web-config (:version web-config))
+          (do
+            (println "[AUTO-UPDATE] Got config from web app - version:" (:version web-config))
+            (let [tag (:version web-config)
+                  sources (:sources web-config)
+                  newer? (version-newer? tag (:version config))]
+              (println "[AUTO-UPDATE] Current:" (:version config) "Latest:" tag "Newer?" newer?)
+              (if (and newer? (seq sources))
+                (do
+                  (println "[AUTO-UPDATE] *** NEW VERSION DETECTED - AUTO-DOWNLOADING ***")
+                  (log! (str "[AUTO-UPDATE] New version " tag " found - downloading automatically..."))
+                  (swap! *state assoc-in [:update :available] true)
+                  (swap! *state assoc-in [:update :latest-version] tag)
+                  ;; Use the first source URL
+                  (let [download-url (:url (first sources))]
+                    (swap! *state assoc-in [:update :download-url] download-url)
+                    (perform-auto-update! frame download-url tag)))
+                (println "[AUTO-UPDATE] Already on latest version"))))
+          
+          ;; FALLBACK TO GITHUB API
+          (do
+            (println "[AUTO-UPDATE] Web app config unavailable, trying GitHub...")
+            (let [github-token (or (get-in @*state [:settings :github-token]) (:github-token config))
+                  url (str (:github-api config) "/repos/" (:github-repo config) "/releases/latest")
+                  headers {"Accept" "application/vnd.github.v3+json"
+                           "Authorization" (str "token " github-token)}
+                  result (http-get url :headers headers)]
+              (println "[AUTO-UPDATE] GitHub response status:" (:status result) "success:" (:success result))
+              (if (:success result)
+                (let [body (:body result)
+                      tag (second (re-find #"\"tag_name\"\s*:\s*\"([^\"]+)\"" body))
+                      download-url (second (re-find #"\"browser_download_url\"\s*:\s*\"([^\"]+\.zip)\"" body))
+                      newer? (version-newer? tag (:version config))]
+                  (println "[AUTO-UPDATE] Current:" (:version config) "Latest:" tag "Newer?" newer?)
+                  (println "[AUTO-UPDATE] Download URL:" download-url)
+                  (if (and newer? download-url)
+                    (do
+                      (println "[AUTO-UPDATE] *** NEW VERSION DETECTED - AUTO-DOWNLOADING ***")
+                      (log! (str "[AUTO-UPDATE] New version " tag " found - downloading automatically..."))
+                      (swap! *state assoc-in [:update :available] true)
+                      (swap! *state assoc-in [:update :latest-version] tag)
+                      (swap! *state assoc-in [:update :download-url] download-url)
+                      (perform-auto-update! frame download-url tag))
+                    (println "[AUTO-UPDATE] Already on latest version or no download URL")))
+                (println "[AUTO-UPDATE] Failed to check - response:" (:error result)))))))
       (catch Exception e
         (println "[AUTO-UPDATE] Silent check failed:" (.getMessage e))
         (.printStackTrace e)))))
