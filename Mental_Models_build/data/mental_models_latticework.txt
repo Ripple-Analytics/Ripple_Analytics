@@ -1,0 +1,195 @@
+# Mental Models from "The Latticework of Mental Models" by The Intellectual Edge
+# Source: The_Latticework_Of_Mental_Models_The_Intellectual_Edge.pdf
+
+## PHYSICS (Page 9-13)
+- Newton's Laws of Motion
+- Laws of Thermodynamics
+- Galilean Relativity
+- Complexity
+- Chaos Theory
+- Momentum
+- Velocity
+- Friction
+- Equilibrium
+- Hysteresis
+- Entropy
+- Conservation Laws
+- Archimedes' Principle
+- Uncertainty Principle
+- Einstein's Theory of Relativity
+- First Principles
+- Reciprocity
+
+## CHEMISTRY (Page 13-15)
+- Chemical Reactions
+- Critical Mass
+- Catalysts
+- Phase Transitions
+- Alloying
+- Half-Life
+- Isomerism
+- Activation Energy
+
+## MATHEMATICS (Page 15-16)
+- Compounding
+- Power Laws
+- Inversion
+- Decision Trees
+
+## STATISTICS & PROBABILITIES (Page 17-19)
+- Bayesian Inference
+- Probability Distributions
+- Correlation vs. Causation
+- Hypothesis Testing
+- Expected Value
+- Sample Size
+- Permutations & Combinations
+- Randomness
+- Law of Large Numbers
+- Confidence Intervals
+- Standard Deviation & Variance
+- Monte Carlo Simulation
+- Markov Chains
+
+## ENGINEERING (Page 20-22)
+- Margin of Safety
+- Leverage
+- Redundancy
+- Reverse Engineering
+- Feedback Loops
+- Designing for the Bottom
+- Trade-Offs
+- Structure & Function
+- Load Distribution
+- Pareto Optimality
+
+## SCIENCE & EXPERIMENTATION (Page 23-24)
+- The Scientific Method
+- Thought Experiments
+- Global and Local Maxima
+- Randomised Controlled Experiment
+- Simulation & Modelling
+- Proximate vs. Root Cause
+- Lateral Thinking
+- Falsifiability
+- Induction
+- Paradigm Shifts
+
+## TECHNOLOGY & COMPUTER SCIENCE (Page 25-27)
+- Moore's Law
+- Metcalfe's Law
+- Information Theory
+- Premature Optimisation
+- Recursion
+- Technical Debt
+- Decoupling
+- Algorithms
+- Fail-Fast Principle
+- Encryption & Security Layers
+
+## BIOLOGY & NATURE (Page 28-30)
+- Sustainability
+- Complex Adaptive Systems
+- Emergence
+- Natural Selection
+- Evolution
+- The Red Queen Effect
+- Dialectical Materialism
+- Hierarchies
+- Symbiosis
+- The Goal Gradient Hypothesis
+- Niche
+- Network Effects
+- Dunbar's Number
+- Homeostasis
+
+## PSYCHOLOGY (Page 31-33)
+- Munger's Psychology of Human Misjudgement (25 tendencies)
+- Maslow's Hierarchy
+- Conditioning
+- Kahneman & Tversky's Biases & Heuristics
+- Denial
+
+## BUSINESS & INVESTING (Page 34-35)
+- Time Value of Money
+- Risk & Return
+- Circle of Competence
+- Mr. Market
+- Antifragility
+- Moats
+- Opportunity Cost
+- The Agency Problem
+- Business Cycles
+
+## KEY QUOTES FROM MUNGER
+"You must know the big ideas in the big disciplines and use them routinely--all of them, not just a few."
+"To the man with a hammer, the world looks like a nail."
+"If the facts don't hang together on a latticework of theory, you don't have them in a usable form."
+"These models supply the analytical structure that enables us to reduce the inherent chaos and confusion of a complex investment problem into a clarified set of fundamentals."
+
+
+## ECONOMICS (Page 36-39)
+- Scale Effects
+- Interest Rates
+- Supply & Demand
+- Utility
+- Incentives
+- Comparative Advantage
+- Arbitrage
+- Complements & Substitutes
+- Bottlenecks
+- Externalities
+- Black Swans
+- Creative Destruction
+- Market Power
+- Scarcity
+- Path Dependence
+- Gresham's Law
+- Liquidity Trap
+- Law of Diminishing Returns
+- Smith's Invisible Hand
+
+## MILITARY & WAR (Page 39-41)
+- Pre- & Post-Mortems
+- Boots on the Ground
+- Deception
+- Fighting the Last War
+- Seizing the Middle
+- Mutually Assured Destruction
+- Exit Strategy
+- Seeing the Front
+- Asymmetric Warfare
+- Counterinsurgency
+
+## PHILOSOPHY (Page 41-43)
+- Stoicism
+- Epicureanism
+- Cynicism
+- Existentialism
+- Nihilism
+- Kaizen
+- Confucianism
+- Pragmatism
+- Metaphysics
+- Altruism
+
+## COMPETITION (Page 44-45)
+- Game Theory
+- Positioning vs Prediction
+- Red Ocean vs. Blue Ocean Strategy
+- First-Mover Advantage
+- The Innovator's Dilemma
+
+## LEADERSHIP & DECISION MAKING (Page 46-48)
+- Errors of Omission vs. Commission
+- Cost-Benefit Analysis
+- The Map is Not the Territory
+- Systems Thinking
+- Lollapalooza Effects
+- Second-Order Thinking
+- Hanlon's Razor
+- Occam's Razor
+- Checklist Manifesto
+- The Feynman Principle
+- Socratic Method
+- Pareto Principle

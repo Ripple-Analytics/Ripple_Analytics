@@ -1,0 +1,206 @@
+{
+  "source": "Charlie Munger - The Psychology of Human Misjudgment",
+  "description": "Munger's 25 Standard Causes of Human Misjudgment",
+  "tendencies": [
+    {
+      "id": 1,
+      "name": "Reward and Punishment Superresponse Tendency",
+      "description": "People respond strongly to incentives. Never think about something else when you should be thinking about the power of incentives.",
+      "keywords": ["incentive", "reward", "punishment", "bonus", "commission", "motivation"],
+      "examples": ["Sales commissions driving behavior", "FedEx night shift problem solved by paying per shift not per hour"],
+      "antidotes": ["Examine incentive structures", "Ask 'whose bread I eat, his song I sing'"]
+    },
+    {
+      "id": 2,
+      "name": "Liking/Loving Tendency",
+      "description": "We tend to ignore faults of, and comply with wishes of, those we like or love.",
+      "keywords": ["like", "love", "admire", "affection", "favor", "preference"],
+      "examples": ["Ignoring faults of loved ones", "Buying from friends even at higher prices"],
+      "antidotes": ["Separate the person from their ideas", "Seek disconfirming evidence"]
+    },
+    {
+      "id": 3,
+      "name": "Disliking/Hating Tendency",
+      "description": "We tend to ignore virtues of, and distort facts about, those we dislike.",
+      "keywords": ["hate", "dislike", "enemy", "opponent", "rival", "adversary"],
+      "examples": ["Dismissing good ideas from rivals", "Political polarization"],
+      "antidotes": ["Evaluate ideas on merit", "Steel-man opposing arguments"]
+    },
+    {
+      "id": 4,
+      "name": "Doubt-Avoidance Tendency",
+      "description": "The brain is designed to remove doubt by reaching a decision quickly.",
+      "keywords": ["doubt", "uncertainty", "decision", "quick", "hasty", "rush"],
+      "examples": ["Snap judgments under stress", "Religious conversion"],
+      "antidotes": ["Deliberately slow down decisions", "Embrace uncertainty"]
+    },
+    {
+      "id": 5,
+      "name": "Inconsistency-Avoidance Tendency",
+      "description": "We resist changing our habits, beliefs, and conclusions once formed.",
+      "keywords": ["consistent", "habit", "routine", "change", "resist", "stubborn"],
+      "examples": ["Continuing failed strategies", "Refusing to update beliefs with new evidence"],
+      "antidotes": ["Actively seek disconfirming evidence", "Be willing to change your mind"]
+    },
+    {
+      "id": 6,
+      "name": "Curiosity Tendency",
+      "description": "Curiosity helps counteract other psychological tendencies.",
+      "keywords": ["curious", "wonder", "explore", "learn", "investigate", "question"],
+      "examples": ["Scientists driven by curiosity", "Children's natural questioning"],
+      "antidotes": ["Cultivate and reward curiosity"]
+    },
+    {
+      "id": 7,
+      "name": "Kantian Fairness Tendency",
+      "description": "We expect fair exchanges and reciprocal behavior.",
+      "keywords": ["fair", "equal", "reciprocal", "justice", "equity", "balanced"],
+      "examples": ["Tit-for-tat strategies", "Outrage at unfair treatment"],
+      "antidotes": ["Recognize fairness is subjective", "Focus on outcomes not process"]
+    },
+    {
+      "id": 8,
+      "name": "Envy/Jealousy Tendency",
+      "description": "Envy is a powerful driver of irrational behavior.",
+      "keywords": ["envy", "jealous", "covet", "resentment", "comparison", "status"],
+      "examples": ["Keeping up with the Joneses", "Sibling rivalry"],
+      "antidotes": ["Focus on absolute not relative progress", "Practice gratitude"]
+    },
+    {
+      "id": 9,
+      "name": "Reciprocation Tendency",
+      "description": "We feel obligated to repay favors and concessions.",
+      "keywords": ["reciprocate", "return", "favor", "obligation", "debt", "payback"],
+      "examples": ["Free samples driving purchases", "Door-in-the-face technique"],
+      "antidotes": ["Recognize manipulation tactics", "Evaluate offers on merit"]
+    },
+    {
+      "id": 10,
+      "name": "Influence-from-Mere-Association Tendency",
+      "description": "We are influenced by associations, even irrelevant ones.",
+      "keywords": ["associate", "connection", "link", "correlation", "messenger", "bearer"],
+      "examples": ["Shooting the messenger", "Celebrity endorsements"],
+      "antidotes": ["Separate message from messenger", "Look for causal not correlational links"]
+    },
+    {
+      "id": 11,
+      "name": "Simple Pain-Avoiding Psychological Denial",
+      "description": "We deny reality when it's too painful to accept.",
+      "keywords": ["denial", "avoid", "ignore", "painful", "uncomfortable", "reality"],
+      "examples": ["Ignoring terminal diagnosis", "Refusing to see business failure"],
+      "antidotes": ["Face reality head-on", "Seek objective feedback"]
+    },
+    {
+      "id": 12,
+      "name": "Excessive Self-Regard Tendency",
+      "description": "We overestimate our own abilities and worth.",
+      "keywords": ["overconfident", "ego", "self-regard", "superior", "above average", "special"],
+      "examples": ["90% of drivers think they're above average", "Endowment effect"],
+      "antidotes": ["Seek honest feedback", "Track predictions vs outcomes"]
+    },
+    {
+      "id": 13,
+      "name": "Over-Optimism Tendency",
+      "description": "We tend to be unrealistically optimistic about outcomes.",
+      "keywords": ["optimistic", "hopeful", "positive", "best case", "rosy", "upbeat"],
+      "examples": ["Underestimating project timelines", "Ignoring base rates"],
+      "antidotes": ["Use base rates", "Consider worst-case scenarios"]
+    },
+    {
+      "id": 14,
+      "name": "Deprival-Superreaction Tendency",
+      "description": "We react more strongly to losses than equivalent gains.",
+      "keywords": ["loss", "deprive", "take away", "lose", "remove", "subtract"],
+      "examples": ["Loss aversion in investing", "Outrage at benefit cuts"],
+      "antidotes": ["Frame decisions in terms of total wealth", "Consider opportunity costs"]
+    },
+    {
+      "id": 15,
+      "name": "Social-Proof Tendency",
+      "description": "We look to others' behavior to determine our own.",
+      "keywords": ["social proof", "conformity", "herd", "crowd", "everyone", "popular"],
+      "examples": ["Laugh tracks on TV shows", "Investment bubbles"],
+      "antidotes": ["Think independently", "Question consensus"]
+    },
+    {
+      "id": 16,
+      "name": "Contrast-Misreaction Tendency",
+      "description": "We judge things relative to nearby comparisons, not absolutely.",
+      "keywords": ["contrast", "compare", "relative", "anchor", "reference", "versus"],
+      "examples": ["Real estate showing bad houses first", "Salary anchoring"],
+      "antidotes": ["Evaluate options independently", "Use absolute standards"]
+    },
+    {
+      "id": 17,
+      "name": "Stress-Influence Tendency",
+      "description": "Stress causes both enhanced and degraded performance.",
+      "keywords": ["stress", "pressure", "anxiety", "panic", "crisis", "emergency"],
+      "examples": ["Panic selling in markets", "Cults using stress to convert"],
+      "antidotes": ["Avoid major decisions under stress", "Build stress resilience"]
+    },
+    {
+      "id": 18,
+      "name": "Availability-Misweighing Tendency",
+      "description": "We overweight information that's easily available or memorable.",
+      "keywords": ["available", "recent", "vivid", "memorable", "salient", "accessible"],
+      "examples": ["Fear of flying vs driving", "Overreacting to recent news"],
+      "antidotes": ["Seek base rate data", "Use checklists"]
+    },
+    {
+      "id": 19,
+      "name": "Use-It-or-Lose-It Tendency",
+      "description": "Skills and knowledge atrophy without practice.",
+      "keywords": ["practice", "skill", "atrophy", "maintain", "exercise", "use"],
+      "examples": ["Forgetting languages not used", "Professional skills declining"],
+      "antidotes": ["Regular practice and review", "Spaced repetition"]
+    },
+    {
+      "id": 20,
+      "name": "Drug-Misinfluence Tendency",
+      "description": "Chemical substances can dramatically alter cognition and behavior.",
+      "keywords": ["drug", "alcohol", "substance", "chemical", "intoxicated", "impaired"],
+      "examples": ["Alcohol-impaired decisions", "Addiction patterns"],
+      "antidotes": ["Avoid substances that impair judgment", "Recognize impairment"]
+    },
+    {
+      "id": 21,
+      "name": "Senescence-Misinfluence Tendency",
+      "description": "Aging naturally degrades cognitive function.",
+      "keywords": ["age", "old", "decline", "senile", "deteriorate", "elderly"],
+      "examples": ["Cognitive decline with age", "Reduced learning capacity"],
+      "antidotes": ["Continuous learning", "Physical and mental exercise"]
+    },
+    {
+      "id": 22,
+      "name": "Authority-Misinfluence Tendency",
+      "description": "We tend to follow authority figures even when they're wrong.",
+      "keywords": ["authority", "expert", "leader", "boss", "credential", "title"],
+      "examples": ["Milgram experiments", "Following bad medical advice"],
+      "antidotes": ["Question authority", "Verify claims independently"]
+    },
+    {
+      "id": 23,
+      "name": "Twaddle Tendency",
+      "description": "We tend to produce and consume meaningless talk.",
+      "keywords": ["twaddle", "nonsense", "babble", "jargon", "buzzword", "empty"],
+      "examples": ["Corporate jargon", "Political speeches"],
+      "antidotes": ["Demand clarity", "Use plain language"]
+    },
+    {
+      "id": 24,
+      "name": "Reason-Respecting Tendency",
+      "description": "We comply more readily when given a reason, even a poor one.",
+      "keywords": ["reason", "because", "why", "explain", "justify", "rationale"],
+      "examples": ["'Because I need to' working in line-cutting experiments"],
+      "antidotes": ["Evaluate the quality of reasons", "Don't accept 'because' automatically"]
+    },
+    {
+      "id": 25,
+      "name": "Lollapalooza Tendency",
+      "description": "Multiple psychological tendencies acting together produce extreme outcomes.",
+      "keywords": ["lollapalooza", "combine", "confluence", "multiple", "compound", "synergy"],
+      "examples": ["Cults using multiple techniques", "Investment bubbles", "Milgram experiments"],
+      "antidotes": ["Watch for multiple tendencies combining", "Use checklists to identify"]
+    }
+  ]
+}
