@@ -33,12 +33,12 @@
 ;; =============================================================================
 
 (def config
-  {:version "2.0.3"
+  {:version "2.0.4"
    :blue-green true
    :app-name "Mental Models Desktop"
    :github-repo "Ripple-Analytics/Ripple_Analytics"
    :github-api "https://api.github.com"
-   :github-token "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"
+   :github-token "ghu_GP2K7FvBnr0OwxlwofnSDSIHaSA0hF0mKvFP"
    :slack-webhook nil
    :lm-studio-url "http://localhost:1234"
    ;; Remote config for bulletproof updates
