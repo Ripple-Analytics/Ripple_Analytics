@@ -140,10 +140,9 @@
             ;; Handle failure
             (do
               (log/warn "Analysis failed" {:status (:status result)})
-              (when (= :failure (:status result))
-                (retry/enqueue! {:operation :analysis
-                                 :args args
-                                 :error (:error result)}))
+                            (when (= :failure (:status result))
+                              (retry/enqueue! :analysis {:args args
+                                                         :error (:error result)}))
               nil)))
         (do
           (log/warn "Rate limit exceeded")
@@ -233,9 +232,8 @@
                            (analyze-with-pipeline (:text doc))
                            (catch Exception e
                              (log/error "Batch item failed" {:error (.getMessage e)})
-                             (retry/enqueue! {:operation :batch-item
-                                              :document doc
-                                              :error e})
+                                                          (retry/enqueue! :batch-item {:document doc
+                                                                             :error e})
                              nil)))
                        documents))
         ;; Reset workers gauge

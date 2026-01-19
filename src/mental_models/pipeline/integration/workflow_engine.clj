@@ -338,9 +338,9 @@
   (metrics/create-counter! :workflow/completed "Workflows completed")
   (metrics/create-counter! :workflow/failed "Workflows failed")
   (metrics/create-counter! :workflow/cancelled "Workflows cancelled")
-  (metrics/create-gauge! :workflow/active "Active workflows"
-                         #(count (filter #(= (:status %) :running)
-                                         (vals (:instances @workflow-state)))))
+    (metrics/create-gauge! :workflow/active "Active workflows"
+                           (fn [] (count (filter (fn [w] (= (:status w) :running))
+                                                 (vals (:instances @workflow-state))))))
   ;; Register default handlers
   (doseq [[step-type handler] default-handlers]
     (register-step-handler! step-type handler))

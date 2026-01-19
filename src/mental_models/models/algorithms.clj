@@ -12,7 +12,7 @@
 (defn word-frequency
   \"Calculate word frequencies in text\"
   [text]
-  (let [words (str/split (str/lower-case text) #\"\\s+\")
+  (let [words (str/split (str/lower-case text) #"\\s+")
         filtered (filter #(> (count %) 3) words)]
     (frequencies filtered)))
 
@@ -36,12 +36,12 @@
         negative [\"bad\" \"terrible\" \"worst\" \"hate\" \"awful\" \"horrible\" \"poor\"]
         pos-count (count (filter #(str/includes? (str/lower-case text) %) positive))
         neg-count (count (filter #(str/includes? (str/lower-case text) %) negative))]
-    {:positive pos-count :negative neg-count :neutral (- (count (str/split text #\"\\s+\")) pos-count neg-count)}))
+    {:positive pos-count :negative neg-count :neutral (- (count (str/split text #"\\s+")) pos-count neg-count)}))
 
 (defn linguistic-complexity
   \"Measure linguistic complexity\"
   [text]
-  (let [words (str/split text #\"\\s+\")
+  (let [words (str/split text #"\\s+")
         avg-word-length (/ (reduce + (map count words)) (count words))
         sentences (extract-sentences text)
         avg-sentence-length (/ (count words) (count sentences))]
@@ -67,7 +67,7 @@
     
     {:score normalized
      :evidence {:keywords keyword-count :symbols symbol-count :numbers numbers}
-     :confidence (cond (> normalized 0.7) \"High\" (> normalized 0.4) \"Moderate\" :else \"Low\")}))
+     :confidence (cond (> normalized 0.7) "High" (> normalized 0.4) "Moderate" :else "Low")}))
 
 (defn detect-physics
   \"Detect physics concepts in text\"
@@ -84,7 +84,7 @@
     
     {:score normalized
      :evidence {:keywords keyword-count :patterns pattern-matches}
-     :confidence (cond (> normalized 0.7) \"High\" (> normalized 0.4) \"Moderate\" :else \"Low\")}))
+     :confidence (cond (> normalized 0.7) "High" (> normalized 0.4) "Moderate" :else "Low")}))
 
 (defn detect-engineering
   \"Detect engineering thinking in text\"
@@ -102,7 +102,7 @@
     
     {:score normalized
      :evidence {:keywords keyword-count :patterns pattern-matches}
-     :confidence (cond (> normalized 0.7) \"High\" (> normalized 0.4) \"Moderate\" :else \"Low\")}))
+     :confidence (cond (> normalized 0.7) "High" (> normalized 0.4) "Moderate" :else "Low")}))
 
 (defn detect-accounting
   \"Detect accounting/financial thinking in text\"
@@ -121,7 +121,7 @@
     
     {:score normalized
      :evidence {:keywords keyword-count :patterns pattern-matches :money-mentions money-mentions}
-     :confidence (cond (> normalized 0.7) \"High\" (> normalized 0.4) \"Moderate\" :else \"Low\")}))
+     :confidence (cond (> normalized 0.7) "High" (> normalized 0.4) "Moderate" :else "Low")}))
 
 ;; -- Life Sciences Algorithms --
 
@@ -141,7 +141,7 @@
     
     {:score normalized
      :evidence {:keywords keyword-count :patterns pattern-matches}
-     :confidence (cond (> normalized 0.7) \"High\" (> normalized 0.4) \"Moderate\" :else \"Low\")}))
+     :confidence (cond (> normalized 0.7) "High" (> normalized 0.4) "Moderate" :else "Low")}))
 
 (defn detect-psychology
   \"Detect psychological thinking in text\"
@@ -159,7 +159,7 @@
     
     {:score normalized
      :evidence {:keywords keyword-count :patterns pattern-matches}
-     :confidence (cond (> normalized 0.7) \"High\" (> normalized 0.4) \"Moderate\" :else \"Low\")}))
+     :confidence (cond (> normalized 0.7) "High" (> normalized 0.4) "Moderate" :else "Low")}))
 
 (defn detect-economics
   \"Detect economic thinking in text\"
@@ -177,7 +177,7 @@
     
     {:score normalized
      :evidence {:keywords keyword-count :patterns pattern-matches}
-     :confidence (cond (> normalized 0.7) \"High\" (> normalized 0.4) \"Moderate\" :else \"Low\")}))
+     :confidence (cond (> normalized 0.7) "High" (> normalized 0.4) "Moderate" :else "Low")}))
 
 ;; -- Cognitive Biases --
 
@@ -198,7 +198,7 @@
     
     {:score normalized
      :evidence {:keywords keyword-count :patterns pattern-matches}
-     :confidence (cond (> normalized 0.7) \"High\" (> normalized 0.4) \"Moderate\" :else \"Low\")}))
+     :confidence (cond (> normalized 0.7) "High" (> normalized 0.4) "Moderate" :else "Low")}))
 
 (defn detect-anchoring-bias
   \"Detect anchoring bias in text\"
@@ -218,7 +218,7 @@
     
     {:score normalized
      :evidence {:keywords keyword-count :patterns pattern-matches}
-     :confidence (cond (> normalized 0.7) \"High\" (> normalized 0.4) \"Moderate\" :else \"Low\")}))
+     :confidence (cond (> normalized 0.7) "High" (> normalized 0.4) "Moderate" :else "Low")}))
 
 (defn detect-availability-heuristic
   \"Detect availability heuristic in text\"
@@ -238,7 +238,7 @@
     
     {:score normalized
      :evidence {:keywords keyword-count :patterns pattern-matches}
-     :confidence (cond (> normalized 0.7) \"High\" (> normalized 0.4) \"Moderate\" :else \"Low\")}))
+     :confidence (cond (> normalized 0.7) "High" (> normalized 0.4) "Moderate" :else "Low")}))
 
 (defn detect-overconfidence-bias
   \"Detect overconfidence bias in text\"
@@ -258,7 +258,7 @@
     
     {:score normalized
      :evidence {:keywords keyword-count :patterns pattern-matches}
-     :confidence (cond (> normalized 0.7) \"High\" (> normalized 0.4) \"Moderate\" :else \"Low\")}))
+     :confidence (cond (> normalized 0.7) "High" (> normalized 0.4) "Moderate" :else "Low")}))
 
 ;; -- Business Models --
 
@@ -280,7 +280,7 @@
     
     {:score normalized
      :evidence {:keywords keyword-count :patterns pattern-matches}
-     :confidence (cond (> normalized 0.7) \"High\" (> normalized 0.4) \"Moderate\" :else \"Low\")}))
+     :confidence (cond (> normalized 0.7) "High" (> normalized 0.4) "Moderate" :else "Low")}))
 
 (defn detect-economic-moat
   \"Detect economic moat thinking in text\"
@@ -301,7 +301,7 @@
     
     {:score normalized
      :evidence {:keywords keyword-count :patterns pattern-matches}
-     :confidence (cond (> normalized 0.7) \"High\" (> normalized 0.4) \"Moderate\" :else \"Low\")}))
+     :confidence (cond (> normalized 0.7) "High" (> normalized 0.4) "Moderate" :else "Low")}))
 
 ;; -- Meta-Skills --
 
@@ -324,7 +324,7 @@
     
     {:score normalized
      :evidence {:keywords keyword-count :patterns pattern-matches}
-     :confidence (cond (> normalized 0.7) \"High\" (> normalized 0.4) \"Moderate\" :else \"Low\")}))
+     :confidence (cond (> normalized 0.7) "High" (> normalized 0.4) "Moderate" :else "Low")}))
 
 (defn detect-continual-learning
   \"Detect continual learning mindset in text\"
@@ -345,7 +345,7 @@
     
     {:score normalized
      :evidence {:keywords keyword-count :patterns pattern-matches}
-     :confidence (cond (> normalized 0.7) \"High\" (> normalized 0.4) \"Moderate\" :else \"Low\")}))
+     :confidence (cond (> normalized 0.7) "High" (> normalized 0.4) "Moderate" :else "Low")}))
 
 ;; -- Unified Detection Registry --
 

@@ -44,9 +44,10 @@
 ;; =============================================================================
 
 (defn publish!
-  "Publish an event to the bus."
-  [type topic payload & {:keys [source] :or {source "system"}}]
-  (let [event (create-event type topic payload source)]
+  "Publish an event to the bus.
+   Takes a topic keyword and a payload map."
+  [topic payload & {:keys [source] :or {source "system"}}]
+  (let [event (create-event topic topic payload source)]
     (swap! event-history conj event)
     (when (> (count @event-history) @max-history)
       (swap! event-history #(vec (drop 100 %))))
@@ -54,10 +55,11 @@
     event))
 
 (defn publish-async!
-  "Publish an event asynchronously."
-  [type topic payload & {:keys [source] :or {source "system"}}]
+  "Publish an event asynchronously.
+   Takes a topic keyword and a payload map."
+  [topic payload & {:keys [source] :or {source "system"}}]
   (go
-    (let [event (create-event type topic payload source)]
+    (let [event (create-event topic topic payload source)]
       (swap! event-history conj event)
       (>! main-channel event)
       event)))
@@ -110,35 +112,35 @@
 ;; =============================================================================
 
 (defn emit-analysis-started [document-id]
-  (publish! :analysis-started (:analysis-started topics)
+  (publish! (:analysis-started topics)
             {:document-id document-id}))
 
 (defn emit-analysis-completed [document-id results]
-  (publish! :analysis-completed (:analysis-completed topics)
+  (publish! (:analysis-completed topics)
             {:document-id document-id :results results}))
 
 (defn emit-analysis-failed [document-id error]
-  (publish! :analysis-failed (:analysis-failed topics)
+  (publish! (:analysis-failed topics)
             {:document-id document-id :error error}))
 
 (defn emit-model-detected [document-id model-id confidence]
-  (publish! :model-detected (:model-detected topics)
+  (publish! (:model-detected topics)
             {:document-id document-id :model-id model-id :confidence confidence}))
 
 (defn emit-lollapalooza [document-id models avg-confidence]
-  (publish! :lollapalooza-detected (:lollapalooza-detected topics)
+  (publish! (:lollapalooza-detected topics)
             {:document-id document-id :models models :avg-confidence avg-confidence}))
 
 (defn emit-document-ingested [document-id path]
-  (publish! :document-ingested (:document-ingested topics)
+  (publish! (:document-ingested topics)
             {:document-id document-id :path path}))
 
 (defn emit-config-changed [key old-value new-value]
-  (publish! :config-changed (:config-changed topics)
+  (publish! (:config-changed topics)
             {:key key :old-value old-value :new-value new-value}))
 
 (defn emit-error [source error]
-  (publish! :error (:error topics)
+  (publish! (:error topics)
             {:source source :error error}))
 
 ;; =============================================================================

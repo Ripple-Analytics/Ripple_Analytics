@@ -35,9 +35,8 @@
         (log/error "Failed to save analysis result" {:status (:status cb-result)})
         (metrics/inc-counter! :database/write-failures)
         ;; Queue for retry
-        (retry/enqueue! {:operation :save-analysis
-                         :data result
-                         :error (:error cb-result)})
+                (retry/enqueue! :save-analysis {:data result
+                                                 :error (:error cb-result)})
         nil))))
 
 (defn save-batch-results!
@@ -60,10 +59,9 @@
         (log/error "Failed to save batch results" {:status (:status cb-result)})
         (metrics/inc-counter! :database/batch-write-failures)
         ;; Queue individual items for retry
-        (doseq [result results]
-          (retry/enqueue! {:operation :save-analysis
-                           :data result
-                           :error (:error cb-result)}))
+                (doseq [result results]
+                  (retry/enqueue! :save-analysis {:data result
+                                                  :error (:error cb-result)}))
         nil))))
 
 (defn save-lollapalooza-alert!
@@ -81,9 +79,8 @@
         (:result cb-result))
       (do
         (log/error "Failed to save Lollapalooza alert" {:status (:status cb-result)})
-        (retry/enqueue! {:operation :save-lollapalooza
-                         :data alert
-                         :error (:error cb-result)})
+                (retry/enqueue! :save-lollapalooza {:data alert
+                                                     :error (:error cb-result)})
         nil))))
 
 ;; =============================================================================

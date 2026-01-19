@@ -236,7 +236,7 @@
                [analysis-id user-id model-slug model-name failure-mode-name risk-level])
     
     (log/info "Failure mode saved:" failure-mode-name)
-    true)
+    true
     
     (catch Exception e
       (log/error e "Failed to save failure mode")

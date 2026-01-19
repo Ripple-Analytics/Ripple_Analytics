@@ -376,9 +376,9 @@
   ;; Create metrics
   (metrics/create-counter! :orchestrator/pipelines-executed "Pipelines executed")
   (metrics/create-counter! :orchestrator/stages-executed "Stages executed")
-  (metrics/create-gauge! :orchestrator/active-executions "Active executions"
-                         #(count (filter #(= :running (:status %))
-                                         (vals (:executions @orchestrator-state)))))
+    (metrics/create-gauge! :orchestrator/active-executions "Active executions"
+                           (fn [] (count (filter (fn [e] (= :running (:status e)))
+                                                 (vals (:executions @orchestrator-state))))))
   ;; Initialize built-in stages and pipelines
   (init-built-in-stages!)
   (init-built-in-pipelines!)

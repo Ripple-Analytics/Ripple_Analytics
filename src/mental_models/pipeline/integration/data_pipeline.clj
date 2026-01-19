@@ -383,8 +383,8 @@
   (metrics/create-counter! :datapipeline/pipelines-executed "Pipelines executed")
   (metrics/create-gauge! :datapipeline/total-pipelines "Total pipelines"
                          #(count (:pipelines @pipeline-state)))
-  (metrics/create-gauge! :datapipeline/active-executions "Active executions"
-                         #(count (filter #(= (:status %) :running) (vals (:executions @pipeline-state)))))
+    (metrics/create-gauge! :datapipeline/active-executions "Active executions"
+                           (fn [] (count (filter (fn [e] (= (:status e) :running)) (vals (:executions @pipeline-state))))))
   (log/info "Data pipeline initialized"))
 
 ;; =============================================================================
