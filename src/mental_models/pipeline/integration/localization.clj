@@ -75,20 +75,20 @@
   "Convert keyword locale to Java Locale."
   [locale]
   (case locale
-    :en (Locale/ENGLISH)
-    :en-US (Locale/US)
-    :en-GB (Locale/UK)
-    :de (Locale/GERMAN)
-    :fr (Locale/FRENCH)
+    :en Locale/ENGLISH
+    :en-US Locale/US
+    :en-GB Locale/UK
+    :de Locale/GERMAN
+    :fr Locale/FRENCH
     :es (Locale. "es")
-    :it (Locale/ITALIAN)
-    :ja (Locale/JAPANESE)
-    :zh (Locale/CHINESE)
-    :ko (Locale/KOREAN)
+    :it Locale/ITALIAN
+    :ja Locale/JAPANESE
+    :zh Locale/CHINESE
+    :ko Locale/KOREAN
     :pt (Locale. "pt")
     :ru (Locale. "ru")
     :ar (Locale. "ar")
-    (Locale/ENGLISH)))
+    Locale/ENGLISH))
 
 ;; =============================================================================
 ;; TRANSLATION MANAGEMENT

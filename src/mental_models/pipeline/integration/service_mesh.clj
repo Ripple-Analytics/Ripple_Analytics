@@ -333,8 +333,8 @@
   (metrics/create-counter! :mesh/instances-registered "Instances registered")
   (metrics/create-counter! :mesh/health-check-failures "Health check failures")
   (metrics/create-counter! :mesh/circuit-opened "Circuit breakers opened")
-  (metrics/create-gauge! :mesh/healthy-instances "Healthy instances"
-                         #(count (filter #(= (:status %) :healthy) (vals (:instances @mesh-state)))))
+    (metrics/create-gauge! :mesh/healthy-instances "Healthy instances"
+                           (fn [] (count (filter (fn [i] (= (:status i) :healthy)) (vals (:instances @mesh-state))))))
   (log/info "Service mesh initialized"))
 
 ;; =============================================================================

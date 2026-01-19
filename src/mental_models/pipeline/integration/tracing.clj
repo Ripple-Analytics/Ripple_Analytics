@@ -400,8 +400,8 @@
   (metrics/create-counter! :tracing/spans-started "Spans started")
   (metrics/create-counter! :tracing/spans-completed "Spans completed")
   (metrics/create-histogram! :tracing/span-duration-ms "Span duration" [1 5 10 50 100 500 1000 5000])
-  (metrics/create-gauge! :tracing/active-traces "Active traces"
-                         #(count (filter #(= (:status %) :active) (vals (:traces @tracing-state)))))
+    (metrics/create-gauge! :tracing/active-traces "Active traces"
+                           (fn [] (count (filter (fn [t] (= (:status t) :active)) (vals (:traces @tracing-state))))))
   (log/info "Tracing initialized"))
 
 ;; =============================================================================

@@ -402,8 +402,8 @@
   (metrics/create-counter! :jobscheduler/jobs-executed "Jobs executed")
   (metrics/create-gauge! :jobscheduler/total-jobs "Total jobs"
                          #(count (:jobs @scheduler-state)))
-  (metrics/create-gauge! :jobscheduler/enabled-jobs "Enabled jobs"
-                         #(count (filter #(.get ^AtomicBoolean (:enabled? %)) (vals (:jobs @scheduler-state)))))
+    (metrics/create-gauge! :jobscheduler/enabled-jobs "Enabled jobs"
+                           (fn [] (count (filter (fn [j] (.get ^AtomicBoolean (:enabled? j))) (vals (:jobs @scheduler-state))))))
   (log/info "Job scheduler initialized"))
 
 ;; =============================================================================
