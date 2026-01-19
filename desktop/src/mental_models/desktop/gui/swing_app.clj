@@ -27,7 +27,7 @@
 ;; =============================================================================
 
 (def config
-  {:version "v2.0.8"
+  {:version "v2.0.9"
    :blue-green true
    :app-name "Mental Models Desktop"
    :github-repo "Ripple-Analytics/Ripple_Analytics"
@@ -3132,7 +3132,7 @@
       (if (:success result)
         (let [body (:body result)
               latest (second (re-find #"\"latest\"\s*:\s*\"([^\"]+)\"" body))
-              gdrive-id (second (re-find (re-pattern (str "\"" latest "\"[^}]*\"gdrive_id\"\s*:\s*\"([^\"]+)\"")) body))]
+              gdrive-id (second (re-find (re-pattern (str "\"" latest "\"[^}]*\"gdrive_id\"\\s*:\\s*\"([^\"]+)\"")) body))]
           (println "[UPDATE] Manifest: latest=" latest "gdrive_id=" gdrive-id)
           {:success true :latest latest :gdrive-id gdrive-id})
         {:success false :error (:error result)}))
