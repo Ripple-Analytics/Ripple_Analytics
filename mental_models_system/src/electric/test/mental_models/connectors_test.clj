@@ -1,0 +1,2956 @@
+(ns mental-models.connectors-test
+  "Tests for the connectors module.
+   
+   Tests connector creation, configuration, and basic functionality.
+   Note: Full integration tests require actual API keys and services."
+  (:require [clojure.test :refer [deftest testing is are]]
+            [mental-models.connectors :as conn]))
+
+;; ============================================
+;; Connector Creation Tests
+;; ============================================
+
+(deftest test-create-zapier-connector
+  (testing "Zapier connector creation"
+    (let [connector (conn/create-zapier-connector "https://hooks.zapier.com/test")]
+      (is (= :zapier (:type connector)))
+      (is (= "https://hooks.zapier.com/test" (:webhook-url connector)))
+      (is (= :disconnected (:status connector)))
+      (is (nil? (:last-triggered connector))))))
+
+(deftest test-create-huggingface-connector
+  (testing "Huggingface connector creation"
+    (let [connector (conn/create-huggingface-connector "hf_test_key")]
+      (is (= :huggingface (:type connector)))
+      (is (= "hf_test_key" (:api-key connector)))
+      (is (= :disconnected (:status connector)))
+      (is (map? (:available-models connector))))))
+
+(deftest test-create-github-connector
+  (testing "GitHub connector creation"
+    (let [connector (conn/create-github-connector "ghp_test_token")]
+      (is (= :github (:type connector)))
+      (is (= "ghp_test_token" (:token connector)))
+      (is (= :disconnected (:status connector)))
+      (is (map? (:rate-limit connector)))
+      (is (= 5000 (get-in connector [:rate-limit :remaining]))))))
+
+(deftest test-create-slack-connector
+  (testing "Slack connector creation"
+    (let [connector (conn/create-slack-connector "xoxb-test-token")]
+      (is (= :slack (:type connector)))
+      (is (= "xoxb-test-token" (:bot-token connector)))
+      (is (= :disconnected (:status connector)))
+      (is (nil? (:workspace connector))))))
+
+(deftest test-create-google-drive-connector
+  (testing "Google Drive connector creation"
+    (let [connector (conn/create-google-drive-connector {:client-id "test"})]
+      (is (= :google-drive (:type connector)))
+      (is (= {:client-id "test"} (:credentials connector)))
+      (is (= :disconnected (:status connector))))))
+
+(deftest test-create-lm-studio-connector
+  (testing "LM Studio connector creation with defaults"
+    (let [connector (conn/create-lm-studio-connector)]
+      (is (= :lm-studio (:type connector)))
+      (is (= "localhost" (:host connector)))
+      (is (= 1234 (:port connector)))
+      (is (= "http://localhost:1234/v1" (:base-url connector)))
+      (is (= :disconnected (:status connector)))))
+  
+  (testing "LM Studio connector creation with custom host/port"
+    (let [connector (conn/create-lm-studio-connector :host "192.168.1.100" :port 8080)]
+      (is (= "192.168.1.100" (:host connector)))
+      (is (= 8080 (:port connector)))
+      (is (= "http://192.168.1.100:8080/v1" (:base-url connector))))))
+
+(deftest test-create-database-connector
+  (testing "Database connector creation"
+    (let [db-spec {:dbtype "postgresql" :host "localhost" :dbname "test"}
+          connector (conn/create-database-connector db-spec)]
+      (is (= :database (:type connector)))
+      (is (= db-spec (:db-spec connector)))
+      (is (= :disconnected (:status connector)))
+      (is (nil? (:pool connector))))))
+
+(deftest test-create-file-connector
+  (testing "File connector creation"
+    (let [connector (conn/create-file-connector "/tmp/test")]
+      (is (= :file (:type connector)))
+      (is (= "/tmp/test" (:base-path connector)))
+      (is (= :connected (:status connector))))))
+
+(deftest test-create-web-scraper
+  (testing "Web scraper creation with defaults"
+    (let [connector (conn/create-web-scraper)]
+      (is (= :web-scraper (:type connector)))
+      (is (= "MentalModels-Bot/1.0" (:user-agent connector)))
+      (is (= :ready (:status connector)))
+      (is (= 1 (get-in connector [:rate-limit :requests-per-second])))))
+  
+  (testing "Web scraper creation with custom user-agent"
+    (let [connector (conn/create-web-scraper :user-agent "CustomBot/2.0")]
+      (is (= "CustomBot/2.0" (:user-agent connector))))))
+
+;; ============================================
+;; Connector Registry Tests
+;; ============================================
+
+(deftest test-list-connectors
+  (testing "List all available connectors"
+    (let [connectors (conn/list-connectors)]
+      (is (vector? connectors))
+      (is (>= (count connectors) 9))
+      (is (every? #(contains? % :type) connectors))
+      (is (every? #(contains? % :description) connectors))
+      (is (some #(= :zapier (:type %)) connectors))
+      (is (some #(= :github (:type %)) connectors))
+      (is (some #(= :lm-studio (:type %)) connectors)))))
+
+(deftest test-create-connector-by-type
+  (testing "Create connector using registry"
+    (let [zapier (conn/create-connector :zapier "https://test.zapier.com")
+          github (conn/create-connector :github "test-token")
+          lm-studio (conn/create-connector :lm-studio)]
+      (is (= :zapier (:type zapier)))
+      (is (= :github (:type github)))
+      (is (= :lm-studio (:type lm-studio)))))
+  
+  (testing "Create connector with unknown type"
+    (let [result (conn/create-connector :unknown)]
+      (is (contains? result :error))
+      (is (string? (:error result))))))
+
+;; ============================================
+;; Configuration Tests
+;; ============================================
+
+(deftest test-zapier-config
+  (testing "Zapier configuration"
+    (is (= "https://hooks.zapier.com" (:base-url conn/zapier-config)))
+    (is (= 30000 (:timeout-ms conn/zapier-config)))
+    (is (= 3 (:retry-count conn/zapier-config)))))
+
+(deftest test-huggingface-config
+  (testing "Huggingface configuration"
+    (is (= "https://api-inference.huggingface.co" (:base-url conn/huggingface-config)))
+    (is (map? (:models conn/huggingface-config)))
+    (is (contains? (:models conn/huggingface-config) :text-generation))
+    (is (contains? (:models conn/huggingface-config) :embeddings))))
+
+(deftest test-github-config
+  (testing "GitHub configuration"
+    (is (= "https://api.github.com" (:base-url conn/github-config)))
+    (is (= "2022-11-28" (:api-version conn/github-config)))))
+
+(deftest test-slack-config
+  (testing "Slack configuration"
+    (is (= "https://slack.com/api" (:base-url conn/slack-config)))
+    (is (vector? (:scopes conn/slack-config)))
+    (is (some #(= "chat:write" %) (:scopes conn/slack-config)))))
+
+(deftest test-lm-studio-config
+  (testing "LM Studio configuration"
+    (is (= "localhost" (:default-host conn/lm-studio-config)))
+    (is (= 1234 (:default-port conn/lm-studio-config)))
+    (is (= "/v1" (:api-path conn/lm-studio-config)))))
+
+(deftest test-scraper-config
+  (testing "Web scraper configuration"
+    (is (= "MentalModels-Bot/1.0" (:user-agent conn/scraper-config)))
+    (is (= 30000 (:timeout-ms conn/scraper-config)))
+    (is (true? (:respect-robots-txt conn/scraper-config)))))
+
+;; ============================================
+;; Error Handling Tests (without actual API calls)
+;; ============================================
+
+(deftest test-error-response-structure
+  (testing "Error responses have consistent structure"
+    ;; Test that functions return proper error structures when called without valid credentials
+    ;; These tests verify the error handling paths work correctly
+    (let [github-connector (conn/create-github-connector "invalid-token")
+          lm-studio-connector (conn/create-lm-studio-connector :host "nonexistent" :port 9999)]
+      
+      ;; GitHub functions should return error structure when API fails
+      (let [result (conn/github-list-issues github-connector "owner" "repo")]
+        (is (contains? result :status))
+        (is (contains? result :timestamp)))
+      
+      ;; LM Studio functions should return error structure when server unavailable
+      (let [result (conn/lm-studio-list-models lm-studio-connector)]
+        (is (contains? result :status))
+        (is (contains? result :models))))))
+
+;; ============================================
+;; File Connector Tests (can run without external services)
+;; ============================================
+
+(deftest test-file-connector-operations
+  (testing "File connector read/write/list operations"
+    (let [test-dir "/tmp/mental-models-test"
+          connector (conn/create-file-connector test-dir)]
+      
+      ;; Create test directory
+      (.mkdirs (java.io.File. test-dir))
+      
+      ;; Test write
+      (let [write-result (conn/file-write connector "test.txt" "Hello, World!")]
+        (is (= :success (:status write-result)))
+        (is (= 13 (:bytes-written write-result))))
+      
+      ;; Test read
+      (let [read-result (conn/file-read connector "test.txt")]
+        (is (= :success (:status read-result)))
+        (is (= "Hello, World!" (:content read-result))))
+      
+      ;; Test list
+      (let [list-result (conn/file-list connector "")]
+        (is (= :success (:status list-result)))
+        (is (some #(= "test.txt" %) (:files list-result))))
+      
+      ;; Cleanup
+      (.delete (java.io.File. (str test-dir "/test.txt")))
+      (.delete (java.io.File. test-dir)))))
+
+(deftest test-file-connector-error-handling
+  (testing "File connector error handling"
+    (let [connector (conn/create-file-connector "/nonexistent/path")]
+      
+      ;; Test read error
+      (let [result (conn/file-read connector "missing.txt")]
+        (is (= :error (:status result)))
+        (is (contains? result :error)))
+      
+      ;; Test list error
+      (let [result (conn/file-list connector "")]
+        (is (= :error (:status result)))
+        (is (contains? result :error))))))
+
+;; ============================================
+;; Integration Test Helpers
+;; ============================================
+
+(defn integration-test-available?
+  "Check if integration tests can run (requires actual services)."
+  [connector-type]
+  (case connector-type
+    :lm-studio (try
+                 (let [connector (conn/create-lm-studio-connector)
+                       result (conn/lm-studio-list-models connector)]
+                   (= :success (:status result)))
+                 (catch Exception _ false))
+    :github (some? (System/getenv "GITHUB_TOKEN"))
+    :slack (some? (System/getenv "SLACK_BOT_TOKEN"))
+    :huggingface (some? (System/getenv "HUGGINGFACE_API_KEY"))
+    false))
+
+(deftest test-integration-helpers
+  (testing "Integration test helpers work"
+    (is (boolean? (integration-test-available? :lm-studio)))
+    (is (boolean? (integration-test-available? :github)))
+    (is (boolean? (integration-test-available? :slack)))
+    (is (boolean? (integration-test-available? :huggingface)))))
+
+;; ============================================
+;; Retry Configuration Tests
+;; ============================================
+
+(deftest test-retry-config
+  (testing "Retry configuration is defined"
+    (is (map? conn/retry-config))
+    (is (= 3 (:max-retries conn/retry-config)))
+    (is (= 1000 (:initial-delay-ms conn/retry-config)))
+    (is (= 30000 (:max-delay-ms conn/retry-config)))
+    (is (= 2.0 (:backoff-multiplier conn/retry-config)))
+    (is (set? (:retryable-status-codes conn/retry-config)))
+    (is (contains? (:retryable-status-codes conn/retry-config) 429))
+    (is (contains? (:retryable-status-codes conn/retry-config) 503))))
+
+(deftest test-calculate-backoff-delay
+  (testing "Backoff delay calculation"
+    (let [config {:initial-delay-ms 1000 :max-delay-ms 30000 :backoff-multiplier 2.0}]
+      ;; First attempt (attempt 0) should be around initial-delay-ms
+      (let [delay (conn/calculate-backoff-delay 0 config)]
+        (is (>= delay 1000))
+        (is (<= delay 1300))) ;; With 30% jitter
+      
+      ;; Second attempt should be around 2x initial
+      (let [delay (conn/calculate-backoff-delay 1 config)]
+        (is (>= delay 2000))
+        (is (<= delay 2600)))
+      
+      ;; Third attempt should be around 4x initial
+      (let [delay (conn/calculate-backoff-delay 2 config)]
+        (is (>= delay 4000))
+        (is (<= delay 5200)))
+      
+      ;; Should cap at max-delay-ms
+      (let [delay (conn/calculate-backoff-delay 10 config)]
+        (is (<= delay 30000))))))
+
+(deftest test-retryable-error-detection
+  (testing "Retryable error detection"
+    (let [config conn/retry-config]
+      ;; Timeout exceptions should be retryable
+      (is (true? (conn/retryable-error? (Exception. "Connection timeout") config)))
+      (is (true? (conn/retryable-error? (Exception. "connection reset") config)))
+      
+      ;; Non-retryable exceptions
+      (is (false? (conn/retryable-error? (Exception. "Invalid API key") config)))
+      (is (false? (conn/retryable-error? (Exception. "Not found") config)))
+      
+      ;; Retryable status codes
+      (is (true? (conn/retryable-error? {:status 429} config)))
+      (is (true? (conn/retryable-error? {:status 503} config)))
+      (is (true? (conn/retryable-error? {:status 500} config)))
+      
+      ;; Non-retryable status codes
+      (is (false? (conn/retryable-error? {:status 200} config)))
+      (is (false? (conn/retryable-error? {:status 404} config)))
+      (is (false? (conn/retryable-error? {:status 401} config))))))
+
+(deftest test-with-retry-success
+  (testing "with-retry returns result on success"
+    (let [call-count (atom 0)
+          result (conn/with-retry #(do (swap! call-count inc) "success"))]
+      (is (= "success" result))
+      (is (= 1 @call-count)))))
+
+(deftest test-with-retry-eventual-success
+  (testing "with-retry retries on transient failure then succeeds"
+    (let [call-count (atom 0)
+          result (conn/with-retry 
+                   #(do 
+                      (swap! call-count inc)
+                      (if (< @call-count 2)
+                        (throw (Exception. "Connection timeout"))
+                        "success"))
+                   {:max-retries 3 :initial-delay-ms 10 :max-delay-ms 100 :backoff-multiplier 2.0
+                    :retryable-status-codes #{}})]
+      (is (= "success" result))
+      (is (= 2 @call-count)))))
+
+;; ============================================
+;; Rate Limiting Tests
+;; ============================================
+
+(deftest test-rate-limit-config
+  (testing "Rate limit configuration is defined"
+    (is (map? conn/rate-limit-config))
+    (is (= 60 (:github conn/rate-limit-config)))
+    (is (= 60 (:slack conn/rate-limit-config)))
+    (is (= 30 (:huggingface conn/rate-limit-config)))
+    (is (= 100 (:zapier conn/rate-limit-config)))
+    (is (= 10 (:web-scraper conn/rate-limit-config)))))
+
+(deftest test-check-rate-limit
+  (testing "Rate limit checking"
+    ;; Reset rate limiters for clean test
+    (reset! conn/rate-limiters {})
+    
+    ;; First request should always be allowed
+    (is (true? (conn/check-rate-limit :github)))
+    
+    ;; Multiple requests within limit should be allowed
+    (dotimes [_ 10]
+      (is (true? (conn/check-rate-limit :github))))))
+
+(deftest test-rate-limiters-atom
+  (testing "Rate limiters atom is initialized"
+    (is (instance? clojure.lang.Atom conn/rate-limiters))
+    (is (map? @conn/rate-limiters))))
+
+;; ============================================
+;; Response Caching Tests
+;; ============================================
+
+(deftest test-cache-config
+  (testing "Cache configuration is defined"
+    (is (map? conn/cache-config))
+    (is (= 300000 (:github conn/cache-config)))
+    (is (= 60000 (:huggingface conn/cache-config)))
+    (is (= 600000 (:web-scraper conn/cache-config)))
+    (is (= 0 (:lm-studio conn/cache-config)))))
+
+(deftest test-response-cache-atom
+  (testing "Response cache atom is initialized"
+    (is (instance? clojure.lang.Atom conn/response-cache))
+    (is (map? @conn/response-cache))))
+
+(deftest test-cache-key-generation
+  (testing "Cache key generation"
+    (let [key1 (conn/cache-key :github "owner" "repo")
+          key2 (conn/cache-key :github "owner" "repo")
+          key3 (conn/cache-key :github "other" "repo")]
+      (is (string? key1))
+      (is (= key1 key2))
+      (is (not= key1 key3))
+      (is (clojure.string/starts-with? key1 "github-")))))
+
+(deftest test-set-and-get-cached
+  (testing "Cache set and get operations"
+    ;; Clear cache first
+    (conn/clear-cache)
+    
+    ;; Set a cached value
+    (conn/set-cached :github {:data "test"} "owner" "repo")
+    
+    ;; Get the cached value
+    (let [cached (conn/get-cached :github "owner" "repo")]
+      (is (= {:data "test"} cached)))
+    
+    ;; Different params should return nil
+    (is (nil? (conn/get-cached :github "other" "repo")))
+    
+    ;; LM Studio should not cache (TTL = 0)
+    (conn/set-cached :lm-studio {:data "test"} "prompt")
+    (is (nil? (conn/get-cached :lm-studio "prompt")))))
+
+(deftest test-clear-cache
+  (testing "Cache clearing"
+    ;; Set some cached values
+    (conn/set-cached :github {:data "github"} "test1")
+    (conn/set-cached :huggingface {:data "hf"} "test2")
+    
+    ;; Clear specific connector cache
+    (conn/clear-cache :github)
+    (is (nil? (conn/get-cached :github "test1")))
+    (is (some? (conn/get-cached :huggingface "test2")))
+    
+    ;; Clear all cache
+    (conn/clear-cache)
+    (is (nil? (conn/get-cached :huggingface "test2")))))
+
+;; ============================================
+;; Connection Manager Tests
+;; ============================================
+
+(deftest test-connection-manager-defined
+  (testing "Connection manager is defined"
+    (is (delay? conn/connection-manager))))
+
+(deftest test-default-http-opts-defined
+  (testing "Default HTTP options are defined"
+    (is (map? conn/default-http-opts))
+    (is (contains? conn/default-http-opts :socket-timeout))
+    (is (contains? conn/default-http-opts :connection-timeout))
+    (is (= 30000 (:socket-timeout conn/default-http-opts)))
+    (is (= 10000 (:connection-timeout conn/default-http-opts)))))
+
+;; ============================================
+;; Metrics & Telemetry Tests
+;; ============================================
+
+(deftest test-metrics-atom-initialized
+  (testing "Metrics atom is initialized with correct structure"
+    (is (instance? clojure.lang.Atom conn/metrics))
+    (is (map? @conn/metrics))
+    (is (contains? @conn/metrics :requests))
+    (is (contains? @conn/metrics :errors))
+    (is (contains? @conn/metrics :latencies))
+    (is (contains? @conn/metrics :cache-hits))
+    (is (contains? @conn/metrics :cache-misses))
+    (is (contains? @conn/metrics :rate-limit-waits))
+    (is (contains? @conn/metrics :retries))))
+
+(deftest test-record-request
+  (testing "Record request increments counter"
+    (conn/reset-metrics)
+    (conn/record-request :github)
+    (is (= 1 (get-in @conn/metrics [:requests :github])))
+    (conn/record-request :github)
+    (is (= 2 (get-in @conn/metrics [:requests :github])))
+    (conn/record-request :slack)
+    (is (= 1 (get-in @conn/metrics [:requests :slack])))))
+
+(deftest test-record-error
+  (testing "Record error increments error counter by type"
+    (conn/reset-metrics)
+    (conn/record-error :github java.net.SocketTimeoutException)
+    (is (= 1 (get-in @conn/metrics [:errors :github java.net.SocketTimeoutException])))
+    (conn/record-error :github java.net.SocketTimeoutException)
+    (is (= 2 (get-in @conn/metrics [:errors :github java.net.SocketTimeoutException])))
+    (conn/record-error :github java.io.IOException)
+    (is (= 1 (get-in @conn/metrics [:errors :github java.io.IOException])))))
+
+(deftest test-record-latency
+  (testing "Record latency tracks min, max, total, count"
+    (conn/reset-metrics)
+    (conn/record-latency :github 100)
+    (let [latencies (get-in @conn/metrics [:latencies :github])]
+      (is (= 1 (:count latencies)))
+      (is (= 100 (:total latencies)))
+      (is (= 100 (:min latencies)))
+      (is (= 100 (:max latencies))))
+    
+    (conn/record-latency :github 200)
+    (let [latencies (get-in @conn/metrics [:latencies :github])]
+      (is (= 2 (:count latencies)))
+      (is (= 300 (:total latencies)))
+      (is (= 100 (:min latencies)))
+      (is (= 200 (:max latencies))))
+    
+    (conn/record-latency :github 50)
+    (let [latencies (get-in @conn/metrics [:latencies :github])]
+      (is (= 3 (:count latencies)))
+      (is (= 350 (:total latencies)))
+      (is (= 50 (:min latencies)))
+      (is (= 200 (:max latencies))))))
+
+(deftest test-record-cache-hit-miss
+  (testing "Record cache hits and misses"
+    (conn/reset-metrics)
+    (conn/record-cache-hit :github)
+    (conn/record-cache-hit :github)
+    (conn/record-cache-miss :github)
+    (is (= 2 (get-in @conn/metrics [:cache-hits :github])))
+    (is (= 1 (get-in @conn/metrics [:cache-misses :github])))))
+
+(deftest test-record-rate-limit-wait
+  (testing "Record rate limit waits"
+    (conn/reset-metrics)
+    (conn/record-rate-limit-wait :github)
+    (conn/record-rate-limit-wait :github)
+    (is (= 2 (get-in @conn/metrics [:rate-limit-waits :github])))))
+
+(deftest test-record-retry
+  (testing "Record retry attempts"
+    (conn/reset-metrics)
+    (conn/record-retry :github 1)
+    (conn/record-retry :github 1)
+    (conn/record-retry :github 2)
+    (is (= 2 (get-in @conn/metrics [:retries :github 1])))
+    (is (= 1 (get-in @conn/metrics [:retries :github 2])))))
+
+(deftest test-get-metrics
+  (testing "Get metrics for all or specific connector"
+    (conn/reset-metrics)
+    (conn/record-request :github)
+    (conn/record-latency :github 100)
+    
+    ;; Get all metrics
+    (let [all-metrics (conn/get-metrics)]
+      (is (map? all-metrics))
+      (is (= 1 (get-in all-metrics [:requests :github]))))
+    
+    ;; Get specific connector metrics
+    (let [github-metrics (conn/get-metrics :github)]
+      (is (= 1 (:requests github-metrics)))
+      (is (map? (:latencies github-metrics)))
+      (is (= 1 (get-in github-metrics [:latencies :count]))))))
+
+(deftest test-get-average-latency
+  (testing "Calculate average latency"
+    (conn/reset-metrics)
+    (conn/record-latency :github 100)
+    (conn/record-latency :github 200)
+    (conn/record-latency :github 300)
+    (is (= 200 (conn/get-average-latency :github)))
+    
+    ;; No data should return 0
+    (is (= 0 (conn/get-average-latency :nonexistent)))))
+
+(deftest test-get-error-rate
+  (testing "Calculate error rate"
+    (conn/reset-metrics)
+    (conn/record-request :github)
+    (conn/record-request :github)
+    (conn/record-request :github)
+    (conn/record-request :github)
+    (conn/record-error :github Exception)
+    (is (= 0.25 (conn/get-error-rate :github)))
+    
+    ;; No requests should return 0.0
+    (is (= 0.0 (conn/get-error-rate :nonexistent)))))
+
+(deftest test-get-cache-hit-rate
+  (testing "Calculate cache hit rate"
+    (conn/reset-metrics)
+    (conn/record-cache-hit :github)
+    (conn/record-cache-hit :github)
+    (conn/record-cache-hit :github)
+    (conn/record-cache-miss :github)
+    (is (= 0.75 (conn/get-cache-hit-rate :github)))
+    
+    ;; No cache activity should return 0.0
+    (is (= 0.0 (conn/get-cache-hit-rate :nonexistent)))))
+
+(deftest test-reset-metrics
+  (testing "Reset all metrics"
+    (conn/record-request :github)
+    (conn/record-latency :github 100)
+    (conn/reset-metrics)
+    (is (= {} (:requests @conn/metrics)))
+    (is (= {} (:latencies @conn/metrics))))
+  
+  (testing "Reset specific connector metrics"
+    (conn/record-request :github)
+    (conn/record-request :slack)
+    (conn/reset-metrics :github)
+    (is (nil? (get-in @conn/metrics [:requests :github])))
+    (is (= 1 (get-in @conn/metrics [:requests :slack])))))
+
+(deftest test-get-metrics-summary
+  (testing "Get metrics summary for all connectors"
+    (conn/reset-metrics)
+    (conn/record-request :github)
+    (conn/record-request :github)
+    (conn/record-latency :github 100)
+    (conn/record-latency :github 200)
+    (conn/record-cache-hit :github)
+    (conn/record-cache-miss :github)
+    
+    (let [summary (conn/get-metrics-summary)]
+      (is (map? summary))
+      (is (contains? summary :github))
+      (is (= 2 (get-in summary [:github :requests])))
+      (is (= 150 (get-in summary [:github :avg-latency-ms])))
+      (is (= 0.5 (get-in summary [:github :cache-hit-rate]))))))
+
+;; ============================================
+;; Circuit Breaker Tests
+;; ============================================
+
+(deftest test-circuit-breaker-config
+  (testing "Circuit breaker configuration is defined"
+    (is (map? conn/circuit-breaker-config))
+    (is (= 5 (:failure-threshold conn/circuit-breaker-config)))
+    (is (= 3 (:success-threshold conn/circuit-breaker-config)))
+    (is (= 60000 (:timeout-ms conn/circuit-breaker-config)))
+    (is (= 3 (:half-open-max-calls conn/circuit-breaker-config)))))
+
+(deftest test-circuit-breakers-atom
+  (testing "Circuit breakers atom is initialized"
+    (is (instance? clojure.lang.Atom conn/circuit-breakers))
+    (is (map? @conn/circuit-breakers))))
+
+(deftest test-get-circuit-state
+  (testing "Get circuit state returns default for unknown connector"
+    (conn/reset-all-circuits)
+    (let [state (conn/get-circuit-state :unknown)]
+      (is (= :closed (:state state)))
+      (is (= 0 (:failure-count state)))
+      (is (= 0 (:success-count state))))))
+
+(deftest test-circuit-closed-by-default
+  (testing "Circuit is closed by default"
+    (conn/reset-all-circuits)
+    (is (false? (conn/circuit-open? :github)))
+    (is (false? (conn/circuit-half-open? :github)))))
+
+(deftest test-record-circuit-failure-opens-circuit
+  (testing "Recording failures opens circuit after threshold"
+    (conn/reset-all-circuits)
+    ;; Record failures up to threshold
+    (dotimes [_ 4]
+      (conn/record-circuit-failure :github))
+    (is (false? (conn/circuit-open? :github)))
+    
+    ;; One more failure should open the circuit
+    (conn/record-circuit-failure :github)
+    (is (true? (conn/circuit-open? :github)))))
+
+(deftest test-record-circuit-success-in-half-open
+  (testing "Recording successes in half-open closes circuit"
+    (conn/reset-all-circuits)
+    ;; Open the circuit
+    (dotimes [_ 5]
+      (conn/record-circuit-failure :github))
+    (is (true? (conn/circuit-open? :github)))
+    
+    ;; Manually set to half-open for testing
+    (swap! conn/circuit-breakers assoc :github
+           {:state :half-open :failure-count 0 :success-count 0 :half-open-calls 0})
+    
+    ;; Record successes
+    (conn/record-circuit-success :github)
+    (conn/record-circuit-success :github)
+    (is (= :half-open (:state (conn/get-circuit-state :github))))
+    
+    ;; Third success should close the circuit
+    (conn/record-circuit-success :github)
+    (is (= :closed (:state (conn/get-circuit-state :github))))))
+
+(deftest test-reset-circuit
+  (testing "Reset circuit clears state"
+    (conn/record-circuit-failure :github)
+    (conn/reset-circuit :github)
+    (is (nil? (get @conn/circuit-breakers :github)))))
+
+(deftest test-reset-all-circuits
+  (testing "Reset all circuits clears all states"
+    (conn/record-circuit-failure :github)
+    (conn/record-circuit-failure :slack)
+    (conn/reset-all-circuits)
+    (is (= {} @conn/circuit-breakers))))
+
+(deftest test-get-circuit-status
+  (testing "Get circuit status returns summary"
+    (conn/reset-all-circuits)
+    (conn/record-circuit-failure :github)
+    (conn/record-circuit-failure :github)
+    (let [status (conn/get-circuit-status)]
+      (is (map? status))
+      (is (contains? status :github))
+      (is (= :closed (get-in status [:github :state])))
+      (is (= 2 (get-in status [:github :failure-count]))))))
+
+(deftest test-with-circuit-breaker-success
+  (testing "with-circuit-breaker returns success on successful call"
+    (conn/reset-all-circuits)
+    (let [result (conn/with-circuit-breaker :github #(+ 1 2))]
+      (is (true? (:success result)))
+      (is (= 3 (:value result)))
+      (is (= :closed (:circuit-state result))))))
+
+(deftest test-with-circuit-breaker-failure
+  (testing "with-circuit-breaker returns failure on exception"
+    (conn/reset-all-circuits)
+    (let [result (conn/with-circuit-breaker :github #(throw (Exception. "test error")))]
+      (is (false? (:success result)))
+      (is (= "test error" (:error result)))
+      (is (= :closed (:circuit-state result))))))
+
+(deftest test-with-circuit-breaker-open-circuit
+  (testing "with-circuit-breaker fails fast when circuit is open"
+    (conn/reset-all-circuits)
+    ;; Open the circuit
+    (dotimes [_ 5]
+      (conn/record-circuit-failure :github))
+    
+    (let [result (conn/with-circuit-breaker :github #(+ 1 2))]
+      (is (false? (:success result)))
+      (is (= "Circuit breaker is open" (:error result)))
+      (is (= :open (:circuit-state result))))))
+
+;; ============================================
+;; Health Check Tests
+;; ============================================
+
+(deftest test-health-check-file-connector
+  (testing "Health check for file connector"
+    (let [test-dir "/tmp/mental-models-health-test"
+          _ (.mkdirs (java.io.File. test-dir))
+          connector (conn/create-file-connector test-dir)
+          result (conn/health-check-connector :file connector)]
+      (is (map? result))
+      (is (contains? result :healthy))
+      (is (contains? result :latency-ms))
+      (is (contains? result :connector-type))
+      (is (= :file (:connector-type result)))
+      (is (number? (:latency-ms result)))
+      ;; Cleanup
+      (.delete (java.io.File. test-dir)))))
+
+(deftest test-health-check-unknown-connector
+  (testing "Health check for unknown connector type"
+    (let [result (conn/health-check-connector :unknown {})]
+      (is (false? (:healthy result)))
+      (is (= :unknown (:connector-type result)))
+      (is (= "Unknown connector type" (get-in result [:details :error]))))))
+
+(deftest test-get-system-health
+  (testing "Get system health returns comprehensive status"
+    (conn/reset-metrics)
+    (conn/reset-all-circuits)
+    (conn/clear-cache)
+    
+    (let [health (conn/get-system-health)]
+      (is (map? health))
+      (is (contains? health :timestamp))
+      (is (contains? health :metrics-summary))
+      (is (contains? health :circuit-breakers))
+      (is (contains? health :rate-limiters))
+      (is (contains? health :cache-size))
+      (is (map? (:metrics-summary health)))
+      (is (map? (:circuit-breakers health)))
+      (is (map? (:rate-limiters health)))
+      (is (number? (:cache-size health))))))
+
+;; ============================================
+;; Bulk Operations Tests
+;; ============================================
+
+(deftest test-bulk-request-success
+  (testing "Bulk request executes multiple functions in parallel"
+    (conn/reset-all-circuits)
+    (let [requests [{:connector-type :test
+                     :connector {}
+                     :fn (fn [_] {:result 1})}
+                    {:connector-type :test
+                     :connector {}
+                     :fn (fn [_] {:result 2})}
+                    {:connector-type :test
+                     :connector {}
+                     :fn (fn [_] {:result 3})}]
+          results (conn/bulk-request requests)]
+      (is (vector? results))
+      (is (= 3 (count results)))
+      (is (every? #(contains? % :success) results)))))
+
+(deftest test-bulk-request-with-failures
+  (testing "Bulk request handles failures gracefully"
+    (conn/reset-all-circuits)
+    (let [requests [{:connector-type :test
+                     :connector {}
+                     :fn (fn [_] {:result 1})}
+                    {:connector-type :test
+                     :connector {}
+                     :fn (fn [_] (throw (Exception. "Test error")))}
+                    {:connector-type :test
+                     :connector {}
+                     :fn (fn [_] {:result 3})}]
+          results (conn/bulk-request requests)]
+      (is (vector? results))
+      (is (= 3 (count results)))
+      ;; First and third should succeed
+      (is (true? (:success (first results))))
+      ;; Second should fail
+      (is (false? (:success (second results)))))))
+
+;; ============================================
+;; Connector Lifecycle Management Tests
+;; ============================================
+
+(deftest test-active-connectors-atom
+  (testing "Active connectors atom is initialized"
+    (is (instance? clojure.lang.Atom conn/active-connectors))
+    (is (map? @conn/active-connectors))))
+
+(deftest test-register-connector
+  (testing "Register connector adds to active connectors"
+    (conn/shutdown-all-connectors)
+    (let [connector (conn/create-file-connector "/tmp")]
+      (conn/register-connector "test-file" :file connector)
+      (is (contains? @conn/active-connectors "test-file"))
+      (is (= :file (get-in @conn/active-connectors ["test-file" :type])))
+      (is (= :active (get-in @conn/active-connectors ["test-file" :status]))))))
+
+(deftest test-unregister-connector
+  (testing "Unregister connector removes from active connectors"
+    (conn/shutdown-all-connectors)
+    (let [connector (conn/create-file-connector "/tmp")]
+      (conn/register-connector "test-file" :file connector)
+      (is (contains? @conn/active-connectors "test-file"))
+      (conn/unregister-connector "test-file")
+      (is (not (contains? @conn/active-connectors "test-file"))))))
+
+(deftest test-get-connector
+  (testing "Get connector retrieves registered connector"
+    (conn/shutdown-all-connectors)
+    (let [connector (conn/create-file-connector "/tmp")]
+      (conn/register-connector "test-file" :file connector)
+      (let [retrieved (conn/get-connector "test-file")]
+        (is (= connector retrieved)))
+      (is (nil? (conn/get-connector "nonexistent"))))))
+
+(deftest test-list-active-connectors
+  (testing "List active connectors returns all registered"
+    (conn/shutdown-all-connectors)
+    (conn/register-connector "file1" :file (conn/create-file-connector "/tmp"))
+    (conn/register-connector "file2" :file (conn/create-file-connector "/var"))
+    (let [connectors (conn/list-active-connectors)]
+      (is (vector? connectors))
+      (is (= 2 (count connectors)))
+      (is (every? #(contains? % :name) connectors))
+      (is (every? #(contains? % :type) connectors))
+      (is (every? #(contains? % :status) connectors)))))
+
+(deftest test-health-check-all
+  (testing "Health check all runs checks on all registered connectors"
+    (conn/shutdown-all-connectors)
+    (let [test-dir "/tmp/health-check-all-test"
+          _ (.mkdirs (java.io.File. test-dir))]
+      (conn/register-connector "test-file" :file (conn/create-file-connector test-dir))
+      (let [results (conn/health-check-all)]
+        (is (map? results))
+        (is (contains? results "test-file"))
+        (is (contains? (get results "test-file") :healthy)))
+      ;; Cleanup
+      (.delete (java.io.File. test-dir)))))
+
+(deftest test-shutdown-all-connectors
+  (testing "Shutdown all connectors cleans up everything"
+    (conn/register-connector "test" :file (conn/create-file-connector "/tmp"))
+    (conn/record-request :github)
+    (conn/record-circuit-failure :github)
+    (conn/set-cached :github {:data "test"} "key")
+    
+    (let [result (conn/shutdown-all-connectors)]
+      (is (= :shutdown (:status result)))
+      (is (contains? result :timestamp))
+      (is (= {} @conn/active-connectors))
+      (is (= {} @conn/circuit-breakers))
+      (is (= {} (:requests @conn/metrics)))
+      (is (= {} @conn/response-cache)))))
+
+;; ============================================
+;; Request/Response Logging Tests
+;; ============================================
+
+(deftest test-request-log-atom
+  (testing "Request log atom is initialized"
+    (is (instance? clojure.lang.Atom conn/request-log))
+    (is (vector? @conn/request-log))))
+
+(deftest test-log-config
+  (testing "Log config is properly defined"
+    (is (map? conn/log-config))
+    (is (= 1000 (:max-entries conn/log-config)))
+    (is (true? (:log-request-body conn/log-config)))
+    (is (true? (:log-response-body conn/log-config)))
+    (is (set? (:redact-headers conn/log-config)))
+    (is (contains? (:redact-headers conn/log-config) "authorization"))))
+
+(deftest test-redact-sensitive
+  (testing "Redact sensitive headers"
+    (let [headers {"content-type" "application/json"
+                   "authorization" "Bearer secret-token"
+                   "x-api-key" "my-api-key"}
+          redacted (conn/redact-sensitive headers)]
+      (is (= "application/json" (get redacted "content-type")))
+      (is (= "[REDACTED]" (get redacted "authorization")))
+      (is (= "[REDACTED]" (get redacted "x-api-key"))))))
+
+(deftest test-log-request
+  (testing "Log request creates entry"
+    (conn/clear-request-log)
+    (let [request-id (conn/log-request :github :get "https://api.github.com/repos"
+                                       :headers {"accept" "application/json"}
+                                       :body nil)]
+      (is (uuid? request-id))
+      (is (= 1 (count @conn/request-log)))
+      (let [entry (first @conn/request-log)]
+        (is (= :request (:type entry)))
+        (is (= :github (:connector-type entry)))
+        (is (= :get (:method entry)))
+        (is (= "https://api.github.com/repos" (:url entry)))))))
+
+(deftest test-log-response
+  (testing "Log response creates entry"
+    (conn/clear-request-log)
+    (let [request-id (java.util.UUID/randomUUID)
+          response-id (conn/log-response request-id 200
+                                         :headers {"content-type" "application/json"}
+                                         :body "{\"data\": \"test\"}"
+                                         :latency-ms 150)]
+      (is (uuid? response-id))
+      (is (= 1 (count @conn/request-log)))
+      (let [entry (first @conn/request-log)]
+        (is (= :response (:type entry)))
+        (is (= request-id (:request-id entry)))
+        (is (= 200 (:status entry)))
+        (is (= 150 (:latency-ms entry)))))))
+
+(deftest test-get-request-log
+  (testing "Get request log with filtering"
+    (conn/clear-request-log)
+    (conn/log-request :github :get "https://api.github.com/repos")
+    (conn/log-request :slack :post "https://slack.com/api/chat.postMessage")
+    (conn/log-request :github :get "https://api.github.com/users")
+    
+    ;; Get all logs
+    (is (= 3 (count (conn/get-request-log))))
+    
+    ;; Filter by connector type
+    (is (= 2 (count (conn/get-request-log :connector-type :github))))
+    (is (= 1 (count (conn/get-request-log :connector-type :slack))))
+    
+    ;; Limit results
+    (is (= 2 (count (conn/get-request-log :limit 2))))))
+
+(deftest test-get-request-by-id
+  (testing "Get request by ID returns request and response"
+    (conn/clear-request-log)
+    (let [request-id (conn/log-request :github :get "https://api.github.com/repos")]
+      (conn/log-response request-id 200 :latency-ms 100)
+      (let [result (conn/get-request-by-id request-id)]
+        (is (map? result))
+        (is (contains? result :request))
+        (is (contains? result :response))
+        (is (= request-id (get-in result [:request :id])))
+        (is (= request-id (get-in result [:response :request-id])))))))
+
+(deftest test-clear-request-log
+  (testing "Clear request log removes all entries"
+    (conn/log-request :github :get "https://api.github.com/repos")
+    (conn/log-request :slack :post "https://slack.com/api/chat.postMessage")
+    (is (pos? (count @conn/request-log)))
+    (conn/clear-request-log)
+    (is (= 0 (count @conn/request-log)))))
+
+(deftest test-get-log-stats
+  (testing "Get log stats returns statistics"
+    (conn/clear-request-log)
+    (let [req1 (conn/log-request :github :get "https://api.github.com/repos")
+          req2 (conn/log-request :slack :post "https://slack.com/api/chat.postMessage")]
+      (conn/log-response req1 200 :latency-ms 100)
+      (conn/log-response req2 500 :latency-ms 200 :error "Server error")
+      
+      (let [stats (conn/get-log-stats)]
+        (is (map? stats))
+        (is (= 4 (:total-entries stats)))
+        (is (= 2 (:total-requests stats)))
+        (is (= 2 (:total-responses stats)))
+        (is (= 1 (:error-count stats)))
+        (is (= 1 (get-in stats [:by-connector :github])))
+        (is (= 1 (get-in stats [:by-connector :slack])))
+        (is (= 150 (:avg-latency-ms stats)))))))
+
+;; ============================================
+;; Timeout Configuration Tests
+;; ============================================
+
+(deftest test-timeout-config-atom
+  (testing "Timeout config atom is initialized with defaults"
+    (is (instance? clojure.lang.Atom conn/timeout-config))
+    (is (map? @conn/timeout-config))
+    (is (contains? @conn/timeout-config :github))
+    (is (contains? @conn/timeout-config :slack))
+    (is (contains? @conn/timeout-config :huggingface))
+    (is (contains? @conn/timeout-config :lm-studio))
+    (is (contains? @conn/timeout-config :web-scraper))
+    (is (contains? @conn/timeout-config :default))))
+
+(deftest test-timeout-config-values
+  (testing "Timeout config has correct default values"
+    ;; GitHub: 30s socket, 10s connection
+    (is (= 30000 (get-in @conn/timeout-config [:github :socket-timeout])))
+    (is (= 10000 (get-in @conn/timeout-config [:github :connection-timeout])))
+    
+    ;; Huggingface: 60s socket, 15s connection
+    (is (= 60000 (get-in @conn/timeout-config [:huggingface :socket-timeout])))
+    (is (= 15000 (get-in @conn/timeout-config [:huggingface :connection-timeout])))
+    
+    ;; LM Studio: 120s socket, 10s connection
+    (is (= 120000 (get-in @conn/timeout-config [:lm-studio :socket-timeout])))
+    (is (= 10000 (get-in @conn/timeout-config [:lm-studio :connection-timeout])))
+    
+    ;; Web scraper: 45s socket, 15s connection
+    (is (= 45000 (get-in @conn/timeout-config [:web-scraper :socket-timeout])))
+    (is (= 15000 (get-in @conn/timeout-config [:web-scraper :connection-timeout])))))
+
+(deftest test-get-timeout-config
+  (testing "Get timeout config returns correct values"
+    (let [github-config (conn/get-timeout-config :github)]
+      (is (map? github-config))
+      (is (= 30000 (:socket-timeout github-config)))
+      (is (= 10000 (:connection-timeout github-config))))
+    
+    ;; Unknown connector type should return default
+    (let [unknown-config (conn/get-timeout-config :unknown)]
+      (is (map? unknown-config))
+      (is (= 30000 (:socket-timeout unknown-config)))
+      (is (= 10000 (:connection-timeout unknown-config))))))
+
+(deftest test-set-timeout-config
+  (testing "Set timeout config updates values"
+    ;; Save original value
+    (let [original (get @conn/timeout-config :github)]
+      ;; Set new values
+      (conn/set-timeout-config :github 60000 20000)
+      (let [updated (conn/get-timeout-config :github)]
+        (is (= 60000 (:socket-timeout updated)))
+        (is (= 20000 (:connection-timeout updated))))
+      
+      ;; Restore original
+      (conn/set-timeout-config :github (:socket-timeout original) (:connection-timeout original)))))
+
+(deftest test-set-timeout-config-new-connector
+  (testing "Set timeout config for new connector type"
+    (conn/set-timeout-config :custom-connector 90000 30000)
+    (let [config (conn/get-timeout-config :custom-connector)]
+      (is (= 90000 (:socket-timeout config)))
+      (is (= 30000 (:connection-timeout config))))
+    ;; Clean up
+    (swap! conn/timeout-config dissoc :custom-connector)))
+
+(deftest test-get-http-opts-for-connector
+  (testing "Get HTTP opts includes connector-specific timeouts"
+    (let [opts (conn/get-http-opts-for-connector :github)]
+      (is (map? opts))
+      (is (= 30000 (:socket-timeout opts)))
+      (is (= 10000 (:connection-timeout opts)))
+      (is (false? (:throw-exceptions opts))))))
+
+;; ============================================
+;; Event Hooks Tests
+;; ============================================
+
+(deftest test-event-hooks-atom
+  (testing "Event hooks atom is initialized with all event types"
+    (is (instance? clojure.lang.Atom conn/event-hooks))
+    (is (map? @conn/event-hooks))
+    (is (contains? @conn/event-hooks :request-start))
+    (is (contains? @conn/event-hooks :request-complete))
+    (is (contains? @conn/event-hooks :request-error))
+    (is (contains? @conn/event-hooks :circuit-open))
+    (is (contains? @conn/event-hooks :circuit-close))
+    (is (contains? @conn/event-hooks :rate-limit-hit))
+    (is (contains? @conn/event-hooks :cache-hit))
+    (is (contains? @conn/event-hooks :cache-miss))))
+
+(deftest test-register-hook
+  (testing "Register hook adds hook and returns ID"
+    (conn/clear-hooks)
+    (let [received-events (atom [])
+          hook-fn (fn [event] (swap! received-events conj event))
+          hook-id (conn/register-hook :request-start hook-fn)]
+      (is (uuid? hook-id))
+      (is (= 1 (count (conn/list-hooks :request-start))))
+      ;; Clean up
+      (conn/clear-hooks))))
+
+(deftest test-unregister-hook
+  (testing "Unregister hook removes hook by ID"
+    (conn/clear-hooks)
+    (let [hook-fn (fn [_] nil)
+          hook-id (conn/register-hook :request-start hook-fn)]
+      (is (= 1 (count (conn/list-hooks :request-start))))
+      (conn/unregister-hook :request-start hook-id)
+      (is (= 0 (count (conn/list-hooks :request-start)))))))
+
+(deftest test-clear-hooks
+  (testing "Clear hooks removes all hooks"
+    (conn/register-hook :request-start (fn [_] nil))
+    (conn/register-hook :request-complete (fn [_] nil))
+    (conn/register-hook :request-error (fn [_] nil))
+    
+    ;; Clear specific event type
+    (conn/clear-hooks :request-start)
+    (is (= 0 (count (conn/list-hooks :request-start))))
+    (is (= 1 (count (conn/list-hooks :request-complete))))
+    
+    ;; Clear all hooks
+    (conn/clear-hooks)
+    (is (= 0 (count (conn/list-hooks :request-complete))))
+    (is (= 0 (count (conn/list-hooks :request-error))))))
+
+(deftest test-emit-event
+  (testing "Emit event calls all registered hooks"
+    (conn/clear-hooks)
+    (let [received-events (atom [])
+          hook-fn1 (fn [event] (swap! received-events conj {:hook 1 :event event}))
+          hook-fn2 (fn [event] (swap! received-events conj {:hook 2 :event event}))]
+      (conn/register-hook :request-start hook-fn1)
+      (conn/register-hook :request-start hook-fn2)
+      
+      (conn/emit-event :request-start {:connector-type :github :url "https://api.github.com"})
+      
+      ;; Both hooks should have been called
+      (is (= 2 (count @received-events)))
+      (is (some #(= 1 (:hook %)) @received-events))
+      (is (some #(= 2 (:hook %)) @received-events))
+      
+      ;; Event data should include timestamp and event-type
+      (let [event (:event (first @received-events))]
+        (is (= :request-start (:event-type event)))
+        (is (contains? event :timestamp))
+        (is (= :github (:connector-type event))))
+      
+      ;; Clean up
+      (conn/clear-hooks))))
+
+(deftest test-emit-event-handles-hook-errors
+  (testing "Emit event continues even if a hook throws"
+    (conn/clear-hooks)
+    (let [received-events (atom [])
+          failing-hook (fn [_] (throw (Exception. "Hook error")))
+          working-hook (fn [event] (swap! received-events conj event))]
+      (conn/register-hook :request-start failing-hook)
+      (conn/register-hook :request-start working-hook)
+      
+      ;; Should not throw, and working hook should still be called
+      (conn/emit-event :request-start {:test true})
+      (is (= 1 (count @received-events)))
+      
+      ;; Clean up
+      (conn/clear-hooks))))
+
+(deftest test-list-hooks
+  (testing "List hooks returns registered hooks"
+    (conn/clear-hooks)
+    (conn/register-hook :request-start (fn [_] nil))
+    (conn/register-hook :request-complete (fn [_] nil))
+    
+    ;; List all hooks
+    (let [all-hooks (conn/list-hooks)]
+      (is (map? all-hooks))
+      (is (= 1 (count (:request-start all-hooks))))
+      (is (= 1 (count (:request-complete all-hooks)))))
+    
+    ;; List hooks for specific event type
+    (let [start-hooks (conn/list-hooks :request-start)]
+      (is (vector? start-hooks))
+      (is (= 1 (count start-hooks))))
+    
+    ;; Clean up
+    (conn/clear-hooks)))
+
+;; ============================================
+;; Connector Factory Pattern Tests
+;; ============================================
+
+(deftest test-connector-registry-atom
+  (testing "Connector registry atom is initialized"
+    (is (instance? clojure.lang.Atom conn/connector-registry))
+    (is (map? @conn/connector-registry))))
+
+(deftest test-built-in-connector-types-registered
+  (testing "Built-in connector types are registered"
+    (is (contains? @conn/connector-registry :github))
+    (is (contains? @conn/connector-registry :slack))
+    (is (contains? @conn/connector-registry :huggingface))
+    (is (contains? @conn/connector-registry :lm-studio))
+    (is (contains? @conn/connector-registry :zapier))
+    (is (contains? @conn/connector-registry :web-scraper))
+    (is (contains? @conn/connector-registry :file))))
+
+(deftest test-register-connector-type
+  (testing "Register connector type adds to registry"
+    (conn/register-connector-type :test-connector
+      (fn [config] {:type :test :config config})
+      :description "Test connector"
+      :required-config [:test-key])
+    
+    (is (contains? @conn/connector-registry :test-connector))
+    (let [type-info (get @conn/connector-registry :test-connector)]
+      (is (fn? (:factory-fn type-info)))
+      (is (= "Test connector" (:description type-info)))
+      (is (= [:test-key] (:required-config type-info))))
+    
+    ;; Clean up
+    (conn/unregister-connector-type :test-connector)))
+
+(deftest test-unregister-connector-type
+  (testing "Unregister connector type removes from registry"
+    (conn/register-connector-type :temp-connector
+      (fn [_] {:type :temp})
+      :description "Temporary connector")
+    
+    (is (contains? @conn/connector-registry :temp-connector))
+    (conn/unregister-connector-type :temp-connector)
+    (is (not (contains? @conn/connector-registry :temp-connector)))))
+
+(deftest test-list-connector-types
+  (testing "List connector types returns all registered types"
+    (let [types (conn/list-connector-types)]
+      (is (vector? types))
+      (is (pos? (count types)))
+      (is (every? #(contains? % :type) types))
+      (is (every? #(contains? % :description) types))
+      (is (every? #(contains? % :required-config) types)))))
+
+(deftest test-create-connector-success
+  (testing "Create connector with valid config succeeds"
+    (let [connector (conn/create-connector :file {:base-path "/tmp"})]
+      (is (map? connector))
+      (is (= :file (:type connector)))
+      (is (not (contains? connector :error))))))
+
+(deftest test-create-connector-missing-config
+  (testing "Create connector with missing required config fails"
+    (let [result (conn/create-connector :github {})]
+      (is (map? result))
+      (is (= :error (:status result)))
+      (is (str/includes? (:error result) "Missing required config")))))
+
+(deftest test-create-connector-unknown-type
+  (testing "Create connector with unknown type fails"
+    (let [result (conn/create-connector :nonexistent {:key "value"})]
+      (is (map? result))
+      (is (= :error (:status result)))
+      (is (str/includes? (:error result) "Unknown connector type")))))
+
+(deftest test-create-and-register
+  (testing "Create and register connector in one step"
+    (conn/shutdown-all-connectors)
+    (let [result (conn/create-and-register "test-file" :file {:base-path "/tmp"})]
+      (is (map? result))
+      (is (= :success (:status result)))
+      (is (= "test-file" (:name result)))
+      (is (= :file (:connector-type result)))
+      (is (contains? @conn/active-connectors "test-file")))
+    ;; Clean up
+    (conn/shutdown-all-connectors)))
+
+(deftest test-create-and-register-with-error
+  (testing "Create and register with missing config returns error"
+    (let [result (conn/create-and-register "test-github" :github {})]
+      (is (map? result))
+      (is (= :error (:status result)))
+      (is (not (contains? @conn/active-connectors "test-github"))))))
+
+;; ============================================
+;; Middleware System Tests
+;; ============================================
+
+(deftest test-middleware-registry-atom
+  (testing "Middleware registry atom is initialized"
+    (is (instance? clojure.lang.Atom conn/middleware-registry))
+    (is (map? @conn/middleware-registry))
+    (is (contains? @conn/middleware-registry :request))
+    (is (contains? @conn/middleware-registry :response))))
+
+(deftest test-register-middleware
+  (testing "Register middleware adds to registry"
+    (conn/clear-middleware)
+    (let [middleware-fn (fn [req] (assoc req :test true))
+          middleware-id (conn/register-middleware :request middleware-fn :name "test-middleware")]
+      (is (uuid? middleware-id))
+      (is (= 1 (count (conn/list-middleware :request))))
+      (let [registered (first (conn/list-middleware :request))]
+        (is (= middleware-id (:id registered)))
+        (is (= "test-middleware" (:name registered)))))
+    ;; Clean up
+    (conn/clear-middleware)))
+
+(deftest test-register-middleware-priority
+  (testing "Middleware is sorted by priority"
+    (conn/clear-middleware)
+    (conn/register-middleware :request (fn [r] r) :name "high" :priority 100)
+    (conn/register-middleware :request (fn [r] r) :name "low" :priority 10)
+    (conn/register-middleware :request (fn [r] r) :name "medium" :priority 50)
+    
+    (let [middlewares (conn/list-middleware :request)]
+      (is (= 3 (count middlewares)))
+      (is (= "low" (:name (first middlewares))))
+      (is (= "medium" (:name (second middlewares))))
+      (is (= "high" (:name (nth middlewares 2)))))
+    ;; Clean up
+    (conn/clear-middleware)))
+
+(deftest test-unregister-middleware
+  (testing "Unregister middleware removes from registry"
+    (conn/clear-middleware)
+    (let [middleware-id (conn/register-middleware :request (fn [r] r))]
+      (is (= 1 (count (conn/list-middleware :request))))
+      (conn/unregister-middleware :request middleware-id)
+      (is (= 0 (count (conn/list-middleware :request)))))))
+
+(deftest test-clear-middleware
+  (testing "Clear middleware removes all middleware"
+    (conn/register-middleware :request (fn [r] r))
+    (conn/register-middleware :response (fn [r] r))
+    
+    ;; Clear specific type
+    (conn/clear-middleware :request)
+    (is (= 0 (count (conn/list-middleware :request))))
+    (is (= 1 (count (conn/list-middleware :response))))
+    
+    ;; Clear all
+    (conn/clear-middleware)
+    (is (= 0 (count (conn/list-middleware :response))))))
+
+(deftest test-apply-request-middleware
+  (testing "Apply request middleware transforms request"
+    (conn/clear-middleware)
+    (conn/register-middleware :request (fn [req] (assoc req :step1 true)))
+    (conn/register-middleware :request (fn [req] (assoc req :step2 true)))
+    
+    (let [result (conn/apply-request-middleware {:original true})]
+      (is (true? (:original result)))
+      (is (true? (:step1 result)))
+      (is (true? (:step2 result))))
+    ;; Clean up
+    (conn/clear-middleware)))
+
+(deftest test-apply-response-middleware
+  (testing "Apply response middleware transforms response"
+    (conn/clear-middleware)
+    (conn/register-middleware :response (fn [resp] (assoc resp :processed true)))
+    (conn/register-middleware :response (fn [resp] (update resp :count (fnil inc 0))))
+    
+    (let [result (conn/apply-response-middleware {:status 200})]
+      (is (= 200 (:status result)))
+      (is (true? (:processed result)))
+      (is (= 1 (:count result))))
+    ;; Clean up
+    (conn/clear-middleware)))
+
+(deftest test-middleware-error-handling
+  (testing "Middleware errors don't break the chain"
+    (conn/clear-middleware)
+    (conn/register-middleware :request (fn [_] (throw (Exception. "Middleware error"))) :priority 10)
+    (conn/register-middleware :request (fn [req] (assoc req :after-error true)) :priority 20)
+    
+    (let [result (conn/apply-request-middleware {:original true})]
+      ;; Original request should be preserved despite error
+      (is (true? (:original result)))
+      ;; Second middleware should still run
+      (is (true? (:after-error result))))
+    ;; Clean up
+    (conn/clear-middleware)))
+
+(deftest test-create-timing-middleware
+  (testing "Timing middleware adds timestamp"
+    (let [middleware-fn (conn/create-timing-middleware)
+          result (middleware-fn {:status 200})]
+      (is (contains? result :middleware-processed-at))
+      (is (instance? java.time.Instant (:middleware-processed-at result))))))
+
+(deftest test-create-error-transform-middleware
+  (testing "Error transform middleware standardizes errors"
+    (let [middleware-fn (conn/create-error-transform-middleware)]
+      ;; Test with error response
+      (let [result (middleware-fn {:status 500 :error "Server error"})]
+        (is (contains? result :standardized-error))
+        (is (= "Server error" (get-in result [:standardized-error :message])))
+        (is (true? (get-in result [:standardized-error :recoverable]))))
+      
+      ;; Test with success response (should not add standardized-error)
+      (let [result (middleware-fn {:status 200 :body "OK"})]
+        (is (not (contains? result :standardized-error)))))))
+
+;; ============================================
+;; Async Connector Support Tests
+;; ============================================
+
+(deftest test-async-tasks-atom
+  (testing "Async tasks atom is initialized"
+    (is (instance? clojure.lang.Atom conn/async-tasks))
+    (is (map? @conn/async-tasks))))
+
+(deftest test-submit-async-task
+  (testing "Submit async task returns task-id immediately"
+    (let [task-id (conn/submit-async-task (fn [] (Thread/sleep 100) "result")
+                                          :name "test-task")]
+      (is (uuid? task-id))
+      (is (contains? @conn/async-tasks task-id))
+      (let [task (get @conn/async-tasks task-id)]
+        (is (= "test-task" (:name task)))
+        (is (= :pending (:status task)))
+        (is (instance? java.time.Instant (:submitted-at task))))
+      ;; Wait for task to complete and clean up
+      (Thread/sleep 200)
+      (swap! conn/async-tasks dissoc task-id))))
+
+(deftest test-get-async-result-pending
+  (testing "Get async result returns pending status for running task"
+    (let [task-id (conn/submit-async-task (fn [] (Thread/sleep 500) "result"))]
+      (let [result (conn/get-async-result task-id)]
+        (is (= :pending (:status result)))
+        (is (contains? result :submitted-at)))
+      ;; Clean up
+      (conn/cancel-async-task task-id)
+      (swap! conn/async-tasks dissoc task-id))))
+
+(deftest test-get-async-result-complete
+  (testing "Get async result returns result for completed task"
+    (let [task-id (conn/submit-async-task (fn [] "test-result"))]
+      ;; Wait for completion
+      (Thread/sleep 100)
+      (let [result (conn/get-async-result task-id)]
+        (is (= :success (:status result)))
+        (is (= "test-result" (:result result)))
+        (is (instance? java.time.Instant (:completed-at result))))
+      ;; Clean up
+      (swap! conn/async-tasks dissoc task-id))))
+
+(deftest test-get-async-result-not-found
+  (testing "Get async result returns not-found for unknown task"
+    (let [result (conn/get-async-result (java.util.UUID/randomUUID))]
+      (is (= :not-found (:status result)))
+      (is (contains? result :error)))))
+
+(deftest test-await-async-result
+  (testing "Await async result blocks until complete"
+    (let [task-id (conn/submit-async-task (fn [] (Thread/sleep 50) "awaited-result"))]
+      (let [result (conn/await-async-result task-id :timeout-ms 5000)]
+        (is (= :success (:status result)))
+        (is (= "awaited-result" (:result result))))
+      ;; Clean up
+      (swap! conn/async-tasks dissoc task-id))))
+
+(deftest test-await-async-result-timeout
+  (testing "Await async result returns timeout on timeout"
+    (let [task-id (conn/submit-async-task (fn [] (Thread/sleep 5000) "never"))]
+      (let [result (conn/await-async-result task-id :timeout-ms 100)]
+        (is (= :timeout (:status result))))
+      ;; Clean up
+      (conn/cancel-async-task task-id)
+      (swap! conn/async-tasks dissoc task-id))))
+
+(deftest test-cancel-async-task
+  (testing "Cancel async task cancels pending task"
+    (let [task-id (conn/submit-async-task (fn [] (Thread/sleep 5000) "never"))]
+      (let [result (conn/cancel-async-task task-id)]
+        (is (= :cancelled (:status result))))
+      (is (= :cancelled (get-in @conn/async-tasks [task-id :status])))
+      ;; Clean up
+      (swap! conn/async-tasks dissoc task-id))))
+
+(deftest test-cancel-async-task-already-complete
+  (testing "Cancel async task returns already-complete for finished task"
+    (let [task-id (conn/submit-async-task (fn [] "quick"))]
+      (Thread/sleep 100)
+      (let [result (conn/cancel-async-task task-id)]
+        (is (= :already-complete (:status result))))
+      ;; Clean up
+      (swap! conn/async-tasks dissoc task-id))))
+
+(deftest test-list-async-tasks
+  (testing "List async tasks returns all tasks"
+    ;; Clear existing tasks
+    (reset! conn/async-tasks {})
+    (let [task1 (conn/submit-async-task (fn [] "task1") :name "task1")
+          task2 (conn/submit-async-task (fn [] "task2") :name "task2")]
+      (let [tasks (conn/list-async-tasks)]
+        (is (= 2 (count tasks))))
+      ;; Clean up
+      (reset! conn/async-tasks {}))))
+
+(deftest test-list-async-tasks-by-status
+  (testing "List async tasks filters by status"
+    (reset! conn/async-tasks {})
+    (let [pending-task (conn/submit-async-task (fn [] (Thread/sleep 5000) "slow"))
+          quick-task (conn/submit-async-task (fn [] "quick"))]
+      (Thread/sleep 100)
+      ;; Check pending tasks
+      (let [pending (conn/list-async-tasks :pending)]
+        (is (>= (count pending) 1)))
+      ;; Clean up
+      (conn/cancel-async-task pending-task)
+      (reset! conn/async-tasks {}))))
+
+(deftest test-cleanup-async-tasks
+  (testing "Cleanup removes old completed tasks"
+    (reset! conn/async-tasks {})
+    (let [task-id (conn/submit-async-task (fn [] "old-task"))]
+      (Thread/sleep 100)
+      ;; Manually set submitted-at to old time
+      (swap! conn/async-tasks assoc-in [task-id :submitted-at]
+             (java.time.Instant/ofEpochMilli 0))
+      (swap! conn/async-tasks assoc-in [task-id :status] :success)
+      
+      (conn/cleanup-async-tasks :max-age-ms 1000)
+      (is (not (contains? @conn/async-tasks task-id))))))
+
+(deftest test-async-task-error-handling
+  (testing "Async task captures errors"
+    (let [task-id (conn/submit-async-task (fn [] (throw (Exception. "Test error"))))]
+      (Thread/sleep 100)
+      (let [result (conn/get-async-result task-id)]
+        (is (= :error (:status result)))
+        (is (= "Test error" (:error result))))
+      ;; Clean up
+      (swap! conn/async-tasks dissoc task-id))))
+
+;; ============================================
+;; Configuration Validation Tests
+;; ============================================
+
+(deftest test-config-schemas-atom
+  (testing "Config schemas atom is initialized with built-in schemas"
+    (is (instance? clojure.lang.Atom conn/config-schemas))
+    (is (map? @conn/config-schemas))
+    (is (contains? @conn/config-schemas :github))
+    (is (contains? @conn/config-schemas :slack))
+    (is (contains? @conn/config-schemas :huggingface))
+    (is (contains? @conn/config-schemas :lm-studio))
+    (is (contains? @conn/config-schemas :zapier))
+    (is (contains? @conn/config-schemas :web-scraper))
+    (is (contains? @conn/config-schemas :file))))
+
+(deftest test-validate-field-required
+  (testing "Validate field catches missing required fields"
+    (let [result (conn/validate-field "token" nil {:type :string :required true})]
+      (is (false? (:valid result)))
+      (is (str/includes? (:error result) "required")))))
+
+(deftest test-validate-field-type-string
+  (testing "Validate field catches wrong type for string"
+    (let [result (conn/validate-field "token" 123 {:type :string :required true})]
+      (is (false? (:valid result)))
+      (is (str/includes? (:error result) "string")))))
+
+(deftest test-validate-field-type-integer
+  (testing "Validate field catches wrong type for integer"
+    (let [result (conn/validate-field "timeout" "not-a-number" {:type :integer :required true})]
+      (is (false? (:valid result)))
+      (is (str/includes? (:error result) "integer")))))
+
+(deftest test-validate-field-min-length
+  (testing "Validate field catches string too short"
+    (let [result (conn/validate-field "token" "" {:type :string :required true :min-length 1})]
+      (is (false? (:valid result)))
+      (is (str/includes? (:error result) "at least")))))
+
+(deftest test-validate-field-min-max-integer
+  (testing "Validate field catches integer out of range"
+    (let [result-min (conn/validate-field "timeout" 500 {:type :integer :min 1000})
+          result-max (conn/validate-field "timeout" 700000 {:type :integer :max 600000})]
+      (is (false? (:valid result-min)))
+      (is (false? (:valid result-max))))))
+
+(deftest test-validate-field-pattern
+  (testing "Validate field catches pattern mismatch"
+    (let [result (conn/validate-field "webhook-url" "https://example.com/hook"
+                                      {:type :string :pattern #"^https://hooks\.zapier\.com/.*"})]
+      (is (false? (:valid result)))
+      (is (str/includes? (:error result) "pattern")))))
+
+(deftest test-validate-field-valid
+  (testing "Validate field passes valid values"
+    (let [result (conn/validate-field "token" "valid-token" {:type :string :required true :min-length 1})]
+      (is (true? (:valid result))))))
+
+(deftest test-validate-config-valid
+  (testing "Validate config passes valid configuration"
+    (let [result (conn/validate-config :github {:token "ghp_valid_token"})]
+      (is (true? (:valid result)))
+      (is (= :github (:connector-type result))))))
+
+(deftest test-validate-config-invalid
+  (testing "Validate config catches invalid configuration"
+    (let [result (conn/validate-config :github {})]
+      (is (false? (:valid result)))
+      (is (seq (:errors result))))))
+
+(deftest test-validate-config-unknown-type
+  (testing "Validate config handles unknown connector type"
+    (let [result (conn/validate-config :unknown-connector {:foo "bar"})]
+      (is (true? (:valid result)))
+      (is (contains? result :warning)))))
+
+(deftest test-apply-defaults
+  (testing "Apply defaults adds missing default values"
+    (let [config (conn/apply-defaults :lm-studio {})]
+      (is (= "http://localhost:1234" (:base-url config)))
+      (is (= 120000 (:timeout-ms config))))))
+
+(deftest test-apply-defaults-preserves-existing
+  (testing "Apply defaults preserves existing values"
+    (let [config (conn/apply-defaults :lm-studio {:base-url "http://custom:5000"})]
+      (is (= "http://custom:5000" (:base-url config))))))
+
+(deftest test-get-config-schema
+  (testing "Get config schema returns schema for known type"
+    (let [schema (conn/get-config-schema :github)]
+      (is (map? schema))
+      (is (contains? schema :token)))))
+
+(deftest test-get-config-schema-unknown
+  (testing "Get config schema returns nil for unknown type"
+    (let [schema (conn/get-config-schema :unknown-type)]
+      (is (nil? schema)))))
+
+(deftest test-register-config-schema
+  (testing "Register config schema adds new schema"
+    (conn/register-config-schema :custom-connector
+                                 {:api-key {:type :string :required true}})
+    (let [schema (conn/get-config-schema :custom-connector)]
+      (is (map? schema))
+      (is (contains? schema :api-key)))
+    ;; Clean up
+    (swap! conn/config-schemas dissoc :custom-connector)))
+
+(deftest test-list-config-schemas
+  (testing "List config schemas returns all schemas"
+    (let [schemas (conn/list-config-schemas)]
+      (is (vector? schemas))
+      (is (>= (count schemas) 7))
+      (is (every? #(contains? % :type) schemas))
+      (is (every? #(contains? % :fields) schemas)))))
+
+(deftest test-redact-sensitive-config
+  (testing "Redact sensitive config redacts sensitive fields"
+    (let [config {:token "secret-token" :base-url "https://api.github.com"}
+          redacted (conn/redact-sensitive-config :github config)]
+      (is (= "[REDACTED]" (:token redacted)))
+      (is (= "https://api.github.com" (:base-url redacted))))))
+
+(deftest test-redact-sensitive-config-unknown-type
+  (testing "Redact sensitive config returns original for unknown type"
+    (let [config {:secret "value"}
+          redacted (conn/redact-sensitive-config :unknown-type config)]
+      (is (= config redacted)))))
+
+;; ============================================
+;; Dependency Injection Tests
+;; ============================================
+
+(deftest test-di-container-atom
+  (testing "DI container atom is initialized"
+    (is (instance? clojure.lang.Atom conn/di-container))
+    (is (map? @conn/di-container))
+    (is (contains? @conn/di-container :http-client))
+    (is (contains? @conn/di-container :cache))
+    (is (contains? @conn/di-container :metrics))
+    (is (contains? @conn/di-container :logger))
+    (is (contains? @conn/di-container :environment))))
+
+(deftest test-register-dependency
+  (testing "Register dependency adds to container"
+    (let [original (get @conn/di-container :test-dep)]
+      (conn/register-dependency :test-dep {:type :test})
+      (is (= {:type :test} (conn/get-dependency :test-dep)))
+      ;; Clean up
+      (swap! conn/di-container dissoc :test-dep))))
+
+(deftest test-get-dependency
+  (testing "Get dependency returns registered value"
+    (conn/register-dependency :test-dep "test-value")
+    (is (= "test-value" (conn/get-dependency :test-dep)))
+    ;; Clean up
+    (swap! conn/di-container dissoc :test-dep)))
+
+(deftest test-get-dependency-nil
+  (testing "Get dependency returns nil for unregistered key"
+    (is (nil? (conn/get-dependency :nonexistent-dep)))))
+
+(deftest test-set-environment
+  (testing "Set environment updates container"
+    (let [original (conn/get-environment)]
+      (conn/set-environment :test)
+      (is (= :test (conn/get-environment)))
+      ;; Restore
+      (conn/set-environment original))))
+
+(deftest test-get-environment
+  (testing "Get environment returns current environment"
+    (is (keyword? (conn/get-environment)))))
+
+(deftest test-with-test-dependencies
+  (testing "With test dependencies temporarily injects and restores"
+    (let [original-env (conn/get-environment)]
+      (conn/with-test-dependencies
+        {:custom-dep "test-value"}
+        (fn []
+          (is (= :test (conn/get-environment)))
+          (is (= "test-value" (conn/get-dependency :custom-dep)))))
+      ;; Verify restoration
+      (is (= original-env (conn/get-environment)))
+      (is (nil? (conn/get-dependency :custom-dep))))))
+
+(deftest test-create-mock-http-client
+  (testing "Create mock HTTP client returns mock structure"
+    (let [mock (conn/create-mock-http-client {"http://test.com" {:status 200 :body "OK"}})]
+      (is (= :mock (:type mock)))
+      (is (map? (:responses mock)))
+      (is (instance? clojure.lang.Atom (:request-log mock)))
+      (is (fn? (:make-request mock))))))
+
+(deftest test-create-mock-cache
+  (testing "Create mock cache returns mock structure"
+    (let [mock (conn/create-mock-cache)]
+      (is (= :mock (:type mock)))
+      (is (instance? clojure.lang.Atom (:store mock)))
+      (is (fn? (:get mock)))
+      (is (fn? (:put mock)))
+      (is (fn? (:invalidate mock)))
+      (is (fn? (:clear mock))))))
+
+(deftest test-mock-cache-operations
+  (testing "Mock cache operations work correctly"
+    (let [mock (conn/create-mock-cache)]
+      ;; Put and get
+      ((:put mock) "key1" "value1" 60000)
+      (is (= {:value "value1" :ttl 60000} ((:get mock) "key1")))
+      
+      ;; Invalidate
+      ((:invalidate mock) "key1")
+      (is (nil? ((:get mock) "key1")))
+      
+      ;; Clear
+      ((:put mock) "key2" "value2" 60000)
+      ((:clear mock))
+      (is (nil? ((:get mock) "key2"))))))
+
+(deftest test-create-mock-logger
+  (testing "Create mock logger returns mock structure"
+    (let [mock (conn/create-mock-logger)]
+      (is (= :mock (:type mock)))
+      (is (instance? clojure.lang.Atom (:logs mock)))
+      (is (fn? (:log mock)))
+      (is (fn? (:get-logs mock)))
+      (is (fn? (:clear mock))))))
+
+(deftest test-mock-logger-operations
+  (testing "Mock logger operations work correctly"
+    (let [mock (conn/create-mock-logger)]
+      ;; Log
+      ((:log mock) :info "Test message" {:extra "data"})
+      (let [logs ((:get-logs mock))]
+        (is (= 1 (count logs)))
+        (is (= :info (:level (first logs))))
+        (is (= "Test message" (:message (first logs)))))
+      
+      ;; Clear
+      ((:clear mock))
+      (is (empty? ((:get-logs mock)))))))
+
+(deftest test-inject-connector
+  (testing "Inject connector adds DI fields"
+    (let [connector (conn/inject-connector :file {:base-path "/tmp"})]
+      (is (true? (:di-enabled connector))))))
+
+(deftest test-inject-connector-with-custom-deps
+  (testing "Inject connector with custom dependencies"
+    (let [mock-cache (conn/create-mock-cache)
+          mock-logger (conn/create-mock-logger)
+          connector (conn/inject-connector :file {:base-path "/tmp"}
+                                           :cache mock-cache
+                                           :logger mock-logger)]
+      (is (= mock-cache (:injected-cache connector)))
+      (is (= mock-logger (:injected-logger connector))))))
+
+(deftest test-get-injected-http-client
+  (testing "Get injected HTTP client returns injected or default"
+    (let [mock-client {:type :mock}
+          connector {:injected-http-client mock-client}]
+      (is (= mock-client (conn/get-injected-http-client connector))))
+    
+    ;; Without injection, returns from container
+    (let [connector {}]
+      (is (nil? (conn/get-injected-http-client connector))))))
+
+(deftest test-get-injected-cache
+  (testing "Get injected cache returns injected or default"
+    (let [mock-cache {:type :mock}
+          connector {:injected-cache mock-cache}]
+      (is (= mock-cache (conn/get-injected-cache connector))))))
+
+(deftest test-get-injected-logger
+  (testing "Get injected logger returns injected or default"
+    (let [mock-logger {:type :mock}
+          connector {:injected-logger mock-logger}]
+      (is (= mock-logger (conn/get-injected-logger connector))))))
+
+;; ============================================
+;; Connector Pool Manager Tests
+;; ============================================
+
+(deftest test-connector-pool-atom
+  (testing "Connector pool atom is initialized"
+    (is (instance? clojure.lang.Atom conn/connector-pool))
+    (is (map? @conn/connector-pool))
+    (is (contains? @conn/connector-pool :pools))
+    (is (contains? @conn/connector-pool :config))))
+
+(deftest test-pool-config-defaults
+  (testing "Pool config has correct defaults"
+    (let [config (conn/get-pool-config)]
+      (is (= 10 (:max-pool-size config)))
+      (is (= 1 (:min-pool-size config)))
+      (is (= 300000 (:max-idle-time-ms config)))
+      (is (= 60000 (:validation-interval-ms config))))))
+
+(deftest test-set-pool-config
+  (testing "Set pool config updates values"
+    (let [original (conn/get-pool-config)]
+      (conn/set-pool-config {:max-pool-size 20})
+      (is (= 20 (:max-pool-size (conn/get-pool-config))))
+      ;; Restore
+      (conn/set-pool-config original))))
+
+(deftest test-acquire-from-pool
+  (testing "Acquire from pool creates new connector"
+    (conn/drain-pool)
+    (let [result (conn/acquire-from-pool :file {:base-path "/tmp"})]
+      (is (map? result))
+      (is (contains? result :connector))
+      (is (contains? result :pool-entry))
+      (is (false? (:from-pool result)))
+      ;; Release and clean up
+      (conn/release-to-pool (:pool-entry result))
+      (conn/drain-pool))))
+
+(deftest test-acquire-from-pool-reuses
+  (testing "Acquire from pool reuses existing connector"
+    (conn/drain-pool)
+    ;; First acquisition
+    (let [result1 (conn/acquire-from-pool :file {:base-path "/tmp"})]
+      (conn/release-to-pool (:pool-entry result1))
+      ;; Second acquisition should reuse
+      (let [result2 (conn/acquire-from-pool :file {:base-path "/tmp"})]
+        (is (true? (:from-pool result2)))
+        (conn/release-to-pool (:pool-entry result2))))
+    (conn/drain-pool)))
+
+(deftest test-release-to-pool
+  (testing "Release to pool marks connector as available"
+    (conn/drain-pool)
+    (let [result (conn/acquire-from-pool :file {:base-path "/tmp"})
+          entry (:pool-entry result)]
+      (is (true? @(:in-use entry)))
+      (conn/release-to-pool entry)
+      (is (false? @(:in-use entry))))
+    (conn/drain-pool)))
+
+(deftest test-with-pooled-connector
+  (testing "With pooled connector auto-releases"
+    (conn/drain-pool)
+    (let [connector-used (atom nil)]
+      (conn/with-pooled-connector :file {:base-path "/tmp"}
+        (fn [conn]
+          (reset! connector-used conn)
+          "result"))
+      ;; Connector should be released
+      (let [stats (conn/get-pool-stats)]
+        (is (= 1 (:total-connectors stats)))))
+    (conn/drain-pool)))
+
+(deftest test-get-pool-stats
+  (testing "Get pool stats returns correct information"
+    (conn/drain-pool)
+    (let [result (conn/acquire-from-pool :file {:base-path "/tmp"})
+          stats (conn/get-pool-stats)]
+      (is (= 1 (:total-pools stats)))
+      (is (= 1 (:total-connectors stats)))
+      (conn/release-to-pool (:pool-entry result)))
+    (conn/drain-pool)))
+
+(deftest test-drain-pool
+  (testing "Drain pool removes all connectors"
+    (let [result (conn/acquire-from-pool :file {:base-path "/tmp"})]
+      (conn/release-to-pool (:pool-entry result))
+      (conn/drain-pool)
+      (let [stats (conn/get-pool-stats)]
+        (is (= 0 (:total-pools stats)))
+        (is (= 0 (:total-connectors stats)))))))
+
+(deftest test-cleanup-idle-connectors
+  (testing "Cleanup removes idle connectors"
+    (conn/drain-pool)
+    ;; Set very short idle time for testing
+    (let [original-config (conn/get-pool-config)]
+      (conn/set-pool-config {:max-idle-time-ms 1 :min-pool-size 0})
+      (let [result (conn/acquire-from-pool :file {:base-path "/tmp"})]
+        (conn/release-to-pool (:pool-entry result))
+        (Thread/sleep 10)
+        (conn/cleanup-idle-connectors)
+        (let [stats (conn/get-pool-stats)]
+          (is (= 0 (:total-connectors stats)))))
+      ;; Restore config
+      (conn/set-pool-config original-config))
+    (conn/drain-pool)))
+
+;; ============================================
+;; Graceful Shutdown Tests
+;; ============================================
+
+(deftest test-shutdown-state-atom
+  (testing "Shutdown state atom is initialized"
+    (is (instance? clojure.lang.Atom conn/shutdown-state))
+    (is (map? @conn/shutdown-state))
+    (is (contains? @conn/shutdown-state :shutting-down))
+    (is (contains? @conn/shutdown-state :pending-operations))
+    (is (contains? @conn/shutdown-state :shutdown-hooks))))
+
+(deftest test-is-shutting-down
+  (testing "Is shutting down returns correct state"
+    ;; Reset state first
+    (swap! conn/shutdown-state assoc :shutting-down false)
+    (is (false? (conn/is-shutting-down?)))
+    (swap! conn/shutdown-state assoc :shutting-down true)
+    (is (true? (conn/is-shutting-down?)))
+    ;; Reset for other tests
+    (swap! conn/shutdown-state assoc :shutting-down false)))
+
+(deftest test-register-shutdown-hook
+  (testing "Register shutdown hook adds hook"
+    (let [hook-id (conn/register-shutdown-hook #(println "test") :name "test-hook" :priority 10)]
+      (is (uuid? hook-id))
+      (is (some #(= hook-id (:id %)) (:shutdown-hooks @conn/shutdown-state)))
+      ;; Cleanup
+      (conn/unregister-shutdown-hook hook-id))))
+
+(deftest test-unregister-shutdown-hook
+  (testing "Unregister shutdown hook removes hook"
+    (let [hook-id (conn/register-shutdown-hook #(println "test") :name "test-hook")]
+      (conn/unregister-shutdown-hook hook-id)
+      (is (not (some #(= hook-id (:id %)) (:shutdown-hooks @conn/shutdown-state)))))))
+
+(deftest test-track-operation
+  (testing "Track operation increments counter"
+    (swap! conn/shutdown-state assoc :shutting-down false)
+    (let [initial @(:pending-operations @conn/shutdown-state)
+          complete-fn (conn/track-operation)]
+      (is (= (inc initial) @(:pending-operations @conn/shutdown-state)))
+      (complete-fn)
+      (is (= initial @(:pending-operations @conn/shutdown-state))))))
+
+(deftest test-with-tracked-operation
+  (testing "With tracked operation executes function"
+    (swap! conn/shutdown-state assoc :shutting-down false)
+    (let [result (conn/with-tracked-operation #(+ 1 2))]
+      (is (= 3 result)))))
+
+(deftest test-with-tracked-operation-during-shutdown
+  (testing "With tracked operation rejects during shutdown"
+    (swap! conn/shutdown-state assoc :shutting-down true)
+    (let [result (conn/with-tracked-operation #(+ 1 2))]
+      (is (contains? result :error)))
+    ;; Reset for other tests
+    (swap! conn/shutdown-state assoc :shutting-down false)))
+
+(deftest test-get-shutdown-status
+  (testing "Get shutdown status returns correct info"
+    (let [status (conn/get-shutdown-status)]
+      (is (map? status))
+      (is (contains? status :shutting-down))
+      (is (contains? status :pending-operations))
+      (is (contains? status :registered-hooks))
+      (is (contains? status :timeout-ms)))))
+
+;; ============================================
+;; Request Deduplication Tests
+;; ============================================
+
+(deftest test-request-dedup-cache-atom
+  (testing "Request dedup cache atom is initialized"
+    (is (instance? clojure.lang.Atom conn/request-dedup-cache))
+    (is (map? @conn/request-dedup-cache))))
+
+(deftest test-dedup-config-atom
+  (testing "Dedup config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/dedup-config))
+    (let [config @conn/dedup-config]
+      (is (contains? config :enabled))
+      (is (contains? config :ttl-ms))
+      (is (contains? config :max-entries)))))
+
+(deftest test-get-dedup-config
+  (testing "Get dedup config returns config"
+    (let [config (conn/get-dedup-config)]
+      (is (map? config))
+      (is (boolean? (:enabled config)))
+      (is (number? (:ttl-ms config)))
+      (is (number? (:max-entries config))))))
+
+(deftest test-set-dedup-config
+  (testing "Set dedup config updates values"
+    (let [original (conn/get-dedup-config)]
+      (conn/set-dedup-config {:ttl-ms 10000})
+      (is (= 10000 (:ttl-ms (conn/get-dedup-config))))
+      ;; Restore
+      (conn/set-dedup-config original))))
+
+(deftest test-request-key
+  (testing "Request key generates unique key"
+    (let [key1 (conn/request-key :github :list-repos {:user "test"})
+          key2 (conn/request-key :github :list-repos {:user "test"})
+          key3 (conn/request-key :github :list-repos {:user "other"})]
+      (is (string? key1))
+      (is (= key1 key2))
+      (is (not= key1 key3)))))
+
+(deftest test-clear-dedup-cache
+  (testing "Clear dedup cache empties cache"
+    (swap! conn/request-dedup-cache assoc "test-key" {:result "test"})
+    (conn/clear-dedup-cache)
+    (is (empty? @conn/request-dedup-cache))))
+
+(deftest test-get-dedup-stats
+  (testing "Get dedup stats returns statistics"
+    (conn/clear-dedup-cache)
+    (let [stats (conn/get-dedup-stats)]
+      (is (map? stats))
+      (is (contains? stats :total-entries))
+      (is (contains? stats :in-flight))
+      (is (contains? stats :cached))
+      (is (contains? stats :expired))
+      (is (= 0 (:total-entries stats))))))
+
+(deftest test-with-deduplication
+  (testing "With deduplication executes function"
+    (conn/clear-dedup-cache)
+    (let [call-count (atom 0)
+          result (conn/with-deduplication :test :op {:param 1}
+                   #(do (swap! call-count inc) "result"))]
+      (is (= "result" result))
+      (is (= 1 @call-count)))))
+
+(deftest test-with-deduplication-caches-result
+  (testing "With deduplication caches result"
+    (conn/clear-dedup-cache)
+    (let [call-count (atom 0)
+          request-fn #(do (swap! call-count inc) "cached-result")]
+      ;; First call
+      (conn/with-deduplication :test :op {:param 1} request-fn)
+      ;; Second call should use cache
+      (let [result (conn/with-deduplication :test :op {:param 1} request-fn)]
+        (is (= "cached-result" result))
+        (is (= 1 @call-count)))))
+  (conn/clear-dedup-cache))
+
+(deftest test-with-deduplication-disabled
+  (testing "With deduplication disabled makes every call"
+    (conn/clear-dedup-cache)
+    (let [original (conn/get-dedup-config)
+          call-count (atom 0)
+          request-fn #(do (swap! call-count inc) "result")]
+      (conn/set-dedup-config {:enabled false})
+      (conn/with-deduplication :test :op {:param 1} request-fn)
+      (conn/with-deduplication :test :op {:param 1} request-fn)
+      (is (= 2 @call-count))
+      ;; Restore
+      (conn/set-dedup-config original)))
+  (conn/clear-dedup-cache))
+
+;; ============================================
+;; Request Batching Tests
+;; ============================================
+
+(deftest test-batch-queue-atom
+  (testing "Batch queue atom is initialized"
+    (is (instance? clojure.lang.Atom conn/batch-queue))
+    (is (map? @conn/batch-queue))))
+
+(deftest test-batch-config-atom
+  (testing "Batch config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/batch-config))
+    (let [config @conn/batch-config]
+      (is (contains? config :enabled))
+      (is (contains? config :max-batch-size))
+      (is (contains? config :max-wait-ms)))))
+
+(deftest test-get-batch-config
+  (testing "Get batch config returns config"
+    (let [config (conn/get-batch-config)]
+      (is (map? config))
+      (is (boolean? (:enabled config)))
+      (is (number? (:max-batch-size config)))
+      (is (number? (:max-wait-ms config))))))
+
+(deftest test-set-batch-config
+  (testing "Set batch config updates values"
+    (let [original (conn/get-batch-config)]
+      (conn/set-batch-config {:max-batch-size 20})
+      (is (= 20 (:max-batch-size (conn/get-batch-config))))
+      ;; Restore
+      (conn/set-batch-config original))))
+
+(deftest test-clear-batch-queue
+  (testing "Clear batch queue empties queue"
+    (conn/clear-batch-queue)
+    (is (empty? @conn/batch-queue))))
+
+(deftest test-get-batch-stats
+  (testing "Get batch stats returns statistics"
+    (conn/clear-batch-queue)
+    (let [stats (conn/get-batch-stats)]
+      (is (map? stats))
+      (is (contains? stats :total-batches))
+      (is (contains? stats :total-pending))
+      (is (contains? stats :batches))
+      (is (= 0 (:total-batches stats)))
+      (is (= 0 (:total-pending stats))))))
+
+(deftest test-with-batching
+  (testing "With batching executes function"
+    (conn/clear-batch-queue)
+    (let [call-count (atom 0)
+          result (conn/with-batching :test :op {:param 1}
+                   #(do (swap! call-count inc) "result"))]
+      (is (= "result" result))
+      (is (= 1 @call-count))))
+  (conn/clear-batch-queue))
+
+(deftest test-with-batching-disabled
+  (testing "With batching disabled executes immediately"
+    (conn/clear-batch-queue)
+    (let [original (conn/get-batch-config)
+          call-count (atom 0)
+          request-fn #(do (swap! call-count inc) "result")]
+      (conn/set-batch-config {:enabled false})
+      (conn/with-batching :test :op {:param 1} request-fn)
+      (is (= 1 @call-count))
+      ;; Restore
+      (conn/set-batch-config original)))
+  (conn/clear-batch-queue))
+
+(deftest test-flush-all-batches
+  (testing "Flush all batches processes pending"
+    (conn/clear-batch-queue)
+    (conn/flush-all-batches)
+    (is (empty? @conn/batch-queue))))
+
+;; ============================================
+;; Adaptive Retry Strategy Tests
+;; ============================================
+
+(deftest test-retry-history-atom
+  (testing "Retry history atom is initialized"
+    (is (instance? clojure.lang.Atom conn/retry-history))
+    (is (map? @conn/retry-history))))
+
+(deftest test-adaptive-retry-config-atom
+  (testing "Adaptive retry config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/adaptive-retry-config))
+    (let [config @conn/adaptive-retry-config]
+      (is (contains? config :enabled))
+      (is (contains? config :history-window-ms))
+      (is (contains? config :min-delay-ms))
+      (is (contains? config :max-delay-ms))
+      (is (contains? config :success-threshold))
+      (is (contains? config :failure-threshold)))))
+
+(deftest test-get-adaptive-retry-config
+  (testing "Get adaptive retry config returns config"
+    (let [config (conn/get-adaptive-retry-config)]
+      (is (map? config))
+      (is (boolean? (:enabled config)))
+      (is (number? (:history-window-ms config)))
+      (is (number? (:min-delay-ms config)))
+      (is (number? (:max-delay-ms config))))))
+
+(deftest test-set-adaptive-retry-config
+  (testing "Set adaptive retry config updates values"
+    (let [original (conn/get-adaptive-retry-config)]
+      (conn/set-adaptive-retry-config {:min-delay-ms 200})
+      (is (= 200 (:min-delay-ms (conn/get-adaptive-retry-config))))
+      ;; Restore
+      (conn/set-adaptive-retry-config original))))
+
+(deftest test-record-retry-result
+  (testing "Record retry result adds entry"
+    (reset! conn/retry-history {})
+    (conn/record-retry-result :test-connector true 0)
+    (is (= 1 (count (get @conn/retry-history :test-connector))))
+    (reset! conn/retry-history {})))
+
+(deftest test-calculate-success-rate
+  (testing "Calculate success rate returns correct rate"
+    (reset! conn/retry-history {})
+    ;; No history = 1.0
+    (is (= 1.0 (conn/calculate-success-rate :test-connector)))
+    ;; Add some history
+    (conn/record-retry-result :test-connector true 0)
+    (conn/record-retry-result :test-connector true 0)
+    (conn/record-retry-result :test-connector false 100)
+    (is (= 2/3 (conn/calculate-success-rate :test-connector)))
+    (reset! conn/retry-history {})))
+
+(deftest test-calculate-adaptive-delay
+  (testing "Calculate adaptive delay adjusts based on success rate"
+    (reset! conn/retry-history {})
+    (let [base-delay 1000]
+      ;; No history (100% success) - shorter delay
+      (is (< (conn/calculate-adaptive-delay :test-connector base-delay) base-delay))
+      ;; Add failures to lower success rate
+      (dotimes [_ 10]
+        (conn/record-retry-result :test-connector false 100))
+      ;; Low success rate - longer delay
+      (is (> (conn/calculate-adaptive-delay :test-connector base-delay) base-delay)))
+    (reset! conn/retry-history {})))
+
+(deftest test-with-adaptive-retry-success
+  (testing "With adaptive retry returns on success"
+    (reset! conn/retry-history {})
+    (let [call-count (atom 0)
+          result (conn/with-adaptive-retry :test-connector
+                   #(do (swap! call-count inc) "success"))]
+      (is (= "success" result))
+      (is (= 1 @call-count)))
+    (reset! conn/retry-history {})))
+
+(deftest test-with-adaptive-retry-disabled
+  (testing "With adaptive retry disabled executes once"
+    (reset! conn/retry-history {})
+    (let [original (conn/get-adaptive-retry-config)
+          call-count (atom 0)]
+      (conn/set-adaptive-retry-config {:enabled false})
+      (conn/with-adaptive-retry :test-connector
+        #(do (swap! call-count inc) "result"))
+      (is (= 1 @call-count))
+      ;; Restore
+      (conn/set-adaptive-retry-config original))
+    (reset! conn/retry-history {})))
+
+(deftest test-get-retry-stats
+  (testing "Get retry stats returns statistics"
+    (reset! conn/retry-history {})
+    (conn/record-retry-result :test-connector true 0)
+    (let [stats (conn/get-retry-stats)]
+      (is (map? stats))
+      (is (contains? stats :connector-stats))
+      (is (contains? (:connector-stats stats) :test-connector)))
+    (reset! conn/retry-history {})))
+
+;; ============================================
+;; Request Prioritization Tests
+;; ============================================
+
+(deftest test-priority-queue-atom
+  (testing "Priority queue atom is initialized"
+    (is (instance? clojure.lang.Atom conn/priority-queue))
+    (is (map? @conn/priority-queue))
+    (is (contains? @conn/priority-queue :high))
+    (is (contains? @conn/priority-queue :normal))
+    (is (contains? @conn/priority-queue :low))
+    (is (contains? @conn/priority-queue :background))))
+
+(deftest test-priority-config-atom
+  (testing "Priority config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/priority-config))
+    (is (map? @conn/priority-config))
+    (is (contains? @conn/priority-config :enabled))
+    (is (contains? @conn/priority-config :high-weight))
+    (is (contains? @conn/priority-config :normal-weight))))
+
+(deftest test-get-priority-config
+  (testing "Get priority config returns config"
+    (let [config (conn/get-priority-config)]
+      (is (map? config))
+      (is (contains? config :enabled))
+      (is (contains? config :high-weight)))))
+
+(deftest test-set-priority-config
+  (testing "Set priority config updates values"
+    (let [original (conn/get-priority-config)]
+      (conn/set-priority-config {:high-weight 10})
+      (is (= 10 (:high-weight (conn/get-priority-config))))
+      ;; Restore
+      (conn/set-priority-config original))))
+
+(deftest test-enqueue-request
+  (testing "Enqueue request adds to queue"
+    (conn/clear-priority-queue)
+    (let [id (conn/enqueue-request :high #("result") :id "test-1")]
+      (is (= "test-1" id))
+      (is (= 1 (:high-count (conn/get-queue-stats)))))
+    (conn/clear-priority-queue)))
+
+(deftest test-dequeue-request
+  (testing "Dequeue request returns entry"
+    (conn/clear-priority-queue)
+    (conn/enqueue-request :high #("result") :id "test-1")
+    (let [entry (conn/dequeue-request)]
+      (is (map? entry))
+      (is (= "test-1" (:id entry))))
+    (conn/clear-priority-queue)))
+
+(deftest test-get-queue-stats
+  (testing "Get queue stats returns statistics"
+    (conn/clear-priority-queue)
+    (let [stats (conn/get-queue-stats)]
+      (is (map? stats))
+      (is (contains? stats :high-count))
+      (is (contains? stats :normal-count))
+      (is (contains? stats :total-count))
+      (is (= 0 (:total-count stats))))
+    (conn/clear-priority-queue)))
+
+(deftest test-clear-priority-queue
+  (testing "Clear priority queue empties all levels"
+    (conn/enqueue-request :high #("result"))
+    (conn/enqueue-request :normal #("result"))
+    (conn/clear-priority-queue)
+    (is (= 0 (:total-count (conn/get-queue-stats))))))
+
+(deftest test-process-priority-queue
+  (testing "Process priority queue executes requests"
+    (conn/clear-priority-queue)
+    (conn/enqueue-request :high #("result") :id "test-1")
+    (let [results (conn/process-priority-queue :max-concurrent 1)]
+      (is (vector? results))
+      (when (seq results)
+        (is (:success (first results)))))
+    (conn/clear-priority-queue)))
+
+;; ============================================
+;; Timeout Escalation Tests
+;; ============================================
+
+(deftest test-timeout-escalation-config-atom
+  (testing "Timeout escalation config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/timeout-escalation-config))
+    (is (map? @conn/timeout-escalation-config))
+    (is (contains? @conn/timeout-escalation-config :enabled))
+    (is (contains? @conn/timeout-escalation-config :initial-timeout-ms))
+    (is (contains? @conn/timeout-escalation-config :max-timeout-ms))))
+
+(deftest test-timeout-history-atom
+  (testing "Timeout history atom is initialized"
+    (is (instance? clojure.lang.Atom conn/timeout-history))
+    (is (map? @conn/timeout-history))))
+
+(deftest test-get-timeout-escalation-config
+  (testing "Get timeout escalation config returns config"
+    (let [config (conn/get-timeout-escalation-config)]
+      (is (map? config))
+      (is (contains? config :enabled))
+      (is (contains? config :initial-timeout-ms)))))
+
+(deftest test-set-timeout-escalation-config
+  (testing "Set timeout escalation config updates values"
+    (let [original (conn/get-timeout-escalation-config)]
+      (conn/set-timeout-escalation-config {:initial-timeout-ms 10000})
+      (is (= 10000 (:initial-timeout-ms (conn/get-timeout-escalation-config))))
+      ;; Restore
+      (conn/set-timeout-escalation-config original))))
+
+(deftest test-calculate-escalated-timeout
+  (testing "Calculate escalated timeout returns value"
+    (reset! conn/timeout-history {})
+    (let [timeout (conn/calculate-escalated-timeout :test-connector)]
+      (is (number? timeout))
+      (is (pos? timeout)))
+    (reset! conn/timeout-history {})))
+
+(deftest test-record-timeout
+  (testing "Record timeout increments escalation count"
+    (reset! conn/timeout-history {})
+    (conn/record-timeout :test-connector)
+    (is (= 1 (get-in @conn/timeout-history [:test-connector :escalation-count])))
+    (reset! conn/timeout-history {})))
+
+(deftest test-record-success-timeout
+  (testing "Record success decrements escalation count"
+    (reset! conn/timeout-history {:test-connector {:escalation-count 2 :timeouts []}})
+    (conn/record-success-timeout :test-connector)
+    (is (= 1 (get-in @conn/timeout-history [:test-connector :escalation-count])))
+    (reset! conn/timeout-history {})))
+
+(deftest test-get-timeout-stats
+  (testing "Get timeout stats returns statistics"
+    (reset! conn/timeout-history {})
+    (conn/record-timeout :test-connector)
+    (let [stats (conn/get-timeout-stats)]
+      (is (map? stats))
+      (is (contains? stats :config))
+      (is (contains? stats :history)))
+    (reset! conn/timeout-history {})))
+
+;; ============================================
+;; Connector Health Scoring Tests
+;; ============================================
+
+(deftest test-health-scores-atom
+  (testing "Health scores atom is initialized"
+    (is (instance? clojure.lang.Atom conn/health-scores))
+    (is (map? @conn/health-scores))))
+
+(deftest test-health-score-config-atom
+  (testing "Health score config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/health-score-config))
+    (is (map? @conn/health-score-config))
+    (is (contains? @conn/health-score-config :enabled))
+    (is (contains? @conn/health-score-config :success-weight))
+    (is (contains? @conn/health-score-config :failure-weight))))
+
+(deftest test-get-health-score-config
+  (testing "Get health score config returns config"
+    (let [config (conn/get-health-score-config)]
+      (is (map? config))
+      (is (contains? config :enabled))
+      (is (contains? config :initial-score)))))
+
+(deftest test-set-health-score-config
+  (testing "Set health score config updates values"
+    (let [original (conn/get-health-score-config)]
+      (conn/set-health-score-config {:initial-score 75.0})
+      (is (= 75.0 (:initial-score (conn/get-health-score-config))))
+      ;; Restore
+      (conn/set-health-score-config original))))
+
+(deftest test-get-connector-health-score
+  (testing "Get connector health score returns initial score for unknown"
+    (reset! conn/health-scores {})
+    (let [score (conn/get-connector-health-score :unknown-connector)]
+      (is (number? score))
+      (is (= (:initial-score @conn/health-score-config) score)))
+    (reset! conn/health-scores {})))
+
+(deftest test-update-health-score
+  (testing "Update health score changes score"
+    (reset! conn/health-scores {})
+    (let [initial (conn/get-connector-health-score :test-connector)
+          _ (conn/update-health-score :test-connector :success)
+          after-success (conn/get-connector-health-score :test-connector)]
+      (is (not= initial after-success)))
+    (reset! conn/health-scores {})))
+
+(deftest test-get-healthiest-connector
+  (testing "Get healthiest connector returns best option"
+    (reset! conn/health-scores {:conn-a 80.0 :conn-b 60.0 :conn-c 90.0})
+    (let [healthiest (conn/get-healthiest-connector [:conn-a :conn-b :conn-c])]
+      (is (= :conn-c healthiest)))
+    (reset! conn/health-scores {})))
+
+(deftest test-get-all-health-scores
+  (testing "Get all health scores returns summary"
+    (reset! conn/health-scores {:test-connector 75.0})
+    (let [all-scores (conn/get-all-health-scores)]
+      (is (map? all-scores))
+      (is (contains? all-scores :config))
+      (is (contains? all-scores :scores))
+      (is (contains? all-scores :summary)))
+    (reset! conn/health-scores {})))
+
+;; ============================================
+;; Request Tracing Tests
+;; ============================================
+
+(deftest test-trace-store-atom
+  (testing "Trace store atom is initialized"
+    (is (instance? clojure.lang.Atom conn/trace-store))
+    (is (map? @conn/trace-store))))
+
+(deftest test-trace-config-atom
+  (testing "Trace config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/trace-config))
+    (is (map? @conn/trace-config))
+    (is (contains? @conn/trace-config :enabled))
+    (is (contains? @conn/trace-config :max-traces))
+    (is (contains? @conn/trace-config :retention-ms))))
+
+(deftest test-get-trace-config
+  (testing "Get trace config returns config"
+    (let [config (conn/get-trace-config)]
+      (is (map? config))
+      (is (contains? config :enabled))
+      (is (contains? config :max-traces)))))
+
+(deftest test-set-trace-config
+  (testing "Set trace config updates values"
+    (let [original (conn/get-trace-config)]
+      (conn/set-trace-config {:max-traces 5000})
+      (is (= 5000 (:max-traces (conn/get-trace-config))))
+      ;; Restore
+      (conn/set-trace-config original))))
+
+(deftest test-generate-trace-id
+  (testing "Generate trace ID returns unique string"
+    (let [id1 (conn/generate-trace-id)
+          id2 (conn/generate-trace-id)]
+      (is (string? id1))
+      (is (string? id2))
+      (is (not= id1 id2))
+      (is (.startsWith id1 "trace-")))))
+
+(deftest test-generate-span-id
+  (testing "Generate span ID returns unique string"
+    (let [id1 (conn/generate-span-id)
+          id2 (conn/generate-span-id)]
+      (is (string? id1))
+      (is (string? id2))
+      (is (not= id1 id2))
+      (is (.startsWith id1 "span-")))))
+
+(deftest test-start-trace
+  (testing "Start trace creates trace entry"
+    (reset! conn/trace-store {})
+    (let [trace-id (conn/start-trace :operation "test-op")]
+      (is (string? trace-id))
+      (is (contains? @conn/trace-store trace-id))
+      (is (= "test-op" (:operation (get @conn/trace-store trace-id)))))
+    (reset! conn/trace-store {})))
+
+(deftest test-start-span
+  (testing "Start span adds span to trace"
+    (reset! conn/trace-store {})
+    (let [trace-id (conn/start-trace :operation "test-op")
+          span-id (conn/start-span trace-id "test-span")]
+      (is (string? span-id))
+      (is (= 1 (count (:spans (get @conn/trace-store trace-id))))))
+    (reset! conn/trace-store {})))
+
+(deftest test-end-span
+  (testing "End span updates span status"
+    (reset! conn/trace-store {})
+    (let [trace-id (conn/start-trace :operation "test-op")
+          span-id (conn/start-span trace-id "test-span")]
+      (conn/end-span trace-id span-id :status :completed)
+      (let [span (first (:spans (get @conn/trace-store trace-id)))]
+        (is (= :completed (:status span)))
+        (is (contains? span :ended-at))))
+    (reset! conn/trace-store {})))
+
+(deftest test-end-trace
+  (testing "End trace updates trace status"
+    (reset! conn/trace-store {})
+    (let [trace-id (conn/start-trace :operation "test-op")]
+      (conn/end-trace trace-id :status :completed)
+      (let [trace (get @conn/trace-store trace-id)]
+        (is (= :completed (:status trace)))
+        (is (contains? trace :ended-at))))
+    (reset! conn/trace-store {})))
+
+(deftest test-get-trace
+  (testing "Get trace returns trace by ID"
+    (reset! conn/trace-store {})
+    (let [trace-id (conn/start-trace :operation "test-op")
+          trace (conn/get-trace trace-id)]
+      (is (map? trace))
+      (is (= trace-id (:trace-id trace))))
+    (reset! conn/trace-store {})))
+
+(deftest test-with-tracing
+  (testing "With tracing executes function and creates trace"
+    (reset! conn/trace-store {})
+    (let [result (conn/with-tracing "test-op" #("result"))]
+      (is (= "result" result))
+      (is (= 1 (count @conn/trace-store))))
+    (reset! conn/trace-store {})))
+
+(deftest test-with-tracing-disabled
+  (testing "With tracing disabled executes without trace"
+    (reset! conn/trace-store {})
+    (let [original (conn/get-trace-config)]
+      (conn/set-trace-config {:enabled false})
+      (conn/with-tracing "test-op" #("result"))
+      (is (= 0 (count @conn/trace-store)))
+      ;; Restore
+      (conn/set-trace-config original))
+    (reset! conn/trace-store {})))
+
+(deftest test-get-trace-stats
+  (testing "Get trace stats returns statistics"
+    (reset! conn/trace-store {})
+    (let [trace-id (conn/start-trace :operation "test-op")]
+      (conn/end-trace trace-id :status :completed)
+      (let [stats (conn/get-trace-stats)]
+        (is (map? stats))
+        (is (contains? stats :total-traces))
+        (is (contains? stats :completed-traces))
+        (is (= 1 (:completed-traces stats)))))
+    (reset! conn/trace-store {})))
+
+(deftest test-cleanup-old-traces
+  (testing "Cleanup old traces removes expired entries"
+    (reset! conn/trace-store {"old-trace" {:started-at 0 :status :completed}})
+    (conn/cleanup-old-traces)
+    (is (= 0 (count @conn/trace-store)))
+    (reset! conn/trace-store {})))
+
+;; ============================================
+;; Request Compression Tests
+;; ============================================
+
+(deftest test-compression-config-atom
+  (testing "Compression config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/compression-config))
+    (is (map? @conn/compression-config))
+    (is (contains? @conn/compression-config :enabled))
+    (is (contains? @conn/compression-config :min-size-bytes))
+    (is (contains? @conn/compression-config :algorithms))))
+
+(deftest test-get-compression-config
+  (testing "Get compression config returns config"
+    (let [config (conn/get-compression-config)]
+      (is (map? config))
+      (is (contains? config :enabled))
+      (is (contains? config :min-size-bytes)))))
+
+(deftest test-set-compression-config
+  (testing "Set compression config updates values"
+    (let [original (conn/get-compression-config)]
+      (conn/set-compression-config {:min-size-bytes 2048})
+      (is (= 2048 (:min-size-bytes (conn/get-compression-config))))
+      ;; Restore
+      (conn/set-compression-config original))))
+
+(deftest test-compress-data
+  (testing "Compress data returns compression result"
+    (let [large-data (apply str (repeat 2000 "a"))
+          result (conn/compress-data large-data :gzip)]
+      (is (map? result))
+      (is (contains? result :compressed))
+      (when (:compressed result)
+        (is (contains? result :algorithm))
+        (is (contains? result :original-size))
+        (is (contains? result :compressed-size))))))
+
+(deftest test-compress-data-small
+  (testing "Compress data skips small data"
+    (let [small-data "hello"
+          result (conn/compress-data small-data :gzip)]
+      (is (map? result))
+      (is (false? (:compressed result))))))
+
+(deftest test-decompress-data
+  (testing "Decompress data restores original"
+    (let [large-data (apply str (repeat 2000 "a"))
+          compressed (conn/compress-data large-data :gzip)]
+      (when (:compressed compressed)
+        (let [decompressed (conn/decompress-data (:data compressed) :gzip)]
+          (is (= large-data decompressed)))))))
+
+(deftest test-compression-stats-atom
+  (testing "Compression stats atom is initialized"
+    (is (instance? clojure.lang.Atom conn/compression-stats))
+    (is (map? @conn/compression-stats))
+    (is (contains? @conn/compression-stats :requests-compressed))
+    (is (contains? @conn/compression-stats :bytes-saved))))
+
+(deftest test-get-compression-stats
+  (testing "Get compression stats returns statistics"
+    (let [stats (conn/get-compression-stats)]
+      (is (map? stats))
+      (is (contains? stats :requests-compressed)))))
+
+(deftest test-reset-compression-stats
+  (testing "Reset compression stats clears values"
+    (conn/reset-compression-stats)
+    (let [stats (conn/get-compression-stats)]
+      (is (= 0 (:requests-compressed stats)))
+      (is (= 0 (:bytes-saved stats))))))
+
+;; ============================================
+;; Response Streaming Tests
+;; ============================================
+
+(deftest test-streaming-config-atom
+  (testing "Streaming config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/streaming-config))
+    (is (map? @conn/streaming-config))
+    (is (contains? @conn/streaming-config :enabled))
+    (is (contains? @conn/streaming-config :buffer-size))
+    (is (contains? @conn/streaming-config :timeout-ms))))
+
+(deftest test-get-streaming-config
+  (testing "Get streaming config returns config"
+    (let [config (conn/get-streaming-config)]
+      (is (map? config))
+      (is (contains? config :enabled))
+      (is (contains? config :buffer-size)))))
+
+(deftest test-set-streaming-config
+  (testing "Set streaming config updates values"
+    (let [original (conn/get-streaming-config)]
+      (conn/set-streaming-config {:buffer-size 16384})
+      (is (= 16384 (:buffer-size (conn/get-streaming-config))))
+      ;; Restore
+      (conn/set-streaming-config original))))
+
+(deftest test-active-streams-atom
+  (testing "Active streams atom is initialized"
+    (is (instance? clojure.lang.Atom conn/active-streams))
+    (is (map? @conn/active-streams))))
+
+(deftest test-register-stream
+  (testing "Register stream adds to registry"
+    (reset! conn/active-streams {})
+    (conn/register-stream "test-stream" {:type :test})
+    (is (contains? @conn/active-streams "test-stream"))
+    (is (= :active (:status (get @conn/active-streams "test-stream"))))
+    (reset! conn/active-streams {})))
+
+(deftest test-unregister-stream
+  (testing "Unregister stream removes from registry"
+    (reset! conn/active-streams {"test-stream" {:status :active}})
+    (conn/unregister-stream "test-stream")
+    (is (not (contains? @conn/active-streams "test-stream")))
+    (reset! conn/active-streams {})))
+
+(deftest test-get-active-streams
+  (testing "Get active streams returns registry"
+    (reset! conn/active-streams {"stream-1" {:status :active}})
+    (let [streams (conn/get-active-streams)]
+      (is (map? streams))
+      (is (contains? streams "stream-1")))
+    (reset! conn/active-streams {})))
+
+(deftest test-close-stream
+  (testing "Close stream updates status"
+    (reset! conn/active-streams {"test-stream" {:status :active :started-at 0}})
+    (let [result (conn/close-stream "test-stream")]
+      (is (= :closed (:status result))))
+    (reset! conn/active-streams {})))
+
+(deftest test-get-stream-stats
+  (testing "Get stream stats returns statistics"
+    (reset! conn/active-streams {"stream-1" {:status :active}})
+    (let [stats (conn/get-stream-stats)]
+      (is (map? stats))
+      (is (contains? stats :active-count))
+      (is (contains? stats :total-streams)))
+    (reset! conn/active-streams {})))
+
+;; ============================================
+;; Connector Versioning Tests
+;; ============================================
+
+(deftest test-connector-versions-atom
+  (testing "Connector versions atom is initialized"
+    (is (instance? clojure.lang.Atom conn/connector-versions))
+    (is (map? @conn/connector-versions))))
+
+(deftest test-versioning-config-atom
+  (testing "Versioning config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/versioning-config))
+    (is (map? @conn/versioning-config))
+    (is (contains? @conn/versioning-config :enabled))
+    (is (contains? @conn/versioning-config :default-version))))
+
+(deftest test-get-versioning-config
+  (testing "Get versioning config returns config"
+    (let [config (conn/get-versioning-config)]
+      (is (map? config))
+      (is (contains? config :enabled))
+      (is (contains? config :default-version)))))
+
+(deftest test-set-versioning-config
+  (testing "Set versioning config updates values"
+    (let [original (conn/get-versioning-config)]
+      (conn/set-versioning-config {:default-version "2.0.0"})
+      (is (= "2.0.0" (:default-version (conn/get-versioning-config))))
+      ;; Restore
+      (conn/set-versioning-config original))))
+
+(deftest test-register-connector-version
+  (testing "Register connector version adds to registry"
+    (reset! conn/connector-versions {})
+    (conn/register-connector-version :test-connector "1.0.0")
+    (is (contains? (get @conn/connector-versions :test-connector) "1.0.0"))
+    (reset! conn/connector-versions {})))
+
+(deftest test-get-connector-version
+  (testing "Get connector version returns version info"
+    (reset! conn/connector-versions {})
+    (conn/register-connector-version :test-connector "1.0.0" :changelog "Initial release")
+    (let [version (conn/get-connector-version :test-connector "1.0.0")]
+      (is (map? version))
+      (is (= "1.0.0" (:version version))))
+    (reset! conn/connector-versions {})))
+
+(deftest test-get-latest-version
+  (testing "Get latest version returns non-deprecated version"
+    (reset! conn/connector-versions {})
+    (conn/register-connector-version :test-connector "1.0.0" :deprecated true)
+    (conn/register-connector-version :test-connector "2.0.0")
+    (let [latest (conn/get-latest-version :test-connector)]
+      (is (= "2.0.0" latest)))
+    (reset! conn/connector-versions {})))
+
+(deftest test-is-version-deprecated
+  (testing "Is version deprecated returns correct status"
+    (reset! conn/connector-versions {})
+    (conn/register-connector-version :test-connector "1.0.0" :deprecated true)
+    (is (true? (conn/is-version-deprecated? :test-connector "1.0.0")))
+    (reset! conn/connector-versions {})))
+
+(deftest test-get-deprecation-warning
+  (testing "Get deprecation warning returns warning for deprecated"
+    (reset! conn/connector-versions {})
+    (conn/register-connector-version :test-connector "1.0.0" :deprecated true :replacement-version "2.0.0")
+    (let [warning (conn/get-deprecation-warning :test-connector "1.0.0")]
+      (is (map? warning))
+      (is (contains? warning :warning))
+      (is (= "2.0.0" (:replacement-version warning))))
+    (reset! conn/connector-versions {})))
+
+(deftest test-list-connector-versions
+  (testing "List connector versions returns all versions"
+    (reset! conn/connector-versions {})
+    (conn/register-connector-version :test-connector "1.0.0")
+    (conn/register-connector-version :test-connector "2.0.0")
+    (let [versions (conn/list-connector-versions :test-connector)]
+      (is (vector? versions))
+      (is (= 2 (count versions))))
+    (reset! conn/connector-versions {})))
+
+(deftest test-get-version-stats
+  (testing "Get version stats returns statistics"
+    (reset! conn/connector-versions {})
+    (conn/register-connector-version :test-connector "1.0.0")
+    (let [stats (conn/get-version-stats)]
+      (is (map? stats))
+      (is (contains? stats :connectors))
+      (is (contains? stats :total-versions)))
+    (reset! conn/connector-versions {})))
+
+;; ============================================
+;; Request Signing Tests
+;; ============================================
+
+(deftest test-signing-config-atom
+  (testing "Signing config atom is initialized"
+    (is (instance? clojure.lang.Atom conn/signing-config))
+    (is (map? @conn/signing-config))
+    (is (contains? @conn/signing-config :enabled))
+    (is (contains? @conn/signing-config :algorithm))
+    (is (contains? @conn/signing-config :timestamp-tolerance-ms))))
+
+(deftest test-get-signing-config
+  (testing "Get signing config returns config"
+    (let [config (conn/get-signing-config)]
+      (is (map? config))
+      (is (contains? config :enabled))
+      (is (contains? config :algorithm)))))
+
+(deftest test-set-signing-config
+  (testing "Set signing config updates values"
+    (let [original (conn/get-signing-config)]
+      (conn/set-signing-config {:algorithm :hmac-sha512})
+      (is (= :hmac-sha512 (:algorithm (conn/get-signing-config))))
+      ;; Restore
+      (conn/set-signing-config original))))
+
+(deftest test-signing-keys-atom
+  (testing "Signing keys atom is initialized"
+    (is (instance? clojure.lang.Atom conn/signing-keys))
+    (is (map? @conn/signing-keys))))
+
+(deftest test-register-signing-key
+  (testing "Register signing key adds to registry"
+    (reset! conn/signing-keys {})
+    (conn/register-signing-key :test-connector "key-1" "secret123")
+    (is (contains? (get @conn/signing-keys :test-connector) "key-1"))
+    (reset! conn/signing-keys {})))
+
+(deftest test-get-signing-key
+  (testing "Get signing key returns secret"
+    (reset! conn/signing-keys {})
+    (conn/register-signing-key :test-connector "key-1" "secret123")
+    (let [secret (conn/get-signing-key :test-connector "key-1")]
+      (is (= "secret123" secret)))
+    (reset! conn/signing-keys {})))
+
+(deftest test-compute-signature
+  (testing "Compute signature returns base64 string"
+    (let [signature (conn/compute-signature "secret" "string-to-sign" :hmac-sha256)]
+      (is (string? signature))
+      (is (pos? (count signature))))))
+
+(deftest test-create-string-to-sign
+  (testing "Create string to sign returns canonical string"
+    (let [string-to-sign (conn/create-string-to-sign "GET" "/api/test" {:host "example.com"} 1234567890)]
+      (is (string? string-to-sign))
+      (is (.contains string-to-sign "GET"))
+      (is (.contains string-to-sign "/api/test")))))
+
+(deftest test-sign-request
+  (testing "Sign request returns signature info"
+    (reset! conn/signing-keys {})
+    (conn/register-signing-key :test-connector "key-1" "secret123")
+    (let [result (conn/sign-request :test-connector "key-1" "GET" "/api/test" {} nil)]
+      (is (map? result))
+      (is (true? (:signed result)))
+      (is (contains? result :signature))
+      (is (contains? result :timestamp)))
+    (reset! conn/signing-keys {})))
+
+(deftest test-sign-request-no-key
+  (testing "Sign request returns error when key not found"
+    (reset! conn/signing-keys {})
+    (let [result (conn/sign-request :test-connector "unknown-key" "GET" "/api/test" {} nil)]
+      (is (map? result))
+      (is (false? (:signed result)))
+      (is (contains? result :error)))
+    (reset! conn/signing-keys {})))
+
+(deftest test-verify-signature
+  (testing "Verify signature validates correctly"
+    (reset! conn/signing-keys {})
+    (conn/register-signing-key :test-connector "key-1" "secret123")
+    (let [sign-result (conn/sign-request :test-connector "key-1" "GET" "/api/test" {} nil)
+          verify-result (conn/verify-signature :test-connector "key-1" "GET" "/api/test" {} (:timestamp sign-result) (:signature sign-result))]
+      (is (map? verify-result))
+      (is (true? (:valid verify-result))))
+    (reset! conn/signing-keys {})))
+
+(deftest test-get-signing-stats
+  (testing "Get signing stats returns statistics"
+    (reset! conn/signing-keys {})
+    (conn/register-signing-key :test-connector "key-1" "secret123")
+    (let [stats (conn/get-signing-stats)]
+      (is (map? stats))
+      (is (contains? stats :connectors-with-keys))
+      (is (contains? stats :total-keys)))
+    (reset! conn/signing-keys {})))
