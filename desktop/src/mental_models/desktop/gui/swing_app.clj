@@ -27,12 +27,14 @@
 ;; =============================================================================
 
 (def config
-  {:version "1.5.1"
+  {:version "v2.0.8"
    :blue-green true
    :app-name "Mental Models Desktop"
    :github-repo "Ripple-Analytics/Ripple_Analytics"
    :github-api "https://api.github.com"
-   :github-token "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"
+   :github-token nil  ;; Not needed - using Google Drive for downloads
+   :gdrive-releases-url "https://drive.google.com/uc?export=download&id="
+   :gdrive-manifest-id "1s5TF72m8QbrMAx3eKIxnkpTps6y38V3X"
    :slack-webhook nil
    :lm-studio-url "http://localhost:1234"
    ;; Remote config for bulletproof updates
@@ -1723,36 +1725,45 @@
         (.disconnect conn))
       (catch Exception _))))
 
+(defn is-gdrive-url? [url]
+  "Check if URL is a Google Drive download URL"
+  (and url (str/includes? url "drive.google.com")))
+
 (defn download-github-release-asset! [download-url dest-file progress-callback]
   "Download using the bulletproof multi-source system.
-   1. Check cache first
-   2. Fetch remote config for download sources
-   3. Try each source with fallback
-   4. Report failures for remote debugging"
+   PRIORITY: Google Drive (no auth) > Remote config > Direct URL
+   Google Drive downloads NEVER need authentication."
   (log! "[DOWNLOAD] Starting bulletproof download...")
+  (log! (str "[DOWNLOAD] URL: " download-url))
   (ensure-cache-dir!)
   
-  ;; Try to get remote config for multiple sources
-  (if-let [remote-config (fetch-remote-config)]
-    (let [sources (:sources remote-config)]
-      (log! (str "[DOWNLOAD] Got " (count sources) " download sources from remote config"))
-      (if (seq sources)
-        ;; Use multi-source download
-        (let [result (download-with-fallback! sources dest-file progress-callback)]
-          (when-not (:success result)
-            ;; Report all failures
-            (doseq [err (:errors result)]
-              (report-download-failure! (:version remote-config) (:source err) (:error err))))
-          result)
-        ;; No sources in config, fall back to direct URL
-        (do
-          (log! "[DOWNLOAD] No sources in remote config, using direct URL")
-          (download-file-simple! download-url dest-file progress-callback true))))
-    
-    ;; Remote config failed, fall back to direct download
+  ;; If it's a Google Drive URL, download directly without auth
+  (if (is-gdrive-url? download-url)
     (do
-      (log! "[DOWNLOAD] Remote config unavailable, using direct URL")
-      (download-file-simple! download-url dest-file progress-callback true))))
+      (log! "[DOWNLOAD] Google Drive URL detected - downloading without auth")
+      (download-file-simple! download-url dest-file progress-callback false))
+    
+    ;; Otherwise try remote config first, then direct URL
+    (if-let [remote-config (fetch-remote-config)]
+      (let [sources (:sources remote-config)]
+        (log! (str "[DOWNLOAD] Got " (count sources) " download sources from remote config"))
+        (if (seq sources)
+          ;; Use multi-source download
+          (let [result (download-with-fallback! sources dest-file progress-callback)]
+            (when-not (:success result)
+              ;; Report all failures
+              (doseq [err (:errors result)]
+                (report-download-failure! (:version remote-config) (:source err) (:error err))))
+            result)
+          ;; No sources in config, fall back to direct URL
+          (do
+            (log! "[DOWNLOAD] No sources in remote config, using direct URL")
+            (download-file-simple! download-url dest-file progress-callback true))))
+      
+      ;; Remote config failed, fall back to direct download
+      (do
+        (log! "[DOWNLOAD] Remote config unavailable, using direct URL")
+        (download-file-simple! download-url dest-file progress-callback true)))))
 
 (defn extract-zip! [zip-file dest-dir]
   "Extract a ZIP file to destination directory"
@@ -3112,38 +3123,82 @@
 ;; Startup Update Check (Fully Automatic)
 ;; =============================================================================
 
+(defn check-gdrive-manifest []
+  "Fetch releases manifest from Google Drive - BULLETPROOF, no auth needed"
+  (try
+    (let [manifest-url (str (:gdrive-releases-url config) (:gdrive-manifest-id config))
+          _ (println "[UPDATE] Fetching manifest from Google Drive...")
+          result (http-get manifest-url)]
+      (if (:success result)
+        (let [body (:body result)
+              latest (second (re-find #"\"latest\"\s*:\s*\"([^\"]+)\"" body))
+              gdrive-id (second (re-find (re-pattern (str "\"" latest "\"[^}]*\"gdrive_id\"\s*:\s*\"([^\"]+)\"")) body))]
+          (println "[UPDATE] Manifest: latest=" latest "gdrive_id=" gdrive-id)
+          {:success true :latest latest :gdrive-id gdrive-id})
+        {:success false :error (:error result)}))
+    (catch Exception e
+      {:success false :error (.getMessage e)})))
+
 (defn check-updates-silently! [frame]
-  "Check for updates on startup and AUTO-DOWNLOAD without user interaction"
+  "Check for updates on startup and AUTO-DOWNLOAD without user interaction
+   BULLETPROOF: Tries Google Drive first, then GitHub, then web app"
   (future
     (try
       (Thread/sleep 3000) ;; Wait for UI to load
       (println "[AUTO-UPDATE] Checking for updates...")
-      (let [github-token (or (get-in @*state [:settings :github-token]) (:github-token config))
-            url (str (:github-api config) "/repos/" (:github-repo config) "/releases/latest")
-            headers {"Accept" "application/vnd.github.v3+json"
-                     "Authorization" (str "token " github-token)}
-            result (http-get url :headers headers)]
-        (println "[AUTO-UPDATE] GitHub response status:" (:status result) "success:" (:success result))
-        (if (:success result)
-          (let [body (:body result)
-                tag (second (re-find #"\"tag_name\"\s*:\s*\"([^\"]+)\"" body))
-                download-url (second (re-find #"\"browser_download_url\"\s*:\s*\"([^\"]+\.zip)\"" body))
-                newer? (version-newer? tag (:version config))]
-            (println "[AUTO-UPDATE] Current:" (:version config) "Latest:" tag "Newer?" newer?)
-            (println "[AUTO-UPDATE] Download URL:" download-url)
-            (if (and newer? download-url)
-              (do
-                (println "[AUTO-UPDATE] *** NEW VERSION DETECTED - AUTO-DOWNLOADING ***")
-                (log! (str "[AUTO-UPDATE] New version " tag " found - downloading automatically..."))
+      (log! "[AUTO-UPDATE] Checking for updates...")
+      
+      ;; METHOD 1: Google Drive manifest (PRIMARY - always works, no auth)
+      (let [gdrive-result (check-gdrive-manifest)]
+        (if (:success gdrive-result)
+          (let [latest (:latest gdrive-result)
+                gdrive-id (:gdrive-id gdrive-result)
+                newer? (version-newer? latest (:version config))]
+            (println "[AUTO-UPDATE] Google Drive: Current:" (:version config) "Latest:" latest "Newer?" newer?)
+            (if (and newer? gdrive-id)
+              (let [download-url (str (:gdrive-releases-url config) gdrive-id)]
+                (println "[AUTO-UPDATE] *** NEW VERSION DETECTED - DOWNLOADING FROM GOOGLE DRIVE ***")
+                (log! (str "[AUTO-UPDATE] New version " latest " found - downloading from Google Drive..."))
                 (swap! *state assoc-in [:update :available] true)
-                (swap! *state assoc-in [:update :latest-version] tag)
+                (swap! *state assoc-in [:update :latest-version] latest)
                 (swap! *state assoc-in [:update :download-url] download-url)
-                ;; AUTO-DOWNLOAD without asking - fully automatic!
-                (perform-auto-update! frame download-url tag))
-              (println "[AUTO-UPDATE] Already on latest version or no download URL")))
-          (println "[AUTO-UPDATE] Failed to check - response:" (:error result))))
+                (perform-auto-update! frame download-url latest))
+              (do
+                (println "[AUTO-UPDATE] Already on latest version")
+                (log! "[AUTO-UPDATE] Already on latest version"))))
+          
+          ;; METHOD 2: GitHub API fallback (if Google Drive fails)
+          (do
+            (println "[AUTO-UPDATE] Google Drive failed, trying GitHub...")
+            (log! "[AUTO-UPDATE] Google Drive unavailable, trying GitHub...")
+            (let [github-token (or (get-in @*state [:settings :github-token]) (:github-token config))
+                  url (str (:github-api config) "/repos/" (:github-repo config) "/releases/latest")
+                  headers (if github-token
+                            {"Accept" "application/vnd.github.v3+json"
+                             "Authorization" (str "token " github-token)}
+                            {"Accept" "application/vnd.github.v3+json"})
+                  result (http-get url :headers headers)]
+              (if (:success result)
+                (let [body (:body result)
+                      tag (second (re-find #"\"tag_name\"\s*:\s*\"([^\"]+)\"" body))
+                      download-url (second (re-find #"\"browser_download_url\"\s*:\s*\"([^\"]+\.zip)\"" body))
+                      newer? (version-newer? tag (:version config))]
+                  (println "[AUTO-UPDATE] GitHub: Current:" (:version config) "Latest:" tag "Newer?" newer?)
+                  (if (and newer? download-url)
+                    (do
+                      (println "[AUTO-UPDATE] *** NEW VERSION DETECTED - DOWNLOADING FROM GITHUB ***")
+                      (log! (str "[AUTO-UPDATE] New version " tag " found - downloading from GitHub..."))
+                      (swap! *state assoc-in [:update :available] true)
+                      (swap! *state assoc-in [:update :latest-version] tag)
+                      (swap! *state assoc-in [:update :download-url] download-url)
+                      (perform-auto-update! frame download-url tag))
+                    (println "[AUTO-UPDATE] Already on latest version or no download URL")))
+                (do
+                  (println "[AUTO-UPDATE] GitHub also failed:" (:error result))
+                  (log! "[AUTO-UPDATE] Both Google Drive and GitHub unavailable")))))))
       (catch Exception e
-        (println "[AUTO-UPDATE] Silent check failed:" (.getMessage e))
+        (println "[AUTO-UPDATE] Update check failed:" (.getMessage e))
+        (log! (str "[AUTO-UPDATE] Update check failed: " (.getMessage e)))
         (.printStackTrace e)))))
 
 ;; =============================================================================
