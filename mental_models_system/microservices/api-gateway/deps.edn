@@ -1,0 +1,32 @@
+{:paths ["src" "resources"]
+ 
+ :mvn/repos {"clojars" {:url "https://repo.clojars.org/"}}
+ 
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}
+        
+        ;; Server
+        ring/ring-core {:mvn/version "1.10.0"}
+        ring/ring-jetty-adapter {:mvn/version "1.10.0"}
+        ring/ring-defaults {:mvn/version "0.4.0"}
+        ring/ring-json {:mvn/version "0.5.1"}
+        
+        ;; HTTP Client for service-to-service calls
+        clj-http/clj-http {:mvn/version "3.12.3"}
+        
+        ;; JSON
+        cheshire/cheshire {:mvn/version "5.12.0"}
+        
+        ;; Async
+        org.clojure/core.async {:mvn/version "1.6.681"}
+        
+        ;; Logging
+        org.clojure/tools.logging {:mvn/version "1.2.4"}
+        ch.qos.logback/logback-classic {:mvn/version "1.4.11"}}
+ 
+ :aliases
+ {:run {:main-opts ["-m" "gateway.core"]}
+  :uberjar {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.1.303"}}
+            :exec-fn hf.depstar/uberjar
+            :exec-args {:jar "target/api-gateway.jar"
+                        :aot true
+                        :main-class gateway.core}}}}
