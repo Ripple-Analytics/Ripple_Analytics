@@ -118,7 +118,7 @@
          :main-opts ["-m" "cognitect.test-runner"]}
 
   ;; Linting with clj-kondo
-  :lint {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2024.01.01"}}
+  :lint {:extra-deps {clj-kondo/clj-kondo {:mvn/version "2024.11.14"}}
          :main-opts ["-m" "clj-kondo.main" "--lint" "src" "test"]}
 
   ;; Code formatting
