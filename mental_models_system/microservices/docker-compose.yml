@@ -116,6 +116,37 @@ services:
       retries: 3
       start_period: 60s
 
+  # ============================================
+  # Chaos Engineering Service
+  # ============================================
+  chaos-engineering:
+    build:
+      context: ./chaos-engineering
+      dockerfile: Dockerfile
+    container_name: mental-models-chaos
+    ports:
+      - "8005:8005"
+    environment:
+      - PORT=8005
+      - API_GATEWAY_URL=http://api-gateway:8000
+      - ANALYSIS_SERVICE_URL=http://analysis-service:8001
+      - HARVESTER_SERVICE_URL=http://harvester-service:8002
+      - STORAGE_SERVICE_URL=http://storage-service:8003
+    depends_on:
+      - api-gateway
+      - analysis-service
+      - harvester-service
+      - storage-service
+    networks:
+      - mental-models-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
 # ============================================
 # Networks
 # ============================================

@@ -1,10 +1,10 @@
 # Mental Models Microservices (Electric Clojure)
 
-This directory contains the Electric Clojure microservices architecture for the Mental Models System.
+This directory contains the Electric Clojure microservices architecture for the Mental Models System with built-in chaos engineering for resilience testing.
 
 ## Architecture Overview
 
-The system is composed of four independent microservices:
+The system is composed of five independent microservices:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -24,6 +24,14 @@ The system is composed of four independent microservices:
 │   Service     │   │   Service     │   │   Service     │
 │   (8001)      │   │   (8002)      │   │   (8003)      │
 └───────────────┘   └───────────────┘   └───────────────┘
+        │                     │                     │
+        └─────────────────────┼─────────────────────┘
+                              ▼
+                    ┌───────────────┐
+                    │    Chaos      │
+                    │  Engineering  │
+                    │   (8005)      │
+                    └───────────────┘
 ```
 
 ## Services
@@ -80,6 +88,32 @@ Data persistence for analyses, settings, and user data.
 - `POST /analyses` - Store analysis
 - `GET /settings` - Get settings
 - `POST /settings` - Update settings
+
+### Chaos Engineering Service (Port 8005)
+Proactive resilience testing with fault injection, circuit breaker testing, and recovery validation.
+
+**Fault Injection Endpoints:**
+- `POST /inject/latency` - Inject artificial latency into service calls
+- `POST /inject/error` - Inject error responses from a service
+- `POST /inject/failure` - Simulate complete service failure
+- `GET /inject/list` - List all active fault injections
+- `POST /inject/clear-all` - Clear all fault injections
+- `POST /inject/clear/:id` - Clear a specific fault injection
+
+**Testing Endpoints:**
+- `POST /test/circuit-breaker` - Test circuit breaker behavior with rapid requests
+- `POST /test/load` - Run load test against a service
+- `POST /test/recovery` - Validate service recovery after fault injection
+
+**Scenario Endpoints:**
+- `POST /scenario/cascade-failure` - Run cascade failure scenario
+- `POST /scenario/recovery-test` - Run full system recovery test
+
+**Experiment Endpoints:**
+- `GET /experiments` - List all experiments
+- `GET /experiments/:id` - Get specific experiment details
+- `GET /metrics` - Get chaos engineering metrics
+- `GET /services/health` - Check health of all target services
 
 ## Quick Start
 
@@ -191,6 +225,60 @@ curl -X POST http://localhost:8000/api/harvester/scrape \
 curl -X POST http://localhost:8000/api/storage/data \
   -H "Content-Type: application/json" \
   -d '{"key": "my-analysis", "value": {"result": "test"}, "collection": "analyses"}'
+```
+
+## Chaos Engineering
+
+The Chaos Engineering service provides proactive resilience testing capabilities.
+
+### Inject Latency
+
+```bash
+curl -X POST http://localhost:8005/inject/latency \
+  -H "Content-Type: application/json" \
+  -d '{"service": "analysis", "latency_ms": 2000, "duration_seconds": 30}'
+```
+
+### Test Circuit Breaker
+
+```bash
+curl -X POST http://localhost:8005/test/circuit-breaker \
+  -H "Content-Type: application/json" \
+  -d '{"service": "api-gateway", "num_requests": 50}'
+```
+
+### Run Load Test
+
+```bash
+curl -X POST http://localhost:8005/test/load \
+  -H "Content-Type: application/json" \
+  -d '{"service": "analysis", "requests_per_second": 10, "duration_seconds": 60}'
+```
+
+### Validate Recovery
+
+```bash
+curl -X POST http://localhost:8005/test/recovery \
+  -H "Content-Type: application/json" \
+  -d '{"service": "harvester", "max_wait_seconds": 60}'
+```
+
+### Run Cascade Failure Scenario
+
+```bash
+curl -X POST http://localhost:8005/scenario/cascade-failure
+```
+
+### Check All Services Health
+
+```bash
+curl http://localhost:8005/services/health
+```
+
+### View Chaos Metrics
+
+```bash
+curl http://localhost:8005/metrics
 ```
 
 ## Development
