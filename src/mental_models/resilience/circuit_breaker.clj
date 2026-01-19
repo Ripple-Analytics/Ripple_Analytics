@@ -81,24 +81,24 @@
 ;; =============================================================================
 
 (defn record-failure! [cb]
-  (let [count (.incrementAndGet (:failure-count cb))]
+  (let [failure-count (.incrementAndGet (:failure-count cb))]
     (.set (:last-failure-time cb) (.toEpochMilli (Instant/now)))
     (swap! (:metrics cb) update :failed-calls inc)
-    (when (and (closed? cb) (>= count (:failure-threshold cb)))
+    (when (and (closed? cb) (>= failure-count (:failure-threshold cb)))
       (set-state! cb :open)
       (.set (:failure-count cb) 0))
-    count))
+    failure-count))
 
 (defn record-success! [cb]
   (swap! (:metrics cb) update :successful-calls inc)
   (cond
     (half-open? cb)
-    (let [count (.incrementAndGet (:success-count cb))]
-      (when (>= count (:success-threshold cb))
+    (let [success-count (.incrementAndGet (:success-count cb))]
+      (when (>= success-count (:success-threshold cb))
         (set-state! cb :closed)
         (.set (:success-count cb) 0)
         (.set (:failure-count cb) 0))
-      count)
+      success-count)
     
     (closed? cb)
     (do

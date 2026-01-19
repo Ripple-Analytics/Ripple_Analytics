@@ -83,16 +83,16 @@
   (let [word-lower (str/lower-case word)
         vowels #{\a \e \i \o \u}
         chars (seq word-lower)]
-    (loop [count 0
+    (loop [syllable-count 0
            prev-vowel false
            remaining chars]
       (if (empty? remaining)
-        (max 1 count)
+        (max 1 syllable-count)
         (let [c (first remaining)
               is-vowel (contains? vowels c)
               new-count (if (and is-vowel (not prev-vowel))
-                          (inc count)
-                          count)]
+                          (inc syllable-count)
+                          syllable-count)]
           (recur new-count is-vowel (rest remaining)))))))
 
 (defn flesch-reading-ease [text]

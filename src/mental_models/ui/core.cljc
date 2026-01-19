@@ -410,7 +410,7 @@
                                   :flex-direction "column"
                                   :gap "8px"}})
               (e/for [cat (e/server (models/get-all-categories))]
-                (let [count (e/server (count (models/get-models-by-category (:id cat))))]
+                (let [model-count (e/server (count (models/get-models-by-category (:id cat))))]
                   (dom/div
                     (dom/props {:style {:display "flex"
                                         :justify-content "space-between"
@@ -423,7 +423,7 @@
                       (dom/props {:style {:font-size "12px"
                                           :font-weight "600"
                                           :color "#525252"}})
-                      (dom/text (str count))))))))
+                      (dom/text (str model-count))))))))
           
           ;; System status
           (dom/div

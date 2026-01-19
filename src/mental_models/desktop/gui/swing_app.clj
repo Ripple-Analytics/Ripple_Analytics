@@ -174,7 +174,7 @@
                        "INSERT INTO scan_results (file_path, models_found, scan_date, confidence) VALUES (?, ?, ?, ?)")]
       (.setString stmt 1 file-path)
       (.setString stmt 2 (str/join ", " models))
-      (.setString stmt 3 (.format (LocalDateTime/now) (DateTimeFormatter/ISO_LOCAL_DATE_TIME)))
+      (.setString stmt 3 (.format (LocalDateTime/now) DateTimeFormatter/ISO_LOCAL_DATE_TIME))
       (.setDouble stmt 4 confidence)
       (.executeUpdate stmt))
     (catch Exception e
