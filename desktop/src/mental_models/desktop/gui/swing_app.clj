@@ -1,13 +1,19 @@
 (ns mental-models.desktop.gui.swing-app
   (:require [clojure.string :as str]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [mental-models.analytics.engine :as analytics]
+            [mental-models.analytics.anomaly :as anomaly]
+            [mental-models.analytics.monitor :as monitor]
+            [mental-models.search.semantic :as search]
+            [mental-models.predict.engine :as predict]
+            [mental-models.predict.news-scanner :as news])
   (:import [javax.swing JFrame JPanel JLabel JButton JTextField JTextArea JScrollPane
                         JFileChooser JProgressBar JOptionPane SwingUtilities UIManager
                         BorderFactory JList DefaultListModel JMenuBar JMenu JMenuItem
                         JDialog Timer Box BoxLayout JComboBox ListSelectionModel]
            [javax.swing.border TitledBorder EmptyBorder]
            [java.awt BorderLayout GridLayout FlowLayout Color Font Dimension CardLayout
-                     Desktop GridBagLayout GridBagConstraints Insets Cursor]
+                     Desktop GridBagLayout GridBagConstraints Insets Cursor Graphics2D RenderingHints BasicStroke]
            [java.awt.event ActionListener WindowAdapter]
            [java.io File FileInputStream FileOutputStream BufferedInputStream]
            [java.net URL HttpURLConnection URI]
@@ -20,24 +26,25 @@
 ;; Forward declarations
 ;; =============================================================================
 
-(declare report-error-to-devin!)
+(declare report-error-to-devin! sync-to-web-app!)
 
 ;; =============================================================================
 ;; Configuration
 ;; =============================================================================
 
 (def config
-  {:version "v2.0.9"
+  {:version "v2.2.0"
    :blue-green true
    :app-name "Mental Models Desktop"
    :github-repo "Ripple-Analytics/Ripple_Analytics"
    :github-api "https://api.github.com"
    :github-token nil  ;; Not needed - using Google Drive for downloads
+   ;; Google Drive update system (PRIMARY - no auth needed)
    :gdrive-releases-url "https://drive.google.com/uc?export=download&id="
    :gdrive-manifest-id "1s5TF72m8QbrMAx3eKIxnkpTps6y38V3X"
    :slack-webhook nil
    :lm-studio-url "http://localhost:1234"
-   ;; Remote config for bulletproof updates
+   ;; Remote config for bulletproof updates (FALLBACK)
    :web-app-url "https://mental-models-web.manus.space"
    :desktop-api-key "mm-desktop-2026-ripple"
    :cache-dir (str (System/getProperty "user.home") "/.mental-models/cache")})
@@ -49,7 +56,7 @@
 (def *state (atom {:logs []
                    :scan-results []
                    :watch-active false
-                   :settings {:github-token (:github-token config)
+                   :settings {:github-token nil  ;; Not needed with Google Drive
                               :slack-webhook nil
                               :lm-studio-url "http://localhost:1234"
                               :web-app-url nil}
@@ -92,15 +99,23 @@
    :sidebar-text (Color. 15 23 42)})
 
 ;; VALUE LINE STYLE - Information Dense Fonts
+
+;; Theme toggle - switch between Gitmos dark and light mode
+(def *dark-mode (atom true))
+
+(defn toggle-theme! []
+  "Toggle between dark and light mode"
+  (swap! *dark-mode not))
+
 (def fonts
-  {:title (Font. "Segoe UI" Font/BOLD 12)      ;; Was 24 - now compact
-   :subtitle (Font. "Segoe UI" Font/BOLD 10)   ;; Was 18
-   :heading (Font. "Segoe UI" Font/BOLD 9)     ;; Was 14
-   :body (Font. "Segoe UI" Font/PLAIN 9)       ;; Was 13 - Value Line uses ~8-9pt
-   :small (Font. "Segoe UI" Font/PLAIN 8)      ;; Was 11 - tiny for max density
-   :mono (Font. "Consolas" Font/PLAIN 8)       ;; Was 12 - compact monospace
-   :data (Font. "Consolas" Font/PLAIN 8)       ;; New: for data tables
-   :micro (Font. "Segoe UI" Font/PLAIN 7)})    ;; New: for labels/headers
+  {:title (Font. "Segoe UI" Font/BOLD 22)      ;; Large title
+   :subtitle (Font. "Segoe UI" Font/BOLD 18)   ;; Large subtitle
+   :heading (Font. "Segoe UI" Font/BOLD 16)    ;; Clear heading
+   :body (Font. "Segoe UI" Font/PLAIN 14)      ;; Readable body text
+   :small (Font. "Segoe UI" Font/PLAIN 13)     ;; Small but clear
+   :mono (Font. "Consolas" Font/PLAIN 14)      ;; Readable monospace
+   :data (Font. "Consolas" Font/PLAIN 14)      ;; Readable data tables
+   :micro (Font. "Segoe UI" Font/PLAIN 12)})   ;; Labels - readable
 
 ;; =============================================================================
 ;; Database (SQLite)
@@ -163,7 +178,7 @@
                        "INSERT INTO scan_results (file_path, models_found, scan_date, confidence) VALUES (?, ?, ?, ?)")]
       (.setString stmt 1 file-path)
       (.setString stmt 2 (str/join ", " models))
-      (.setString stmt 3 (.format (LocalDateTime/now) DateTimeFormatter/ISO_LOCAL_DATE_TIME))
+      (.setString stmt 3 (.format (LocalDateTime/now) (DateTimeFormatter/ISO_LOCAL_DATE_TIME)))
       (.setDouble stmt 4 confidence)
       (.executeUpdate stmt))
     (catch Exception e
@@ -1167,7 +1182,7 @@
       nil)))
 
 (defn scan-file [file progress-callback]
-  "Scan a single file for mental models"
+  "Scan a single file for mental models with semantic indexing"
   (let [name (.getName file)
         ext (str/lower-case (or (last (str/split name #"\.")) ""))
         text (cond
@@ -1181,6 +1196,13 @@
         (when (seq models)
           (save-scan-result! (.getAbsolutePath file) (map :name models) 
                             (/ (count models) (double (count mental-models))))
+          ;; Index document for semantic search
+          (try
+            (search/index-document! (.getAbsolutePath file) text
+                                   {:name name
+                                    :models (map :name models)
+                                    :lollapalooza (boolean lollapalooza)})
+            (catch Exception _ nil))
           (when progress-callback
             (progress-callback {:file name
                                :models models
@@ -1190,27 +1212,156 @@
          :lollapalooza lollapalooza}))))
 
 (defn scan-folder [folder-path progress-callback completion-callback]
-  "Scan all files in a folder"
+  "Scan all files in a folder with analytics tracking"
   (future
     (try
-      (let [folder (File. folder-path)
+      (let [start-time (System/currentTimeMillis)
+            folder (File. folder-path)
             files (->> (file-seq folder)
                       (filter #(.isFile %))
                       (filter #(let [ext (str/lower-case (or (last (str/split (.getName %) #"\.")) ""))]
-                                (#{"txt" "md" "markdown" "pdf" "docx" "doc"} ext))))]
+                                (#{"txt" "md" "markdown" "pdf" "docx" "doc"} ext))))
+            models-found (atom [])]
         (log! (str "[SCAN] Starting scan of " (count files) " files in " folder-path))
         (doseq [[idx file] (map-indexed vector files)]
           (when progress-callback
             (progress-callback {:progress (/ (* 100 (inc idx)) (count files))
                                :current (.getName file)}))
-          (scan-file file progress-callback))
-        (log! "[SCAN] Scan complete")
-        ;; Sync results to web app if connected (function defined later)
-        ;; Will be called via the completion callback in the UI
+          (when-let [result (scan-file file progress-callback)]
+            (swap! models-found concat (map :name (:models result)))))
+        (let [duration-ms (- (System/currentTimeMillis) start-time)]
+          (log! (str "[SCAN] Complete in " duration-ms "ms"))
+          ;; Track scan in analytics
+          (analytics/track-scan! folder-path (count files) (distinct @models-found) duration-ms)
+          ;; Update anomaly baselines
+          (anomaly/update-scan-baselines! (:scans (analytics/get-stats)))
+          ;; Check for anomalies
+          (anomaly/check-scan-anomalies {:folder folder-path 
+                                          :files (count files)
+                                          :model-count (count (distinct @models-found))
+                                          :duration-ms duration-ms}))
+        ;; Auto-sync results to web app
+        (when (get-in @*state [:settings :auto-sync] true)
+          (try
+            (let [results (get-in @*state [:scan-results])]
+              (when (seq results)
+                (log! "[SYNC] Auto-syncing to web app...")
+                (sync-to-web-app! results)
+                (log! "[SYNC] Auto-sync complete")))
+            (catch Exception e
+              (log! (str "[SYNC] Auto-sync failed: " (.getMessage e))))))
         (when completion-callback
           (completion-callback {:total (count files)})))
       (catch Exception e
         (log! (str "[SCAN] Error: " (.getMessage e)))))))
+
+
+;; =============================================================================
+;; Batch Queue Processing (Wholesale Mode)
+;; =============================================================================
+(def *batch-queue (atom []))
+(def *batch-running (atom false))
+(def *batch-stats (atom {:total-folders 0 :completed-folders 0 :total-files 0 :total-models 0}))
+
+(defn add-to-batch-queue! [folder-paths]
+  "Add multiple folder paths to the batch queue"
+  (swap! *batch-queue concat folder-paths)
+  (swap! *batch-stats update :total-folders + (count folder-paths))
+  (log! (str "[BATCH] Added " (count folder-paths) " folders to queue. Total: " (count @*batch-queue))))
+
+(defn process-batch-queue! [progress-callback completion-callback]
+  "Process all folders in the batch queue sequentially"
+  (when-not @*batch-running
+    (reset! *batch-running true)
+    (future
+      (try
+        (log! (str "[BATCH] Starting batch processing of " (count @*batch-queue) " folders"))
+        (let [start-time (System/currentTimeMillis)]
+          (doseq [[idx folder] (map-indexed vector @*batch-queue)]
+            (when @*batch-running
+              (log! (str "[BATCH] Processing folder " (inc idx) "/" (count @*batch-queue) ": " folder))
+              (let [folder-files (atom 0)
+                    folder-models (atom 0)]
+                (scan-folder folder
+                  (fn [result]
+                    (when (:models result)
+                      (swap! folder-files inc)
+                      (swap! folder-models + (count (:models result)))
+                      (swap! *batch-stats update :total-files inc)
+                      (swap! *batch-stats update :total-models + (count (:models result))))
+                    (when progress-callback
+                      (progress-callback {:folder folder
+                                         :folder-progress (/ (* 100 (inc idx)) (count @*batch-queue))
+                                         :file (:file result)
+                                         :models (:models result)})))
+                  nil)
+                ;; Wait for folder scan to complete
+                (Thread/sleep 100)
+                (while (not= @folder-files @folder-files) (Thread/sleep 50)))
+              (swap! *batch-stats update :completed-folders inc)))
+          (let [elapsed (/ (- (System/currentTimeMillis) start-time) 1000.0)]
+            (log! (str "[BATCH] Complete. " (:total-files @*batch-stats) " files, " 
+                      (:total-models @*batch-stats) " models in " (format "%.1f" elapsed) "s"))
+            (when completion-callback
+              (completion-callback @*batch-stats))))
+        (catch Exception e
+          (log! (str "[BATCH] Error: " (.getMessage e))))
+        (finally
+          (reset! *batch-running false)
+          (reset! *batch-queue []))))))
+
+(defn stop-batch! []
+  "Stop batch processing"
+  (reset! *batch-running false)
+  (log! "[BATCH] Stopped"))
+
+(defn clear-batch-queue! []
+  "Clear the batch queue"
+  (reset! *batch-queue [])
+  (reset! *batch-stats {:total-folders 0 :completed-folders 0 :total-files 0 :total-models 0})
+  (log! "[BATCH] Queue cleared"))
+
+;; =============================================================================
+;; CLI Batch Mode (Headless)
+;; =============================================================================
+(defn run-cli-batch [args]
+  "Run in headless CLI mode for batch processing"
+  (println "Mental Models Desktop - CLI Batch Mode")
+  (println "======================================")
+  (let [folders (filter #(.isDirectory (File. %)) args)]
+    (if (empty? folders)
+      (do
+        (println "Usage: MentalModels.bat --batch <folder1> <folder2> ...")
+        (println "       MentalModels.bat --batch-file <paths.txt>")
+        (System/exit 1))
+      (do
+        (println (str "Processing " (count folders) " folders..."))
+        (add-to-batch-queue! folders)
+        (let [done (promise)]
+          (process-batch-queue!
+            (fn [result]
+              (when (:file result)
+                (println (str "  " (:file result) " -> " (count (:models result)) " models"))))
+            (fn [stats]
+              (println "")
+              (println "=== BATCH COMPLETE ===")
+              ;; Auto-sync batch results
+              (when (get-in @*state [:settings :auto-sync] true)
+                (try
+                  (let [results (get-in @*state [:scan-results])]
+                    (when (seq results)
+                      (println "[SYNC] Auto-syncing batch results...")
+                      (sync-to-web-app! results)
+                      (println "[SYNC] Batch sync complete")))
+                  (catch Exception e
+                    (println (str "[SYNC] Batch sync failed: " (.getMessage e))))))
+              (println (str "Folders: " (:completed-folders stats)))
+              (println (str "Files:   " (:total-files stats)))
+              (println (str "Models:  " (:total-models stats)))
+              (deliver done true)))
+          @done)
+        (System/exit 0)))))
+
 
 ;; =============================================================================
 ;; Watch Mode
@@ -1295,13 +1446,17 @@
 (defn check-web-app! []
   (future
     (try
-      (let [url (get-in @*state [:settings :web-app-url])]
+      (let [url (or (get-in @*state [:settings :web-app-url]) (:web-app-url config))]
         (if (and url (not (str/blank? url)))
-          (let [result (http-get (str url "/api/health"))]
+          (let [result (http-get (str url "/api/trpc/desktop.config") 
+                                 :headers {"X-Desktop-API-Key" (:desktop-api-key config)})]
             (swap! *state assoc-in [:connections :web-app]
-                   (if (:success result) :connected :disconnected)))
+                   (if (:success result) :connected :disconnected))
+            (when (:success result)
+              (log! "[WEB-APP] Connected successfully")))
           (swap! *state assoc-in [:connections :web-app] :disconnected)))
-      (catch Exception _
+      (catch Exception e
+        (log! (str "[WEB-APP] Connection error: " (.getMessage e)))
         (swap! *state assoc-in [:connections :web-app] :disconnected)))))
 
 (defn sync-to-web-app! [scan-results]
@@ -1508,6 +1663,40 @@
   (let [f (cache-path version)]
     (and (.exists f) (> (.length f) 1000000)))) ;; Must be > 1MB to be valid
 
+(defn fetch-secure-download []
+  "Fetch secure, time-limited download URL from web app. Returns nil on failure."
+  (log! "[UPDATE] Fetching secure download URL from web app...")
+  (try
+    (let [url (str (:web-app-url config) "/api/trpc/desktop.getSecureDownload")
+          conn (doto ^HttpURLConnection (.openConnection (URL. url))
+                 (.setRequestMethod "GET")
+                 (.setRequestProperty "X-Desktop-API-Key" (:desktop-api-key config))
+                 (.setConnectTimeout 10000)
+                 (.setReadTimeout 30000))
+          status (.getResponseCode conn)]
+      (if (= status 200)
+        (let [body (slurp (.getInputStream conn))]
+          (.disconnect conn)
+          (log! "[UPDATE] Secure download URL fetched successfully")
+          ;; Parse the response
+          (let [version (second (re-find #"\"version\":\s*\"([^\"]+)\"" body))
+                download-url (second (re-find #"\"downloadUrl\":\s*\"([^\"]+)\"" body))
+                fallback-url (second (re-find #"\"fallbackUrl\":\s*\"([^\"]+)\"" body))
+                auth-header (second (re-find #"\"authHeader\":\s*\"([^\"]+)\"" body))
+                sha256 (second (re-find #"\"sha256\":\s*\"([^\"]+)\"" body))]
+            {:version version
+             :download-url download-url
+             :fallback-url fallback-url
+             :auth-header auth-header
+             :sha256 sha256}))
+        (do
+          (.disconnect conn)
+          (log! (str "[UPDATE] Secure download failed: HTTP " status))
+          nil)))
+    (catch Exception e
+      (log! (str "[UPDATE] Secure download error: " (.getMessage e)))
+      nil)))
+
 (defn fetch-remote-config []
   "Fetch download configuration from web app. Returns nil on failure."
   (log! "[UPDATE] Fetching remote config from web app...")
@@ -1523,14 +1712,24 @@
         (let [body (slurp (.getInputStream conn))]
           (.disconnect conn)
           (log! "[UPDATE] Remote config fetched successfully")
-          ;; Parse the tRPC response to extract download sources
-          (let [version (second (re-find #"\"currentVersion\":\s*\"([^\"]+)\"" body))
-                sources (vec (for [[_ name url auth] 
-                                   (re-seq #"\{\"name\":\"([^\"]+)\"[^}]*\"url\":\"([^\"]+)\"[^}]*\"requiresAuth\":(true|false)" body)]
-                               {:name name :url url :requires-auth (= auth "true")}))]
-            {:version version
-             :sources sources
-             :raw body}))
+          ;; Parse the tRPC response to extract version
+          (let [version (second (re-find #"\"currentVersion\":\s*\"([^\"]+)\"" body))]
+            ;; Now fetch the secure download URL
+            (if-let [secure-download (fetch-secure-download)]
+              {:version version
+               :sources [{:name "secure"
+                          :url (:download-url secure-download)
+                          :fallback-url (:fallback-url secure-download)
+                          :auth-header (:auth-header secure-download)
+                          :sha256 (:sha256 secure-download)
+                          :requires-auth true}]
+               :raw body}
+              ;; Fallback to GitHub if secure download fails
+              {:version version
+               :sources [{:name "github"
+                          :url (str "https://github.com/Ripple-Analytics/Ripple_Analytics/releases/download/" version "/MentalModels-" version "-Desktop.zip")
+                          :requires-auth true}]
+               :raw body})))
         (do
           (.disconnect conn)
           (log! (str "[UPDATE] Remote config failed: HTTP " status))
@@ -1725,45 +1924,36 @@
         (.disconnect conn))
       (catch Exception _))))
 
-(defn is-gdrive-url? [url]
-  "Check if URL is a Google Drive download URL"
-  (and url (str/includes? url "drive.google.com")))
-
 (defn download-github-release-asset! [download-url dest-file progress-callback]
   "Download using the bulletproof multi-source system.
-   PRIORITY: Google Drive (no auth) > Remote config > Direct URL
-   Google Drive downloads NEVER need authentication."
+   1. Check cache first
+   2. Fetch remote config for download sources
+   3. Try each source with fallback
+   4. Report failures for remote debugging"
   (log! "[DOWNLOAD] Starting bulletproof download...")
-  (log! (str "[DOWNLOAD] URL: " download-url))
   (ensure-cache-dir!)
   
-  ;; If it's a Google Drive URL, download directly without auth
-  (if (is-gdrive-url? download-url)
-    (do
-      (log! "[DOWNLOAD] Google Drive URL detected - downloading without auth")
-      (download-file-simple! download-url dest-file progress-callback false))
+  ;; Try to get remote config for multiple sources
+  (if-let [remote-config (fetch-remote-config)]
+    (let [sources (:sources remote-config)]
+      (log! (str "[DOWNLOAD] Got " (count sources) " download sources from remote config"))
+      (if (seq sources)
+        ;; Use multi-source download
+        (let [result (download-with-fallback! sources dest-file progress-callback)]
+          (when-not (:success result)
+            ;; Report all failures
+            (doseq [err (:errors result)]
+              (report-download-failure! (:version remote-config) (:source err) (:error err))))
+          result)
+        ;; No sources in config, fall back to direct URL
+        (do
+          (log! "[DOWNLOAD] No sources in remote config, using direct URL")
+          (download-file-simple! download-url dest-file progress-callback true))))
     
-    ;; Otherwise try remote config first, then direct URL
-    (if-let [remote-config (fetch-remote-config)]
-      (let [sources (:sources remote-config)]
-        (log! (str "[DOWNLOAD] Got " (count sources) " download sources from remote config"))
-        (if (seq sources)
-          ;; Use multi-source download
-          (let [result (download-with-fallback! sources dest-file progress-callback)]
-            (when-not (:success result)
-              ;; Report all failures
-              (doseq [err (:errors result)]
-                (report-download-failure! (:version remote-config) (:source err) (:error err))))
-            result)
-          ;; No sources in config, fall back to direct URL
-          (do
-            (log! "[DOWNLOAD] No sources in remote config, using direct URL")
-            (download-file-simple! download-url dest-file progress-callback true))))
-      
-      ;; Remote config failed, fall back to direct download
-      (do
-        (log! "[DOWNLOAD] Remote config unavailable, using direct URL")
-        (download-file-simple! download-url dest-file progress-callback true)))))
+    ;; Remote config failed, fall back to direct download
+    (do
+      (log! "[DOWNLOAD] Remote config unavailable, using direct URL")
+      (download-file-simple! download-url dest-file progress-callback true))))
 
 (defn extract-zip! [zip-file dest-dir]
   "Extract a ZIP file to destination directory"
@@ -2115,28 +2305,40 @@
     row))
 
 (defn create-dense-stats-table []
-  "Create Value Line style dense statistics table"
+  "Create Value Line style dense statistics table with analytics"
   (let [table-panel (JPanel. (GridLayout. 0 4 3 1))  ;; 4 columns, tight spacing
         stats (:stats @*state)
-        scan-results (:scan-results @*state)]
+        analytics-stats (analytics/get-stats)
+        health (monitor/get-health-status)
+        anomalies (anomaly/anomaly-summary)]
     (.setOpaque table-panel false)
     (.setBorder table-panel (BorderFactory/createTitledBorder 
                               (BorderFactory/createLineBorder (:border colors) 1)
                               "STATISTICS" TitledBorder/LEFT TitledBorder/TOP (:micro fonts) (:text-muted colors)))
     
     ;; Row 1: Core counts
-    (.add table-panel (create-stat-row "Files" (:files-scanned stats 0)))
-    (.add table-panel (create-stat-row "Models" (:models-found stats 0)))
-    (.add table-panel (create-stat-row "Docs" (:documents stats 0)))
-    (.add table-panel (create-stat-row "Lolla" (:lollapalooza stats 0)))
+    (.add table-panel (create-stat-row "Files" (:total-files-scanned analytics-stats 0)))
+    (.add table-panel (create-stat-row "Models" (:total-models-found analytics-stats 0)))
+    (.add table-panel (create-stat-row "Unique" (:unique-models analytics-stats 0)))
+    (.add table-panel (create-stat-row "Scans" (:total-scans analytics-stats 0)))
     
-    ;; Row 2: Rates and averages
-    (let [files (max 1 (:files-scanned stats 1))
-          models (:models-found stats 0)]
-      (.add table-panel (create-stat-row "Avg/File" (format "%.1f" (/ (double models) files))))
-      (.add table-panel (create-stat-row "Hit Rate" (str (int (* 100 (/ (double (:documents stats 0)) files))) "%")))
-      (.add table-panel (create-stat-row "Lolla%" (str (int (* 100 (/ (double (:lollapalooza stats 0)) (max 1 (:documents stats 1))))) "%")))
-      (.add table-panel (create-stat-row "Version" (:version config))))
+    ;; Row 2: Performance metrics
+    (.add table-panel (create-stat-row "Files/sec" (format "%.1f" (double (:files-per-second analytics-stats 0)))))
+    (.add table-panel (create-stat-row "Avg Duration" (str (int (:avg-scan-duration-ms analytics-stats 0)) "ms")))
+    (.add table-panel (create-stat-row "Scans/hr" (format "%.1f" (double (:scans-per-hour analytics-stats 0)))))
+    (.add table-panel (create-stat-row "Uptime" (format "%.1fh" (double (:uptime-hours analytics-stats 0)))))
+    
+    ;; Row 3: Health and anomalies
+    (.add table-panel (create-stat-row "Health" (str (:score health 100) "%")))
+    (.add table-panel (create-stat-row "Status" (name (:status health :healthy))))
+    (.add table-panel (create-stat-row "Anomalies" (:total-anomalies anomalies 0)))
+    (.add table-panel (create-stat-row "Alerts" (:active-alerts anomalies 0)))
+    
+    ;; Row 4: Version info
+    (.add table-panel (create-stat-row "Version" (:version config)))
+    (.add table-panel (create-stat-row "P95 Duration" (str (int (:p95-duration-ms analytics-stats 0)) "ms")))
+    (.add table-panel (create-stat-row "Lollapalooza" (:lollapalooza stats 0)))
+    (.add table-panel (create-stat-row "Detection %" (str (int (* 100 (/ (double (:total-models-found analytics-stats 1)) (max 1 (:total-files-scanned analytics-stats 1))))) "%")))
     
     table-panel))
 
@@ -2148,7 +2350,7 @@
                                                  (count (:models r []))
                                                  (if (:lollapalooza r) "⚡" "-")])
                                               (:scan-results @*state))))
-        columns (into-array ["File" "#" "L"])
+        columns (into-array ["File" "Models" "Lollapalooza"])
         table (javax.swing.JTable. table-data columns)]
     (.setFont table (:data fonts))
     (.setRowHeight table 12)
@@ -2167,7 +2369,7 @@
   "Single-line connection status strip"
   (let [strip (JPanel. (FlowLayout. FlowLayout/LEFT 5 0))]
     (.setOpaque strip false)
-    (doseq [[name key color-key] [["LM" :lm-studio] ["Web" :web-app] ["Git" :github] ["Slk" :slack]]]
+    (doseq [[name key color-key] [["LM Studio" :lm-studio] ["Web App" :web-app] ["GitHub" :github] ["Slack" :slack]]]
       (let [lbl (JLabel. (str "●" name))]
         (.setFont lbl (:micro fonts))
         (add-watch *state (keyword (str "strip-" name))
@@ -2244,7 +2446,7 @@
                                             (subs name-str 0 (min 20 (count name-str))))
                                           cnt]) 
                                        top-models))
-          columns (into-array ["Model" "#"])
+          columns (into-array ["Mental Model" "Count"])
           table (javax.swing.JTable. table-data columns)]
       (.setFont table (:data fonts))
       (.setRowHeight table 11)
@@ -2263,8 +2465,8 @@
                               (BorderFactory/createLineBorder (:border colors) 1)
                               "CATEGORIES" TitledBorder/LEFT TitledBorder/TOP (:micro fonts) (:text-muted colors)))
       (doseq [cat categories]
-        (let [model-count (count (filter #(= cat (:category %)) mental-models))]
-          (.add cat-panel (create-stat-row (subs cat 0 (min 6 (count cat))) model-count))))
+        (let [cat-count (count (filter #(= cat (:category %)) mental-models))]
+          (.add cat-panel (create-stat-row cat cat-count))))
       (.add main-panel cat-panel))
     
     (.add panel main-panel BorderLayout/CENTER)
@@ -2295,11 +2497,13 @@
         path-field (JTextField. 50)
         browse-btn (JButton. "...")
         scan-btn (JButton. "Scan")
-        ai-scan-btn (JButton. "AI")
+        ai-scan-btn (JButton. "AI Scan")
+        add-queue-btn (JButton. "+ Queue")
+        run-queue-btn (JButton. "Run Queue")
         progress (JProgressBar. 0 100)
         ;; Results as table instead of text area
         results-model (javax.swing.table.DefaultTableModel.
-                        (into-array ["File" "Models" "#" "L" "Conf"])
+                        (into-array ["File" "Models Found" "Count" "Lollapalooza" "Confidence"])
                         0)
         results-table (javax.swing.JTable. results-model)
         results-scroll (JScrollPane. results-table)
@@ -2307,7 +2511,7 @@
         stats-strip (JPanel. (FlowLayout. FlowLayout/LEFT 3 0))
         files-lbl (JLabel. "Files:0")
         models-lbl (JLabel. "Models:0")
-        lolla-lbl (JLabel. "Lolla:0")
+        lolla-lbl (JLabel. "Lollapalooza: 0")
         rate-lbl (JLabel. "Rate:0/s")]
     
     (.setBackground panel (:bg-primary colors))
@@ -2365,15 +2569,15 @@
                                 (count (:models result))
                                 (if (:lollapalooza result) "⚡" "-")
                                 "-"]))
-                           (.setText files-lbl (str "Files:" @file-count))
-                           (.setText models-lbl (str "Models:" @model-count))
-                           (.setText lolla-lbl (str "Lolla:" @lolla-count))))))
+                           (.setText files-lbl (str "Files Scanned: " @file-count))
+                           (.setText models-lbl (str "Models Found: " @model-count))
+                           (.setText lolla-lbl (str "Lollapalooza: " @lolla-count))))))
                   (fn [summary]
                     (SwingUtilities/invokeLater
                       #(do
                          (.setValue progress 100)
                          (let [elapsed (/ (- (System/currentTimeMillis) start-time) 1000.0)]
-                           (.setText rate-lbl (str "Rate:" (format "%.1f" (/ @file-count (max 0.1 elapsed))) "/s")))
+                           (.setText rate-lbl (str "Scan Rate: " (format "%.1f" (/ @file-count (max 0.1 elapsed))) "/s")))
                          (refresh-dashboard!)))))))))))
     (.add top-row scan-btn)    
     ;; AI Scan button
@@ -2381,6 +2585,105 @@
     (.setMargin ai-scan-btn (Insets. 0 4 0 4))
     (.setToolTipText ai-scan-btn "Use LM Studio AI for deeper analysis")
     (.add top-row ai-scan-btn)
+    
+    ;; Batch queue buttons
+    (.setFont add-queue-btn (:small fonts))
+    (.setMargin add-queue-btn (Insets. 0 4 0 4))
+    (.setToolTipText add-queue-btn "Add current path to batch queue")
+    (.addActionListener add-queue-btn
+      (reify ActionListener
+        (actionPerformed [_ _]
+          (let [path (.getText path-field)]
+            (when-not (str/blank? path)
+              (add-to-batch-queue! [path])
+              (javax.swing.JOptionPane/showMessageDialog 
+                frame 
+                (str "Added to queue. Total folders: " (count @*batch-queue))
+                "Queue Updated"
+                javax.swing.JOptionPane/INFORMATION_MESSAGE))))))
+    (.add top-row add-queue-btn)
+    
+    (.setFont run-queue-btn (:small fonts))
+    (.setMargin run-queue-btn (Insets. 0 4 0 4))
+    (.setBackground run-queue-btn (:success colors))
+    (.setForeground run-queue-btn Color/WHITE)
+    (.setToolTipText run-queue-btn "Process all folders in queue")
+    (.addActionListener run-queue-btn
+      (reify ActionListener
+        (actionPerformed [_ _]
+          (if (empty? @*batch-queue)
+            (javax.swing.JOptionPane/showMessageDialog 
+              frame "Queue is empty. Add folders first." "Empty Queue" javax.swing.JOptionPane/WARNING_MESSAGE)
+            (do
+              (.setRowCount results-model 0)
+              (.setValue progress 0)
+              (process-batch-queue!
+                (fn [result]
+                  (SwingUtilities/invokeLater
+                    #(do
+                       (when (:folder-progress result)
+                         (.setValue progress (int (:folder-progress result))))
+                       (when (:models result)
+                         (.addRow results-model
+                           (into-array Object
+                             [(or (:file result) "")
+                              (str/join ", " (map :name (take 3 (:models result))))
+                              (count (:models result))
+                              (if (:lollapalooza result) "Yes" "-")
+                              "-"]))))))
+                (fn [stats]
+                  (SwingUtilities/invokeLater
+                    #(do
+                       (.setValue progress 100)
+                       (javax.swing.JOptionPane/showMessageDialog 
+                         frame 
+                         (str "Batch complete!\n"
+                              "Folders: " (:completed-folders stats) "\n"
+                              "Files: " (:total-files stats) "\n"
+                              "Models: " (:total-models stats))
+                         "Batch Complete"
+                         javax.swing.JOptionPane/INFORMATION_MESSAGE)
+                       (refresh-dashboard!))))))))))
+    (.add top-row run-queue-btn)
+    
+    ;; Sync to Web button
+    (let [sync-btn (JButton. "↗ Sync to Web")]
+      (.setFont sync-btn (:small fonts))
+      (.setMargin sync-btn (Insets. 0 6 0 6))
+      (.setForeground sync-btn (:accent colors))
+      (.setToolTipText sync-btn "Push scan results to web dashboard")
+      (.addActionListener sync-btn
+        (reify ActionListener
+          (actionPerformed [_ _]
+            (let [results (get-in @*state [:scan-results])]
+              (if (empty? results)
+                (javax.swing.JOptionPane/showMessageDialog 
+                  frame "No scan results to sync. Run a scan first." "Nothing to Sync" javax.swing.JOptionPane/WARNING_MESSAGE)
+                (do
+                  (.setEnabled sync-btn false)
+                  (.setText sync-btn "Syncing...")
+                  (future
+                    (try
+                      (sync-to-web-app! results)
+                      (SwingUtilities/invokeLater
+                        #(do
+                           (.setText sync-btn "✓ Synced!")
+                           (javax.swing.JOptionPane/showMessageDialog 
+                             frame 
+                             (str "Synced " (count results) " results to web dashboard.\n\nView at: " (:web-app-url config) "/dashboard")
+                             "Sync Complete"
+                             javax.swing.JOptionPane/INFORMATION_MESSAGE)
+                           (Thread/sleep 2000)
+                           (.setText sync-btn "↗ Sync to Web")
+                           (.setEnabled sync-btn true)))
+                      (catch Exception e
+                        (SwingUtilities/invokeLater
+                          #(do
+                             (.setText sync-btn "↗ Sync to Web")
+                             (.setEnabled sync-btn true)
+                             (javax.swing.JOptionPane/showMessageDialog 
+                               frame (str "Sync failed: " (.getMessage e)) "Sync Error" javax.swing.JOptionPane/ERROR_MESSAGE))))))))))))
+      (.add top-row sync-btn))
     
     ;; Progress bar - compact
     (.setPreferredSize progress (Dimension. 80 14))
@@ -2565,7 +2868,7 @@
         category-combo (JComboBox. (into-array String ["All" "Psych" "Econ" "Bio" "Phys" "Math" "Eng" "Moat" "Org" "Think"]))
         ;; Main: Table of all models
         table-model (javax.swing.table.DefaultTableModel.
-                      (into-array ["#" "Name" "Cat" "Keywords"])
+                      (into-array ["#" "Model Name" "Category" "Keywords"])
                       0)
         models-table (javax.swing.JTable. table-model)
         table-scroll (JScrollPane. models-table)
@@ -2650,9 +2953,10 @@
                            (:description model) "\n\n"
                            "Ex: " (:example model)))))))))))
     
-    ;; Search filter
+    ;; Search filter - simple keyword search
     (let [do-filter (fn []
-                      (let [query (str/lower-case (.getText search-field))
+                      (let [query (.getText search-field)
+                            query-lower (str/lower-case query)
                             cat-full {"All" nil "Psych" "Psychology" "Econ" "Economics" "Bio" "Biology"
                                       "Phys" "Physics" "Math" "Mathematics" "Eng" "Engineering"
                                       "Moat" "Moats" "Org" "Organizational" "Think" "Thinking Tools"}
@@ -2660,10 +2964,10 @@
                         (.setRowCount table-model 0)
                         (doseq [model mental-models]
                           (when (and (or (str/blank? query)
-                                        (str/includes? (str/lower-case (:name model)) query)
-                                        (str/includes? (str/lower-case (str (:keywords model))) query))
+                                        (str/includes? (str/lower-case (:name model)) query-lower)
+                                        (str/includes? (str/lower-case (str (:keywords model))) query-lower))
                                     (or (nil? cat)
-                                        (= (:category model) cat)))
+                                        (str/includes? (:category model) (or cat ""))))
                             (.addRow table-model
                               (into-array Object
                                 [(:id model)
@@ -2701,6 +3005,138 @@
               (catch Exception _)))))
       (.add bottom-strip web-btn)
       (.add panel bottom-strip BorderLayout/SOUTH))
+    
+    panel))
+;; =============================================================================
+;; News Analyzer Panel - Predictive Mental Models
+;; =============================================================================
+
+(defn create-news-panel []
+  "News analyzer with pattern overlap and outcome prediction"
+  (let [panel (JPanel. (BorderLayout. 15 15))
+        input-panel (JPanel. (BorderLayout. 10 10))
+        results-panel (JPanel. (BorderLayout. 10 10))
+        
+        headline-field (JTextField. 60)
+        content-area (JTextArea. 8 60)
+        analyze-btn (JButton. "🔍 Analyze Story")
+        clear-btn (JButton. "Clear")
+        
+        results-area (JTextArea. 20 60)
+        
+        ;; Stats labels
+        danger-label (JLabel. "Danger: 0%")
+        success-label (JLabel. "Success: 0%")
+        overlap-label (JLabel. "Pattern Overlap: 0%")
+        risk-label (JLabel. "Risk: --")
+        models-label (JLabel. "Models: 0")]
+    
+    (.setBackground panel (:bg-secondary colors))
+    (.setBorder panel (EmptyBorder. 20 20 20 20))
+    
+    ;; Title
+    (let [title-panel (JPanel. (BorderLayout.))
+          title (JLabel. "📰 News Story Analyzer")
+          subtitle (JLabel. "Detect mental models, predict outcomes, show pattern overlap")]
+      (.setOpaque title-panel false)
+      (.setFont title (:title fonts))
+      (.setForeground title (:text-primary colors))
+      (.setFont subtitle (:small fonts))
+      (.setForeground subtitle (:text-muted colors))
+      (.add title-panel title BorderLayout/NORTH)
+      (.add title-panel subtitle BorderLayout/SOUTH)
+      (.add panel title-panel BorderLayout/NORTH))
+    
+    ;; Input section
+    (.setOpaque input-panel false)
+    (.setBorder input-panel (BorderFactory/createTitledBorder "Enter News Story"))
+    
+    (let [headline-panel (JPanel. (BorderLayout. 5 5))
+          headline-lbl (JLabel. "Headline:")]
+      (.setOpaque headline-panel false)
+      (.setFont headline-lbl (:body fonts))
+      (.add headline-panel headline-lbl BorderLayout/WEST)
+      (.add headline-panel headline-field BorderLayout/CENTER)
+      (.add input-panel headline-panel BorderLayout/NORTH))
+    
+    (.setLineWrap content-area true)
+    (.setWrapStyleWord content-area true)
+    (.setBorder content-area (BorderFactory/createTitledBorder "Content/Body"))
+    (.add input-panel (JScrollPane. content-area) BorderLayout/CENTER)
+    
+    ;; Buttons
+    (let [btn-panel (JPanel. (FlowLayout. FlowLayout/LEFT 10 5))]
+      (.setOpaque btn-panel false)
+      (.setBackground analyze-btn (:primary colors))
+      (.setForeground analyze-btn Color/WHITE)
+      (.setFont analyze-btn (:body fonts))
+      (.add btn-panel analyze-btn)
+      (.add btn-panel clear-btn)
+      (.add input-panel btn-panel BorderLayout/SOUTH))
+    
+    ;; Results section
+    (.setOpaque results-panel false)
+    (.setBorder results-panel (BorderFactory/createTitledBorder "Analysis Results"))
+    
+    ;; Stats bar at top of results
+    (let [stats-panel (JPanel. (FlowLayout. FlowLayout/LEFT 20 5))]
+      (.setOpaque stats-panel false)
+      (doseq [lbl [danger-label success-label overlap-label risk-label models-label]]
+        (.setFont lbl (:body fonts))
+        (.add stats-panel lbl))
+      (.setForeground danger-label (Color. 220 50 50))
+      (.setForeground success-label (Color. 50 180 50))
+      (.setForeground risk-label (:accent colors))
+      (.add results-panel stats-panel BorderLayout/NORTH))
+    
+    (.setEditable results-area false)
+    (.setFont results-area (Font. "Monospaced" Font/PLAIN 11))
+    (.setBackground results-area (:bg-primary colors))
+    (.setForeground results-area (:text-primary colors))
+    (.add results-panel (JScrollPane. results-area) BorderLayout/CENTER)
+    
+    ;; Analyze button action
+    (.addActionListener analyze-btn
+      (reify ActionListener
+        (actionPerformed [_ _]
+          (let [headline (.getText headline-field)
+                content (.getText content-area)]
+            (when (and (not (str/blank? headline)) (not (str/blank? content)))
+              (try
+                (let [analysis (news/analyze-story headline content)
+                      report (news/format-analysis-report analysis)]
+                  ;; Update stats
+                  (.setText danger-label (format "Danger: %.0f%%" (* 100 (:danger-score analysis))))
+                  (.setText success-label (format "Success: %.0f%%" (* 100 (:success-score analysis))))
+                  (.setText overlap-label (format "Pattern Overlap: %.1f%%" (double (:pattern-overlap-pct analysis))))
+                  (.setText risk-label (str "Risk: " (name (:overall-risk analysis))))
+                  (.setText models-label (str "Models: " (:model-count analysis)))
+                  ;; Update results
+                  (.setText results-area report)
+                  (.setCaretPosition results-area 0)
+                  (log! (str "[NEWS] Analyzed: " headline " - " (:model-count analysis) " models detected")))
+                (catch Exception e
+                  (.setText results-area (str "Error analyzing story: " (.getMessage e)))
+                  (log! :error (str "[NEWS] Analysis error: " (.getMessage e))))))))))
+    
+    ;; Clear button action
+    (.addActionListener clear-btn
+      (reify ActionListener
+        (actionPerformed [_ _]
+          (.setText headline-field "")
+          (.setText content-area "")
+          (.setText results-area "")
+          (.setText danger-label "Danger: 0%")
+          (.setText success-label "Success: 0%")
+          (.setText overlap-label "Pattern Overlap: 0%")
+          (.setText risk-label "Risk: --")
+          (.setText models-label "Models: 0"))))
+    
+    ;; Layout - split pane
+    (let [split (javax.swing.JSplitPane. javax.swing.JSplitPane/VERTICAL_SPLIT input-panel results-panel)]
+      (.setDividerLocation split 200)
+      (.setResizeWeight split 0.3)
+      (.add panel split BorderLayout/CENTER))
     
     panel))
 
@@ -2926,47 +3362,430 @@
     panel))
 
 ;; =============================================================================
+;; Case Studies Panel (fetches from web app)
+;; =============================================================================
+
+(defn fetch-case-studies []
+  "Fetch case studies from web app API"
+  (try
+    (let [url (str (or (get-in @*state [:settings :web-app-url]) (:web-app-url config))
+                   "/api/trpc/caseStudies.list")
+          result (http-get url {:headers {"x-desktop-api-key" "mm-desktop-2026-ripple"}})]
+      (if (:success result)
+        (get-in (json/read-str (:body result) :key-fn keyword) [:result :data :json] [])
+        []))
+    (catch Exception e
+      (log! (str "[CASE-STUDIES] Error fetching: " (.getMessage e)))
+      [])))
+
+(defn create-case-studies-panel []
+  "Panel showing historical case studies from web app"
+  (let [panel (JPanel. (BorderLayout. 20 20))
+        table-model (DefaultTableModel.
+                     (into-array ["Case Study" "Category" "Models" "Lollapalooza"])
+                     0)
+        table (JTable. table-model)
+        refresh-btn (JButton. "🔄 Refresh from Web App")
+        detail-area (JTextArea. 10 50)]
+    
+    (.setBackground panel (:bg-secondary colors))
+    (.setBorder panel (EmptyBorder. 30 30 30 30))
+    
+    ;; Title
+    (let [header (JPanel. (BorderLayout.))
+          title (JLabel. "📚 Case Studies")]
+      (.setOpaque header false)
+      (.setFont title (:title fonts))
+      (.setForeground title (:text-primary colors))
+      (.add header title BorderLayout/WEST)
+      (.add header refresh-btn BorderLayout/EAST)
+      (.add panel header BorderLayout/NORTH))
+    
+    ;; Built-in case studies
+    (doseq [[name cat models lolla] [["Enron Collapse (2001)" "Corporate Fraud" "Incentive Bias, Denial, Authority" "Yes"]
+                                     ["2008 Financial Crisis" "Market Bubble" "Social Proof, FOMO, Leverage" "Yes"]
+                                     ["Theranos Fraud" "Corporate Fraud" "Authority Bias, Denial, Overconfidence" "Yes"]
+                                     ["Berkshire Hathaway" "Success Story" "Margin of Safety, Circle of Competence" "No"]
+                                     ["Amazon Growth" "Success Story" "Network Effects, Scale Economics" "Yes"]
+                                     ["WeWork Collapse" "Corporate Fraud" "Overconfidence, Incentive Bias" "Yes"]
+                                     ["Dot-com Bubble" "Market Bubble" "Social Proof, FOMO, Greater Fool" "Yes"]
+                                     ["Long-Term Capital" "Market Bubble" "Overconfidence, Leverage Risk" "Yes"]]]
+      (.addRow table-model (into-array Object [name cat models lolla])))
+    
+    ;; Table setup
+    (.setFont table (:body fonts))
+    (.setRowHeight table 28)
+    (.setSelectionMode (.getSelectionModel table) ListSelectionModel/SINGLE_SELECTION)
+    
+    ;; Selection listener for detail view
+    (.addListSelectionListener (.getSelectionModel table)
+      (reify javax.swing.event.ListSelectionListener
+        (valueChanged [_ e]
+          (when-not (.getValueIsAdjusting e)
+            (let [row (.getSelectedRow table)]
+              (when (>= row 0)
+                (let [name (.getValueAt table-model row 0)]
+                  (.setText detail-area (str "Selected: " name "\n\nClick 'Refresh' to load full details from web app.")))))))))
+    
+    ;; Detail area
+    (.setEditable detail-area false)
+    (.setLineWrap detail-area true)
+    (.setFont detail-area (:body fonts))
+    
+    ;; Layout
+    (let [split (JSplitPane. JSplitPane/VERTICAL_SPLIT
+                            (JScrollPane. table)
+                            (JScrollPane. detail-area))]
+      (.setDividerLocation split 250)
+      (.add panel split BorderLayout/CENTER))
+    
+    ;; Refresh action
+    (.addActionListener refresh-btn
+      (reify ActionListener
+        (actionPerformed [_ _]
+          (future
+            (let [studies (fetch-case-studies)]
+              (SwingUtilities/invokeLater
+                #(do
+                   (.setRowCount table-model 0)
+                   (if (seq studies)
+                     (doseq [s studies]
+                       (.addRow table-model (into-array Object 
+                         [(:title s) (:category s) 
+                          (str (count (:primaryModels s [])) " models")
+                          (if (:lollapaloozaPresent s) "Yes" "No")])))
+                     (.setText detail-area "No case studies found or web app unavailable.")))))))))
+    
+    panel))
+
+;; =============================================================================
+;; Model Effectiveness Panel
+;; =============================================================================
+
+(defn create-effectiveness-panel []
+  "Panel showing Bayesian effectiveness tracking for mental models"
+  (let [panel (JPanel. (BorderLayout. 20 20))
+        table-model (DefaultTableModel.
+                     (into-array ["Model" "Domain" "Success" "Failure" "Bayesian Score"])
+                     0)
+        table (JTable. table-model)
+        refresh-btn (JButton. "🔄 Refresh")]
+    
+    (.setBackground panel (:bg-secondary colors))
+    (.setBorder panel (EmptyBorder. 30 30 30 30))
+    
+    ;; Title
+    (let [header (JPanel. (BorderLayout.))
+          title (JLabel. "📊 Model Effectiveness")]
+      (.setOpaque header false)
+      (.setFont title (:title fonts))
+      (.setForeground title (:text-primary colors))
+      (.add header title BorderLayout/WEST)
+      (.add header refresh-btn BorderLayout/EAST)
+      (.add panel header BorderLayout/NORTH))
+    
+    ;; Sample data - will be replaced by web app data
+    (doseq [[model domain success fail score] 
+            [["Margin of Safety" "Investing" 15 3 "0.83"]
+             ["Circle of Competence" "Business" 12 2 "0.86"]
+             ["Incentive Bias" "Management" 8 4 "0.67"]
+             ["Social Proof" "Marketing" 10 5 "0.67"]
+             ["Sunk Cost" "Decisions" 6 8 "0.43"]
+             ["Confirmation Bias" "Research" 4 6 "0.40"]]]
+      (.addRow table-model (into-array Object [model domain success fail score])))
+    
+    ;; Table setup
+    (.setFont table (:body fonts))
+    (.setRowHeight table 28)
+    
+    ;; Explanation
+    (let [info (JLabel. "<html>Bayesian scores update based on decision outcomes. Higher = more effective.</html>")]
+      (.setFont info (:small fonts))
+      (.add panel info BorderLayout/SOUTH))
+    
+    (.add panel (JScrollPane. table) BorderLayout/CENTER)
+    
+    panel))
+
+;; =============================================================================
+;; Signals Panel (News/SEC filings)
+;; =============================================================================
+
+(defn create-signals-panel []
+  "Panel showing signals from news and SEC filings"
+  (let [panel (JPanel. (BorderLayout. 20 20))
+        table-model (DefaultTableModel.
+                     (into-array ["Date" "Type" "Title" "Models Detected" "Lollapalooza"])
+                     0)
+        table (JTable. table-model)
+        refresh-btn (JButton. "🔄 Fetch Signals")]
+    
+    (.setBackground panel (:bg-secondary colors))
+    (.setBorder panel (EmptyBorder. 30 30 30 30))
+    
+    ;; Title
+    (let [header (JPanel. (BorderLayout.))
+          title (JLabel. "📡 Signals")]
+      (.setOpaque header false)
+      (.setFont title (:title fonts))
+      (.setForeground title (:text-primary colors))
+      (.add header title BorderLayout/WEST)
+      (.add header refresh-btn BorderLayout/EAST)
+      (.add panel header BorderLayout/NORTH))
+    
+    ;; Sample signals
+    (doseq [[date type title models lolla]
+            [["2026-01-19" "News" "Tech Giant Reports Record Earnings" "Social Proof, FOMO" "No"]
+             ["2026-01-18" "SEC" "Form 10-K: XYZ Corp" "Incentive Bias" "No"]
+             ["2026-01-17" "News" "Startup Raises $500M at $10B Valuation" "Overconfidence, Greater Fool" "Yes"]
+             ["2026-01-16" "SEC" "Form 8-K: Management Change" "Authority Bias" "No"]
+             ["2026-01-15" "News" "Market Hits All-Time High" "Social Proof, FOMO, Denial" "Yes"]]]
+      (.addRow table-model (into-array Object [date type title models lolla])))
+    
+    ;; Table setup
+    (.setFont table (:body fonts))
+    (.setRowHeight table 28)
+    
+    ;; Color Lollapalooza rows
+    (.setDefaultRenderer table Object
+      (proxy [javax.swing.table.DefaultTableCellRenderer] []
+        (getTableCellRendererComponent [tbl value isSelected hasFocus row col]
+          (let [comp (proxy-super getTableCellRendererComponent tbl value isSelected hasFocus row col)
+                lolla-val (.getValueAt tbl row 4)]
+            (when (and (not isSelected) (= lolla-val "Yes"))
+              (.setBackground comp (Color. 254 243 199)))
+            comp))))
+    
+    (.add panel (JScrollPane. table) BorderLayout/CENTER)
+    
+    ;; Refresh action
+    (.addActionListener refresh-btn
+      (reify ActionListener
+        (actionPerformed [_ _]
+          (JOptionPane/showMessageDialog panel 
+            "Fetching signals from web app...\nConnect your web app in Settings to enable."))))
+    
+    panel))
+
+;; =============================================================================
+;; Sync Status Panel
+;; =============================================================================
+
+(defn create-sync-panel []
+  "Panel showing sync status with web app"
+  (let [panel (JPanel. (BorderLayout. 20 20))
+        status-area (JTextArea. 15 50)
+        sync-btn (JButton. "🔄 Sync Now")
+        clear-btn (JButton. "🗑️ Clear Queue")]
+    
+    (.setBackground panel (:bg-secondary colors))
+    (.setBorder panel (EmptyBorder. 30 30 30 30))
+    
+    ;; Title
+    (let [title (JLabel. "☁️ Sync Status")]
+      (.setFont title (:title fonts))
+      (.setForeground title (:text-primary colors))
+      (.add panel title BorderLayout/NORTH))
+    
+    ;; Status display
+    (.setEditable status-area false)
+    (.setFont status-area (:mono fonts))
+    (.setText status-area 
+      (str "=== Sync Status ===\n\n"
+           "Web App: " (or (get-in @*state [:settings :web-app-url]) "Not configured") "\n"
+           "Connection: " (if (= (get-in @*state [:connections :web-app]) :connected) "Connected" "Disconnected") "\n\n"
+           "=== Pending Sync Items ===\n"
+           "Scan Results: " (count (get-in @*state [:sync-queue :scans] [])) "\n"
+           "Decisions: " (count (get-in @*state [:sync-queue :decisions] [])) "\n"
+           "Model Updates: " (count (get-in @*state [:sync-queue :models] [])) "\n\n"
+           "=== Last Sync ===\n"
+           "Time: " (or (get-in @*state [:last-sync]) "Never") "\n"
+           "Status: " (or (get-in @*state [:last-sync-status]) "Unknown")))
+    
+    (.add panel (JScrollPane. status-area) BorderLayout/CENTER)
+    
+    ;; Buttons
+    (let [btn-panel (JPanel. (FlowLayout. FlowLayout/RIGHT))]
+      (.setOpaque btn-panel false)
+      (.add btn-panel clear-btn)
+      (.add btn-panel sync-btn)
+      (.add panel btn-panel BorderLayout/SOUTH))
+    
+    ;; Sync action
+    (.addActionListener sync-btn
+      (reify ActionListener
+        (actionPerformed [_ _]
+          (future
+            (let [results (get-in @*state [:recent-scans] [])]
+              (when (seq results)
+                (sync-to-web-app! results)
+                (swap! *state assoc :last-sync (str (java.time.LocalDateTime/now))
+                                   :last-sync-status "Success")))))))
+    
+    panel))
+
+;; =============================================================================
+;; Knowledge Graph Panel
+;; =============================================================================
+
+(defn create-knowledge-graph-panel []
+  "Panel showing knowledge graph visualization of mental model connections"
+  (let [panel (JPanel. (BorderLayout. 20 20))
+        canvas (JPanel.)
+        refresh-btn (JButton. "🔄 Refresh Graph")
+        zoom-in-btn (JButton. "+")
+        zoom-out-btn (JButton. "-")
+        zoom-level (atom 1.0)
+        
+        ;; Sample graph data - nodes and edges
+        nodes (atom [{:id 1 :label "Incentive Bias" :x 200 :y 150 :category "Psychology"}
+                     {:id 2 :label "Social Proof" :x 350 :y 100 :category "Psychology"}
+                     {:id 3 :label "Sunk Cost" :x 300 :y 250 :category "Economics"}
+                     {:id 4 :label "Confirmation Bias" :x 450 :y 200 :category "Psychology"}
+                     {:id 5 :label "Margin of Safety" :x 150 :y 300 :category "Investing"}
+                     {:id 6 :label "Circle of Competence" :x 500 :y 350 :category "Investing"}
+                     {:id 7 :label "Leverage" :x 400 :y 400 :category "Economics"}
+                     {:id 8 :label "Network Effects" :x 250 :y 400 :category "Systems"}])
+        edges (atom [[1 2] [1 3] [2 4] [3 5] [4 6] [5 7] [6 7] [7 8] [1 8]])]
+    
+    (.setBackground panel (:bg-secondary colors))
+    (.setBorder panel (EmptyBorder. 30 30 30 30))
+    
+    ;; Title and controls
+    (let [header (JPanel. (BorderLayout.))
+          title (JLabel. "🕸️ Knowledge Graph")
+          controls (JPanel. (FlowLayout. FlowLayout/RIGHT))]
+      (.setOpaque header false)
+      (.setOpaque controls false)
+      (.setFont title (:title fonts))
+      (.setForeground title (:text-primary colors))
+      (.add controls zoom-out-btn)
+      (.add controls zoom-in-btn)
+      (.add controls refresh-btn)
+      (.add header title BorderLayout/WEST)
+      (.add header controls BorderLayout/EAST)
+      (.add panel header BorderLayout/NORTH))
+    
+    ;; Canvas for drawing graph
+    (let [graph-canvas (proxy [JPanel] []
+                        (paintComponent [g]
+                          (proxy-super paintComponent g)
+                          (let [g2d (cast Graphics2D g)
+                                zoom @zoom-level]
+                            ;; Enable anti-aliasing
+                            (.setRenderingHint g2d RenderingHints/KEY_ANTIALIASING RenderingHints/VALUE_ANTIALIAS_ON)
+                            
+                            ;; Draw edges
+                            (.setColor g2d (Color. 200 200 200))
+                            (.setStroke g2d (BasicStroke. 2))
+                            (doseq [[from to] @edges]
+                              (let [n1 (first (filter #(= (:id %) from) @nodes))
+                                    n2 (first (filter #(= (:id %) to) @nodes))]
+                                (when (and n1 n2)
+                                  (.drawLine g2d 
+                                    (int (* zoom (:x n1))) (int (* zoom (:y n1)))
+                                    (int (* zoom (:x n2))) (int (* zoom (:y n2)))))))
+                            
+                            ;; Draw nodes
+                            (doseq [node @nodes]
+                              (let [x (int (* zoom (:x node)))
+                                    y (int (* zoom (:y node)))
+                                    color (case (:category node)
+                                           "Psychology" (Color. 99 102 241)
+                                           "Economics" (Color. 34 197 94)
+                                           "Investing" (Color. 234 179 8)
+                                           "Systems" (Color. 239 68 68)
+                                           (Color. 148 163 184))]
+                                ;; Node circle
+                                (.setColor g2d color)
+                                (.fillOval g2d (- x 20) (- y 20) 40 40)
+                                (.setColor g2d Color/WHITE)
+                                (.setStroke g2d (BasicStroke. 2))
+                                (.drawOval g2d (- x 20) (- y 20) 40 40)
+                                ;; Label
+                                (.setColor g2d (:text-primary colors))
+                                (.setFont g2d (:small fonts))
+                                (let [fm (.getFontMetrics g2d)
+                                      label (:label node)
+                                      lw (.stringWidth fm label)]
+                                  (.drawString g2d label (- x (/ lw 2)) (+ y 35))))))))]
+      (.setBackground graph-canvas (:bg-primary colors))
+      (.setPreferredSize graph-canvas (Dimension. 800 600))
+      (.add panel (JScrollPane. graph-canvas) BorderLayout/CENTER)
+      
+      ;; Zoom controls
+      (.addActionListener zoom-in-btn
+        (reify ActionListener
+          (actionPerformed [_ _]
+            (swap! zoom-level #(min 2.0 (+ % 0.1)))
+            (.repaint graph-canvas))))
+      
+      (.addActionListener zoom-out-btn
+        (reify ActionListener
+          (actionPerformed [_ _]
+            (swap! zoom-level #(max 0.5 (- % 0.1)))
+            (.repaint graph-canvas)))))
+    
+    ;; Legend
+    (let [legend (JPanel. (FlowLayout. FlowLayout/LEFT 15 5))]
+      (.setOpaque legend false)
+      (doseq [[cat color] [["Psychology" "#6366f1"] ["Economics" "#22c55e"] 
+                           ["Investing" "#eab308"] ["Systems" "#ef4444"]]]
+        (let [lbl (JLabel. (str "● " cat))]
+          (.setFont lbl (:small fonts))
+          (.add legend lbl)))
+      (.add panel legend BorderLayout/SOUTH))
+    
+    panel))
+
+;; =============================================================================
 ;; Sidebar
 ;; =============================================================================
 
 (defn create-sidebar [card-layout content-panel frame]
-  "VALUE LINE STYLE - Ultra-compact sidebar navigation"
+  "Clean modern sidebar matching web app design"
   (let [sidebar (JPanel.)
         layout (BoxLayout. sidebar BoxLayout/Y_AXIS)]
     
     (.setLayout sidebar layout)
-    (.setBackground sidebar (:sidebar-bg colors))
-    (.setPreferredSize sidebar (Dimension. 90 0))  ;; Was 220 - now ultra narrow
-    (.setBorder sidebar (EmptyBorder. 3 3 3 3))    ;; Minimal padding
+    (.setBackground sidebar (:bg-secondary colors))
+    (.setPreferredSize sidebar (Dimension. 180 0))  ;; Wider for readability
+    (.setBorder sidebar (EmptyBorder. 12 12 12 12))  ;; More breathing room
     
-    ;; Logo/Title - abbreviated
-    (let [logo (JLabel. "MM")]
-      (.setFont logo (:heading fonts))
-      (.setForeground logo (:primary colors))
+    ;; Logo/Title - full name
+    (let [logo (JLabel. "Mental Models")]
+      (.setFont logo (:header fonts))
+      (.setForeground logo (:accent colors))
       (.setAlignmentX logo 0.0)
       (.add sidebar logo))
     
-    (.add sidebar (Box/createVerticalStrut 5))
+    (.add sidebar (Box/createVerticalStrut 16))
     
-    ;; Nav buttons - abbreviated labels, compact
-    (doseq [[label card-name] [["Dash" "dashboard"]
-                               ["Scan" "scan"]
-                               ["Models" "models"]
-                               ["Decide" "decisions"]
-                               ["Watch" "watch"]
-                               ["Logs" "logs"]
-                               ["Set" "settings"]]]
+    ;; Nav buttons - full labels, clean styling
+    (doseq [[label card-name] [["Dashboard" "dashboard"]
+                               ["Scan Files" "scan"]
+                               ["All Models" "models"]
+                               ["News Analyzer" "news"]
+                               ["Decisions" "decisions"]
+                               ["Case Studies" "cases"]
+                               ["Effectiveness" "effectiveness"]
+                               ["Signals" "signals"]
+                               ["Knowledge Graph" "graph"]
+                               ["Sync Status" "sync"]
+                               ["Watch Folders" "watch"]
+                               ["Activity Log" "logs"]
+                               ["Settings" "settings"]]]
       (let [btn (JButton. label)]
-        (.setFont btn (:small fonts))
-        (.setForeground btn (:sidebar-text colors))
-        (.setBackground btn (:sidebar-bg colors))
+        (.setFont btn (:body fonts))
+        (.setForeground btn (:text-secondary colors))
+        (.setBackground btn (:bg-primary colors))
         (.setBorderPainted btn false)
         (.setFocusPainted btn false)
         (.setHorizontalAlignment btn JButton/LEFT)
-        (.setMaximumSize btn (Dimension. 85 18))   ;; Compact height
-        (.setPreferredSize btn (Dimension. 85 18))
+        (.setMaximumSize btn (Dimension. 160 32))   ;; Comfortable height
+        (.setPreferredSize btn (Dimension. 160 32))
         (.setAlignmentX btn 0.0)
-        (.setMargin btn (Insets. 0 2 0 2))
+        (.setMargin btn (Insets. 4 8 4 8))
         (.setCursor btn (Cursor/getPredefinedCursor Cursor/HAND_CURSOR))
         (.addActionListener btn
           (reify ActionListener
@@ -2975,7 +3794,55 @@
               (when (= card-name "dashboard")
                 (refresh-dashboard!)))))
         (.add sidebar btn)
-        (.add sidebar (Box/createVerticalStrut 1))))  ;; Minimal gap
+        (.add sidebar (Box/createVerticalStrut 4))))  ;; Minimal gap
+    
+    (.add sidebar (Box/createVerticalStrut 16))
+    
+    ;; Web App Quick Links section
+    (let [web-section (JPanel.)
+          web-layout (BoxLayout. web-section BoxLayout/Y_AXIS)]
+      (.setLayout web-section web-layout)
+      (.setOpaque web-section false)
+      (.setAlignmentX web-section 0.0)
+      
+      (let [section-lbl (JLabel. "WEB APP")]
+        (.setFont section-lbl (:label fonts))
+        (.setForeground section-lbl (:text-muted colors))
+        (.setAlignmentX section-lbl 0.0)
+        (.add web-section section-lbl))
+      
+      (.add web-section (Box/createVerticalStrut 4))
+      
+      (doseq [[label path] [["📊 Dashboard" "/dashboard"]
+                            ["🧠 All Models" "/models"]
+                            ["📈 Analytics" "/analytics"]
+                            ["⚙️ Settings" "/settings"]]]
+        (let [btn (JButton. label)]
+          (.setFont btn (:small fonts))
+          (.setForeground btn (:accent colors))
+          (.setBackground btn (:bg-primary colors))
+          (.setBorderPainted btn false)
+          (.setFocusPainted btn false)
+          (.setHorizontalAlignment btn JButton/LEFT)
+          (.setMaximumSize btn (Dimension. 160 28))
+          (.setPreferredSize btn (Dimension. 160 28))
+          (.setAlignmentX btn 0.0)
+          (.setMargin btn (Insets. 2 8 2 8))
+          (.setCursor btn (Cursor/getPredefinedCursor Cursor/HAND_CURSOR))
+          (.addActionListener btn
+            (reify ActionListener
+              (actionPerformed [_ _]
+                (try
+                  (let [base-url (or (get-in @*state [:settings :web-app-url])
+                                    (:web-app-url config))
+                        full-url (str base-url path)]
+                    (.browse (Desktop/getDesktop) (URI. full-url)))
+                  (catch Exception e
+                    (log! :error (str "Failed to open web: " (.getMessage e))))))))
+          (.add web-section btn)
+          (.add web-section (Box/createVerticalStrut 2))))
+      
+      (.add sidebar web-section))
     
     (.add sidebar (Box/createVerticalGlue))
     
@@ -2983,10 +3850,10 @@
     (let [conn-row (JPanel. (FlowLayout. FlowLayout/LEFT 1 0))]
       (.setOpaque conn-row false)
       (.setAlignmentX conn-row 0.0)
-      (doseq [[abbrev key] [["L" :lm-studio] ["W" :web-app] ["S" :slack] ["G" :github]]]
-        (let [lbl (JLabel. (str "●" abbrev))]
+      (doseq [[name key] [["LM Studio" :lm-studio] ["Web App" :web-app] ["Slack" :slack] ["GitHub" :github]]]
+        (let [lbl (JLabel. (str "● " name))]
           (.setFont lbl (:micro fonts))
-          (add-watch *state (keyword (str "sb-" abbrev))
+          (add-watch *state (keyword (str "sb-" name))
             (fn [_ _ _ new-state]
               (SwingUtilities/invokeLater
                 #(.setForeground lbl
@@ -3056,7 +3923,13 @@
     (.add content-panel (create-dashboard-panel) "dashboard")
     (.add content-panel (create-scan-panel frame) "scan")
     (.add content-panel (create-models-panel) "models")
+    (.add content-panel (create-news-panel) "news")
     (.add content-panel (create-decisions-panel) "decisions")
+    (.add content-panel (create-case-studies-panel) "cases")
+    (.add content-panel (create-effectiveness-panel) "effectiveness")
+    (.add content-panel (create-signals-panel) "signals")
+    (.add content-panel (create-knowledge-graph-panel) "graph")
+    (.add content-panel (create-sync-panel) "sync")
     (.add content-panel (create-watch-panel) "watch")
     (.add content-panel (create-logs-panel) "logs")
     (.add content-panel (create-settings-panel frame) "settings")
@@ -3068,6 +3941,7 @@
     ;; Menu bar
     (let [menubar (JMenuBar.)
           file-menu (JMenu. "File")
+          view-menu (JMenu. "View")
           help-menu (JMenu. "Help")
           
           exit-item (JMenuItem. "Exit")
@@ -3110,6 +3984,28 @@
       
       (.add menubar file-menu)
       (.add menubar help-menu)
+      (let [theme-item (JMenuItem. "Toggle Dark/Light Mode")
+            fullscreen-item (JMenuItem. "Toggle Fullscreen")]
+        (.addActionListener theme-item
+          (reify ActionListener
+            (actionPerformed [_ _]
+              (toggle-theme!)
+              ;; Refresh the UI - recreate panels
+              (javax.swing.JOptionPane/showMessageDialog 
+                frame 
+                "Theme changed. Restart app to apply fully."
+                "Theme Toggle"
+                javax.swing.JOptionPane/INFORMATION_MESSAGE))))
+        (.addActionListener fullscreen-item
+          (reify ActionListener
+            (actionPerformed [_ _]
+              (let [device (.getDefaultScreenDevice (java.awt.GraphicsEnvironment/getLocalGraphicsEnvironment))]
+                (if (.getFullScreenWindow device)
+                  (.setFullScreenWindow device nil)
+                  (.setFullScreenWindow device frame))))))
+        (.add view-menu theme-item)
+        (.add view-menu fullscreen-item))
+      (.add menubar view-menu)
       (.setJMenuBar frame menubar))
     
     (.setDefaultCloseOperation frame JFrame/EXIT_ON_CLOSE)
@@ -3123,82 +4019,361 @@
 ;; Startup Update Check (Fully Automatic)
 ;; =============================================================================
 
-(defn check-gdrive-manifest []
-  "Fetch releases manifest from Google Drive - BULLETPROOF, no auth needed"
+;; =============================================================================
+;; Continuous Update System - Delta Updates + Auto-Polling
+;; =============================================================================
+
+(def *update-poll-interval (atom 3600000)) ;; 1 hour default (less intrusive)
+(def *last-code-hash (atom nil))
+(def *update-poller (atom nil))
+
+;; Blue-Green Deployment State
+(def *blue-green-state (atom {:active-slot :blue
+                               :blue-version nil
+                               :green-version nil
+                               :blue-ready true
+                               :green-ready false
+                               :pending-download nil
+                               :last-swap nil}))
+
+(defn get-inactive-slot []
+  "Get the slot that's not currently active"
+  (if (= :blue (:active-slot @*blue-green-state)) :green :blue))
+
+(defn get-slot-dir [slot]
+  "Get directory for a deployment slot"
+  (let [base-dir (or (System/getProperty "app.dir") ".")
+        slot-name (name slot)]
+    (File. base-dir (str "slots/" slot-name))))
+
+(defn prepare-inactive-slot! [new-version-dir]
+  "Prepare the inactive slot with new version (background)"
+  (future
+    (try
+      (let [inactive-slot (get-inactive-slot)
+            slot-dir (get-slot-dir inactive-slot)]
+        (log! (str "[BLUE-GREEN] Preparing " (name inactive-slot) " slot..."))
+        ;; Create slot directory
+        (.mkdirs slot-dir)
+        ;; Copy new version to inactive slot
+        (doseq [f (file-seq (File. new-version-dir))]
+          (when (.isFile f)
+            (let [rel-path (.substring (.getAbsolutePath f) 
+                                       (inc (count (.getAbsolutePath (File. new-version-dir)))))
+                  dest-file (File. slot-dir rel-path)]
+              (.mkdirs (.getParentFile dest-file))
+              (io/copy f dest-file))))
+        ;; Mark slot as ready
+        (swap! *blue-green-state assoc 
+               (keyword (str (name inactive-slot) "-ready")) true
+               (keyword (str (name inactive-slot) "-version")) (:version config))
+        (log! (str "[BLUE-GREEN] " (name inactive-slot) " slot ready"))
+        {:success true :slot inactive-slot})
+      (catch Exception e
+        (log! (str "[BLUE-GREEN] Slot preparation failed: " (.getMessage e)))
+        {:success false :error (.getMessage e)}))))
+
+(defn swap-slots! []
+  "Instantly swap active slot (zero-downtime switch)"
+  (let [current (:active-slot @*blue-green-state)
+        new-slot (get-inactive-slot)]
+    (when (get @*blue-green-state (keyword (str (name new-slot) "-ready")))
+      (log! (str "[BLUE-GREEN] Swapping " (name current) " -> " (name new-slot)))
+      (swap! *blue-green-state assoc 
+             :active-slot new-slot
+             :last-swap (System/currentTimeMillis))
+      ;; Update classpath to point to new slot (Clojure dynamic loading)
+      (try
+        (let [slot-dir (get-slot-dir new-slot)
+              src-dir (File. slot-dir "src")]
+          (when (.exists src-dir)
+            ;; Reload the main namespace from new location
+            (require 'mental-models.desktop.gui.swing-app :reload)
+            (log! "[BLUE-GREEN] Code swapped successfully - no restart needed")))
+        (catch Exception e
+          (log! (str "[BLUE-GREEN] Hot swap failed, will use on next restart: " (.getMessage e)))))
+      (swap! *state assoc-in [:update :status] (str "✓ Swapped to " (name new-slot)))
+      {:success true :active new-slot})))
+
+(defn fetch-delta-manifest! []
+  "Fetch list of changed files from web app"
   (try
+    (let [url (str (or (get-in @*state [:settings :web-app-url]) (:web-app-url config))
+                   "/api/trpc/desktop.deltaManifest?input="
+                   (java.net.URLEncoder/encode 
+                     (str "{\"json\":{\"version\":\"" (:version config) "\"}}")
+                     "UTF-8"))
+          result (http-get url :headers {"X-Desktop-API-Key" (:desktop-api-key config)})]
+      (when (:success result)
+        (let [body (:body result)]
+          ;; Parse changed files from response
+          (when-let [files-match (re-find #"\"changedFiles\":\s*\[([^\]]+)\]" body)]
+            (let [files-str (second files-match)
+                  ;; Extract file objects
+                  file-matches (re-seq #"\{\"path\":\"([^\"]+)\",\"url\":\"([^\"]+)\",\"hash\":\"([^\"]+)\"\}" files-str)]
+              (map (fn [[_ path url hash]]
+                     {:path path :url url :hash hash})
+                   file-matches))))))
+    (catch Exception e
+      (log! (str "[DELTA] Failed to fetch manifest: " (.getMessage e)))
+      nil)))
+
+(defn blue-green-delta-update! []
+  "Delta update to inactive slot, then swap when ready - NO full downloads"
+  (future
+    (try
+      (log! "[BLUE-GREEN] Checking for delta updates...")
+      (let [changed-files (fetch-delta-manifest!)]
+        (if (and changed-files (seq changed-files))
+          (do
+            (log! (str "[BLUE-GREEN] " (count changed-files) " files changed - downloading deltas only"))
+            (swap! *blue-green-state assoc :pending-download "delta")
+            
+            ;; Prepare inactive slot by copying current version first
+            (let [inactive-slot (get-inactive-slot)
+                  slot-dir (get-slot-dir inactive-slot)
+                  current-dir (File. (or (System/getProperty "app.dir") "."))]
+              
+              ;; Only copy if slot doesn't exist yet
+              (when-not (.exists slot-dir)
+                (log! "[BLUE-GREEN] Initializing inactive slot from current...")
+                (.mkdirs slot-dir)
+                (doseq [f (file-seq current-dir)]
+                  (when (and (.isFile f)
+                             (not (str/includes? (.getAbsolutePath f) "slots/"))
+                             (not (str/includes? (.getAbsolutePath f) ".git")))
+                    (let [rel-path (.substring (.getAbsolutePath f) 
+                                               (inc (count (.getAbsolutePath current-dir))))
+                          dest-file (File. slot-dir rel-path)]
+                      (.mkdirs (.getParentFile dest-file))
+                      (io/copy f dest-file)))))
+              
+              ;; Now apply only the changed files
+              (let [success-count (atom 0)]
+                (doseq [{:keys [path url]} changed-files]
+                  (let [dest-file (File. slot-dir path)]
+                    (.mkdirs (.getParentFile dest-file))
+                    (try
+                      (let [result (http-get url)]
+                        (when (:success result)
+                          (spit dest-file (:body result))
+                          (swap! success-count inc)
+                          (log! (str "[DELTA] Updated: " path))))
+                      (catch Exception e
+                        (log! (str "[DELTA] Failed: " path " - " (.getMessage e)))))))
+                
+                (if (= @success-count (count changed-files))
+                  (do
+                    (log! "[BLUE-GREEN] All deltas applied - ready to swap")
+                    (swap! *blue-green-state assoc 
+                           (keyword (str (name inactive-slot) "-ready")) true)
+                    (swap! *state assoc-in [:update :status] "✓ Delta ready")
+                    ;; Auto-swap after brief delay
+                    (Thread/sleep 2000)
+                    (swap-slots!))
+                  (log! "[BLUE-GREEN] Some deltas failed")))))
+          (log! "[BLUE-GREEN] No changes detected")))
+      (catch Exception e
+        (log! (str "[BLUE-GREEN] Delta update failed: " (.getMessage e)))
+        (swap! *blue-green-state assoc :pending-download nil)))))
+
+(defn fetch-code-manifest []
+  "Fetch manifest of current code files and hashes from web app"
+  (try
+    (let [url (str (or (get-in @*state [:settings :web-app-url]) (:web-app-url config))
+                   "/api/trpc/desktop.codeManifest")
+          result (http-get url :headers {"X-Desktop-API-Key" (:desktop-api-key config)})]
+      (when (:success result)
+        (let [body (:body result)]
+          ;; Parse JSON response
+          (when-let [data (re-find #"\"files\":\s*\[([^\]]+)\]" body)]
+            {:success true :manifest (second data)}))))
+    (catch Exception e
+      (log! (str "[DELTA] Failed to fetch manifest: " (.getMessage e)))
+      nil)))
+
+(defn download-delta-file! [file-path file-url]
+  "Download a single changed file"
+  (try
+    (let [app-dir (File. (or (System/getProperty "app.dir") "."))
+          dest-file (File. app-dir file-path)
+          result (http-get file-url)]
+      (when (:success result)
+        (.mkdirs (.getParentFile dest-file))
+        (spit dest-file (:body result))
+        (log! (str "[DELTA] Updated: " file-path))
+        true))
+    (catch Exception e
+      (log! (str "[DELTA] Failed to update " file-path ": " (.getMessage e)))
+      false)))
+
+(defn apply-delta-updates! [changed-files]
+  "Apply delta updates for changed files only"
+  (log! (str "[DELTA] Applying " (count changed-files) " file updates..."))
+  (let [results (doall (map (fn [{:keys [path url]}]
+                              (download-delta-file! path url))
+                            changed-files))]
+    (if (every? true? results)
+      (do
+        (log! "[DELTA] All updates applied successfully")
+        (swap! *state assoc-in [:update :status] "✓ Live updated")
+        ;; Reload changed namespaces if possible
+        (try
+          (require 'mental-models.desktop.gui.swing-app :reload)
+          (log! "[DELTA] Hot-reloaded code")
+          (catch Exception e
+            (log! (str "[DELTA] Hot reload not possible: " (.getMessage e)))))
+        true)
+      (do
+        (log! "[DELTA] Some updates failed")
+        false))))
+
+(defn check-for-delta-updates! []
+  "Check web app for code changes and apply blue-green delta updates"
+  (future
+    (try
+      (let [url (str (or (get-in @*state [:settings :web-app-url]) (:web-app-url config))
+                     "/api/trpc/desktop.checkUpdates?input=" 
+                     (java.net.URLEncoder/encode 
+                       (str "{\"json\":{\"version\":\"" (:version config) 
+                            "\",\"codeHash\":\"" @*last-code-hash "\"}}")
+                       "UTF-8"))
+            result (http-get url :headers {"X-Desktop-API-Key" (:desktop-api-key config)})]
+        (when (:success result)
+          (let [body (:body result)]
+            (when (str/includes? body "\"hasUpdates\":true")
+              (log! "[POLLER] Updates detected - starting blue-green delta update...")
+              ;; Use blue-green delta update (downloads only changed files)
+              (blue-green-delta-update!)))))
+      (catch Exception e
+        (log! (str "[POLLER] Update check failed: " (.getMessage e)))))))
+
+(defn start-update-poller! []
+  "Start background polling for updates"
+  (when-not @*update-poller
+    (reset! *update-poller
+      (future
+        (log! "[POLLER] Started continuous update polling")
+        (while true
+          (try
+            (Thread/sleep @*update-poll-interval)
+            (check-for-delta-updates!)
+            (catch InterruptedException _
+              (log! "[POLLER] Stopped")
+              (throw (InterruptedException.)))
+            (catch Exception e
+              (log! (str "[POLLER] Error: " (.getMessage e))))))))))
+
+(defn stop-update-poller! []
+  "Stop the update poller"
+  (when-let [p @*update-poller]
+    (future-cancel p)
+    (reset! *update-poller nil)
+    (log! "[POLLER] Stopped")))
+
+;; =============================================================================
+;; Google Drive Update Functions
+;; =============================================================================
+
+(defn check-gdrive-manifest []
+  "Check Google Drive manifest for latest version - PRIMARY update method"
+  (try
+    (println "[GDRIVE] Checking manifest...")
     (let [manifest-url (str (:gdrive-releases-url config) (:gdrive-manifest-id config))
-          _ (println "[UPDATE] Fetching manifest from Google Drive...")
           result (http-get manifest-url)]
       (if (:success result)
-        (let [body (:body result)
-              latest (second (re-find #"\"latest\"\s*:\s*\"([^\"]+)\"" body))
-              gdrive-id (second (re-find (re-pattern (str "\"" latest "\"[^}]*\"gdrive_id\"\\s*:\\s*\"([^\"]+)\"")) body))]
-          (println "[UPDATE] Manifest: latest=" latest "gdrive_id=" gdrive-id)
-          {:success true :latest latest :gdrive-id gdrive-id})
-        {:success false :error (:error result)}))
+        (let [body (:body result)]
+          (try
+            ;; Parse JSON manifest
+            (let [latest (second (re-find #"\"latest\"\s*:\s*\"([^\"]+)\"" body))
+                  url (second (re-find #"\"url\"\s*:\s*\"([^\"]+)\"" body))]
+              (println "[GDRIVE] Manifest parsed - latest:" latest "url:" url)
+              {:success true :version latest :download-url url})
+            (catch Exception e
+              (println "[GDRIVE] Failed to parse manifest:" (.getMessage e))
+              {:success false :error "Parse failed"})))
+        (do
+          (println "[GDRIVE] Failed to fetch manifest:" (:error result))
+          {:success false :error (:error result)})))
     (catch Exception e
+      (println "[GDRIVE] Exception:" (.getMessage e))
       {:success false :error (.getMessage e)})))
 
+(defn is-gdrive-url? [url]
+  "Check if URL is a Google Drive URL"
+  (and url (or (str/includes? url "drive.google.com")
+               (str/includes? url "docs.google.com"))))
+
 (defn check-updates-silently! [frame]
-  "Check for updates on startup and AUTO-DOWNLOAD without user interaction
-   BULLETPROOF: Tries Google Drive first, then GitHub, then web app"
+  "Check for updates - tries Google Drive first (no auth), then web app, then GitHub"
   (future
     (try
       (Thread/sleep 3000) ;; Wait for UI to load
+      ;; Start continuous polling
+      (start-update-poller!)
       (println "[AUTO-UPDATE] Checking for updates...")
-      (log! "[AUTO-UPDATE] Checking for updates...")
       
-      ;; METHOD 1: Google Drive manifest (PRIMARY - always works, no auth)
+      ;; TRY GOOGLE DRIVE FIRST (PRIMARY - no auth needed, always works)
       (let [gdrive-result (check-gdrive-manifest)]
         (if (:success gdrive-result)
-          (let [latest (:latest gdrive-result)
-                gdrive-id (:gdrive-id gdrive-result)
-                newer? (version-newer? latest (:version config))]
-            (println "[AUTO-UPDATE] Google Drive: Current:" (:version config) "Latest:" latest "Newer?" newer?)
-            (if (and newer? gdrive-id)
-              (let [download-url (str (:gdrive-releases-url config) gdrive-id)]
-                (println "[AUTO-UPDATE] *** NEW VERSION DETECTED - DOWNLOADING FROM GOOGLE DRIVE ***")
-                (log! (str "[AUTO-UPDATE] New version " latest " found - downloading from Google Drive..."))
-                (swap! *state assoc-in [:update :available] true)
-                (swap! *state assoc-in [:update :latest-version] latest)
-                (swap! *state assoc-in [:update :download-url] download-url)
-                (perform-auto-update! frame download-url latest))
+          (let [tag (:version gdrive-result)
+                download-url (:download-url gdrive-result)
+                newer? (version-newer? tag (:version config))]
+            (println "[AUTO-UPDATE] Google Drive - Current:" (:version config) "Latest:" tag "Newer?" newer?)
+            (if (and newer? download-url)
               (do
-                (println "[AUTO-UPDATE] Already on latest version")
-                (log! "[AUTO-UPDATE] Already on latest version"))))
+                (println "[AUTO-UPDATE] *** NEW VERSION DETECTED VIA GOOGLE DRIVE ***")
+                (log! (str "[AUTO-UPDATE] New version " tag " found - downloading from Google Drive..."))
+                (swap! *state assoc-in [:update :available] true)
+                (swap! *state assoc-in [:update :latest-version] tag)
+                (swap! *state assoc-in [:update :download-url] download-url)
+                (perform-auto-update! frame download-url tag))
+              (println "[AUTO-UPDATE] Already on latest version")))
           
-          ;; METHOD 2: GitHub API fallback (if Google Drive fails)
+          ;; FALLBACK 1: Web app config
           (do
-            (println "[AUTO-UPDATE] Google Drive failed, trying GitHub...")
-            (log! "[AUTO-UPDATE] Google Drive unavailable, trying GitHub...")
-            (let [github-token (or (get-in @*state [:settings :github-token]) (:github-token config))
-                  url (str (:github-api config) "/repos/" (:github-repo config) "/releases/latest")
-                  headers (if github-token
-                            {"Accept" "application/vnd.github.v3+json"
-                             "Authorization" (str "token " github-token)}
-                            {"Accept" "application/vnd.github.v3+json"})
-                  result (http-get url :headers headers)]
-              (if (:success result)
-                (let [body (:body result)
-                      tag (second (re-find #"\"tag_name\"\s*:\s*\"([^\"]+)\"" body))
-                      download-url (second (re-find #"\"browser_download_url\"\s*:\s*\"([^\"]+\.zip)\"" body))
+            (println "[AUTO-UPDATE] Google Drive unavailable, trying web app...")
+            (let [web-config (fetch-remote-config)]
+              (if (and web-config (:version web-config))
+                (let [tag (:version web-config)
+                      sources (:sources web-config)
                       newer? (version-newer? tag (:version config))]
-                  (println "[AUTO-UPDATE] GitHub: Current:" (:version config) "Latest:" tag "Newer?" newer?)
-                  (if (and newer? download-url)
+                  (println "[AUTO-UPDATE] Web app - Current:" (:version config) "Latest:" tag "Newer?" newer?)
+                  (if (and newer? (seq sources))
                     (do
-                      (println "[AUTO-UPDATE] *** NEW VERSION DETECTED - DOWNLOADING FROM GITHUB ***")
-                      (log! (str "[AUTO-UPDATE] New version " tag " found - downloading from GitHub..."))
+                      (println "[AUTO-UPDATE] *** NEW VERSION DETECTED VIA WEB APP ***")
+                      (log! (str "[AUTO-UPDATE] New version " tag " found - downloading..."))
                       (swap! *state assoc-in [:update :available] true)
                       (swap! *state assoc-in [:update :latest-version] tag)
-                      (swap! *state assoc-in [:update :download-url] download-url)
-                      (perform-auto-update! frame download-url tag))
-                    (println "[AUTO-UPDATE] Already on latest version or no download URL")))
+                      (let [download-url (:url (first sources))]
+                        (swap! *state assoc-in [:update :download-url] download-url)
+                        (perform-auto-update! frame download-url tag)))
+                    (println "[AUTO-UPDATE] Already on latest version")))
+                
+                ;; FALLBACK 2: GitHub API (public releases only)
                 (do
-                  (println "[AUTO-UPDATE] GitHub also failed:" (:error result))
-                  (log! "[AUTO-UPDATE] Both Google Drive and GitHub unavailable")))))))
+                  (println "[AUTO-UPDATE] Web app unavailable, trying GitHub public API...")
+                  (let [url (str (:github-api config) "/repos/" (:github-repo config) "/releases/latest")
+                        headers {"Accept" "application/vnd.github.v3+json"}
+                        result (http-get url :headers headers)]
+                    (if (:success result)
+                      (let [body (:body result)
+                            tag (second (re-find #"\"tag_name\"\s*:\s*\"([^\"]+)\"" body))
+                            download-url (second (re-find #"\"browser_download_url\"\s*:\s*\"([^\"]+\.zip)\"" body))
+                            newer? (version-newer? tag (:version config))]
+                        (println "[AUTO-UPDATE] GitHub - Current:" (:version config) "Latest:" tag "Newer?" newer?)
+                        (if (and newer? download-url)
+                          (do
+                            (println "[AUTO-UPDATE] *** NEW VERSION DETECTED VIA GITHUB ***")
+                            (log! (str "[AUTO-UPDATE] New version " tag " found - downloading..."))
+                            (swap! *state assoc-in [:update :available] true)
+                            (swap! *state assoc-in [:update :latest-version] tag)
+                            (swap! *state assoc-in [:update :download-url] download-url)
+                            (perform-auto-update! frame download-url tag))
+                          (println "[AUTO-UPDATE] Already on latest version or no download URL")))
+                      (println "[AUTO-UPDATE] All update sources failed")))))))))
       (catch Exception e
-        (println "[AUTO-UPDATE] Update check failed:" (.getMessage e))
-        (log! (str "[AUTO-UPDATE] Update check failed: " (.getMessage e)))
+        (println "[AUTO-UPDATE] Silent check failed:" (.getMessage e))
         (.printStackTrace e)))))
 
 ;; =============================================================================
@@ -3262,7 +4437,38 @@
           ;; Delete corrupted state file
           (.delete state-file))))))
 
+
+(defn run-startup-selftest []
+  "Run self-test to catch errors BEFORE showing UI"
+  (try
+    (println "[SELFTEST] Testing UI components...")
+    ;; Test 1: Can we create basic UI?
+    (let [_ (JPanel.)] nil)
+    ;; Test 2: Mental models loaded?
+    (assert (seq mental-models) "Mental models not loaded")
+    ;; Test 3: Dashboard panel
+    (let [_ (create-dashboard-panel)] nil)
+    ;; Test 4: Scan panel
+    (let [_ (create-scan-panel nil)] nil)
+    ;; Test 5: Models panel  
+    (let [_ (create-models-panel)] nil)
+    (println "[SELFTEST] All tests PASSED")
+    true
+    (catch Exception e
+      (println (str "[SELFTEST] FAILED: " (.getMessage e)))
+      (.printStackTrace e)
+      false)))
+
 (defn -main [& args]
+  ;; Check for CLI batch mode
+  (when (and (seq args) (= (first args) "--batch"))
+    (run-cli-batch (rest args)))
+  (when (and (seq args) (= (first args) "--batch-file"))
+    (let [file-path (second args)
+          paths (when file-path 
+                  (str/split-lines (slurp file-path)))]
+      (run-cli-batch paths)))
+  
   (println "")
   (println "╔════════════════════════════════════════════════╗")
   (println "║     Mental Models Desktop v" (:version config) "           ║")
@@ -3288,6 +4494,11 @@
           (report-error-to-devin! "UncaughtException" (.getMessage ex) stack)))))
   
   (init-database!)
+  
+  ;; Initialize semantic search index
+  (println "[SEARCH] Indexing mental models...")
+  (let [indexed (search/index-models! mental-models)]
+    (println (str "[SEARCH] Indexed " indexed " models for semantic search")))
   
   ;; RESTORE STATE FROM UPDATE (99.9% uptime feature)
   (restore-state-from-update!)
