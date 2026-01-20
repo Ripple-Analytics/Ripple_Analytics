@@ -1,6 +1,9 @@
 %%%-------------------------------------------------------------------
-%%% @doc Updater Worker
-%%% Core update logic with bulletproof fallback chain.
+%%% @doc Updater Worker - Proper Blue-Green Deployment
+%%% 
+%%% CORE PRINCIPLE: Active version NEVER touched during update.
+%%% Only the standby is rebuilt. If standby fails, active keeps serving.
+%%% 
 %%% @end
 %%%-------------------------------------------------------------------
 -module(updater_worker).
@@ -16,15 +19,21 @@
     last_update = undefined,
     current_commit = undefined,
     remote_commit = undefined,
-    branch = <<"master">>,
+    branch = <<"release2">>,
     update_available = false,
-    update_source = undefined,
+    active_env = "blue",
+    standby_env = "green",
     error_message = undefined,
     check_interval = 300000,
     timer_ref = undefined,
     heartbeat_ref = undefined,
-    check_count = 0
+    check_count = 0,
+    consecutive_failures = 0,
+    last_failed_commit = undefined
 }).
+
+-define(MAX_CONSECUTIVE_FAILURES, 3).
+-define(DATA_DIR, "/data").
 
 %%====================================================================
 %% API
@@ -33,17 +42,10 @@
 start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
-get_status() ->
-    gen_server:call(?MODULE, get_status).
-
-check_updates() ->
-    gen_server:call(?MODULE, check_updates, 60000).
-
-perform_update() ->
-    gen_server:call(?MODULE, perform_update, 120000).
-
-get_config() ->
-    gen_server:call(?MODULE, get_config).
+get_status() -> gen_server:call(?MODULE, get_status).
+check_updates() -> gen_server:call(?MODULE, check_updates, 60000).
+perform_update() -> gen_server:call(?MODULE, perform_update, 600000).
+get_config() -> gen_server:call(?MODULE, get_config).
 
 %%====================================================================
 %% gen_server callbacks
@@ -51,15 +53,33 @@ get_config() ->
 
 init([]) ->
     io:format("[UPDATER] ========================================~n"),
-    io:format("[UPDATER] BULLETPROOF AUTO-UPDATER STARTING~n"),
-    io:format("[UPDATER] This service will NEVER stop~n"),
+    io:format("[UPDATER] BLUE-GREEN AUTO-UPDATER v2.0~n"),
+    io:format("[UPDATER] Active stays running, only standby updated~n"),
     io:format("[UPDATER] ========================================~n"),
+    
+    %% Ensure data directory exists
+    filelib:ensure_dir(?DATA_DIR ++ "/"),
+    
     Interval = get_check_interval(),
+    Branch = get_env_binary("GITHUB_BRANCH", <<"release2">>),
+    ActiveEnv = read_active_env(),
+    StandbyEnv = case ActiveEnv of "blue" -> "green"; _ -> "blue" end,
+    
+    io:format("[UPDATER] Branch: ~s~n", [Branch]),
+    io:format("[UPDATER] Active: ~s, Standby: ~s~n", [ActiveEnv, StandbyEnv]),
+    
     self() ! init_repo,
     TimerRef = erlang:send_after(Interval, self(), check_timer),
-    %% Heartbeat every 60 seconds to show we're alive
     HeartbeatRef = erlang:send_after(60000, self(), heartbeat),
-    {ok, #state{check_interval = Interval, timer_ref = TimerRef, heartbeat_ref = HeartbeatRef}}.
+    
+    {ok, #state{
+        check_interval = Interval, 
+        timer_ref = TimerRef, 
+        heartbeat_ref = HeartbeatRef,
+        branch = Branch,
+        active_env = ActiveEnv,
+        standby_env = StandbyEnv
+    }}.
 
 handle_call(get_status, _From, State) ->
     Status = #{
@@ -70,22 +90,21 @@ handle_call(get_status, _From, State) ->
         remote_commit => State#state.remote_commit,
         branch => State#state.branch,
         update_available => State#state.update_available,
-        update_source => State#state.update_source,
-        error_message => State#state.error_message,
-        check_interval_seconds => State#state.check_interval div 1000
+        active_env => list_to_binary(State#state.active_env),
+        standby_env => list_to_binary(State#state.standby_env),
+        consecutive_failures => State#state.consecutive_failures,
+        error_message => State#state.error_message
     },
     {reply, {ok, Status}, State};
 
 handle_call(check_updates, _From, State) ->
-    io:format("[UPDATER] Manual check triggered~n"),
-    NewState = do_check_updates(State#state{status = checking}),
+    NewState = do_check_updates(State),
     {reply, {ok, #{update_available => NewState#state.update_available}}, NewState};
 
 handle_call(perform_update, _From, State) ->
-    io:format("[UPDATER] Manual update triggered~n"),
-    NewState = do_perform_update(State#state{status = updating}),
+    NewState = do_perform_update(State),
     Result = case NewState#state.status of
-        idle -> {ok, #{message => <<"Update successful">>, source => NewState#state.update_source}};
+        idle -> {ok, #{message => <<"Update successful">>}};
         error -> {error, #{message => NewState#state.error_message}};
         _ -> {ok, #{message => <<"Update in progress">>}}
     end,
@@ -93,10 +112,9 @@ handle_call(perform_update, _From, State) ->
 
 handle_call(get_config, _From, State) ->
     Config = #{
-        github_repo => get_env_binary("GITHUB_REPO", <<"Ripple-Analytics/Ripple_Analytics">>),
-        github_branch => get_env_binary("GITHUB_BRANCH", <<"master">>),
-        github_token_configured => os:getenv("GITHUB_TOKEN") =/= false,
-        gdrive_configured => os:getenv("GDRIVE_BACKUP_URL") =/= false,
+        branch => State#state.branch,
+        active_env => list_to_binary(State#state.active_env),
+        standby_env => list_to_binary(State#state.standby_env),
         check_interval_seconds => State#state.check_interval div 1000
     },
     {reply, {ok, Config}, State};
@@ -108,82 +126,43 @@ handle_cast(_Msg, State) ->
     {noreply, State}.
 
 handle_info(init_repo, State) ->
-    %% Wrap init in try-catch to prevent crashes during startup
     NewState = try
-        io:format("[UPDATER] Initializing repository~n"),
         do_init_repo(State)
     catch
-        Class:Reason:Stacktrace ->
-            io:format("[UPDATER] ERROR during init: ~p:~p~n~p~n", [Class, Reason, Stacktrace]),
-            State#state{status = error, error_message = <<"Init failed, will retry on next check">>}
+        _:_ -> State#state{status = error, error_message = <<"Init failed">>}
     end,
     {noreply, NewState};
 
 handle_info(heartbeat, State) ->
-    %% CRITICAL: Always reschedule heartbeat FIRST
     HeartbeatRef = erlang:send_after(60000, self(), heartbeat),
-    
-    %% Log heartbeat to show we're alive
-    CheckCount = State#state.check_count,
-    NextCheckIn = case State#state.timer_ref of
-        undefined -> <<"unknown">>;
-        _ -> 
-            Remaining = erlang:read_timer(State#state.timer_ref),
-            case Remaining of
-                false -> <<"imminent">>;
-                Ms -> list_to_binary(integer_to_list(Ms div 1000) ++ "s")
-            end
-    end,
-    io:format("[UPDATER] HEARTBEAT - Alive and running | Checks completed: ~p | Next check in: ~s~n", 
-              [CheckCount, NextCheckIn]),
-    
-    %% Watchdog: If timer_ref is undefined or invalid, recreate it
-    NewTimerRef = case State#state.timer_ref of
-        undefined ->
-            io:format("[UPDATER] WATCHDOG: Timer was missing, recreating!~n"),
-            erlang:send_after(State#state.check_interval, self(), check_timer);
-        Ref ->
-            case erlang:read_timer(Ref) of
-                false ->
-                    io:format("[UPDATER] WATCHDOG: Timer expired without firing, recreating!~n"),
-                    erlang:send_after(State#state.check_interval, self(), check_timer);
-                _ -> Ref
-            end
-    end,
-    
-    {noreply, State#state{heartbeat_ref = HeartbeatRef, timer_ref = NewTimerRef}};
+    io:format("[UPDATER] HEARTBEAT | Active: ~s | Checks: ~p | Failures: ~p~n", 
+              [State#state.active_env, State#state.check_count, State#state.consecutive_failures]),
+    {noreply, State#state{heartbeat_ref = HeartbeatRef}};
 
 handle_info(check_timer, State) ->
-    %% CRITICAL: Always reschedule timer FIRST to ensure we never stop checking
-    %% This is the most important line - it ensures the updater NEVER stops
+    %% ALWAYS reschedule first
     TimerRef = erlang:send_after(State#state.check_interval, self(), check_timer),
     NewCheckCount = State#state.check_count + 1,
     
-    io:format("[UPDATER] ========================================~n"),
-    io:format("[UPDATER] CHECK #~p STARTING~n", [NewCheckCount]),
-    io:format("[UPDATER] ========================================~n"),
+    io:format("[UPDATER] === CHECK #~p ===~n", [NewCheckCount]),
     
-    %% Now do the actual work in a try-catch to prevent any crashes
     FinalState = try
-        io:format("[UPDATER] Periodic check triggered~n"),
-        NewState = do_check_updates(State#state{status = checking, check_count = NewCheckCount}),
-        case NewState#state.update_available of
+        CheckedState = do_check_updates(State#state{check_count = NewCheckCount}),
+        case CheckedState#state.update_available of
             true ->
-                io:format("[UPDATER] Update available, auto-updating~n"),
-                do_perform_update(NewState#state{status = updating});
+                io:format("[UPDATER] Update available, deploying to standby (~s)~n", 
+                          [CheckedState#state.standby_env]),
+                do_perform_update(CheckedState);
             false ->
-                io:format("[UPDATER] No updates available~n"),
-                NewState
+                io:format("[UPDATER] No update needed~n"),
+                CheckedState
         end
     catch
-        Class:Reason:Stacktrace ->
-            io:format("[UPDATER] ERROR during check: ~p:~p~n~p~n", [Class, Reason, Stacktrace]),
-            io:format("[UPDATER] Will retry on next check - updater continues running~n"),
-            State#state{status = error, error_message = <<"Check failed, will retry">>, check_count = NewCheckCount}
+        Class:Reason:Stack ->
+            io:format("[UPDATER] ERROR: ~p:~p~n~p~n", [Class, Reason, Stack]),
+            State#state{status = error, check_count = NewCheckCount}
     end,
     
-    io:format("[UPDATER] CHECK #~p COMPLETE - Next check in ~p seconds~n", 
-              [NewCheckCount, State#state.check_interval div 1000]),
     {noreply, FinalState#state{timer_ref = TimerRef}};
 
 handle_info(_Info, State) ->
@@ -193,17 +172,288 @@ terminate(_Reason, _State) ->
     ok.
 
 %%====================================================================
-%% Internal functions
+%% Core Logic
 %%====================================================================
 
+do_init_repo(State) ->
+    case filelib:is_dir("/repo/.git") of
+        true ->
+            Commit = get_current_commit(),
+            io:format("[UPDATER] Repo exists, commit: ~p~n", [Commit]),
+            State#state{current_commit = Commit, status = idle};
+        false ->
+            case clone_repo(State#state.branch) of
+                ok ->
+                    Commit = get_current_commit(),
+                    State#state{current_commit = Commit, status = idle};
+                {error, _} ->
+                    State#state{status = error, error_message = <<"Clone failed">>}
+            end
+    end.
+
+do_check_updates(State) ->
+    Branch = binary_to_list(State#state.branch),
+    
+    %% Fetch latest
+    os:cmd("cd /repo && git fetch origin " ++ Branch ++ " 2>&1"),
+    
+    CurrentCommit = get_current_commit(),
+    RemoteCommit = get_remote_commit(Branch),
+    LastProcessed = read_file(?DATA_DIR ++ "/last_processed_commit"),
+    LastFailed = read_file(?DATA_DIR ++ "/last_failed_commit"),
+    
+    io:format("[UPDATER] Current: ~s, Remote: ~s~n", [fmt(CurrentCommit), fmt(RemoteCommit)]),
+    io:format("[UPDATER] LastProcessed: ~s, LastFailed: ~s~n", [fmt(LastProcessed), fmt(LastFailed)]),
+    
+    %% Update available if:
+    %% 1. Remote differs from current
+    %% 2. Remote differs from last processed (not already done)
+    %% 3. Remote differs from last failed (don't retry broken commit)
+    %% 4. Not in circuit breaker mode (too many consecutive failures)
+    UpdateAvailable = (RemoteCommit =/= undefined) andalso
+                      (CurrentCommit =/= RemoteCommit) andalso
+                      (RemoteCommit =/= LastProcessed) andalso
+                      (RemoteCommit =/= LastFailed) andalso
+                      (State#state.consecutive_failures < ?MAX_CONSECUTIVE_FAILURES),
+    
+    case State#state.consecutive_failures >= ?MAX_CONSECUTIVE_FAILURES of
+        true -> io:format("[UPDATER] CIRCUIT BREAKER ACTIVE - too many failures~n");
+        false -> ok
+    end,
+    
+    State#state{
+        status = idle,
+        last_check = erlang:timestamp(),
+        current_commit = CurrentCommit,
+        remote_commit = RemoteCommit,
+        update_available = UpdateAvailable
+    }.
+
+do_perform_update(State) ->
+    RemoteCommit = State#state.remote_commit,
+    StandbyEnv = State#state.standby_env,
+    ActiveEnv = State#state.active_env,
+    Branch = binary_to_list(State#state.branch),
+    
+    io:format("[UPDATER] ========================================~n"),
+    io:format("[UPDATER] DEPLOYING TO STANDBY: ~s~n", [StandbyEnv]),
+    io:format("[UPDATER] Active (~s) continues serving traffic~n", [ActiveEnv]),
+    io:format("[UPDATER] ========================================~n"),
+    
+    %% Step 1: Pull the new code
+    os:cmd("cd /repo && git reset --hard origin/" ++ Branch),
+    NewCommit = get_current_commit(),
+    io:format("[UPDATER] Pulled commit: ~s~n", [fmt(NewCommit)]),
+    
+    %% Step 2: Build ONLY the standby services
+    StandbyServices = get_standby_services(StandbyEnv),
+    BuildResult = build_standby(StandbyServices),
+    
+    case BuildResult of
+        ok ->
+            %% Step 3: Start standby and health check
+            start_standby(StandbyServices),
+            timer:sleep(15000),  %% Wait for startup
+            
+            case check_health(StandbyEnv) of
+                true ->
+                    %% Step 4: Switch traffic
+                    io:format("[UPDATER] Standby healthy, switching traffic~n"),
+                    switch_traffic(StandbyEnv),
+                    
+                    %% Step 5: Record success
+                    write_file(?DATA_DIR ++ "/last_processed_commit", NewCommit),
+                    delete_file(?DATA_DIR ++ "/last_failed_commit"),
+                    
+                    io:format("[UPDATER] ========================================~n"),
+                    io:format("[UPDATER] SUCCESS! Traffic now on: ~s~n", [StandbyEnv]),
+                    io:format("[UPDATER] ========================================~n"),
+                    
+                    %% Swap active/standby
+                    State#state{
+                        status = idle,
+                        last_update = erlang:timestamp(),
+                        current_commit = NewCommit,
+                        update_available = false,
+                        active_env = StandbyEnv,
+                        standby_env = ActiveEnv,
+                        consecutive_failures = 0,
+                        last_failed_commit = undefined
+                    };
+                false ->
+                    handle_failure(State, NewCommit, "Health check failed")
+            end;
+        {error, Reason} ->
+            handle_failure(State, NewCommit, Reason)
+    end.
+
+handle_failure(State, FailedCommit, Reason) ->
+    NewFailures = State#state.consecutive_failures + 1,
+    io:format("[UPDATER] FAILED: ~s (failure #~p)~n", [Reason, NewFailures]),
+    
+    %% Record the failed commit so we don't retry it
+    write_file(?DATA_DIR ++ "/last_failed_commit", FailedCommit),
+    
+    %% Revert to the previous commit
+    os:cmd("cd /repo && git reset --hard HEAD~1 2>&1"),
+    
+    io:format("[UPDATER] Active (~s) continues serving~n", [State#state.active_env]),
+    
+    State#state{
+        status = error,
+        error_message = list_to_binary(Reason),
+        consecutive_failures = NewFailures,
+        last_failed_commit = FailedCommit,
+        update_available = false
+    }.
+
+%%====================================================================
+%% Blue-Green Helpers
+%%====================================================================
+
+get_standby_services(Env) ->
+    [
+        "desktop-ui-" ++ Env,
+        "api-gateway-" ++ Env,
+        "analysis-service-" ++ Env,
+        "storage-service-" ++ Env,
+        "harvester-service-" ++ Env
+    ].
+
+build_standby(Services) ->
+    BasePath = "/repo/mental_models_system/erlang-services",
+    build_services(BasePath, Services, []).
+
+build_services(_BasePath, [], _Failed) ->
+    ok;
+build_services(BasePath, [Service | Rest], Failed) ->
+    io:format("[UPDATER] Building: ~s~n", [Service]),
+    Cmd = "cd " ++ BasePath ++ " && docker-compose build --no-cache " ++ Service ++ " 2>&1",
+    Result = os:cmd(Cmd),
+    
+    case is_build_error(Result) of
+        true ->
+            io:format("[UPDATER] Build FAILED: ~s~n", [Service]),
+            %% Log error for debugging
+            ErrorFile = ?DATA_DIR ++ "/build_error_" ++ Service ++ ".log",
+            file:write_file(ErrorFile, Result),
+            {error, "Build failed: " ++ Service};
+        false ->
+            io:format("[UPDATER] Built: ~s~n", [Service]),
+            build_services(BasePath, Rest, Failed)
+    end.
+
+is_build_error(Output) ->
+    string:find(Output, "failed to solve") =/= nomatch orelse
+    string:find(Output, "error:") =/= nomatch orelse
+    string:find(Output, "ERROR:") =/= nomatch orelse
+    string:find(Output, "FAILED") =/= nomatch.
+
+start_standby(Services) ->
+    BasePath = "/repo/mental_models_system/erlang-services",
+    ServiceStr = string:join(Services, " "),
+    Cmd = "cd " ++ BasePath ++ " && docker-compose up -d " ++ ServiceStr ++ " 2>&1",
+    os:cmd(Cmd).
+
+check_health(Env) ->
+    Container = "mental-models-ui-" ++ Env,
+    Cmd = "docker inspect --format='{{.State.Running}}' " ++ Container ++ " 2>/dev/null",
+    Result = string:trim(os:cmd(Cmd)),
+    io:format("[UPDATER] Health check ~s: ~s~n", [Container, Result]),
+    Result =:= "true".
+
+switch_traffic(NewEnv) ->
+    %% Update active env file
+    write_file(?DATA_DIR ++ "/active_env", NewEnv),
+    
+    %% Update nginx config
+    BasePath = "/repo/mental_models_system/erlang-services",
+    ActiveConf = BasePath ++ "/nginx_proxy/active_env/active.conf",
+    Config = "set $active_env " ++ NewEnv ++ ";\n",
+    file:write_file(ActiveConf, Config),
+    
+    %% Reload nginx
+    os:cmd("docker exec mental-models-proxy nginx -s reload 2>&1").
+
+read_active_env() ->
+    case read_file(?DATA_DIR ++ "/active_env") of
+        undefined -> "blue";
+        Env -> binary_to_list(Env)
+    end.
+
+%%====================================================================
+%% Git Helpers
+%%====================================================================
+
+clone_repo(Branch) ->
+    BranchStr = binary_to_list(Branch),
+    case os:getenv("GITHUB_TOKEN") of
+        false -> {error, no_token};
+        Token ->
+            Repo = os:getenv("GITHUB_REPO", "Ripple-Analytics/Ripple_Analytics"),
+            Url = "https://" ++ Token ++ "@github.com/" ++ Repo ++ ".git",
+            Cmd = "git clone --depth 1 --branch " ++ BranchStr ++ " " ++ Url ++ " /repo 2>&1",
+            Result = os:cmd(Cmd),
+            case string:find(Result, "fatal:") of
+                nomatch -> ok;
+                _ -> {error, Result}
+            end
+    end.
+
+get_current_commit() ->
+    Result = string:trim(os:cmd("cd /repo && git rev-parse HEAD 2>/dev/null")),
+    case length(Result) >= 7 of
+        true -> list_to_binary(string:sub_string(Result, 1, 7));
+        false -> undefined
+    end.
+
+get_remote_commit(Branch) ->
+    Cmd = "cd /repo && git rev-parse origin/" ++ Branch ++ " 2>/dev/null",
+    Result = string:trim(os:cmd(Cmd)),
+    case length(Result) >= 7 of
+        true -> list_to_binary(string:sub_string(Result, 1, 7));
+        false -> undefined
+    end.
+
+%%====================================================================
+%% File Helpers
+%%====================================================================
+
+read_file(Path) ->
+    case file:read_file(Path) of
+        {ok, Bin} -> 
+            Trimmed = string:trim(binary_to_list(Bin)),
+            case Trimmed of
+                "" -> undefined;
+                S -> list_to_binary(S)
+            end;
+        {error, _} -> undefined
+    end.
+
+write_file(Path, Content) when is_binary(Content) ->
+    file:write_file(Path, Content);
+write_file(Path, Content) when is_list(Content) ->
+    file:write_file(Path, Content).
+
+delete_file(Path) ->
+    file:delete(Path).
+
+fmt(undefined) -> "undefined";
+fmt(Bin) when is_binary(Bin) -> binary_to_list(Bin);
+fmt(Other) -> io_lib:format("~p", [Other]).
+
+format_time(undefined) -> null;
+format_time({MegaSecs, Secs, _}) ->
+    Seconds = MegaSecs * 1000000 + Secs,
+    list_to_binary(calendar:system_time_to_rfc3339(Seconds, [{unit, second}])).
+
 get_check_interval() ->
-    try
-        case os:getenv("UPDATE_CHECK_INTERVAL") of
-            false -> 300000;
-            Val -> list_to_integer(Val) * 1000
-        end
-    catch
-        _:_ -> 300000  %% Default to 5 minutes if parsing fails
+    case os:getenv("UPDATE_CHECK_INTERVAL") of
+        false -> 300000;
+        Val -> 
+            try list_to_integer(Val) * 1000
+            catch _:_ -> 300000
+            end
     end.
 
 get_env_binary(Key, Default) ->
@@ -211,506 +461,3 @@ get_env_binary(Key, Default) ->
         false -> Default;
         Val -> list_to_binary(Val)
     end.
-
-do_init_repo(State) ->
-    RepoPath = "/repo",
-    case filelib:is_dir(RepoPath ++ "/.git") of
-        true ->
-            io:format("[UPDATER] Repository already exists~n"),
-            Commit = get_current_commit(),
-            Branch = get_env_binary("GITHUB_BRANCH", <<"master">>),
-            State#state{current_commit = Commit, branch = Branch, status = idle};
-        false ->
-            io:format("[UPDATER] Cloning repository~n"),
-            case try_clone() of
-                {ok, Source} ->
-                    Commit = get_current_commit(),
-                    Branch = get_env_binary("GITHUB_BRANCH", <<"master">>),
-                    io:format("[UPDATER] Clone successful via ~p~n", [Source]),
-                    State#state{current_commit = Commit, branch = Branch, update_source = Source, status = idle};
-                {error, Reason} ->
-                    io:format("[UPDATER] Clone failed: ~p~n", [Reason]),
-                    State#state{status = error, error_message = <<"Failed to clone repository">>}
-            end
-    end.
-
-try_clone() ->
-    Branch = os:getenv("GITHUB_BRANCH", "master"),
-    
-    %% Try authenticated HTTPS first (most common)
-    case os:getenv("GITHUB_TOKEN") of
-        false -> ok;
-        Token ->
-            Repo = os:getenv("GITHUB_REPO", "Ripple-Analytics/Ripple_Analytics"),
-            Url = "https://" ++ Token ++ "@github.com/" ++ Repo ++ ".git",
-            Cmd = "git clone --depth 1 --branch " ++ Branch ++ " " ++ Url ++ " /repo 2>&1",
-            case run_cmd(Cmd) of
-                ok -> 
-                    io:format("[UPDATER] Authenticated HTTPS clone successful~n"),
-                    {ok, https_auth};
-                _ -> ok
-            end
-    end,
-    
-    %% Check if clone succeeded
-    case filelib:is_dir("/repo/.git") of
-        true -> {ok, https_auth};
-        false ->
-            %% Try public HTTPS
-            case os:getenv("GITHUB_REPO_URL") of
-                false -> {error, no_sources};
-                PublicUrl ->
-                    Cmd2 = "git clone --depth 1 --branch " ++ Branch ++ " " ++ PublicUrl ++ " /repo 2>&1",
-                    case run_cmd(Cmd2) of
-                        ok -> {ok, https_public};
-                        _ -> try_gdrive()
-                    end
-            end
-    end.
-
-try_gdrive() ->
-    case os:getenv("GDRIVE_BACKUP_URL") of
-        false -> {error, no_gdrive};
-        Url ->
-            Cmd = "curl -L -o /tmp/backup.zip '" ++ Url ++ "' && mkdir -p /repo && unzip -o /tmp/backup.zip -d /repo",
-            case run_cmd(Cmd) of
-                ok -> {ok, gdrive};
-                _ -> {error, gdrive_failed}
-            end
-    end.
-
-do_check_updates(State) ->
-    Now = erlang:timestamp(),
-    Cmd = "cd /repo && git fetch origin " ++ binary_to_list(State#state.branch) ++ " --depth 1 2>&1",
-    run_cmd(Cmd),
-    
-    CurrentCommit = get_current_commit(),
-    RemoteCommit = get_remote_commit(State#state.branch),
-    
-    %% Only trigger update if:
-    %% 1. Both commits are valid
-    %% 2. Remote is different from current
-    %% 3. We haven't already processed this remote commit (prevents loops)
-    LastProcessedCommit = read_last_processed_commit(),
-    
-    UpdateAvailable = (CurrentCommit =/= undefined) andalso 
-                      (RemoteCommit =/= undefined) andalso 
-                      (CurrentCommit =/= RemoteCommit) andalso
-                      (RemoteCommit =/= LastProcessedCommit),
-    
-    io:format("[UPDATER] Current: ~p, Remote: ~p, LastProcessed: ~p, Update: ~p~n", 
-              [CurrentCommit, RemoteCommit, LastProcessedCommit, UpdateAvailable]),
-    
-    State#state{
-        status = idle,
-        last_check = Now,
-        current_commit = CurrentCommit,
-        remote_commit = RemoteCommit,
-        update_available = UpdateAvailable,
-        error_message = undefined
-    }.
-
-do_perform_update(State) ->
-    Now = erlang:timestamp(),
-    Branch = binary_to_list(State#state.branch),
-    Cmd = "cd /repo && git reset --hard origin/" ++ Branch ++ " 2>&1",
-    run_cmd(Cmd),
-    
-    NewCommit = get_current_commit(),
-    io:format("[UPDATER] Updated to: ~p~n", [NewCommit]),
-    
-    %% Save this commit as processed to prevent rebuild loops
-    save_last_processed_commit(NewCommit),
-    
-    %% Trigger rebuild in background
-    spawn(fun() -> rebuild_services() end),
-    
-    State#state{
-        status = idle,
-        last_update = Now,
-        current_commit = NewCommit,
-        update_available = false,
-        error_message = undefined
-    }.
-
-get_current_commit() ->
-    Result = os:cmd("cd /repo && git rev-parse HEAD 2>/dev/null"),
-    case string:trim(Result) of
-        "" -> undefined;
-        Commit when length(Commit) >= 7 -> list_to_binary(string:sub_string(Commit, 1, 7));
-        _ -> undefined
-    end.
-
-get_remote_commit(Branch) ->
-    BranchStr = binary_to_list(Branch),
-    %% First ensure we have the latest refs
-    FetchCmd = "cd /repo && git fetch origin " ++ BranchStr ++ " 2>&1",
-    _FetchResult = os:cmd(FetchCmd),
-    
-    %% Now get the remote commit - use FETCH_HEAD as fallback
-    Cmd = "cd /repo && git rev-parse origin/" ++ BranchStr ++ " 2>/dev/null",
-    Result = os:cmd(Cmd),
-    TrimmedResult = string:trim(Result),
-    
-    %% Debug logging
-    io:format("[UPDATER] get_remote_commit cmd: ~s~n", [Cmd]),
-    io:format("[UPDATER] get_remote_commit result: ~s~n", [TrimmedResult]),
-    
-    case TrimmedResult of
-        "" -> 
-            %% Try FETCH_HEAD as fallback
-            FallbackCmd = "cd /repo && git rev-parse FETCH_HEAD 2>/dev/null",
-            FallbackResult = string:trim(os:cmd(FallbackCmd)),
-            case FallbackResult of
-                "" -> undefined;
-                FB when length(FB) >= 7 -> list_to_binary(string:sub_string(FB, 1, 7));
-                _ -> undefined
-            end;
-        Commit when length(Commit) >= 7 -> 
-            list_to_binary(string:sub_string(Commit, 1, 7));
-        _ -> 
-            undefined
-    end.
-
-rebuild_services() ->
-    %% Wrap entire rebuild in try-catch to ensure we never crash
-    try
-        io:format("[UPDATER] ========================================~n"),
-        io:format("[UPDATER] BLUE-GREEN DEPLOYMENT STARTING~n"),
-        io:format("[UPDATER] Zero downtime update in progress~n"),
-        io:format("[UPDATER] ========================================~n"),
-        
-        BasePath = "/repo/mental_models_system/erlang-services",
-        
-        %% Step 0: Auto-detect and set HOST_PATH in .env file
-        %% This ensures the UI shows the correct folder path without manual intervention
-        detect_and_set_host_path(BasePath),
-        
-        %% Build services one at a time to handle failures gracefully
-        %% If a service fails to build, log it and continue with others
-        AllServices = [
-            "deployment-controller-blue", "deployment-controller-green",
-            "auto-updater-blue", "auto-updater-green", "auto-updater-service",
-            "desktop-ui-blue", "desktop-ui-green",
-            "api-gateway-blue", "api-gateway-green",
-            "analysis-service-blue", "analysis-service-green",
-            "harvester-service-blue", "harvester-service-green",
-            "storage-service-blue", "storage-service-green",
-            "chaos-engineering-blue", "chaos-engineering-green"
-        ],
-        
-        %% Build each service individually, tracking successes and failures
-        CommitHash = get_current_commit(),
-        CommitHashStr = case CommitHash of
-            undefined -> "unknown";
-            Hash -> binary_to_list(Hash)
-        end,
-        BuildTime = calendar:system_time_to_rfc3339(erlang:system_time(second), [{unit, second}]),
-        BuildArgs = "--build-arg COMMIT_HASH=" ++ CommitHashStr ++ " --build-arg BUILD_TIME=" ++ BuildTime,
-        
-        {SuccessfulServices, FailedServices} = build_services_individually(BasePath, AllServices, BuildArgs, [], []),
-        
-        io:format("[UPDATER] Build results: ~p successful, ~p failed~n", 
-                  [length(SuccessfulServices), length(FailedServices)]),
-        
-        case FailedServices of
-            [] -> ok;
-            _ -> io:format("[UPDATER] WARNING: Failed services: ~p~n", [FailedServices])
-        end,
-        
-        %% Only restart services that built successfully
-        restart_successful_services(BasePath, SuccessfulServices),
-        
-        %% Determine which environment is currently active for UI switching
-        ActiveEnv = get_active_environment(),
-        StandbyEnv = case ActiveEnv of
-            "blue" -> "green";
-            "green" -> "blue";
-            _ -> "green"  %% Default to updating green if unknown
-        end,
-        io:format("[UPDATER] Active environment: ~s, Standby: ~s~n", [ActiveEnv, StandbyEnv]),
-        
-%% Wait for services to be healthy
-        io:format("[UPDATER] Waiting for services to be healthy...~n"),
-        timer:sleep(10000),  %% Wait 10 seconds for containers to start
-        
-        %% Health check the standby UI
-        StandbyHealthy = check_standby_health(StandbyEnv),
-        
-        case StandbyHealthy of
-            true ->
-                %% Switch traffic to the new environment
-                io:format("[UPDATER] ~s is healthy, switching traffic...~n", [StandbyEnv]),
-                switch_active_environment(StandbyEnv, BasePath),
-                io:format("[UPDATER] ========================================~n"),
-                io:format("[UPDATER] BLUE-GREEN DEPLOYMENT COMPLETE~n"),
-                io:format("[UPDATER] Traffic now routed to: ~s~n", [StandbyEnv]),
-                io:format("[UPDATER] Zero downtime achieved!~n"),
-                io:format("[UPDATER] ========================================~n");
-            false ->
-                io:format("[UPDATER] WARNING: ~s failed health check, keeping traffic on ~s~n", [StandbyEnv, ActiveEnv]),
-                io:format("[UPDATER] Will retry on next update cycle~n")
-        end
-    catch
-        Class:Reason:Stacktrace ->
-            io:format("[UPDATER] ERROR during rebuild: ~p:~p~n~p~n", [Class, Reason, Stacktrace]),
-            io:format("[UPDATER] Rebuild failed but updater continues running~n")
-    end.
-
-%% Auto-detect and set HOST_PATH in .env file
-%% This reads the host path from docker and writes it to .env so containers can display it
-detect_and_set_host_path(BasePath) ->
-    io:format("[UPDATER] Auto-detecting host path...~n"),
-    
-    %% Get the host path by inspecting the auto-updater container's bind mount
-    %% The /services volume is mounted from the host's erlang-services directory
-    InspectCmd = "docker inspect mental-models-auto-updater --format='{{range .Mounts}}{{if eq .Destination \"/services\"}}{{.Source}}{{end}}{{end}}' 2>/dev/null",
-    HostPath = string:trim(os:cmd(InspectCmd)),
-    
-    case HostPath of
-        "" ->
-            %% Fallback: try to read from existing .env file
-            io:format("[UPDATER] Could not detect host path from docker, checking .env~n");
-        Path ->
-            io:format("[UPDATER] Detected host path: ~s~n", [Path]),
-            %% Update the .env file with HOST_PATH
-            EnvFile = BasePath ++ "/.env",
-            update_env_file(EnvFile, "HOST_PATH", Path)
-    end.
-
-%% Update or add a key=value pair in the .env file
-update_env_file(EnvFile, Key, Value) ->
-    %% Read existing .env content
-    ExistingContent = case file:read_file(EnvFile) of
-        {ok, Content} -> binary_to_list(Content);
-        {error, _} -> ""
-    end,
-    
-    %% Check if key already exists
-    KeyPattern = Key ++ "=",
-    Lines = string:split(ExistingContent, "\n", all),
-    
-    %% Filter out existing key and add new value
-    FilteredLines = [L || L <- Lines, not lists:prefix(KeyPattern, L), L =/= ""],
-    NewLines = FilteredLines ++ [Key ++ "=" ++ Value],
-    NewContent = string:join(NewLines, "\n") ++ "\n",
-    
-    %% Write back to .env file
-    case file:write_file(EnvFile, NewContent) of
-        ok ->
-            io:format("[UPDATER] Updated ~s in .env file~n", [Key]);
-        {error, Reason} ->
-            io:format("[UPDATER] WARNING: Could not update .env file: ~p~n", [Reason])
-    end.
-
-%% Get the currently active environment (blue or green)
-get_active_environment() ->
-    %% Read from nginx config or default to blue
-    Result = os:cmd("cat /repo/mental_models_system/erlang-services/nginx_proxy/active_env 2>/dev/null"),
-    case string:trim(Result) of
-        "green" -> "green";
-        "blue" -> "blue";
-        _ -> "blue"  %% Default to blue
-    end.
-
-%% Check if the standby environment is healthy
-check_standby_health(Env) ->
-    Container = "mental-models-ui-" ++ Env,
-    %% Check if container is running and healthy
-    HealthCmd = "docker inspect --format='{{.State.Health.Status}}' " ++ Container ++ " 2>/dev/null",
-    Result = string:trim(os:cmd(HealthCmd)),
-    io:format("[UPDATER] Health check for ~s: ~s~n", [Container, Result]),
-    Result =:= "healthy".
-
-%% Switch the active environment by updating nginx config
-switch_active_environment(NewEnv, BasePath) ->
-    %% Update the active_env file
-    ActiveEnvFile = BasePath ++ "/nginx_proxy/active_env",
-    file:write_file(ActiveEnvFile, NewEnv),
-    
-    %% Update the nginx active.conf to route to the new environment
-    ActiveConfFile = BasePath ++ "/nginx_proxy/active.conf",
-    NewConfig = "# Active environment: " ++ NewEnv ++ "\nlocation / {\n    proxy_pass http://" ++ NewEnv ++ ";\n}\n",
-    file:write_file(ActiveConfFile, NewConfig),
-    
-    %% Reload nginx to apply the change (zero downtime)
-    ReloadCmd = "docker exec mental-models-proxy nginx -s reload 2>&1",
-    _ReloadResult = os:cmd(ReloadCmd),
-    io:format("[UPDATER] Nginx reloaded, traffic switched to ~s~n", [NewEnv]).
-
-%% Run command with timeout to prevent hanging
-%% This is CRITICAL for bulletproof operation - git commands can hang indefinitely
-run_cmd(Cmd) ->
-    run_cmd_with_timeout(Cmd, 30000).  %% 30 second default timeout
-
-run_cmd_with_timeout(Cmd, Timeout) ->
-    Parent = self(),
-    Ref = make_ref(),
-    
-    %% Spawn a process to run the command
-    Pid = spawn(fun() ->
-        Result = os:cmd(Cmd),
-        Parent ! {Ref, done, Result}
-    end),
-    
-    %% Wait for result with timeout
-    receive
-        {Ref, done, Result} ->
-            case string:find(Result, "fatal:") of
-                nomatch ->
-                    case string:find(Result, "error:") of
-                        nomatch -> ok;
-                        _ -> {error, Result}
-                    end;
-                _ -> {error, Result}
-            end
-    after Timeout ->
-        %% Kill the hung process
-        exit(Pid, kill),
-        io:format("[UPDATER] WARNING: Command timed out after ~p ms: ~s~n", [Timeout, Cmd]),
-        {error, timeout}
-    end.
-
-format_time(undefined) -> null;
-format_time({MegaSecs, Secs, _MicroSecs}) ->
-    Seconds = MegaSecs * 1000000 + Secs,
-    list_to_binary(calendar:system_time_to_rfc3339(Seconds, [{unit, second}])).
-
-
-%% ============================================================================
-%% RESILIENT SERVICE BUILDING - Build services one at a time
-%% ============================================================================
-
-%% Build services one at a time, collecting successes and failures
-build_services_individually(_BasePath, [], _BuildArgs, Successes, Failures) ->
-    {lists:reverse(Successes), lists:reverse(Failures)};
-build_services_individually(BasePath, [Service | Rest], BuildArgs, Successes, Failures) ->
-    io:format("[UPDATER] Building ~s...~n", [Service]),
-    BuildCmd = "cd " ++ BasePath ++ " && docker-compose build --no-cache " ++ BuildArgs ++ " " ++ Service ++ " 2>&1",
-    Result = os:cmd(BuildCmd),
-    
-    %% Check if build succeeded by looking for error indicators
-    BuildFailed = string:find(Result, "failed to solve") =/= nomatch orelse
-                  string:find(Result, "error:") =/= nomatch orelse
-                  string:find(Result, "ERROR:") =/= nomatch,
-    
-    case BuildFailed of
-        true ->
-            io:format("[UPDATER] FAILED to build ~s - attempting LM Studio auto-fix~n", [Service]),
-            %% Try to auto-fix using LM Studio service
-            case try_lm_studio_fix(Service, Result) of
-                {ok, fixed} ->
-                    %% Retry the build after fix
-                    io:format("[UPDATER] LM Studio fix applied, retrying build...~n"),
-                    RetryResult = os:cmd(BuildCmd),
-                    RetryFailed = string:find(RetryResult, "failed to solve") =/= nomatch orelse
-                                  string:find(RetryResult, "error:") =/= nomatch,
-                    case RetryFailed of
-                        true ->
-                            io:format("[UPDATER] Build still failed after fix~n"),
-                            build_services_individually(BasePath, Rest, BuildArgs, Successes, [Service | Failures]);
-                        false ->
-                            io:format("[UPDATER] Build succeeded after LM Studio fix!~n"),
-                            build_services_individually(BasePath, Rest, BuildArgs, [Service | Successes], Failures)
-                    end;
-                {error, _Reason} ->
-                    io:format("[UPDATER] LM Studio fix failed, continuing...~n"),
-                    io:format("[UPDATER] Error output (truncated): ~s~n", 
-                              [string:slice(Result, 0, min(500, length(Result)))]),
-                    build_services_individually(BasePath, Rest, BuildArgs, Successes, [Service | Failures])
-            end;
-        false ->
-            io:format("[UPDATER] Successfully built ~s~n", [Service]),
-            build_services_individually(BasePath, Rest, BuildArgs, [Service | Successes], Failures)
-    end.
-
-%% ============================================================================
-%% LM STUDIO AUTO-FIX INTEGRATION
-%% When a build fails, attempt to fix it using the LM Studio service
-%% ============================================================================
-
-try_lm_studio_fix(Service, BuildOutput) ->
-    io:format("[UPDATER] Calling LM Studio service to fix ~s~n", [Service]),
-    
-    %% Try to reach the LM Studio service
-    LmStudioUrl = "http://lm-studio-service:8030/api/lm/fix-build",
-    
-    %% Build the request body
-    RequestBody = jsx:encode(#{
-        <<"service_name">> => list_to_binary(Service),
-        <<"build_output">> => list_to_binary(string:slice(BuildOutput, 0, 5000))
-    }),
-    
-    case hackney:request(post, list_to_binary(LmStudioUrl),
-                         [{<<"Content-Type">>, <<"application/json">>}],
-                         RequestBody,
-                         [{timeout, 60000}, {recv_timeout, 60000}]) of
-        {ok, 200, _Headers, ClientRef} ->
-            {ok, ResponseBody} = hackney:body(ClientRef),
-            try
-                Response = jsx:decode(ResponseBody, [return_maps]),
-                case maps:get(<<"success">>, Response, false) of
-                    true ->
-                        io:format("[UPDATER] LM Studio provided a fix~n"),
-                        {ok, fixed};
-                    false ->
-                        Error = maps:get(<<"error">>, Response, <<"unknown">>),
-                        io:format("[UPDATER] LM Studio could not fix: ~s~n", [Error]),
-                        {error, Error}
-                end
-            catch
-                _:_ ->
-                    io:format("[UPDATER] Failed to parse LM Studio response~n"),
-                    {error, parse_failed}
-            end;
-        {ok, StatusCode, _Headers, _ClientRef} ->
-            io:format("[UPDATER] LM Studio returned HTTP ~p~n", [StatusCode]),
-            {error, {http_error, StatusCode}};
-        {error, Reason} ->
-            io:format("[UPDATER] Could not reach LM Studio: ~p~n", [Reason]),
-            %% LM Studio service might not be running, that's OK
-            {error, Reason}
-    end.
-
-%% Restart only the services that built successfully
-restart_successful_services(_BasePath, []) ->
-    io:format("[UPDATER] No services to restart~n"),
-    ok;
-restart_successful_services(BasePath, Services) ->
-    io:format("[UPDATER] Restarting ~p successful services...~n", [length(Services)]),
-    ServiceList = string:join(Services, " "),
-    RestartCmd = "cd " ++ BasePath ++ " && docker-compose up -d --no-deps " ++ ServiceList ++ " 2>&1",
-    _Result = os:cmd(RestartCmd),
-    io:format("[UPDATER] Restart command completed~n"),
-    ok.
-
-%% ============================================================================
-%% COMMIT TRACKING - Prevents continuous rebuild loops
-%% ============================================================================
-
-%% Read the last processed commit from persistent storage
-read_last_processed_commit() ->
-    case file:read_file("/data/last_processed_commit") of
-        {ok, Bin} -> 
-            Commit = string:trim(binary_to_list(Bin)),
-            case length(Commit) >= 7 of
-                true -> list_to_binary(Commit);
-                false -> undefined
-            end;
-        {error, _} -> undefined
-    end.
-
-%% Save the processed commit to prevent rebuild loops
-save_last_processed_commit(Commit) when is_binary(Commit) ->
-    %% Ensure /data directory exists
-    filelib:ensure_dir("/data/"),
-    case file:write_file("/data/last_processed_commit", Commit) of
-        ok -> 
-            io:format("[UPDATER] Saved processed commit: ~s~n", [Commit]),
-            ok;
-        {error, Reason} ->
-            io:format("[UPDATER] WARNING: Could not save processed commit: ~p~n", [Reason]),
-            {error, Reason}
-    end;
-save_last_processed_commit(_) ->
-    ok.
