@@ -64,8 +64,10 @@ init(Req0, State) ->
                 return favorites.some(f => f.name === modelName || f.id === modelName);
             }
             
-            async function toggleFavorite(modelName, category, event) {
+            async function toggleFavorite(encodedModelName, encodedCategory, event) {
                 if (event) event.stopPropagation();
+                const modelName = decodeURIComponent(encodedModelName);
+                const category = decodeURIComponent(encodedCategory);
                 
                 if (isFavorite(modelName)) {
                     // Remove from favorites
@@ -169,7 +171,7 @@ init(Req0, State) ->
                         document.getElementById('recommendations-section').style.display = 'block';
                         let html = '';
                         for (const name of recommendedNotFav.slice(0, 5)) {
-                            html += '<div style=\"background: #d1e7dd; padding: 8px 15px; border-radius: 20px; cursor: pointer;\" onclick=\"searchForModel(\\'' + name.replace(/'/g, "\\\\'") + '\\')\">';
+                            html += '<div style=\"background: #d1e7dd; padding: 8px 15px; border-radius: 20px; cursor: pointer;\" onclick=\"searchForModel(\\'' + encodeURIComponent(name) + '\\')\">';
                             html += '<span>' + name + '</span>';
                             html += '</div>';
                         }
@@ -180,8 +182,8 @@ init(Req0, State) ->
                 }
             }
             
-            function searchForModel(name) {
-                document.getElementById('search').value = name;
+            function searchForModel(encodedName) {
+                document.getElementById('search').value = decodeURIComponent(encodedName);
                 showAllModels();
                 filterModels();
             }
@@ -226,7 +228,12 @@ init(Req0, State) ->
             
             function renderModels(models) {
                 if (models.length === 0) {
-                    const msg = showingFavorites ? 'No favorites yet. Click the star icon on any model to add it to your favorites.' : 'No models found matching your criteria.';
+                    var msg;
+                    if (showingFavorites) {
+                        msg = 'No favorites yet. Click the star icon on any model to add it to your favorites.';
+                    } else {
+                        msg = 'No models found matching your criteria.';
+                    }
                     document.getElementById('models-list').innerHTML = 
                         '<div class=\"alert alert-info\">' + msg + '</div>';
                     return;
@@ -235,13 +242,21 @@ init(Req0, State) ->
                 let html = '<div class=\"grid\">';
                 for (const model of models) {
                     const isFav = isFavorite(model.name);
-                    const starStyle = isFav ? 'color: #ffc107; font-size: 20px;' : 'color: #ccc; font-size: 20px;';
-                    const starChar = isFav ? '&#9733;' : '&#9734;';
+                    var starStyle, starChar, starTitle;
+                    if (isFav) {
+                        starStyle = 'color: #ffc107; font-size: 20px;';
+                        starChar = '&#9733;';
+                        starTitle = 'Remove from favorites';
+                    } else {
+                        starStyle = 'color: #ccc; font-size: 20px;';
+                        starChar = '&#9734;';
+                        starTitle = 'Add to favorites';
+                    }
                     
                     html += '<div class=\"model-card\" onclick=\"showModelDetails(\\'' + encodeURIComponent(JSON.stringify(model)) + '\\')\" style=\"cursor:pointer;\">';
                     html += '<div style=\"display: flex; justify-content: space-between; align-items: start;\">';
                     html += '<h4 style=\"margin: 0;\">' + model.name + '</h4>';
-                    html += '<button onclick=\"toggleFavorite(\\'' + model.name.replace(/'/g, "\\\\'") + '\\', \\'' + model.category + '\\', event)\" style=\"background: none; border: none; cursor: pointer; ' + starStyle + '\" title=\"' + (isFav ? 'Remove from favorites' : 'Add to favorites') + '\">' + starChar + '</button>';
+                    html += '<button onclick=\"toggleFavorite(\\'' + encodeURIComponent(model.name) + '\\', \\'' + encodeURIComponent(model.category) + '\\', event)\" style=\"background: none; border: none; cursor: pointer; ' + starStyle + '\" title=\"' + starTitle + '\">' + starChar + '</button>';
                     html += '</div>';
                     html += '<span class=\"category\">' + model.category + '</span>';
                     html += '<p>' + model.description + '</p>';
