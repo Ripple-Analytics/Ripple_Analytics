@@ -37,11 +37,13 @@
    :app-name "Mental Models Desktop"
    :github-repo "Ripple-Analytics/Ripple_Analytics"
    :github-api "https://api.github.com"
-   :github-token "ghu_GP2K7FvBnr0OwxlwofnSDSIHaSA0hF0mKvFP"
+   ;; GitHub token is optional - public repos work without authentication
+   ;; Users can set their own token in settings for higher rate limits or private repos
+   :github-token nil
    :slack-webhook nil
    :lm-studio-url "http://localhost:1234"
-   ;; Remote config for bulletproof updates
-   :web-app-url "https://3000-i7g2c9ows75ghqeegfaf0-42dd4221.sg1.manus.computer"
+   ;; Remote config for bulletproof updates (optional - falls back to GitHub API)
+   :web-app-url nil
    :desktop-api-key "mm-desktop-2026-ripple"
    :cache-dir (str (System/getProperty "user.home") "/.mental-models/cache")})
 
@@ -3871,8 +3873,12 @@
             (println "[AUTO-UPDATE] Web app config unavailable, trying GitHub...")
             (let [github-token (or (get-in @*state [:settings :github-token]) (:github-token config))
                   url (str (:github-api config) "/repos/" (:github-repo config) "/releases/latest")
-                  headers {"Accept" "application/vnd.github.v3+json"
-                           "Authorization" (str "token " github-token)}
+                  ;; Only include Authorization header if token is valid (non-nil, non-empty)
+                  ;; For public repos, unauthenticated requests work fine (just with lower rate limits)
+                  headers (if (and github-token (not (clojure.string/blank? github-token)))
+                            {"Accept" "application/vnd.github.v3+json"
+                             "Authorization" (str "token " github-token)}
+                            {"Accept" "application/vnd.github.v3+json"})
                   result (http-get url :headers headers)]
               (println "[AUTO-UPDATE] GitHub response status:" (:status result) "success:" (:success result))
               (if (:success result)
