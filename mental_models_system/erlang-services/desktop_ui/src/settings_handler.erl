@@ -180,6 +180,45 @@ init(Req0, State) ->
             <div id=\"lan-results\" style=\"margin-top: 15px;\"></div>
         </div>
         
+        <div class=\"card\" style=\"border-left: 4px solid #10b981;\">
+            <h2>Scheduled Analysis</h2>
+            <p>Set up recurring analyses to run automatically on a schedule.</p>
+            <div id=\"scheduled-list\" style=\"margin: 15px 0;\">
+                <p class=\"loading\">Loading scheduled tasks...</p>
+            </div>
+            <div style=\"background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 15px;\">
+                <h4 style=\"margin-bottom: 10px;\">Add New Scheduled Analysis</h4>
+                <div style=\"display: grid; grid-template-columns: 1fr 1fr; gap: 10px;\">
+                    <div>
+                        <label><strong>Name</strong></label>
+                        <input type=\"text\" id=\"schedule-name\" placeholder=\"Daily news analysis\" style=\"width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #e0e0e0; margin-top: 5px;\">
+                    </div>
+                    <div>
+                        <label><strong>Type</strong></label>
+                        <select id=\"schedule-type\" style=\"width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #e0e0e0; margin-top: 5px;\">
+                            <option value=\"url\">URL Scrape + Analyze</option>
+                            <option value=\"text\">Text Analysis</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label><strong>URL or Text</strong></label>
+                        <input type=\"text\" id=\"schedule-target\" placeholder=\"https://example.com or text to analyze\" style=\"width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #e0e0e0; margin-top: 5px;\">
+                    </div>
+                    <div>
+                        <label><strong>Interval</strong></label>
+                        <select id=\"schedule-interval\" style=\"width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #e0e0e0; margin-top: 5px;\">
+                            <option value=\"3600\">Every hour</option>
+                            <option value=\"21600\">Every 6 hours</option>
+                            <option value=\"43200\">Every 12 hours</option>
+                            <option value=\"86400\" selected>Daily</option>
+                            <option value=\"604800\">Weekly</option>
+                        </select>
+                    </div>
+                </div>
+                <button class=\"btn\" onclick=\"addScheduledTask()\" style=\"margin-top: 15px;\">Add Scheduled Task</button>
+            </div>
+        </div>
+        
         <div class=\"card\">
             <h2>Chaos Engineering (Legacy)</h2>
             <p>Test system resilience with controlled chaos experiments.</p>
