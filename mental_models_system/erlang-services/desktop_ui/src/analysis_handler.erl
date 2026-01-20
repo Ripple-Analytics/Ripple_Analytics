@@ -385,6 +385,31 @@ init(Req0, State) ->
                         html += '</div>';
                     }
                     
+                    // Text Analysis section (keyword-based detection)
+                    const textAnalysis = comprehensiveData.text_analysis || {};
+                    const textModels = textAnalysis.top_models || [];
+                    if (textModels.length > 0) {
+                        html += '<div class=\"card\">';
+                        html += '<h2>Keyword-Based Detection</h2>';
+                        html += '<p>Text analysis detected ' + (textAnalysis.models || []).length + ' patterns across ' + (textAnalysis.text_length || 0) + ' characters:</p><br>';
+                        for (const tm of textModels) {
+                            const score = tm.score || 0;
+                            const scoreColor = score >= 70 ? '#28a745' : score >= 40 ? '#ffc107' : '#6c757d';
+                            html += '<div class=\"model-card\">';
+                            html += '<div style=\"display: flex; justify-content: space-between; align-items: center;\">';
+                            html += '<h4>' + tm.name + '</h4>';
+                            html += '<span style=\"background: ' + scoreColor + '; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;\">' + score + '% match</span>';
+                            html += '</div>';
+                            html += '<span class=\"category\">' + tm.category + '</span>';
+                            html += '<p style=\"margin-top: 8px;\"><strong>Confidence:</strong> ' + (tm.confidence || 'Low') + '</p>';
+                            if (tm.evidence) {
+                                html += '<p style=\"font-size: 12px; color: #666;\">Evidence: ' + (tm.evidence.keywords || 0) + ' keywords, ' + (tm.evidence.patterns || 0) + ' patterns</p>';
+                            }
+                            html += '</div>';
+                        }
+                        html += '</div>';
+                    }
+                    
                     // Biases section
                     html += '<div class=\"card\"><h2>Cognitive Biases</h2>';
                     if (biasesData.biases && biasesData.biases.length > 0) {

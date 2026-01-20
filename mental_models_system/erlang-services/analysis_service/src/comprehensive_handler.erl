@@ -44,7 +44,9 @@ handle_comprehensive(Body, Req0, State) ->
                         jsx:encode(#{<<"error">> => <<"No text provided">>}), Req0),
                     {ok, Req1, State};
                 _ ->
-                    Result = lollapalooza_detector:analyze_comprehensive(Text, TopN),
+                    LollapaloozaResult = lollapalooza_detector:analyze_comprehensive(Text, TopN),
+                    TextAnalysisResult = text_analyzer:analyze_text(Text),
+                    Result = merge_analysis_results(LollapaloozaResult, TextAnalysisResult),
                     Req2 = cowboy_req:reply(200, cors_headers(),
                         jsx:encode(Result), Req0),
                     {ok, Req2, State}
@@ -55,6 +57,17 @@ handle_comprehensive(Body, Req0, State) ->
                 jsx:encode(#{<<"error">> => <<"Invalid JSON">>}), Req0),
             {ok, Req3, State}
     end.
+
+merge_analysis_results(LollapaloozaResult, TextAnalysisResult) ->
+    TextModels = maps:get(<<"models">>, TextAnalysisResult, []),
+    TopTextModels = maps:get(<<"top_models">>, TextAnalysisResult, []),
+    LollapaloozaResult#{
+        <<"text_analysis">> => #{
+            <<"models">> => TextModels,
+            <<"top_models">> => TopTextModels,
+            <<"text_length">> => maps:get(<<"text_length">>, TextAnalysisResult, 0)
+        }
+    }.
 
 cors_headers() ->
     #{<<"content-type">> => <<"application/json">>,
