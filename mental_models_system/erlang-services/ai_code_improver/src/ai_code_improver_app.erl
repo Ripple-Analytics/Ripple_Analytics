@@ -23,7 +23,19 @@ start(_StartType, _StartArgs) ->
             {"/api/git/commits", git_handler, []},
             {"/api/git/commit", git_handler, []},
             {"/api/git/push", git_handler, []},
-            {"/api/metrics", metrics_handler, []}
+            {"/api/metrics", metrics_handler, []},
+            {"/api/diff/pending", diff_handler, []},
+            {"/api/diff/create", diff_handler, []},
+            {"/api/diff/:id", diff_handler, []},
+            {"/api/diff/:id/approve", diff_handler, []},
+            {"/api/diff/:id/reject", diff_handler, []},
+            {"/api/rollback/list", rollback_handler, []},
+            {"/api/rollback/count", rollback_handler, []},
+            {"/api/rollback/create", rollback_handler, []},
+            {"/api/rollback/cleanup", rollback_handler, []},
+            {"/api/rollback/:id", rollback_handler, []},
+            {"/api/rollback/:id/restore", rollback_handler, []},
+            {"/api/exclusions", exclusion_handler, []}
         ]}
     ]),
     {ok, _} = cowboy:start_clear(ai_code_improver_http,

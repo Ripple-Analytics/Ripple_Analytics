@@ -61,6 +61,30 @@ init([]) ->
             shutdown => 5000,
             type => worker,
             modules => [improvement_metrics]
+        },
+        #{
+            id => diff_preview,
+            start => {diff_preview, start_link, []},
+            restart => permanent,
+            shutdown => 5000,
+            type => worker,
+            modules => [diff_preview]
+        },
+        #{
+            id => rollback_manager,
+            start => {rollback_manager, start_link, []},
+            restart => permanent,
+            shutdown => 5000,
+            type => worker,
+            modules => [rollback_manager]
+        },
+        #{
+            id => exclusion_config,
+            start => {exclusion_config, start_link, []},
+            restart => permanent,
+            shutdown => 5000,
+            type => worker,
+            modules => [exclusion_config]
         }
     ],
     {ok, {SupFlags, ChildSpecs}}.
