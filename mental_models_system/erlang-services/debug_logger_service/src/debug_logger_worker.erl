@@ -267,15 +267,19 @@ do_push_sync() ->
         FetchResult = os:cmd("cd " ++ ?REPO_PATH ++ " && git fetch origin release2 2>&1"),
         io:format("[DEBUG_LOGGER] Fetch result: ~s~n", [truncate(FetchResult, 100)]),
         
-        %% Ensure we're on release2 branch
-        os:cmd("cd " ++ ?REPO_PATH ++ " && git checkout release2 2>&1"),
+        %% Copy log files to temp location before git operations
+        os:cmd("cp -r " ++ ?LOG_BASE ++ " /tmp/debug_logs_backup 2>&1"),
         
-        %% Pull with rebase to get latest changes while preserving our logs
-        PullResult = os:cmd("cd " ++ ?REPO_PATH ++ " && git pull --rebase origin release2 2>&1"),
-        io:format("[DEBUG_LOGGER] Pull result: ~s~n", [truncate(PullResult, 100)]),
+        %% Hard reset to remote release2 (clean slate)
+        os:cmd("cd " ++ ?REPO_PATH ++ " && git checkout -f release2 2>&1"),
+        ResetResult = os:cmd("cd " ++ ?REPO_PATH ++ " && git reset --hard origin/release2 2>&1"),
+        io:format("[DEBUG_LOGGER] Reset result: ~s~n", [truncate(ResetResult, 100)]),
         
         %% Ensure debug_logs directory exists
         filelib:ensure_dir(?LOG_BASE ++ "/"),
+        
+        %% Copy log files back from backup
+        os:cmd("cp -r /tmp/debug_logs_backup/* " ++ ?LOG_BASE ++ "/ 2>&1"),
         
         %% Add logs
         os:cmd("cd " ++ ?REPO_PATH ++ " && git add mental_models_system/erlang-services/debug_logs/ 2>&1"),
