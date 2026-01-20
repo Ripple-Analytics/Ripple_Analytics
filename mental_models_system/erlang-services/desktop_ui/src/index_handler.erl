@@ -70,6 +70,23 @@ init(Req0, State) ->
             </div>
         </div>
         
+        <div class=\"grid\" style=\"margin-top: 20px;\">
+            <div class=\"card\">
+                <h2>Trending Models</h2>
+                <p style=\"font-size: 13px; color: #666; margin-bottom: 15px;\">Most frequently detected in your analyses</p>
+                <div id=\"trending-models\">
+                    <p class=\"loading\">Loading...</p>
+                </div>
+            </div>
+            <div class=\"card\">
+                <h2>Top Biases Detected</h2>
+                <p style=\"font-size: 13px; color: #666; margin-bottom: 15px;\">Common cognitive biases found in your content</p>
+                <div id=\"trending-biases\">
+                    <p class=\"loading\">Loading...</p>
+                </div>
+            </div>
+        </div>
+        
         <div class=\"card\" style=\"margin-top: 20px;\">
             <h2>Recent Analyses</h2>
             <div id=\"recent-analyses\">
@@ -177,6 +194,77 @@ init(Req0, State) ->
                 });
             }
             
+            // Load trending models and biases
+            function loadTrendingData(historyData) {
+                // Count model occurrences
+                const modelCounts = {};
+                const biasCounts = {};
+                
+                for (const analysis of historyData) {
+                    const models = analysis.models || [];
+                    for (const model of models) {
+                        const name = model.name || model;
+                        modelCounts[name] = (modelCounts[name] || 0) + 1;
+                    }
+                    
+                    const biases = analysis.biases || [];
+                    for (const bias of biases) {
+                        const name = bias.bias || bias;
+                        biasCounts[name] = (biasCounts[name] || 0) + 1;
+                    }
+                }
+                
+                // Sort and get top 5 models
+                const topModels = Object.entries(modelCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5);
+                
+                // Sort and get top 5 biases
+                const topBiases = Object.entries(biasCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5);
+                
+                // Render trending models
+                if (topModels.length > 0) {
+                    let html = '';
+                    for (const [name, count] of topModels) {
+                        const barWidth = Math.min(100, (count / topModels[0][1]) * 100);
+                        html += '<div style=\"margin-bottom: 10px;\">';
+                        html += '<div style=\"display: flex; justify-content: space-between; margin-bottom: 3px;\">';
+                        html += '<span style=\"font-size: 13px;\">' + name + '</span>';
+                        html += '<span style=\"font-size: 12px; color: #666;\">' + count + 'x</span>';
+                        html += '</div>';
+                        html += '<div style=\"background: #e9ecef; border-radius: 4px; height: 8px;\">';
+                        html += '<div style=\"background: #4361ee; border-radius: 4px; height: 8px; width: ' + barWidth + '%;\"></div>';
+                        html += '</div></div>';
+                    }
+                    html += '<a href=\"/models\" style=\"font-size: 12px;\">View all models</a>';
+                    document.getElementById('trending-models').innerHTML = html;
+                } else {
+                    document.getElementById('trending-models').innerHTML = '<p style=\"color: #666; font-size: 13px;\">No data yet. Run some analyses to see trends.</p>';
+                }
+                
+                // Render trending biases
+                if (topBiases.length > 0) {
+                    let html = '';
+                    for (const [name, count] of topBiases) {
+                        const barWidth = Math.min(100, (count / topBiases[0][1]) * 100);
+                        const displayName = name.replace(/_/g, ' ').replace(/\\b\\w/g, l => l.toUpperCase());
+                        html += '<div style=\"margin-bottom: 10px;\">';
+                        html += '<div style=\"display: flex; justify-content: space-between; margin-bottom: 3px;\">';
+                        html += '<span style=\"font-size: 13px;\">' + displayName + '</span>';
+                        html += '<span style=\"font-size: 12px; color: #666;\">' + count + 'x</span>';
+                        html += '</div>';
+                        html += '<div style=\"background: #e9ecef; border-radius: 4px; height: 8px;\">';
+                        html += '<div style=\"background: #f72585; border-radius: 4px; height: 8px; width: ' + barWidth + '%;\"></div>';
+                        html += '</div></div>';
+                    }
+                    document.getElementById('trending-biases').innerHTML = html;
+                } else {
+                    document.getElementById('trending-biases').innerHTML = '<p style=\"color: #666; font-size: 13px;\">No biases detected yet. Run bias detection to see trends.</p>';
+                }
+            }
+            
             // Activity chart with real data from history
             function initActivityChart(historyData) {
                 const ctx = document.getElementById('activityChart').getContext('2d');
@@ -273,6 +361,9 @@ init(Req0, State) ->
                     }
                     
                     initActivityChart(historyData);
+                    
+                    // Load trending models and biases from history
+                    loadTrendingData(historyData);
                     
                     // Load service health
                     const health = await fetch('/api/gateway/health').then(r => r.json()).catch(() => ({status: 'unknown'}));
