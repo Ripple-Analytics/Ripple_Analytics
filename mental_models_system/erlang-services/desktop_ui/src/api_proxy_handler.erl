@@ -1,5 +1,11 @@
 %%%-------------------------------------------------------------------
 %%% @doc API Proxy Handler - Proxies requests to backend services
+%%% 
+%%% Routes API requests from the desktop UI to the appropriate backend
+%%% microservices. Handles path translation and request forwarding.
+%%% 
+%%% Path format: /api/{service}/{rest...}
+%%% Example: /api/analysis/models -> http://analysis-service:8001/api/analysis/models
 %%%-------------------------------------------------------------------
 -module(api_proxy_handler).
 -behaviour(cowboy_handler).
@@ -25,9 +31,14 @@ init(Req0, State) ->
                 undefined ->
                     reply_error(404, <<"Unknown service">>, Req0, State);
                 BaseUrl ->
+                    %% Reconstruct the full path including /api/{service}/ prefix
+                    %% This ensures the backend service receives the expected route
                     TargetPath = case Rest of
                         [] -> "/health";
-                        _ -> "/" ++ binary_to_list(iolist_to_binary(lists:join("/", Rest)))
+                        _ -> 
+                            %% Keep the full path: /api/{service}/{rest}
+                            "/api/" ++ binary_to_list(Service) ++ "/" ++ 
+                            binary_to_list(iolist_to_binary(lists:join("/", Rest)))
                     end,
                     proxy_request(Method, BaseUrl ++ TargetPath, Req0, State)
             end;
@@ -54,6 +65,9 @@ proxy_request(Method, Url, Req0, State) ->
     Headers = [{<<"content-type">>, <<"application/json">>}],
     Options = [{timeout, 30000}, {recv_timeout, 30000}],
     
+    %% Log the proxy request for debugging
+    io:format("[PROXY] ~s ~s~n", [Method, Url]),
+    
     case hackney:request(HackneyMethod, list_to_binary(Url), Headers, Body, Options) of
         {ok, Status, RespHeaders, ClientRef} ->
             {ok, RespBody} = hackney:body(ClientRef),
@@ -64,6 +78,7 @@ proxy_request(Method, Url, Req0, State) ->
             }, RespBody, Req1),
             {ok, Req, State};
         {error, Reason} ->
+            io:format("[PROXY ERROR] ~p~n", [Reason]),
             reply_error(502, list_to_binary(io_lib:format("Proxy error: ~p", [Reason])), Req1, State)
     end.
 
