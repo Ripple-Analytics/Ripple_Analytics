@@ -163,6 +163,8 @@ base_layout(Title, Content) ->
                 <div style=\"margin-top: 4px; opacity: 0.8;\">
                     <span id=\"git-commit-nav\"></span>
                 </div>
+                <div id=\"host-path-indicator\" style=\"margin-top: 4px; opacity: 0.7; font-size: 10px; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;\" title=\"\">
+                </div>
             </div>
         </div>
         <script>
@@ -181,6 +183,19 @@ base_layout(Title, Content) ->
                     }
                 } catch (e) {
                     document.getElementById('git-branch-nav').textContent = 'offline';
+                }
+                
+                // Load host path from settings API
+                try {
+                    const pathRes = await fetch('/api/system/info');
+                    const pathData = await pathRes.json();
+                    const hostPathEl = document.getElementById('host-path-indicator');
+                    if (pathData.host_path && hostPathEl) {
+                        hostPathEl.textContent = pathData.host_path;
+                        hostPathEl.title = pathData.host_path;
+                    }
+                } catch (e) {
+                    // Silently fail if system info not available
                 }
             })();
         </script>

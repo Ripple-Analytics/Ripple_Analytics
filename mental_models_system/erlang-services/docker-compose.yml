@@ -290,6 +290,8 @@ services:
       - CHAOS_MONKEY_URL=http://update-chaos-monkey:8013
       # Machine-specific licensing - pass host machine GUID to container
       - MACHINE_GUID=${MACHINE_GUID:-}
+      # Host path for display in UI - shows where the app is running from
+      - HOST_PATH=${HOST_PATH:-}
     depends_on:
       - api-gateway
       - chaos-engineering

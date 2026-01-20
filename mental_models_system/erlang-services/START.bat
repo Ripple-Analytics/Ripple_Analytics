@@ -52,6 +52,15 @@ if not exist ".env" (
     move /y .env.tmp .env >nul 2>&1
 )
 
+:: Set HOST_PATH so the UI can show where the app is running from
+set HOST_PATH=%cd%
+echo [INFO] Running from: %HOST_PATH%
+:: Update HOST_PATH in .env file
+findstr /v "HOST_PATH" .env > .env.tmp 2>nul
+echo HOST_PATH=%HOST_PATH% >> .env.tmp
+move /y .env.tmp .env >nul 2>&1
+echo.
+
 :: Pull latest changes if this is a git repo
 echo [1/5] Checking for updates...
 cd ..\..
