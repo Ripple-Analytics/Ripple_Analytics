@@ -367,9 +367,18 @@ rebuild_services() ->
         io:format("[UPDATER] Active environment: ~s, Updating standby: ~s~n", [ActiveEnv, StandbyEnv]),
         
         %% Step 2: Build all services including the standby UI
+        %% Use --build-arg to bust Docker cache and ensure source changes are picked up
         StandbyService = "desktop-ui-" ++ StandbyEnv,
-        io:format("[UPDATER] Building backend services and ~s...~n", [StandbyService]),
-        BuildCmd = "cd " ++ BasePath ++ " && docker-compose build --parallel " ++ BackendServices ++ " " ++ StandbyService ++ " 2>&1",
+        CommitHash = get_current_commit(),
+        CommitHashStr = case CommitHash of
+            undefined -> "unknown";
+            Hash -> binary_to_list(Hash)
+        end,
+        BuildTime = calendar:system_time_to_rfc3339(erlang:system_time(second), [{unit, second}]),
+        io:format("[UPDATER] Building backend services and ~s with commit ~s...~n", [StandbyService, CommitHashStr]),
+        BuildArgs = "--build-arg COMMIT_HASH=" ++ CommitHashStr ++ " --build-arg BUILD_TIME=" ++ BuildTime,
+        BuildCmd = "cd " ++ BasePath ++ " && docker-compose build --no-cache " ++ BuildArgs ++ " " ++ BackendServices ++ " " ++ StandbyService ++ " 2>&1",
+        io:format("[UPDATER] Build command: ~s~n", [BuildCmd]),
         _BuildResult = os:cmd(BuildCmd),
         
         %% Step 3: Update backend services (quick restart)

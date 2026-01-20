@@ -12,6 +12,11 @@ COPY rebar.config .
 RUN rebar3 get-deps
 
 # Copy source code
+# CACHE BUSTER: This ARG changes with each commit, forcing rebuild of src layer
+ARG COMMIT_HASH=unknown
+ARG BUILD_TIME=unknown
+RUN echo "Building commit: ${COMMIT_HASH} at ${BUILD_TIME}"
+
 COPY src src/
 
 # Compile
