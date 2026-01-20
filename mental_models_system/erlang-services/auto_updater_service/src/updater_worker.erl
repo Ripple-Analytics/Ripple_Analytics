@@ -350,6 +350,10 @@ rebuild_services() ->
         
         BasePath = "/repo/mental_models_system/erlang-services",
         
+        %% Step 0: Auto-detect and set HOST_PATH in .env file
+        %% This ensures the UI shows the correct folder path without manual intervention
+        detect_and_set_host_path(BasePath),
+        
         %% Backend services (not blue-green, just restart)
         BackendServices = "api-gateway analysis-service harvester-service storage-service chaos-engineering",
         
@@ -407,6 +411,52 @@ rebuild_services() ->
         Class:Reason:Stacktrace ->
             io:format("[UPDATER] ERROR during rebuild: ~p:~p~n~p~n", [Class, Reason, Stacktrace]),
             io:format("[UPDATER] Rebuild failed but updater continues running~n")
+    end.
+
+%% Auto-detect and set HOST_PATH in .env file
+%% This reads the host path from docker and writes it to .env so containers can display it
+detect_and_set_host_path(BasePath) ->
+    io:format("[UPDATER] Auto-detecting host path...~n"),
+    
+    %% Get the host path by inspecting the auto-updater container's bind mount
+    %% The /services volume is mounted from the host's erlang-services directory
+    InspectCmd = "docker inspect mental-models-auto-updater --format='{{range .Mounts}}{{if eq .Destination \"/services\"}}{{.Source}}{{end}}{{end}}' 2>/dev/null",
+    HostPath = string:trim(os:cmd(InspectCmd)),
+    
+    case HostPath of
+        "" ->
+            %% Fallback: try to read from existing .env file
+            io:format("[UPDATER] Could not detect host path from docker, checking .env~n");
+        Path ->
+            io:format("[UPDATER] Detected host path: ~s~n", [Path]),
+            %% Update the .env file with HOST_PATH
+            EnvFile = BasePath ++ "/.env",
+            update_env_file(EnvFile, "HOST_PATH", Path)
+    end.
+
+%% Update or add a key=value pair in the .env file
+update_env_file(EnvFile, Key, Value) ->
+    %% Read existing .env content
+    ExistingContent = case file:read_file(EnvFile) of
+        {ok, Content} -> binary_to_list(Content);
+        {error, _} -> ""
+    end,
+    
+    %% Check if key already exists
+    KeyPattern = Key ++ "=",
+    Lines = string:split(ExistingContent, "\n", all),
+    
+    %% Filter out existing key and add new value
+    FilteredLines = [L || L <- Lines, not lists:prefix(KeyPattern, L), L =/= ""],
+    NewLines = FilteredLines ++ [Key ++ "=" ++ Value],
+    NewContent = string:join(NewLines, "\n") ++ "\n",
+    
+    %% Write back to .env file
+    case file:write_file(EnvFile, NewContent) of
+        ok ->
+            io:format("[UPDATER] Updated ~s in .env file~n", [Key]);
+        {error, Reason} ->
+            io:format("[UPDATER] WARNING: Could not update .env file: ~p~n", [Reason])
     end.
 
 %% Get the currently active environment (blue or green)
