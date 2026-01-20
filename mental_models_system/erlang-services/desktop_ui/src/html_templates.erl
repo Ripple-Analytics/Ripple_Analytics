@@ -204,6 +204,7 @@ nav_html(ActivePage) ->
         {<<"Dashboard">>, <<"/">>},
         {<<"Analysis">>, <<"/analysis">>},
         {<<"Models">>, <<"/models">>},
+        {<<"History">>, <<"/history">>},
         {<<"Harvester">>, <<"/harvester">>},
         {<<"Settings">>, <<"/settings">>}
     ],

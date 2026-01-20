@@ -20,6 +20,7 @@ start(_StartType, _StartArgs) ->
             {"/dashboard", dashboard_handler, []},
             {"/analysis", analysis_handler, []},
             {"/models", models_handler, []},
+            {"/history", history_handler, []},
             {"/harvester", harvester_handler, []},
             {"/settings", settings_handler, []},
             {"/api/update/[...]", update_handler, []},
