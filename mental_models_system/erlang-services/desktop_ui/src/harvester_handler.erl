@@ -26,6 +26,22 @@ init(Req0, State) ->
         </div>
         
         <div class=\"card\" style=\"margin-top: 20px;\">
+            <h2>Scrape &amp; Analyze</h2>
+            <p>Scrape a URL and immediately analyze its content for mental models and cognitive biases.</p>
+            <br>
+            <input type=\"url\" id=\"analyze-url\" placeholder=\"https://example.com/article\">
+            <div style=\"display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;\">
+                <button class=\"btn\" onclick=\"scrapeAndAnalyze()\">Scrape &amp; Analyze</button>
+                <label style=\"display: flex; align-items: center; gap: 5px;\">
+                    <input type=\"checkbox\" id=\"detect-biases\" checked> Detect Biases
+                </label>
+                <label style=\"display: flex; align-items: center; gap: 5px;\">
+                    Top N Models: <input type=\"number\" id=\"top-n\" value=\"5\" min=\"1\" max=\"20\" style=\"width: 60px;\">
+                </label>
+            </div>
+        </div>
+        
+        <div class=\"card\" style=\"margin-top: 20px;\">
             <h2>Batch URL Scraping</h2>
             <p>Enter multiple URLs (one per line) to scrape in parallel. Maximum 50 URLs per batch.</p>
             <br>
@@ -123,6 +139,79 @@ init(Req0, State) ->
             function clearBatchUrls() {
                 document.getElementById('batch-urls').value = '';
                 document.getElementById('url-count').textContent = '0 URLs';
+            }
+            
+            async function scrapeAndAnalyze() {
+                const url = document.getElementById('analyze-url').value;
+                if (!url.trim()) {
+                    alert('Please enter a URL');
+                    return;
+                }
+                
+                const detectBiases = document.getElementById('detect-biases').checked;
+                const topN = parseInt(document.getElementById('top-n').value) || 5;
+                
+                document.getElementById('results').innerHTML = '<div class=\"loading\">Scraping and analyzing URL...</div>';
+                
+                try {
+                    const res = await fetch('/api/harvester/scrape-analyze', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({url: url, top_n: topN, detect_biases: detectBiases})
+                    });
+                    const data = await res.json();
+                    
+                    let html = '<div class=\"card\"><h2>Scrape &amp; Analyze Results</h2>';
+                    
+                    if (data.success) {
+                        html += '<p><strong>URL:</strong> ' + data.url + '</p>';
+                        html += '<p><strong>Content Type:</strong> ' + (data.scrape?.content_type || 'text/html') + '</p>';
+                        html += '<p><strong>Text Length:</strong> ' + (data.scrape?.text_length || 0) + ' characters</p>';
+                        
+                        // Mental Models
+                        html += '<h3 style=\"margin-top: 20px;\">Mental Models Detected</h3>';
+                        const models = data.analysis?.models || [];
+                        if (models.length > 0) {
+                            for (const model of models) {
+                                html += '<div class=\"model-card\">';
+                                html += '<h4>' + model.name + '</h4>';
+                                html += '<span class=\"category\">' + model.category + '</span>';
+                                html += '<p>' + model.description + '</p>';
+                                html += '</div>';
+                            }
+                        } else {
+                            html += '<p style=\"color: #666;\">No mental models detected in this content.</p>';
+                        }
+                        
+                        // Biases
+                        if (detectBiases) {
+                            html += '<h3 style=\"margin-top: 20px;\">Cognitive Biases Detected</h3>';
+                            const biases = data.analysis?.biases || [];
+                            if (biases.length > 0) {
+                                for (const bias of biases) {
+                                    const severityClass = bias.severity === 'high' ? 'status-unhealthy' : 
+                                                          bias.severity === 'medium' ? 'status-unknown' : 'status-healthy';
+                                    html += '<div class=\"model-card\">';
+                                    html += '<h4>' + bias.bias.replace(/_/g, ' ').replace(/\\b\\w/g, l => l.toUpperCase()) + '</h4>';
+                                    html += '<span class=\"' + severityClass + '\">Severity: ' + bias.severity + '</span>';
+                                    html += '</div>';
+                                }
+                            } else {
+                                html += '<p style=\"color: #666;\">No cognitive biases detected in this content.</p>';
+                            }
+                        }
+                        
+                        html += '<p style=\"margin-top: 15px; font-size: 12px; color: #666;\">Analysis method: ' + (data.analysis?.method || 'keyword_matching') + '</p>';
+                    } else {
+                        html += '<div class=\"alert alert-error\">Failed to scrape URL: ' + (data.error || 'Unknown error') + '</div>';
+                    }
+                    html += '</div>';
+                    document.getElementById('results').innerHTML = html;
+                    loadStats();
+                } catch (e) {
+                    document.getElementById('results').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
             }
             
             async function batchScrape() {
