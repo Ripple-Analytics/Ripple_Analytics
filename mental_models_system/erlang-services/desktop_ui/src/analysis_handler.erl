@@ -13,6 +13,28 @@ init(Req0, State) ->
             <p>Enter text to identify relevant mental models and detect cognitive biases.</p>
             <br>
             
+            <!-- Data Import Section -->
+            <div style=\"margin-bottom: 20px; padding: 15px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 8px; color: white;\">
+                <h3 style=\"margin: 0 0 10px 0; color: white;\">Import Data</h3>
+                <p style=\"margin: 0 0 15px 0; font-size: 14px;\">Upload files or paste data for batch analysis</p>
+                <div style=\"display: flex; gap: 10px; flex-wrap: wrap; align-items: center;\">
+                    <input type=\"file\" id=\"file-upload\" accept=\".txt,.csv,.json,.md\" multiple style=\"display: none;\" onchange=\"handleFileUpload(event)\">
+                    <button class=\"btn\" style=\"background: white; color: #667eea;\" onclick=\"document.getElementById('file-upload').click()\">Upload Files</button>
+                    <button class=\"btn\" style=\"background: rgba(255,255,255,0.2); border: 1px solid white;\" onclick=\"showPasteModal()\">Paste Bulk Data</button>
+                    <button class=\"btn\" style=\"background: rgba(255,255,255,0.2); border: 1px solid white;\" onclick=\"loadFromURL()\">Load from URL</button>
+                    <span id=\"file-count\" style=\"font-size: 12px;\"></span>
+                </div>
+                <div id=\"import-preview\" style=\"margin-top: 10px; display: none;\">
+                    <div style=\"background: rgba(255,255,255,0.1); padding: 10px; border-radius: 6px; max-height: 150px; overflow-y: auto;\">
+                        <div id=\"import-files-list\"></div>
+                    </div>
+                    <div style=\"margin-top: 10px; display: flex; gap: 10px;\">
+                        <button class=\"btn\" style=\"background: #28a745;\" onclick=\"processBatchData()\">Process All Files</button>
+                        <button class=\"btn\" style=\"background: rgba(255,255,255,0.2);\" onclick=\"clearImportedFiles()\">Clear</button>
+                    </div>
+                </div>
+            </div>
+            
             <div style=\"margin-bottom: 15px;\">
                 <label style=\"font-weight: bold; display: block; margin-bottom: 8px;\">Quick Templates:</label>
                 <div style=\"display: flex; gap: 8px; flex-wrap: wrap;\">
@@ -25,7 +47,7 @@ init(Req0, State) ->
                 </div>
             </div>
             
-            <textarea id=\"analysis-text\" placeholder=\"Enter text to analyze...\"></textarea>
+            <textarea id=\"analysis-text\" placeholder=\"Enter text to analyze or import data above...\"></textarea>
             <div style=\"display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;\">
                 <button class=\"btn\" onclick=\"analyzeText()\">Analyze for Models</button>
                 <button class=\"btn btn-secondary\" onclick=\"detectBiases()\">Detect Biases</button>
@@ -33,6 +55,19 @@ init(Req0, State) ->
                 <button class=\"btn btn-secondary\" onclick=\"runPatternAnalysis()\">Pattern Analysis</button>
                 <button class=\"btn btn-secondary\" onclick=\"runFullAnalysis()\">Full Analysis</button>
                 <button class=\"btn btn-secondary\" onclick=\"document.getElementById('analysis-text').value=''\">Clear</button>
+            </div>
+        </div>
+        
+        <!-- Paste Modal -->
+        <div id=\"paste-modal\" style=\"display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;\">
+            <div style=\"background: white; padding: 25px; border-radius: 12px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto;\">
+                <h3 style=\"margin: 0 0 15px 0;\">Paste Bulk Data</h3>
+                <p style=\"color: #666; font-size: 14px;\">Paste multiple entries separated by blank lines, or CSV/JSON data:</p>
+                <textarea id=\"bulk-paste-area\" style=\"width: 100%; height: 300px; margin: 15px 0; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: monospace;\" placeholder=\"Paste your data here...\\n\\nSupported formats:\\n- Plain text (entries separated by blank lines)\\n- CSV (with headers)\\n- JSON array of objects with 'text' field\"></textarea>
+                <div style=\"display: flex; gap: 10px; justify-content: flex-end;\">
+                    <button class=\"btn btn-secondary\" onclick=\"closePasteModal()\">Cancel</button>
+                    <button class=\"btn\" onclick=\"importPastedData()\">Import Data</button>
+                </div>
             </div>
         </div>
         <div id=\"results\"></div>
@@ -50,6 +85,289 @@ init(Req0, State) ->
         <script>
             let lastAnalysisResult = null;
             let lastAnalysisType = null;
+            let importedFiles = [];
+            let batchResults = [];
+            
+            // ========== Data Import Functions ==========
+            
+            function handleFileUpload(event) {
+                const files = Array.from(event.target.files);
+                files.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        importedFiles.push({
+                            name: file.name,
+                            type: file.type || getFileType(file.name),
+                            content: e.target.result,
+                            size: file.size
+                        });
+                        updateImportPreview();
+                    };
+                    reader.readAsText(file);
+                });
+            }
+            
+            function getFileType(filename) {
+                const ext = filename.split('.').pop().toLowerCase();
+                const types = {txt: 'text/plain', csv: 'text/csv', json: 'application/json', md: 'text/markdown'};
+                return types[ext] || 'text/plain';
+            }
+            
+            function updateImportPreview() {
+                const preview = document.getElementById('import-preview');
+                const list = document.getElementById('import-files-list');
+                const count = document.getElementById('file-count');
+                
+                if (importedFiles.length > 0) {
+                    preview.style.display = 'block';
+                    count.textContent = importedFiles.length + ' file(s) ready';
+                    list.innerHTML = importedFiles.map((f, i) => 
+                        '<div style=\"display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.1);\">' +
+                        '<span>' + f.name + ' (' + formatSize(f.size) + ')</span>' +
+                        '<button onclick=\"removeFile(' + i + ')\" style=\"background: none; border: none; color: white; cursor: pointer;\">x</button>' +
+                        '</div>'
+                    ).join('');
+                } else {
+                    preview.style.display = 'none';
+                    count.textContent = '';
+                }
+            }
+            
+            function formatSize(bytes) {
+                if (bytes < 1024) return bytes + ' B';
+                if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+                return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+            }
+            
+            function removeFile(index) {
+                importedFiles.splice(index, 1);
+                updateImportPreview();
+            }
+            
+            function clearImportedFiles() {
+                importedFiles = [];
+                document.getElementById('file-upload').value = '';
+                updateImportPreview();
+            }
+            
+            function showPasteModal() {
+                document.getElementById('paste-modal').style.display = 'flex';
+            }
+            
+            function closePasteModal() {
+                document.getElementById('paste-modal').style.display = 'none';
+            }
+            
+            function importPastedData() {
+                const data = document.getElementById('bulk-paste-area').value.trim();
+                if (!data) {
+                    alert('Please paste some data first');
+                    return;
+                }
+                
+                // Try to parse as JSON first
+                try {
+                    const jsonData = JSON.parse(data);
+                    if (Array.isArray(jsonData)) {
+                        jsonData.forEach((item, i) => {
+                            const text = typeof item === 'string' ? item : (item.text || item.content || JSON.stringify(item));
+                            importedFiles.push({
+                                name: 'pasted-item-' + (i + 1) + '.txt',
+                                type: 'text/plain',
+                                content: text,
+                                size: text.length
+                            });
+                        });
+                    }
+                } catch (e) {
+                    // Try CSV parsing
+                    if (data.includes(',') && data.includes('\\n')) {
+                        const lines = data.split('\\n');
+                        const headers = lines[0].split(',').map(h => h.trim());
+                        const textCol = headers.findIndex(h => h.toLowerCase().includes('text') || h.toLowerCase().includes('content'));
+                        
+                        if (textCol >= 0) {
+                            lines.slice(1).forEach((line, i) => {
+                                const cols = line.split(',');
+                                if (cols[textCol]) {
+                                    importedFiles.push({
+                                        name: 'csv-row-' + (i + 1) + '.txt',
+                                        type: 'text/plain',
+                                        content: cols[textCol].replace(/^\"|\"$/g, ''),
+                                        size: cols[textCol].length
+                                    });
+                                }
+                            });
+                        } else {
+                            // Use whole lines as entries
+                            lines.forEach((line, i) => {
+                                if (line.trim()) {
+                                    importedFiles.push({
+                                        name: 'line-' + (i + 1) + '.txt',
+                                        type: 'text/plain',
+                                        content: line.trim(),
+                                        size: line.length
+                                    });
+                                }
+                            });
+                        }
+                    } else {
+                        // Split by blank lines
+                        const entries = data.split(/\\n\\s*\\n/).filter(e => e.trim());
+                        entries.forEach((entry, i) => {
+                            importedFiles.push({
+                                name: 'entry-' + (i + 1) + '.txt',
+                                type: 'text/plain',
+                                content: entry.trim(),
+                                size: entry.length
+                            });
+                        });
+                    }
+                }
+                
+                updateImportPreview();
+                closePasteModal();
+                document.getElementById('bulk-paste-area').value = '';
+            }
+            
+            async function loadFromURL() {
+                const url = prompt('Enter URL to fetch data from (must return text, JSON, or CSV):');
+                if (!url) return;
+                
+                try {
+                    document.getElementById('file-count').textContent = 'Loading...';
+                    const res = await fetch('/api/proxy?url=' + encodeURIComponent(url));
+                    const text = await res.text();
+                    
+                    importedFiles.push({
+                        name: url.split('/').pop() || 'url-data.txt',
+                        type: 'text/plain',
+                        content: text,
+                        size: text.length
+                    });
+                    updateImportPreview();
+                } catch (e) {
+                    alert('Failed to load URL: ' + e.message);
+                    document.getElementById('file-count').textContent = '';
+                }
+            }
+            
+            async function processBatchData() {
+                if (importedFiles.length === 0) {
+                    alert('No files to process');
+                    return;
+                }
+                
+                document.getElementById('results').innerHTML = '<div class=\"loading\">Processing ' + importedFiles.length + ' items...</div>';
+                batchResults = [];
+                
+                for (let i = 0; i < importedFiles.length; i++) {
+                    const file = importedFiles[i];
+                    document.getElementById('results').innerHTML = '<div class=\"loading\">Processing item ' + (i + 1) + ' of ' + importedFiles.length + '...</div>';
+                    
+                    try {
+                        const res = await fetch('/api/analysis/comprehensive', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({text: file.content, top_n: 5})
+                        });
+                        const data = await res.json();
+                        batchResults.push({
+                            file: file.name,
+                            success: true,
+                            result: data
+                        });
+                    } catch (e) {
+                        batchResults.push({
+                            file: file.name,
+                            success: false,
+                            error: e.message
+                        });
+                    }
+                }
+                
+                displayBatchResults();
+            }
+            
+            function displayBatchResults() {
+                let html = '<div class=\"card\">';
+                html += '<h2>Batch Analysis Results</h2>';
+                html += '<p>Processed ' + batchResults.length + ' items</p>';
+                html += '<div style=\"margin-top: 15px;\">';
+                html += '<button class=\"btn\" onclick=\"exportBatchJSON()\">Export All as JSON</button>';
+                html += '<button class=\"btn btn-secondary\" style=\"margin-left: 10px;\" onclick=\"exportBatchCSV()\">Export Summary CSV</button>';
+                html += '</div>';
+                html += '</div>';
+                
+                batchResults.forEach((item, i) => {
+                    html += '<div class=\"card\" style=\"margin-top: 15px;\">';
+                    html += '<h3 style=\"display: flex; justify-content: space-between;\">';
+                    html += '<span>' + item.file + '</span>';
+                    html += '<span style=\"font-size: 12px; color: ' + (item.success ? '#28a745' : '#dc3545') + ';\">' + (item.success ? 'Success' : 'Failed') + '</span>';
+                    html += '</h3>';
+                    
+                    if (item.success && item.result) {
+                        const lolla = item.result.lollapalooza || {};
+                        if (lolla.detected) {
+                            html += '<div style=\"background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; padding: 10px; border-radius: 6px; margin: 10px 0;\">';
+                            html += '<strong>Lollapalooza Detected!</strong> ' + lolla.convergence_count + ' models converging (' + lolla.strength + ')';
+                            html += '</div>';
+                        }
+                        
+                        const models = item.result.analysis || [];
+                        if (models.length > 0) {
+                            html += '<p><strong>Top Models:</strong></p>';
+                            html += '<div style=\"display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px;\">';
+                            models.slice(0, 5).forEach(m => {
+                                html += '<span style=\"background: #e9ecef; padding: 4px 8px; border-radius: 4px; font-size: 12px;\">' + m.name + ' (' + (m.relevance || 0) + '%)</span>';
+                            });
+                            html += '</div>';
+                        }
+                    } else if (!item.success) {
+                        html += '<p style=\"color: #dc3545;\">Error: ' + item.error + '</p>';
+                    }
+                    html += '</div>';
+                });
+                
+                document.getElementById('results').innerHTML = html;
+                document.getElementById('export-buttons').style.display = 'none';
+                lastAnalysisResult = batchResults;
+                lastAnalysisType = 'batch';
+            }
+            
+            function exportBatchJSON() {
+                const blob = new Blob([JSON.stringify(batchResults, null, 2)], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'batch-analysis-' + new Date().toISOString().slice(0,10) + '.json';
+                a.click();
+            }
+            
+            function exportBatchCSV() {
+                let csv = 'File,Success,Lollapalooza,Convergence Count,Top Model,Top Score\\n';
+                batchResults.forEach(item => {
+                    const lolla = item.result?.lollapalooza || {};
+                    const topModel = item.result?.analysis?.[0] || {};
+                    csv += [
+                        item.file,
+                        item.success,
+                        lolla.detected || false,
+                        lolla.convergence_count || 0,
+                        topModel.name || '',
+                        topModel.relevance || 0
+                    ].join(',') + '\\n';
+                });
+                
+                const blob = new Blob([csv], {type: 'text/csv'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'batch-summary-' + new Date().toISOString().slice(0,10) + '.csv';
+                a.click();
+            }
+            
+            // ========== Templates ==========
             
             const templates = {
                 decision: 'DECISION ANALYSIS\\n\\nDecision to make: [Describe the decision]\\n\\nOptions:\\n1. [Option A]\\n2. [Option B]\\n3. [Option C]\\n\\nPros and Cons:\\n- Option A: [pros/cons]\\n- Option B: [pros/cons]\\n- Option C: [pros/cons]\\n\\nKey factors to consider:\\n- [Factor 1]\\n- [Factor 2]\\n\\nTimeline: [When decision needs to be made]\\n\\nStakeholders affected: [Who is impacted]',
