@@ -186,15 +186,16 @@ init(Req0, State) ->
                     return;
                 }
                 
-                document.getElementById('results').innerHTML = '<div class=\"loading\">Running full analysis...</div>';
+                document.getElementById('results').innerHTML = '<div class=\"loading\">Running comprehensive analysis with Lollapalooza detection...</div>';
                 document.getElementById('export-buttons').style.display = 'none';
                 
                 try {
-                    const [modelsRes, biasesRes] = await Promise.all([
-                        fetch('/api/analysis/analyze', {
+                    // Use comprehensive analysis endpoint for Lollapalooza detection
+                    const [comprehensiveRes, biasesRes] = await Promise.all([
+                        fetch('/api/analysis/comprehensive', {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({text: text, top_n: 5})
+                            body: JSON.stringify({text: text, top_n: 10})
                         }),
                         fetch('/api/analysis/detect-biases', {
                             method: 'POST',
@@ -203,11 +204,11 @@ init(Req0, State) ->
                         })
                     ]);
                     
-                    const modelsData = await modelsRes.json();
+                    const comprehensiveData = await comprehensiveRes.json();
                     const biasesData = await biasesRes.json();
                     
                     lastAnalysisResult = {
-                        models: modelsData,
+                        comprehensive: comprehensiveData,
                         biases: biasesData,
                         timestamp: new Date().toISOString(),
                         inputText: text.substring(0, 200) + (text.length > 200 ? '...' : '')
@@ -215,17 +216,69 @@ init(Req0, State) ->
                     lastAnalysisType = 'full';
                     
                     // Save to history
-                    saveToHistory('full', text, modelsData.models || [], biasesData.biases || []);
+                    const models = comprehensiveData.analysis || [];
+                    saveToHistory('full', text, models, biasesData.biases || []);
                     
-                    let html = '<div class=\"card\"><h2>Full Analysis Results</h2>';
+                    let html = '';
                     
-                    // Models section
-                    html += '<h3 style=\"margin-top: 20px;\">Mental Models</h3>';
-                    if (modelsData.models && modelsData.models.length > 0) {
-                        html += '<p>Found ' + modelsData.models.length + ' relevant mental models:</p><br>';
-                        for (const model of modelsData.models) {
+                    // Lollapalooza Alert (if detected)
+                    const lollapalooza = comprehensiveData.lollapalooza || {};
+                    if (lollapalooza.detected) {
+                        html += '<div class=\"card\" style=\"background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;\">';
+                        html += '<h2 style=\"color: white;\">LOLLAPALOOZA EFFECT DETECTED!</h2>';
+                        html += '<p style=\"font-size: 16px;\">Multiple mental models (' + lollapalooza.convergence_count + ') are converging with <strong>' + lollapalooza.strength + '</strong> intensity.</p>';
+                        html += '<p><strong>Converging Models:</strong> ' + (lollapalooza.converging_models || []).join(', ') + '</p>';
+                        if (lollapalooza.cross_domain) {
+                            html += '<p><strong>Cross-Domain Analysis:</strong> Models span multiple categories: ' + (lollapalooza.categories_involved || []).join(', ') + '</p>';
+                        }
+                        html += '<p style=\"margin-top: 15px; font-style: italic;\">\"When several models combine, you get lollapalooza effects; this is when two, three, or four forces are all operating in the same direction.\" - Charlie Munger</p>';
+                        html += '</div>';
+                    }
+                    
+                    // Recommendations (if any)
+                    const recommendations = comprehensiveData.recommendations || [];
+                    if (recommendations.length > 0) {
+                        html += '<div class=\"card\">';
+                        html += '<h2>Recommendations</h2>';
+                        for (const rec of recommendations) {
+                            const priorityColor = rec.priority === 'high' ? '#dc3545' : rec.priority === 'medium' ? '#ffc107' : '#28a745';
+                            html += '<div class=\"model-card\" style=\"border-left: 4px solid ' + priorityColor + ';\">';
+                            html += '<h4>' + (rec.type || 'Insight').replace(/_/g, ' ').replace(/\\b\\w/g, l => l.toUpperCase()) + '</h4>';
+                            html += '<p>' + rec.message + '</p>';
+                            if (rec.action) {
+                                html += '<p style=\"margin-top: 10px;\"><strong>Action:</strong> ' + rec.action + '</p>';
+                            }
+                            html += '</div>';
+                        }
+                        html += '</div>';
+                    }
+                    
+                    // Convergence Metrics
+                    const convergence = comprehensiveData.convergence || {};
+                    if (convergence.total_models > 0) {
+                        html += '<div class=\"card\">';
+                        html += '<h2>Convergence Metrics</h2>';
+                        html += '<div style=\"display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;\">';
+                        html += '<div style=\"text-align: center; padding: 15px; background: #f8f9fa; border-radius: 8px;\"><div style=\"font-size: 24px; font-weight: bold; color: #4361ee;\">' + convergence.total_models + '</div><div>Models Analyzed</div></div>';
+                        html += '<div style=\"text-align: center; padding: 15px; background: #f8f9fa; border-radius: 8px;\"><div style=\"font-size: 24px; font-weight: bold; color: #28a745;\">' + convergence.high_scoring + '</div><div>High Scoring (70%+)</div></div>';
+                        html += '<div style=\"text-align: center; padding: 15px; background: #f8f9fa; border-radius: 8px;\"><div style=\"font-size: 24px; font-weight: bold; color: #6c757d;\">' + (convergence.mean_score || 0).toFixed(1) + '%</div><div>Mean Score</div></div>';
+                        html += '<div style=\"text-align: center; padding: 15px; background: #f8f9fa; border-radius: 8px;\"><div style=\"font-size: 24px; font-weight: bold; color: #17a2b8;\">' + (convergence.max_score || 0) + '%</div><div>Max Score</div></div>';
+                        html += '</div></div>';
+                    }
+                    
+                    // Mental Models section
+                    html += '<div class=\"card\"><h2>Mental Models Detected</h2>';
+                    const modelsData = comprehensiveData.analysis || [];
+                    if (modelsData.length > 0) {
+                        html += '<p>Found ' + modelsData.length + ' relevant mental models:</p><br>';
+                        for (const model of modelsData) {
+                            const relevance = model.relevance || 0;
+                            const relevanceColor = relevance >= 70 ? '#28a745' : relevance >= 40 ? '#ffc107' : '#6c757d';
                             html += '<div class=\"model-card\">';
+                            html += '<div style=\"display: flex; justify-content: space-between; align-items: center;\">';
                             html += '<h4>' + model.name + '</h4>';
+                            html += '<span style=\"background: ' + relevanceColor + '; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;\">' + relevance + '% relevance</span>';
+                            html += '</div>';
                             html += '<span class=\"category\">' + model.category + '</span>';
                             html += '<p>' + model.description + '</p>';
                             html += '</div>';
@@ -233,9 +286,29 @@ init(Req0, State) ->
                     } else {
                         html += '<p>No specific mental models detected.</p>';
                     }
+                    html += '</div>';
+                    
+                    // Failure Modes (if any)
+                    const failureModes = comprehensiveData.failure_modes || [];
+                    if (failureModes.length > 0) {
+                        html += '<div class=\"card\">';
+                        html += '<h2>Potential Failure Modes</h2>';
+                        html += '<p>Based on detected models, watch out for these potential pitfalls:</p><br>';
+                        for (const fm of failureModes) {
+                            const riskColor = fm.risk === 'critical' ? '#dc3545' : fm.risk === 'high' ? '#fd7e14' : fm.risk === 'medium' ? '#ffc107' : '#28a745';
+                            html += '<div class=\"model-card\" style=\"border-left: 4px solid ' + riskColor + ';\">';
+                            html += '<div style=\"display: flex; justify-content: space-between; align-items: center;\">';
+                            html += '<h4>' + fm.mode + '</h4>';
+                            html += '<span style=\"background: ' + riskColor + '; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;\">' + fm.risk + ' risk</span>';
+                            html += '</div>';
+                            html += '<p>Source: ' + fm.source_model + ' (Score: ' + fm.model_score + '%)</p>';
+                            html += '</div>';
+                        }
+                        html += '</div>';
+                    }
                     
                     // Biases section
-                    html += '<h3 style=\"margin-top: 20px;\">Cognitive Biases</h3>';
+                    html += '<div class=\"card\"><h2>Cognitive Biases</h2>';
                     if (biasesData.biases && biasesData.biases.length > 0) {
                         html += '<p>Found ' + biasesData.biases.length + ' potential cognitive biases:</p><br>';
                         for (const bias of biasesData.biases) {
@@ -249,8 +322,8 @@ init(Req0, State) ->
                     } else {
                         html += '<p>No obvious cognitive biases detected.</p>';
                     }
-                    
                     html += '</div>';
+                    
                     document.getElementById('results').innerHTML = html;
                     document.getElementById('export-buttons').style.display = 'block';
                 } catch (e) {
