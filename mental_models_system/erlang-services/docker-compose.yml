@@ -28,10 +28,13 @@ services:
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - .:/services
+      - updater-repo:/repo
+      - updater-data:/data
+      - .:/repo/mental_models_system/erlang-services
     environment:
       - GITHUB_BRANCH=release2
-      - BOOTSTRAP_INTERVAL=60
+      - CHECK_INTERVAL=60
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
     networks:
       - mental-models-network
 
