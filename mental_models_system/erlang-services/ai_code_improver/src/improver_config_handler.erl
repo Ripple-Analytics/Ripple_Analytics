@@ -60,16 +60,16 @@ handle_post(Req0, State) ->
         end,
         
         Response = jsx:encode(#{<<"status">> => <<"updated">>, <<"message">> => <<"Configuration updated">>}),
-        Req = cowboy_req:reply(200,
+        Req2 = cowboy_req:reply(200,
             #{<<"content-type">> => <<"application/json">>},
             Response,
             Req1),
-        {ok, Req, State}
+        {ok, Req2, State}
     catch
         _:_ ->
-            Req = cowboy_req:reply(400,
+            Req3 = cowboy_req:reply(400,
                 #{<<"content-type">> => <<"application/json">>},
                 jsx:encode(#{<<"error">> => <<"Invalid JSON">>}),
                 Req1),
-            {ok, Req, State}
+            {ok, Req3, State}
     end.

@@ -11,29 +11,29 @@ init(Req0, State) ->
         
         ValidationPrompt = design_philosophy:get_validation_prompt(Code),
         
-        case lm_studio_client:generate(ValidationPrompt, "You are a code validator.") of
+        Req2 = case lm_studio_client:generate(ValidationPrompt, "You are a code validator.") of
             {ok, ValidationResponse} ->
                 Response = jsx:encode(#{
                     <<"status">> => <<"success">>,
                     <<"validation">> => ValidationResponse
                 }),
-                Req = cowboy_req:reply(200,
+                cowboy_req:reply(200,
                     #{<<"content-type">> => <<"application/json">>},
                     Response,
                     Req1);
             {error, Reason} ->
                 Response = jsx:encode(#{<<"error">> => list_to_binary(io_lib:format("Validation error: ~p", [Reason]))}),
-                Req = cowboy_req:reply(500,
+                cowboy_req:reply(500,
                     #{<<"content-type">> => <<"application/json">>},
                     Response,
                     Req1)
         end,
-        {ok, Req, State}
+        {ok, Req2, State}
     catch
         _:_ ->
-            Req = cowboy_req:reply(400,
+            Req3 = cowboy_req:reply(400,
                 #{<<"content-type">> => <<"application/json">>},
                 jsx:encode(#{<<"error">> => <<"Invalid JSON">>}),
                 Req1),
-            {ok, Req, State}
+            {ok, Req3, State}
     end.

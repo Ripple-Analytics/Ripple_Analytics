@@ -15,10 +15,15 @@ init(Req0, State) ->
             handle_get_backup(BackupId, Req0, State);
         {<<"POST">>, <<"/api/rollback/create">>} ->
             handle_create_backup(Req0, State);
-        {<<"POST">>, <<"/api/rollback/", BackupId/binary, "/restore">>} ->
-            handle_restore(BackupId, Req0, State);
         {<<"POST">>, <<"/api/rollback/cleanup">>} ->
             handle_cleanup(Req0, State);
+        {<<"POST">>, <<"/api/rollback/", Rest/binary>>} ->
+            case binary:split(Rest, <<"/">>) of
+                [BackupId, <<"restore">>] ->
+                    handle_restore(BackupId, Req0, State);
+                _ ->
+                    handle_not_found(Req0, State)
+            end;
         _ ->
             Req = cowboy_req:reply(404,
                 #{<<"content-type">> => <<"application/json">>},
@@ -83,26 +88,26 @@ handle_create_backup(Req0, State) ->
         Request = jsx:decode(Body, [return_maps]),
         FilePath = binary_to_list(maps:get(<<"file">>, Request)),
         
-        case rollback_manager:save_backup(FilePath) of
+        Req2 = case rollback_manager:save_backup(FilePath) of
             {ok, BackupInfo} ->
-                Req = cowboy_req:reply(200,
+                cowboy_req:reply(200,
                     #{<<"content-type">> => <<"application/json">>},
                     jsx:encode(BackupInfo),
                     Req1);
             {error, Reason} ->
-                Req = cowboy_req:reply(500,
+                cowboy_req:reply(500,
                     #{<<"content-type">> => <<"application/json">>},
                     jsx:encode(#{<<"error">> => format_error(Reason)}),
                     Req1)
         end,
-        {ok, Req, State}
+        {ok, Req2, State}
     catch
         _:_ ->
-            Req = cowboy_req:reply(400,
+            Req3 = cowboy_req:reply(400,
                 #{<<"content-type">> => <<"application/json">>},
                 jsx:encode(#{<<"error">> => <<"Invalid JSON">>}),
                 Req1),
-            {ok, Req, State}
+            {ok, Req3, State}
     end.
 
 handle_restore(BackupId, Req0, State) ->
@@ -138,6 +143,13 @@ handle_cleanup(Req0, State) ->
                 jsx:encode(#{<<"error">> => format_error(Reason)}),
                 Req0)
     end,
+    {ok, Req, State}.
+
+handle_not_found(Req0, State) ->
+    Req = cowboy_req:reply(404,
+        #{<<"content-type">> => <<"application/json">>},
+        jsx:encode(#{<<"error">> => <<"Not found">>}),
+        Req0),
     {ok, Req, State}.
 
 format_error(Reason) when is_binary(Reason) -> Reason;

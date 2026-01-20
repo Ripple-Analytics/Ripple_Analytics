@@ -9,23 +9,31 @@ init(Req0, State) ->
     case {Method, Path} of
         {<<"GET">>, <<"/api/diff/pending">>} ->
             handle_get_pending(Req0, State);
-        {<<"GET">>, <<"/api/diff/", DiffId/binary>>} ->
-            handle_get_diff(DiffId, Req0, State);
         {<<"POST">>, <<"/api/diff/create">>} ->
             handle_create_diff(Req0, State);
-        {<<"POST">>, <<"/api/diff/", DiffId/binary, "/approve">>} ->
-            handle_approve(DiffId, Req0, State);
-        {<<"POST">>, <<"/api/diff/", DiffId/binary, "/reject">>} ->
-            handle_reject(DiffId, Req0, State);
         {<<"DELETE">>, <<"/api/diff/pending">>} ->
             handle_clear_pending(Req0, State);
+        {<<"GET">>, <<"/api/diff/", DiffId/binary>>} ->
+            handle_get_diff(DiffId, Req0, State);
+        {<<"POST">>, <<"/api/diff/", Rest/binary>>} ->
+            case binary:split(Rest, <<"/">>) of
+                [DiffId, <<"approve">>] ->
+                    handle_approve(DiffId, Req0, State);
+                [DiffId, <<"reject">>] ->
+                    handle_reject(DiffId, Req0, State);
+                _ ->
+                    handle_not_found(Req0, State)
+            end;
         _ ->
-            Req = cowboy_req:reply(404,
-                #{<<"content-type">> => <<"application/json">>},
-                jsx:encode(#{<<"error">> => <<"Not found">>}),
-                Req0),
-            {ok, Req, State}
+            handle_not_found(Req0, State)
     end.
+
+handle_not_found(Req0, State) ->
+    Req = cowboy_req:reply(404,
+        #{<<"content-type">> => <<"application/json">>},
+        jsx:encode(#{<<"error">> => <<"Not found">>}),
+        Req0),
+    {ok, Req, State}.
 
 handle_get_pending(Req0, State) ->
     case diff_preview:get_pending_diffs() of
@@ -69,26 +77,26 @@ handle_create_diff(Req0, State) ->
         FilePath = binary_to_list(maps:get(<<"file">>, Request)),
         NewContent = maps:get(<<"content">>, Request),
         
-        case diff_preview:create_diff(FilePath, NewContent) of
+        Req2 = case diff_preview:create_diff(FilePath, NewContent) of
             {ok, DiffInfo} ->
-                Req = cowboy_req:reply(200,
+                cowboy_req:reply(200,
                     #{<<"content-type">> => <<"application/json">>},
                     jsx:encode(DiffInfo),
                     Req1);
             {error, Reason} ->
-                Req = cowboy_req:reply(500,
+                cowboy_req:reply(500,
                     #{<<"content-type">> => <<"application/json">>},
                     jsx:encode(#{<<"error">> => format_error(Reason)}),
                     Req1)
         end,
-        {ok, Req, State}
+        {ok, Req2, State}
     catch
         _:_ ->
-            Req = cowboy_req:reply(400,
+            Req3 = cowboy_req:reply(400,
                 #{<<"content-type">> => <<"application/json">>},
                 jsx:encode(#{<<"error">> => <<"Invalid JSON">>}),
                 Req1),
-            {ok, Req, State}
+            {ok, Req3, State}
     end.
 
 handle_approve(DiffId, Req0, State) ->

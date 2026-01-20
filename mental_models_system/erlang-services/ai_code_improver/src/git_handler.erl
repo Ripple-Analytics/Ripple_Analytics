@@ -83,26 +83,26 @@ handle_commit(Req0, State) ->
         Request = jsx:decode(Body, [return_maps]),
         FilePath = binary_to_list(maps:get(<<"file">>, Request)),
         Description = binary_to_list(maps:get(<<"description">>, Request)),
-        case git_integration:commit_improvement(FilePath, Description) of
+        Req2 = case git_integration:commit_improvement(FilePath, Description) of
             {ok, CommitHash} ->
-                Req = cowboy_req:reply(200,
+                cowboy_req:reply(200,
                     #{<<"content-type">> => <<"application/json">>},
                     jsx:encode(#{<<"status">> => <<"committed">>, <<"hash">> => CommitHash}),
                     Req1);
             {error, Reason} ->
-                Req = cowboy_req:reply(500,
+                cowboy_req:reply(500,
                     #{<<"content-type">> => <<"application/json">>},
                     jsx:encode(#{<<"error">> => format_error(Reason)}),
                     Req1)
         end,
-        {ok, Req, State}
+        {ok, Req2, State}
     catch
         _:_ ->
-            Req = cowboy_req:reply(400,
+            Req3 = cowboy_req:reply(400,
                 #{<<"content-type">> => <<"application/json">>},
                 jsx:encode(#{<<"error">> => <<"Invalid JSON">>}),
                 Req1),
-            {ok, Req, State}
+            {ok, Req3, State}
     end.
 
 handle_push(Req0, State) ->
@@ -125,26 +125,26 @@ handle_create_branch(Req0, State) ->
     try
         Request = jsx:decode(Body, [return_maps]),
         BranchName = binary_to_list(maps:get(<<"name">>, Request)),
-        case git_integration:create_branch(BranchName) of
+        Req2 = case git_integration:create_branch(BranchName) of
             {ok, _} ->
-                Req = cowboy_req:reply(200,
+                cowboy_req:reply(200,
                     #{<<"content-type">> => <<"application/json">>},
                     jsx:encode(#{<<"status">> => <<"created">>, <<"branch">> => list_to_binary(BranchName)}),
                     Req1);
             {error, Reason} ->
-                Req = cowboy_req:reply(500,
+                cowboy_req:reply(500,
                     #{<<"content-type">> => <<"application/json">>},
                     jsx:encode(#{<<"error">> => format_error(Reason)}),
                     Req1)
         end,
-        {ok, Req, State}
+        {ok, Req2, State}
     catch
         _:_ ->
-            Req = cowboy_req:reply(400,
+            Req3 = cowboy_req:reply(400,
                 #{<<"content-type">> => <<"application/json">>},
                 jsx:encode(#{<<"error">> => <<"Invalid JSON">>}),
                 Req1),
-            {ok, Req, State}
+            {ok, Req3, State}
     end.
 
 format_error(Reason) when is_binary(Reason) -> Reason;

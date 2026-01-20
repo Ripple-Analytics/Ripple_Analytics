@@ -9,7 +9,7 @@ init(Req0, State) ->
         Request = jsx:decode(Body, [return_maps]),
         FilePath = binary_to_list(maps:get(<<"file">>, Request)),
         
-        case file:read_file(FilePath) of
+        Req2 = case file:read_file(FilePath) of
             {ok, Content} ->
                 case code_analyzer:analyze_file(FilePath) of
                     {ok, Analysis} ->
@@ -25,37 +25,37 @@ init(Req0, State) ->
                                     <<"file">> => list_to_binary(FilePath),
                                     <<"suggestions">> => Suggestions
                                 }),
-                                Req = cowboy_req:reply(200,
+                                cowboy_req:reply(200,
                                     #{<<"content-type">> => <<"application/json">>},
                                     Response,
                                     Req1);
                             {error, Reason} ->
                                 Response = jsx:encode(#{<<"error">> => list_to_binary(io_lib:format("LM Studio error: ~p", [Reason]))}),
-                                Req = cowboy_req:reply(500,
+                                cowboy_req:reply(500,
                                     #{<<"content-type">> => <<"application/json">>},
                                     Response,
                                     Req1)
                         end;
                     {error, Reason} ->
                         Response = jsx:encode(#{<<"error">> => list_to_binary(io_lib:format("Analysis error: ~p", [Reason]))}),
-                        Req = cowboy_req:reply(500,
+                        cowboy_req:reply(500,
                             #{<<"content-type">> => <<"application/json">>},
                             Response,
                             Req1)
                 end;
             {error, Reason} ->
                 Response = jsx:encode(#{<<"error">> => list_to_binary(io_lib:format("File read error: ~p", [Reason]))}),
-                Req = cowboy_req:reply(404,
+                cowboy_req:reply(404,
                     #{<<"content-type">> => <<"application/json">>},
                     Response,
                     Req1)
         end,
-        {ok, Req, State}
+        {ok, Req2, State}
     catch
         _:_ ->
-            Req = cowboy_req:reply(400,
+            Req3 = cowboy_req:reply(400,
                 #{<<"content-type">> => <<"application/json">>},
                 jsx:encode(#{<<"error">> => <<"Invalid JSON">>}),
                 Req1),
-            {ok, Req, State}
+            {ok, Req3, State}
     end.
