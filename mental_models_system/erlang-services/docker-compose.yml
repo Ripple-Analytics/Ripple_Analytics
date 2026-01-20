@@ -12,20 +12,27 @@
 
 services:
   # Auto-Updater - Automatically pulls updates from GitHub (with Google Drive fallback)
+  # When GitHub fails, creates a GitHub issue to alert Devin to fix the problem
   auto-updater:
     build: ./auto_updater
     container_name: mental-models-auto-updater
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - updater-repo:/repo
+      - updater-data:/data
       - .:/services:ro
     environment:
       - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
       - GITHUB_BRANCH=master
       - UPDATE_CHECK_INTERVAL=300
+      # GitHub token for creating alert issues when GitHub fails (required for alerts)
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
       # Configure Google Drive backup URL (optional)
       # Format: https://drive.google.com/file/d/FILE_ID/view or direct download link
       - GDRIVE_BACKUP_URL=${GDRIVE_BACKUP_URL:-}
+      # Optional webhook URL for custom alerts
+      - ALERT_WEBHOOK_URL=${ALERT_WEBHOOK_URL:-}
     restart: unless-stopped
     networks:
       - mental-models-network
@@ -171,4 +178,6 @@ volumes:
   storage-data:
     driver: local
   updater-repo:
+    driver: local
+  updater-data:
     driver: local

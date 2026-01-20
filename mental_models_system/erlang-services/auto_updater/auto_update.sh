@@ -1,6 +1,7 @@
 #!/bin/bash
 # Mental Models System - Auto Updater Service
 # Checks GitHub for updates every 5 minutes, with Google Drive as fallback
+# Creates GitHub issue to alert Devin when GitHub fails
 
 set -e
 
@@ -9,11 +10,146 @@ REPO_URL="${GITHUB_REPO_URL:-https://github.com/Ripple-Analytics/Ripple_Analytic
 BRANCH="${GITHUB_BRANCH:-master}"
 CHECK_INTERVAL="${UPDATE_CHECK_INTERVAL:-300}"  # 5 minutes default
 GDRIVE_BACKUP_URL="${GDRIVE_BACKUP_URL:-}"  # Optional Google Drive backup URL
+GITHUB_TOKEN="${GITHUB_TOKEN:-}"  # GitHub token for creating issues
+GITHUB_REPO="${GITHUB_REPO:-Ripple-Analytics/Ripple_Analytics}"  # Repo for issues
+ALERT_WEBHOOK_URL="${ALERT_WEBHOOK_URL:-}"  # Optional webhook for alerts
 REPO_PATH="/repo"
 SERVICES_PATH="/repo/mental_models_system/erlang-services"
+STATUS_FILE="/data/updater_status.json"
+GITHUB_FAILURE_COUNT=0
+LAST_ALERT_TIME=0
 
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
+}
+
+# Write status to file for UI to read
+write_status() {
+    local status="$1"
+    local message="$2"
+    local github_ok="$3"
+    
+    mkdir -p /data
+    cat > "$STATUS_FILE" << EOF
+{
+    "status": "$status",
+    "message": "$message",
+    "github_available": $github_ok,
+    "last_check": "$(date -Iseconds)",
+    "github_failure_count": $GITHUB_FAILURE_COUNT,
+    "update_source": "${UPDATE_SOURCE:-github}"
+}
+EOF
+}
+
+# Create GitHub issue to alert about GitHub failure
+create_github_alert_issue() {
+    if [ -z "$GITHUB_TOKEN" ]; then
+        log "WARNING: No GITHUB_TOKEN configured - cannot create alert issue"
+        log "Please set GITHUB_TOKEN environment variable to enable automatic alerts"
+        return 1
+    fi
+    
+    # Only create issue once per hour to avoid spam
+    CURRENT_TIME=$(date +%s)
+    TIME_DIFF=$((CURRENT_TIME - LAST_ALERT_TIME))
+    if [ $TIME_DIFF -lt 3600 ]; then
+        log "Skipping alert - last alert was less than 1 hour ago"
+        return 0
+    fi
+    
+    log "Creating GitHub issue to alert about GitHub failure..."
+    
+    ISSUE_TITLE="[AUTO-ALERT] GitHub Update Failed - Using Google Drive Fallback"
+    ISSUE_BODY="## Automatic Alert from Mental Models Auto-Updater
+
+**Time:** $(date -Iseconds)
+**Status:** GitHub connection failed, using Google Drive backup
+
+### Details
+- GitHub URL: $REPO_URL
+- Branch: $BRANCH
+- Failure Count: $GITHUB_FAILURE_COUNT
+- Fallback: Google Drive backup was used successfully
+
+### Action Required
+Please investigate why GitHub is not accessible:
+1. Check if the repository is available
+2. Check network connectivity
+3. Check if there are any GitHub outages
+
+### For Devin
+If you see this issue, please:
+1. Check the GitHub repository status
+2. Verify the auto-updater configuration
+3. Fix any issues preventing GitHub access
+
+---
+*This issue was automatically created by the Mental Models Auto-Updater service.*"
+
+    # Create issue via GitHub API
+    RESPONSE=$(curl -s -X POST \
+        -H "Authorization: token $GITHUB_TOKEN" \
+        -H "Accept: application/vnd.github.v3+json" \
+        "https://api.github.com/repos/$GITHUB_REPO/issues" \
+        -d "{\"title\": \"$ISSUE_TITLE\", \"body\": $(echo "$ISSUE_BODY" | jq -Rs .), \"labels\": [\"auto-alert\", \"infrastructure\"]}" \
+        2>/dev/null) || {
+        log "Failed to create GitHub issue"
+        return 1
+    }
+    
+    ISSUE_URL=$(echo "$RESPONSE" | jq -r '.html_url // empty')
+    if [ -n "$ISSUE_URL" ]; then
+        log "GitHub alert issue created: $ISSUE_URL"
+        LAST_ALERT_TIME=$CURRENT_TIME
+    else
+        log "Failed to create GitHub issue: $RESPONSE"
+    fi
+}
+
+# Send webhook alert
+send_webhook_alert() {
+    if [ -z "$ALERT_WEBHOOK_URL" ]; then
+        return 0
+    fi
+    
+    log "Sending webhook alert..."
+    
+    PAYLOAD="{
+        \"event\": \"github_failure\",
+        \"timestamp\": \"$(date -Iseconds)\",
+        \"message\": \"GitHub update failed, using Google Drive fallback\",
+        \"details\": {
+            \"repo_url\": \"$REPO_URL\",
+            \"branch\": \"$BRANCH\",
+            \"failure_count\": $GITHUB_FAILURE_COUNT
+        }
+    }"
+    
+    curl -s -X POST \
+        -H "Content-Type: application/json" \
+        -d "$PAYLOAD" \
+        "$ALERT_WEBHOOK_URL" 2>/dev/null || log "Webhook alert failed"
+}
+
+# Alert when GitHub fails and Google Drive is used
+alert_github_failure() {
+    GITHUB_FAILURE_COUNT=$((GITHUB_FAILURE_COUNT + 1))
+    
+    log "=========================================="
+    log "ALERT: GitHub update failed!"
+    log "Using Google Drive backup as fallback."
+    log "Failure count: $GITHUB_FAILURE_COUNT"
+    log "=========================================="
+    
+    # Write failure status
+    write_status "fallback" "GitHub failed, using Google Drive backup" "false"
+    
+    # Create GitHub issue to alert
+    create_github_alert_issue
+    
+    # Send webhook if configured
+    send_webhook_alert
 }
 
 # Initialize repository if not exists
@@ -133,21 +269,29 @@ rebuild_services() {
 
 # Main update function
 perform_update() {
+    UPDATE_SOURCE="github"
+    
     # Try GitHub first
     if pull_github_updates; then
+        write_status "ok" "Updated from GitHub" "true"
+        GITHUB_FAILURE_COUNT=0  # Reset failure count on success
         rebuild_services
         return 0
     fi
     
     log "GitHub update failed, trying Google Drive backup..."
+    UPDATE_SOURCE="gdrive"
     
     # Try Google Drive as fallback
     if download_from_gdrive; then
+        # ALERT: GitHub failed, using Google Drive fallback
+        alert_github_failure
         rebuild_services
         return 0
     fi
     
     log "All update sources failed."
+    write_status "error" "All update sources failed" "false"
     return 1
 }
 
