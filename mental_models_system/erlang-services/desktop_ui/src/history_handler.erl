@@ -12,6 +12,12 @@ init(Req0, State) ->
             <h2>Analysis History</h2>
             <p>View your past analyses and track patterns over time.</p>
             <br>
+            <div style=\"display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;\">
+                <input type=\"text\" id=\"search-input\" placeholder=\"Search analyses...\" onkeyup=\"filterAnalyses()\" style=\"flex: 1; min-width: 200px; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;\">
+                <select id=\"tag-filter\" onchange=\"filterAnalyses()\" style=\"padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;\">
+                    <option value=\"\">All Tags</option>
+                </select>
+            </div>
             <div style=\"display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;\">
                 <select id=\"type-filter\" onchange=\"loadHistory()\" style=\"padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;\">
                     <option value=\"\">All Types</option>
@@ -19,7 +25,7 @@ init(Req0, State) ->
                     <option value=\"biases\">Bias Detection</option>
                     <option value=\"full\">Full Analysis</option>
                 </select>
-                <input type=\"number\" id=\"limit\" value=\"20\" min=\"1\" max=\"100\" style=\"width: 80px; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;\">
+                <input type=\"number\" id=\"limit\" value=\"50\" min=\"1\" max=\"200\" style=\"width: 80px; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;\">
                 <button class=\"btn\" onclick=\"loadHistory()\">Refresh</button>
                 <button class=\"btn btn-secondary\" onclick=\"loadStats()\">View Stats</button>
                 <button class=\"btn btn-secondary\" onclick=\"toggleCompareMode()\" id=\"compare-btn\">Compare Mode</button>
@@ -36,9 +42,32 @@ init(Req0, State) ->
         </div>
         
         <script>
+            let allTags = [];
+            let analysisTagsMap = {};
+            
+            async function loadTags() {
+                try {
+                    const res = await fetch('/api/storage/tags');
+                    const data = await res.json();
+                    allTags = data.tags || [];
+                    
+                    // Populate tag filter dropdown
+                    const select = document.getElementById('tag-filter');
+                    select.innerHTML = '<option value=\"\">All Tags</option>';
+                    for (const tag of allTags) {
+                        const opt = document.createElement('option');
+                        opt.value = tag.name;
+                        opt.textContent = tag.name + ' (' + tag.count + ')';
+                        select.appendChild(opt);
+                    }
+                } catch (e) {
+                    console.error('Error loading tags:', e);
+                }
+            }
+            
             async function loadHistory() {
                 const type = document.getElementById('type-filter').value;
-                const limit = document.getElementById('limit').value || 20;
+                const limit = document.getElementById('limit').value || 50;
                 
                 document.getElementById('history-list').innerHTML = '<div class=\"loading\">Loading...</div>';
                 
@@ -50,7 +79,18 @@ init(Req0, State) ->
                     const data = await res.json();
                     
                     if (data.analyses && data.analyses.length > 0) {
-                        renderHistory(data.analyses);
+                        // Load tags for each analysis
+                        for (const analysis of data.analyses) {
+                            try {
+                                const tagsRes = await fetch('/api/storage/tags?analysis_id=' + analysis.id);
+                                const tagsData = await tagsRes.json();
+                                analysisTagsMap[analysis.id] = tagsData.tags || [];
+                            } catch (e) {
+                                analysisTagsMap[analysis.id] = [];
+                            }
+                        }
+                        allAnalysesData = data.analyses;
+                        filterAnalyses();
                     } else {
                         document.getElementById('history-list').innerHTML = 
                             '<div class=\"alert alert-info\">No analysis history found. Run some analyses to see them here.</div>';
@@ -59,6 +99,26 @@ init(Req0, State) ->
                     document.getElementById('history-list').innerHTML = 
                         '<div class=\"alert alert-error\">Error loading history: ' + e.message + '</div>';
                 }
+            }
+            
+            function filterAnalyses() {
+                const searchTerm = document.getElementById('search-input').value.toLowerCase();
+                const tagFilter = document.getElementById('tag-filter').value;
+                
+                let filtered = allAnalysesData.filter(analysis => {
+                    // Search filter
+                    const matchesSearch = !searchTerm || 
+                        (analysis.input_text && analysis.input_text.toLowerCase().includes(searchTerm)) ||
+                        (analysis.type && analysis.type.toLowerCase().includes(searchTerm));
+                    
+                    // Tag filter
+                    const analysisTags = analysisTagsMap[analysis.id] || [];
+                    const matchesTag = !tagFilter || analysisTags.includes(tagFilter);
+                    
+                    return matchesSearch && matchesTag;
+                });
+                
+                renderHistory(filtered);
             }
             
             function renderHistory(analyses) {
@@ -469,7 +529,11 @@ init(Req0, State) ->
             }
             
             // Load history on page load
-            loadHistory();
+            async function init() {
+                await loadTags();
+                await loadHistory();
+            }
+            init();
         </script>">>
     ],
     Html = html_templates:base_layout(<<"History">>, Content),
