@@ -153,31 +153,115 @@ init(Req0, State) ->
                     const res = await fetch('/api/storage/history/' + id);
                     const data = await res.json();
                     
+                    // Also fetch notes for this analysis
+                    const notesRes = await fetch('/api/storage/notes?analysis_id=' + id);
+                    const notesData = await notesRes.json();
+                    const notes = notesData.notes || [];
+                    
                     if (data.analysis) {
                         const a = data.analysis;
-                        let details = 'Analysis ID: ' + a.id + '\\n';
-                        details += 'Type: ' + a.type + '\\n';
-                        details += 'Date: ' + new Date(a.timestamp * 1000).toLocaleString() + '\\n\\n';
-                        details += 'Input Text:\\n' + (a.input_text || 'N/A') + '\\n\\n';
-                        
-                        if (a.models && a.models.length > 0) {
-                            details += 'Models Detected:\\n';
-                            for (const m of a.models) {
-                                details += '- ' + (m.name || m) + '\\n';
-                            }
-                        }
-                        
-                        if (a.biases && a.biases.length > 0) {
-                            details += '\\nBiases Detected:\\n';
-                            for (const b of a.biases) {
-                                details += '- ' + (b.bias || b) + '\\n';
-                            }
-                        }
-                        
-                        alert(details);
+                        showDetailsModal(a, notes);
                     }
                 } catch (e) {
                     alert('Error loading details: ' + e.message);
+                }
+            }
+            
+            function showDetailsModal(a, notes) {
+                let html = '<div class=\"modal-overlay\" onclick=\"closeDetailsModal()\">';
+                html += '<div class=\"modal-content\" onclick=\"event.stopPropagation()\" style=\"max-width: 700px; max-height: 80vh; overflow-y: auto;\">';
+                html += '<button class=\"modal-close\" onclick=\"closeDetailsModal()\">&times;</button>';
+                
+                html += '<h2>Analysis Details</h2>';
+                html += '<p><strong>ID:</strong> ' + a.id + '</p>';
+                html += '<p><strong>Type:</strong> ' + a.type + '</p>';
+                html += '<p><strong>Date:</strong> ' + new Date(a.timestamp * 1000).toLocaleString() + '</p>';
+                
+                html += '<div style=\"margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;\">';
+                html += '<strong>Input Text:</strong><br><span style=\"font-style: italic; color: #666;\">' + (a.input_text || 'N/A') + '</span>';
+                html += '</div>';
+                
+                if (a.models && a.models.length > 0) {
+                    html += '<div style=\"margin-top: 15px;\"><strong>Models Detected (' + a.models.length + '):</strong><ul>';
+                    for (const m of a.models) {
+                        html += '<li>' + (m.name || m) + '</li>';
+                    }
+                    html += '</ul></div>';
+                }
+                
+                if (a.biases && a.biases.length > 0) {
+                    html += '<div style=\"margin-top: 15px;\"><strong>Biases Detected (' + a.biases.length + '):</strong><ul>';
+                    for (const b of a.biases) {
+                        html += '<li>' + (b.bias || b) + '</li>';
+                    }
+                    html += '</ul></div>';
+                }
+                
+                // Notes section
+                html += '<div style=\"margin-top: 20px; border-top: 1px solid #e0e0e0; padding-top: 15px;\">';
+                html += '<h3>Notes</h3>';
+                html += '<div id=\"notes-list-' + a.id + '\">';
+                if (notes.length > 0) {
+                    for (const note of notes) {
+                        const noteDate = new Date(note.created_at * 1000).toLocaleString();
+                        html += '<div style=\"padding: 10px; background: #fff3cd; border-radius: 6px; margin-bottom: 10px;\">';
+                        html += '<div style=\"display: flex; justify-content: space-between; align-items: start;\">';
+                        html += '<span style=\"font-size: 11px; color: #666;\">' + noteDate + '</span>';
+                        html += '<button onclick=\"deleteNote(\\'' + note.id + '\\', \\'' + a.id + '\\')\" style=\"background: none; border: none; color: #dc3545; cursor: pointer; font-size: 14px;\">&times;</button>';
+                        html += '</div>';
+                        html += '<p style=\"margin: 5px 0 0 0;\">' + note.content + '</p>';
+                        html += '</div>';
+                    }
+                } else {
+                    html += '<p style=\"color: #666; font-style: italic;\">No notes yet.</p>';
+                }
+                html += '</div>';
+                
+                html += '<div style=\"margin-top: 10px;\">';
+                html += '<textarea id=\"new-note-' + a.id + '\" placeholder=\"Add a note...\" style=\"width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #e0e0e0; min-height: 60px;\"></textarea>';
+                html += '<button class=\"btn\" onclick=\"addNote(\\'' + a.id + '\\')\" style=\"margin-top: 5px;\">Add Note</button>';
+                html += '</div>';
+                html += '</div>';
+                
+                html += '</div></div>';
+                document.body.insertAdjacentHTML('beforeend', html);
+            }
+            
+            function closeDetailsModal() {
+                const modal = document.querySelector('.modal-overlay');
+                if (modal) modal.remove();
+            }
+            
+            async function addNote(analysisId) {
+                const textarea = document.getElementById('new-note-' + analysisId);
+                const content = textarea.value.trim();
+                if (!content) {
+                    alert('Please enter a note');
+                    return;
+                }
+                
+                try {
+                    await fetch('/api/storage/notes', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({analysis_id: analysisId, content: content})
+                    });
+                    closeDetailsModal();
+                    viewDetails(analysisId);
+                } catch (e) {
+                    alert('Error adding note: ' + e.message);
+                }
+            }
+            
+            async function deleteNote(noteId, analysisId) {
+                if (!confirm('Delete this note?')) return;
+                
+                try {
+                    await fetch('/api/storage/notes?id=' + noteId, {method: 'DELETE'});
+                    closeDetailsModal();
+                    viewDetails(analysisId);
+                } catch (e) {
+                    alert('Error deleting note: ' + e.message);
                 }
             }
             
