@@ -121,10 +121,11 @@ handle_info(heartbeat, State) ->
               [State#state.check_count, State#state.consecutive_failures, 
                State#state.active_env]),
     
-    %% Log heartbeat to GitHub
+    %% Log heartbeat to GitHub AND push
     github_logger:log(State#state.active_env, "auto_updater", "heartbeat",
         file_utils:fmt("Checks: ~p, Failures: ~p, Status: ~p",
             [State#state.check_count, State#state.consecutive_failures, State#state.status])),
+    github_logger:push_logs(),
     
     %% Report status to external webhook
     phone_home:report(build_status(State)),
