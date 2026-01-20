@@ -22,10 +22,14 @@ init(Req0, State) ->
                 <input type=\"number\" id=\"limit\" value=\"20\" min=\"1\" max=\"100\" style=\"width: 80px; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;\">
                 <button class=\"btn\" onclick=\"loadHistory()\">Refresh</button>
                 <button class=\"btn btn-secondary\" onclick=\"loadStats()\">View Stats</button>
+                <button class=\"btn btn-secondary\" onclick=\"toggleCompareMode()\" id=\"compare-btn\">Compare Mode</button>
+                <button class=\"btn\" onclick=\"compareSelected()\" id=\"compare-action-btn\" style=\"display: none;\">Compare Selected (<span id=\"compare-count\">0</span>)</button>
             </div>
         </div>
         
         <div id=\"stats-panel\" style=\"display: none;\"></div>
+        
+        <div id=\"compare-panel\" style=\"display: none;\"></div>
         
         <div id=\"history-list\">
             <div class=\"loading\">Loading history...</div>
@@ -58,6 +62,7 @@ init(Req0, State) ->
             }
             
             function renderHistory(analyses) {
+                allAnalysesData = analyses;
                 let html = '<div class=\"grid\">';
                 for (const analysis of analyses) {
                     const date = new Date(analysis.timestamp * 1000).toLocaleString();
@@ -66,7 +71,20 @@ init(Req0, State) ->
                     const typeClass = analysis.type === 'models' ? 'status-healthy' :
                                      analysis.type === 'biases' ? 'status-unknown' : 'status-healthy';
                     
-                    html += '<div class=\"model-card\">';
+                    const isSelected = selectedForCompare.includes(analysis.id);
+                    const cardStyle = isSelected ? 'border: 2px solid #007bff; background: #f0f7ff;' : '';
+                    
+                    html += '<div class=\"model-card\" style=\"' + cardStyle + '\">';
+                    
+                    // Compare mode checkbox
+                    if (compareMode) {
+                        html += '<div style=\"margin-bottom: 10px;\">';
+                        html += '<label style=\"cursor: pointer; display: flex; align-items: center; gap: 8px;\">';
+                        html += '<input type=\"checkbox\" ' + (isSelected ? 'checked' : '') + ' onchange=\"toggleSelectForCompare(\\'' + analysis.id + '\\')\" style=\"width: 18px; height: 18px;\">';
+                        html += '<span style=\"font-weight: bold;\">' + (isSelected ? 'Selected for comparison' : 'Select to compare') + '</span>';
+                        html += '</label></div>';
+                    }
+                    
                     html += '<div style=\"display: flex; justify-content: space-between; align-items: start;\">';
                     html += '<span class=\"' + typeClass + '\">' + typeLabel + '</span>';
                     html += '<small style=\"color: #666;\">' + date + '</small>';
@@ -172,6 +190,146 @@ init(Req0, State) ->
                 } catch (e) {
                     alert('Error deleting: ' + e.message);
                 }
+            }
+            
+            // Compare mode state
+            let compareMode = false;
+            let selectedForCompare = [];
+            let allAnalysesData = [];
+            
+            function toggleCompareMode() {
+                compareMode = !compareMode;
+                const btn = document.getElementById('compare-btn');
+                const actionBtn = document.getElementById('compare-action-btn');
+                
+                if (compareMode) {
+                    btn.textContent = 'Exit Compare Mode';
+                    btn.style.background = '#dc3545';
+                    actionBtn.style.display = 'inline-block';
+                    selectedForCompare = [];
+                    updateCompareCount();
+                } else {
+                    btn.textContent = 'Compare Mode';
+                    btn.style.background = '';
+                    actionBtn.style.display = 'none';
+                    selectedForCompare = [];
+                    document.getElementById('compare-panel').style.display = 'none';
+                }
+                loadHistory();
+            }
+            
+            function toggleSelectForCompare(id) {
+                const idx = selectedForCompare.indexOf(id);
+                if (idx > -1) {
+                    selectedForCompare.splice(idx, 1);
+                } else if (selectedForCompare.length < 4) {
+                    selectedForCompare.push(id);
+                } else {
+                    alert('Maximum 4 analyses can be compared at once');
+                    return;
+                }
+                updateCompareCount();
+                loadHistory();
+            }
+            
+            function updateCompareCount() {
+                document.getElementById('compare-count').textContent = selectedForCompare.length;
+            }
+            
+            async function compareSelected() {
+                if (selectedForCompare.length < 2) {
+                    alert('Select at least 2 analyses to compare');
+                    return;
+                }
+                
+                // Fetch full details for each selected analysis
+                const analyses = [];
+                for (const id of selectedForCompare) {
+                    try {
+                        const res = await fetch('/api/storage/history/' + id);
+                        const data = await res.json();
+                        if (data.analysis) analyses.push(data.analysis);
+                    } catch (e) {
+                        console.error('Error fetching analysis:', e);
+                    }
+                }
+                
+                if (analyses.length < 2) {
+                    alert('Could not load analyses for comparison');
+                    return;
+                }
+                
+                renderComparison(analyses);
+            }
+            
+            function renderComparison(analyses) {
+                let html = '<div class=\"card\" style=\"margin-bottom: 20px;\">';
+                html += '<div style=\"display: flex; justify-content: space-between; align-items: center;\">';
+                html += '<h2>Analysis Comparison</h2>';
+                html += '<button class=\"btn btn-secondary\" onclick=\"document.getElementById(\\'compare-panel\\').style.display=\\'none\\'\">Close</button>';
+                html += '</div>';
+                
+                // Create comparison table
+                html += '<div style=\"overflow-x: auto;\"><table style=\"width: 100%; border-collapse: collapse; margin-top: 15px;\">';
+                
+                // Header row with analysis dates
+                html += '<tr style=\"background: #f8f9fa;\"><th style=\"padding: 10px; border: 1px solid #e0e0e0;\">Attribute</th>';
+                for (const a of analyses) {
+                    const date = new Date(a.timestamp * 1000).toLocaleDateString();
+                    html += '<th style=\"padding: 10px; border: 1px solid #e0e0e0;\">' + date + '</th>';
+                }
+                html += '</tr>';
+                
+                // Type row
+                html += '<tr><td style=\"padding: 10px; border: 1px solid #e0e0e0;\"><strong>Type</strong></td>';
+                for (const a of analyses) {
+                    html += '<td style=\"padding: 10px; border: 1px solid #e0e0e0;\">' + a.type + '</td>';
+                }
+                html += '</tr>';
+                
+                // Model count row
+                html += '<tr><td style=\"padding: 10px; border: 1px solid #e0e0e0;\"><strong>Models Detected</strong></td>';
+                for (const a of analyses) {
+                    html += '<td style=\"padding: 10px; border: 1px solid #e0e0e0;\">' + (a.model_count || 0) + '</td>';
+                }
+                html += '</tr>';
+                
+                // Bias count row
+                html += '<tr><td style=\"padding: 10px; border: 1px solid #e0e0e0;\"><strong>Biases Detected</strong></td>';
+                for (const a of analyses) {
+                    html += '<td style=\"padding: 10px; border: 1px solid #e0e0e0;\">' + (a.bias_count || 0) + '</td>';
+                }
+                html += '</tr>';
+                
+                // Models list row
+                html += '<tr><td style=\"padding: 10px; border: 1px solid #e0e0e0; vertical-align: top;\"><strong>Models</strong></td>';
+                for (const a of analyses) {
+                    const models = (a.models || []).map(m => m.name || m).join(', ') || 'None';
+                    html += '<td style=\"padding: 10px; border: 1px solid #e0e0e0; vertical-align: top; font-size: 12px;\">' + models + '</td>';
+                }
+                html += '</tr>';
+                
+                // Biases list row
+                html += '<tr><td style=\"padding: 10px; border: 1px solid #e0e0e0; vertical-align: top;\"><strong>Biases</strong></td>';
+                for (const a of analyses) {
+                    const biases = (a.biases || []).map(b => b.bias || b).join(', ') || 'None';
+                    html += '<td style=\"padding: 10px; border: 1px solid #e0e0e0; vertical-align: top; font-size: 12px;\">' + biases + '</td>';
+                }
+                html += '</tr>';
+                
+                // Input text row
+                html += '<tr><td style=\"padding: 10px; border: 1px solid #e0e0e0; vertical-align: top;\"><strong>Input Preview</strong></td>';
+                for (const a of analyses) {
+                    html += '<td style=\"padding: 10px; border: 1px solid #e0e0e0; vertical-align: top; font-size: 11px; color: #666;\">' + (a.input_text || 'N/A') + '</td>';
+                }
+                html += '</tr>';
+                
+                html += '</table></div>';
+                html += '</div>';
+                
+                document.getElementById('compare-panel').innerHTML = html;
+                document.getElementById('compare-panel').style.display = 'block';
+                document.getElementById('compare-panel').scrollIntoView({behavior: 'smooth'});
             }
             
             // Load history on page load
