@@ -101,21 +101,38 @@ handle_cast(_Msg, State) ->
     {noreply, State}.
 
 handle_info(init_repo, State) ->
-    io:format("[UPDATER] Initializing repository~n"),
-    NewState = do_init_repo(State),
+    %% Wrap init in try-catch to prevent crashes during startup
+    NewState = try
+        io:format("[UPDATER] Initializing repository~n"),
+        do_init_repo(State)
+    catch
+        Class:Reason:Stacktrace ->
+            io:format("[UPDATER] ERROR during init: ~p:~p~n~p~n", [Class, Reason, Stacktrace]),
+            State#state{status = error, error_message = <<"Init failed, will retry on next check">>}
+    end,
     {noreply, NewState};
 
 handle_info(check_timer, State) ->
-    io:format("[UPDATER] Periodic check triggered~n"),
-    NewState = do_check_updates(State#state{status = checking}),
-    FinalState = case NewState#state.update_available of
-        true ->
-            io:format("[UPDATER] Update available, auto-updating~n"),
-            do_perform_update(NewState#state{status = updating});
-        false ->
-            NewState
-    end,
+    %% CRITICAL: Always reschedule timer FIRST to ensure we never stop checking
+    %% This is the most important line - it ensures the updater NEVER stops
     TimerRef = erlang:send_after(State#state.check_interval, self(), check_timer),
+    
+    %% Now do the actual work in a try-catch to prevent any crashes
+    FinalState = try
+        io:format("[UPDATER] Periodic check triggered~n"),
+        NewState = do_check_updates(State#state{status = checking}),
+        case NewState#state.update_available of
+            true ->
+                io:format("[UPDATER] Update available, auto-updating~n"),
+                do_perform_update(NewState#state{status = updating});
+            false ->
+                NewState
+        end
+    catch
+        Class:Reason:Stacktrace ->
+            io:format("[UPDATER] ERROR during check: ~p:~p~n~p~n", [Class, Reason, Stacktrace]),
+            State#state{status = error, error_message = <<"Check failed, will retry">>}
+    end,
     {noreply, FinalState#state{timer_ref = TimerRef}};
 
 handle_info(_Info, State) ->
@@ -129,9 +146,13 @@ terminate(_Reason, _State) ->
 %%====================================================================
 
 get_check_interval() ->
-    case os:getenv("UPDATE_CHECK_INTERVAL") of
-        false -> 300000;
-        Val -> list_to_integer(Val) * 1000
+    try
+        case os:getenv("UPDATE_CHECK_INTERVAL") of
+            false -> 300000;
+            Val -> list_to_integer(Val) * 1000
+        end
+    catch
+        _:_ -> 300000  %% Default to 5 minutes if parsing fails
     end.
 
 get_env_binary(Key, Default) ->
@@ -269,15 +290,24 @@ get_remote_commit(Branch) ->
     end.
 
 rebuild_services() ->
-    io:format("[UPDATER] Triggering service rebuild~n"),
-    %% Build and restart only the application services, NOT the auto-updater itself
-    %% This prevents the auto-updater from stopping itself during updates
-    Services = "api-gateway analysis-service harvester-service storage-service chaos-engineering desktop-ui",
-    BuildCmd = "cd /repo/mental_models_system/erlang-services && docker-compose build --parallel " ++ Services ++ " 2>&1",
-    RestartCmd = "cd /repo/mental_models_system/erlang-services && docker-compose up -d --no-deps " ++ Services ++ " 2>&1",
-    os:cmd(BuildCmd),
-    os:cmd(RestartCmd),
-    io:format("[UPDATER] Rebuild complete~n").
+    %% Wrap entire rebuild in try-catch to ensure we never crash
+    try
+        io:format("[UPDATER] Triggering service rebuild~n"),
+        %% Build and restart only the application services, NOT the auto-updater itself
+        %% This prevents the auto-updater from stopping itself during updates
+        Services = "api-gateway analysis-service harvester-service storage-service chaos-engineering desktop-ui gdrive-backup",
+        BuildCmd = "cd /repo/mental_models_system/erlang-services && docker-compose build --parallel " ++ Services ++ " 2>&1",
+        RestartCmd = "cd /repo/mental_models_system/erlang-services && docker-compose up -d --no-deps " ++ Services ++ " 2>&1",
+        io:format("[UPDATER] Running build command...~n"),
+        _BuildResult = os:cmd(BuildCmd),
+        io:format("[UPDATER] Running restart command...~n"),
+        _RestartResult = os:cmd(RestartCmd),
+        io:format("[UPDATER] Rebuild complete~n")
+    catch
+        Class:Reason:Stacktrace ->
+            io:format("[UPDATER] ERROR during rebuild: ~p:~p~n~p~n", [Class, Reason, Stacktrace]),
+            io:format("[UPDATER] Rebuild failed but updater continues running~n")
+    end.
 
 run_cmd(Cmd) ->
     Result = os:cmd(Cmd),
