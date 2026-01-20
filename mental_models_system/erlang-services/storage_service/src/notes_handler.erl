@@ -43,14 +43,14 @@ handle_request(<<"POST">>, Req0, State) ->
         
         add_note(Note),
         
-        Response = jsx:encode(#{success => true, note => Note}),
-        Req = cowboy_req:reply(200, #{<<"content-type">> => <<"application/json">>}, Response, Req1),
-        {ok, Req, State}
+        SuccessResponse = jsx:encode(#{success => true, note => Note}),
+        SuccessReq = cowboy_req:reply(200, #{<<"content-type">> => <<"application/json">>}, SuccessResponse, Req1),
+        {ok, SuccessReq, State}
     catch
         _:_ ->
-            Response = jsx:encode(#{success => false, error => <<"Invalid request">>}),
-            Req = cowboy_req:reply(400, #{<<"content-type">> => <<"application/json">>}, Response, Req1),
-            {ok, Req, State}
+            ErrorResponse = jsx:encode(#{success => false, error => <<"Invalid request">>}),
+            ErrorReq = cowboy_req:reply(400, #{<<"content-type">> => <<"application/json">>}, ErrorResponse, Req1),
+            {ok, ErrorReq, State}
     end;
 
 handle_request(<<"PUT">>, Req0, State) ->
@@ -63,14 +63,14 @@ handle_request(<<"PUT">>, Req0, State) ->
         
         update_note(NoteId, Content),
         
-        Response = jsx:encode(#{success => true, message => <<"Note updated">>}),
-        Req = cowboy_req:reply(200, #{<<"content-type">> => <<"application/json">>}, Response, Req1),
-        {ok, Req, State}
+        SuccessResponse = jsx:encode(#{success => true, message => <<"Note updated">>}),
+        SuccessReq = cowboy_req:reply(200, #{<<"content-type">> => <<"application/json">>}, SuccessResponse, Req1),
+        {ok, SuccessReq, State}
     catch
         _:_ ->
-            Response = jsx:encode(#{success => false, error => <<"Invalid request">>}),
-            Req = cowboy_req:reply(400, #{<<"content-type">> => <<"application/json">>}, Response, Req1),
-            {ok, Req, State}
+            ErrorResponse = jsx:encode(#{success => false, error => <<"Invalid request">>}),
+            ErrorReq = cowboy_req:reply(400, #{<<"content-type">> => <<"application/json">>}, ErrorResponse, Req1),
+            {ok, ErrorReq, State}
     end;
 
 handle_request(<<"DELETE">>, Req0, State) ->
