@@ -163,7 +163,8 @@ base_layout(Title, Content) ->
                 <div style=\"margin-top: 4px; opacity: 0.8;\">
                     <span id=\"git-commit-nav\"></span>
                 </div>
-                <div id=\"host-path-indicator\" style=\"margin-top: 4px; opacity: 0.7; font-size: 10px; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;\" title=\"\">
+                <div id=\"host-path-indicator\" style=\"margin-top: 4px; opacity: 0.7; font-size: 10px; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;\" title=\"Loading path...\">
+                    Loading...
                 </div>
             </div>
         </div>
@@ -218,12 +219,21 @@ base_layout(Title, Content) ->
                     const pathRes = await fetch('/api/system/info');
                     const pathData = await pathRes.json();
                     const hostPathEl = document.getElementById('host-path-indicator');
-                    if (pathData.host_path && hostPathEl) {
-                        hostPathEl.textContent = pathData.host_path;
-                        hostPathEl.title = pathData.host_path;
+                    if (hostPathEl) {
+                        if (pathData.host_path) {
+                            hostPathEl.textContent = pathData.host_path;
+                            hostPathEl.title = pathData.host_path;
+                        } else {
+                            hostPathEl.textContent = 'Path not available';
+                            hostPathEl.title = 'HOST_PATH environment variable not set';
+                        }
                     }
                 } catch (e) {
-                    // Silently fail if system info not available
+                    const hostPathEl = document.getElementById('host-path-indicator');
+                    if (hostPathEl) {
+                        hostPathEl.textContent = 'Path unavailable';
+                        hostPathEl.title = 'Could not fetch system info: ' + e.message;
+                    }
                 }
                 
                 // Restore focus and scroll position to prevent any UI disruption
