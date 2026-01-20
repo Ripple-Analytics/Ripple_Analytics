@@ -32,7 +32,7 @@ services:
       - updater-data:/data
       - .:/repo/mental_models_system/erlang-services
     environment:
-      - GITHUB_BRANCH=release2
+      - GITHUB_BRANCH=release4
       - CHECK_INTERVAL=60
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
     networks:
@@ -58,7 +58,7 @@ services:
     environment:
       - GITHUB_SSH_URL=git@github.com:Ripple-Analytics/Ripple_Analytics.git
       - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
-      - GITHUB_BRANCH=release2
+      - GITHUB_BRANCH=release4
       - UPDATE_CHECK_INTERVAL=300
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
       - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
@@ -91,7 +91,7 @@ services:
     environment:
       - GITHUB_SSH_URL=git@github.com:Ripple-Analytics/Ripple_Analytics.git
       - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
-      - GITHUB_BRANCH=release2
+      - GITHUB_BRANCH=release4
       - UPDATE_CHECK_INTERVAL=300
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
       - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
@@ -124,7 +124,7 @@ services:
     environment:
       - GITHUB_SSH_URL=git@github.com:Ripple-Analytics/Ripple_Analytics.git
       - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
-      - GITHUB_BRANCH=release2
+      - GITHUB_BRANCH=release4
       - UPDATE_CHECK_INTERVAL=300
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
       - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
@@ -214,7 +214,7 @@ services:
     environment:
       - GITHUB_SSH_URL=git@github.com:Ripple-Analytics/Ripple_Analytics.git
       - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
-      - GITHUB_BRANCH=release2
+      - GITHUB_BRANCH=release4
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
       - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
     restart: unless-stopped

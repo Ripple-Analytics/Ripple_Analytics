@@ -25,8 +25,8 @@ echo "=========================================="
 echo "BOOTSTRAP: Pulling latest code..."
 echo "=========================================="
 
-git fetch origin release2
-git reset --hard origin/release2
+git fetch origin release4
+git reset --hard origin/release4
 
 echo "=========================================="
 echo "BOOTSTRAP: Rebuilding auto-updater..."

@@ -19,7 +19,7 @@
     last_update = undefined,
     current_commit = undefined,
     remote_commit = undefined,
-    branch = <<"release2">>,
+    branch = <<"release4">>,
     update_available = false,
     active_env = "blue",
     standby_env = "green",
@@ -62,7 +62,7 @@ init([]) ->
     
     Interval = get_check_interval(),
     %% HARDCODED - don't rely on env vars that might be wrong
-    Branch = <<"release2">>,
+    Branch = <<"release4">>,
     ActiveEnv = read_active_env(),
     StandbyEnv = case ActiveEnv of "blue" -> "green"; _ -> "blue" end,
     

@@ -13,7 +13,7 @@
 set -e
 
 REPO="Ripple-Analytics/Ripple_Analytics"
-BRANCH="${GITHUB_BRANCH:-release2}"
+BRANCH="${GITHUB_BRANCH:-release4}"
 CHECK_INTERVAL="${CHECK_INTERVAL:-60}"
 LAST_COMMIT_FILE="/data/bootstrap_last_commit"
 LOG_FILE="/data/bootstrap_watcher.log"

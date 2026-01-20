@@ -12,7 +12,7 @@ services:
       - .:/services:ro
     environment:
       - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
-      - GITHUB_BRANCH=release2
+      - GITHUB_BRANCH=release4
       - UPDATE_CHECK_INTERVAL=300
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
       - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
