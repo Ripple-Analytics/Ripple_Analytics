@@ -1,0 +1,19 @@
+{application, blue_green_orchestrator,
+ [{description, "Blue-Green Deployment Orchestrator - Self-managing zero-downtime deployment service"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {mod, {blue_green_orchestrator_app, []}},
+  {applications,
+   [kernel,
+    stdlib,
+    cowboy,
+    jsx,
+    hackney,
+    inets,
+    ssl
+   ]},
+  {env,[]},
+  {modules, []},
+  {licenses, ["Apache 2.0"]},
+  {links, []}
+ ]}.
