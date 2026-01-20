@@ -817,20 +817,56 @@ init(Req0, State) ->
                     
                     let html = '';
                     
-                    // Lollapalooza Alert (if detected) - Most Important
+                    // Lollapalooza Alert (if detected) - Most Important - Enhanced Display
                     const lollapalooza = comprehensiveData.lollapalooza || {};
                     if (lollapalooza.detected) {
-                        html += '<div class=\"card\" style=\"background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;\">';
-                        html += '<h2 style=\"color: white; margin-bottom: 10px;\">LOLLAPALOOZA EFFECT DETECTED</h2>';
-                        html += '<p style=\"font-size: 15px;\">Multiple mental models (<strong>' + lollapalooza.convergence_count + '</strong>) are converging with <strong>' + (lollapalooza.strength || 'significant').toUpperCase() + '</strong> intensity.</p>';
-                        html += '<div style=\"margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 8px;\">';
-                        html += '<p style=\"margin: 0;\"><strong>Converging Models:</strong> ' + (lollapalooza.converging_models || []).join(', ') + '</p>';
-                        if (lollapalooza.cross_domain) {
-                            html += '<p style=\"margin: 8px 0 0 0;\"><strong>Cross-Domain:</strong> Models span categories: ' + (lollapalooza.categories_involved || []).join(', ') + '</p>';
-                        }
-                        html += '<p style=\"margin: 8px 0 0 0;\"><strong>Convergence Score:</strong> ' + (lollapalooza.convergence_score || 0) + '%</p>';
+                        const strengthColors = {
+                            'extreme': 'linear-gradient(135deg, #ff0844 0%, #ffb199 100%)',
+                            'strong': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                            'moderate': 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)',
+                            'weak': 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'
+                        };
+                        const strength = (lollapalooza.strength || 'moderate').toLowerCase();
+                        const bgGradient = strengthColors[strength] || strengthColors.moderate;
+                        
+                        html += '<div class="card" style="background: ' + bgGradient + '; color: white; border: 3px solid rgba(255,255,255,0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.2);">';
+                        html += '<div style="display: flex; align-items: center; gap: 15px; margin-bottom: 15px;">';
+                        html += '<div style="font-size: 48px;">&#9889;</div>';
+                        html += '<div>';
+                        html += '<h2 style="color: white; margin: 0; font-size: 24px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">LOLLAPALOOZA EFFECT</h2>';
+                        html += '<p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.9;">Extreme Outcome Probability Detected</p>';
+                        html += '</div></div>';
+                        
+                        html += '<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0;">';
+                        html += '<div style="text-align: center; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 12px;">';
+                        html += '<div style="font-size: 36px; font-weight: bold;">' + lollapalooza.convergence_count + '</div>';
+                        html += '<div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Converging Models</div></div>';
+                        html += '<div style="text-align: center; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 12px;">';
+                        html += '<div style="font-size: 36px; font-weight: bold;">' + (lollapalooza.convergence_score || 0) + '%</div>';
+                        html += '<div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Convergence Score</div></div>';
+                        html += '<div style="text-align: center; padding: 15px; background: rgba(255,255,255,0.2); border-radius: 12px;">';
+                        html += '<div style="font-size: 36px; font-weight: bold;">' + (lollapalooza.categories_involved || []).length + '</div>';
+                        html += '<div style="font-size: 11px; text-transform: uppercase; letter-spacing: 1px;">Domains Involved</div></div>';
                         html += '</div>';
-                        html += '<p style=\"margin-top: 15px; font-style: italic; font-size: 12px; opacity: 0.9;\">\"When several models combine, you get lollapalooza effects; this is when two, three, or four forces are all operating in the same direction.\" - Charlie Munger</p>';
+                        
+                        html += '<div style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 12px; margin-bottom: 15px;">';
+                        html += '<h4 style="margin: 0 0 10px 0; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">Converging Mental Models</h4>';
+                        html += '<div style="display: flex; flex-wrap: wrap; gap: 8px;">';
+                        for (const model of (lollapalooza.converging_models || [])) {
+                            html += '<span style="background: rgba(255,255,255,0.25); padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;">' + model + '</span>';
+                        }
+                        html += '</div></div>';
+                        
+                        if (lollapalooza.cross_domain && (lollapalooza.categories_involved || []).length > 1) {
+                            html += '<div style="background: rgba(255,215,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid rgba(255,215,0,0.5);">';
+                            html += '<strong>&#127942; Cross-Domain Confluence:</strong> Models span multiple disciplines: ' + (lollapalooza.categories_involved || []).join(' &#8594; ') + '';
+                            html += '</div>';
+                        }
+                        
+                        html += '<div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; border-left: 4px solid rgba(255,255,255,0.5);">';
+                        html += '<p style="margin: 0; font-style: italic; font-size: 13px;">"When several models combine, you get lollapalooza effects; this is when two, three, or four forces are all operating in the same direction. And, frequently, you do not get simple addition. It is often like a critical mass in physics where you get a nuclear explosion if you get to a certain point of mass."</p>';
+                        html += '<p style="margin: 10px 0 0 0; font-size: 11px; opacity: 0.8; text-align: right;">- Charlie Munger, Poor Charlie\'s Almanack</p>';
+                        html += '</div>';
                         html += '</div>';
                     }
                     

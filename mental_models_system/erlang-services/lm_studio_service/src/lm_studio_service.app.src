@@ -1,0 +1,17 @@
+{application, lm_studio_service,
+ [{description, "Blue-Green LM Studio Service for Autonomous Code Improvement"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {mod, {lm_studio_service_app, []}},
+  {applications,
+   [kernel,
+    stdlib,
+    cowboy,
+    jsx,
+    hackney
+   ]},
+  {env,[]},
+  {modules, []},
+  {licenses, ["Apache-2.0"]},
+  {links, []}
+ ]}.

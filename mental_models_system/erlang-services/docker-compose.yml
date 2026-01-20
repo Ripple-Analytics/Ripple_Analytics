@@ -648,6 +648,86 @@ services:
     networks:
       - mental-models-network
 
+  # ============================================================================
+  # LM STUDIO SERVICE - Autonomous Self-Improving AI Agent
+  # Blue-green deployable service that:
+  # - Self-directs research and learning
+  # - Auto-fixes compilation and build errors
+  # - Self-heals unhealthy services
+  # - Autonomously improves UI and features
+  # - Can run overnight without human intervention
+  # ============================================================================
+  
+  # LM Studio Service - BLUE Environment
+  lm-studio-service-blue:
+    build: ./lm_studio_service
+    container_name: mental-models-lm-studio-blue
+    volumes:
+      - .:/repo/mental_models_system/erlang-services:rw
+      - /var/run/docker.sock:/var/run/docker.sock
+      - lm-studio-data:/data
+    environment:
+      - LM_STUDIO_URL=http://host.docker.internal:1234
+      - LM_STUDIO_SERVICE_PORT=8030
+      - DEPLOYMENT_ENV=blue
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8030/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - mental-models-network
+
+  # LM Studio Service - GREEN Environment
+  lm-studio-service-green:
+    build: ./lm_studio_service
+    container_name: mental-models-lm-studio-green
+    volumes:
+      - .:/repo/mental_models_system/erlang-services:rw
+      - /var/run/docker.sock:/var/run/docker.sock
+      - lm-studio-data:/data
+    environment:
+      - LM_STUDIO_URL=http://host.docker.internal:1234
+      - LM_STUDIO_SERVICE_PORT=8030
+      - DEPLOYMENT_ENV=green
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8030/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - mental-models-network
+
+  # LM Studio Service Proxy - Routes to active instance
+  lm-studio-service:
+    build: ./nginx_proxy
+    container_name: mental-models-lm-studio-proxy
+    ports:
+      - "8030:8030"
+    volumes:
+      - lm-studio-config:/etc/nginx/conf.d
+    environment:
+      - UPSTREAM_BLUE=lm-studio-service-blue:8030
+      - UPSTREAM_GREEN=lm-studio-service-green:8030
+      - ACTIVE_ENV=${LM_STUDIO_ACTIVE:-blue}
+      - LISTEN_PORT=8030
+    depends_on:
+      - lm-studio-service-blue
+      - lm-studio-service-green
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8030/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - mental-models-network
+
   # AI Code Improver Proxy - Routes to active improver instance
   ai-code-improver:
     build: ./nginx_proxy
@@ -836,4 +916,8 @@ volumes:
   ai-improver-data:
     driver: local
   ai-improver-config:
+    driver: local
+  lm-studio-data:
+    driver: local
+  lm-studio-config:
     driver: local

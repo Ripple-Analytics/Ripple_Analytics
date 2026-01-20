@@ -564,14 +564,80 @@ build_services_individually(BasePath, [Service | Rest], BuildArgs, Successes, Fa
     
     case BuildFailed of
         true ->
-            io:format("[UPDATER] FAILED to build ~s - continuing with other services~n", [Service]),
-            %% Log the error but continue
-            io:format("[UPDATER] Error output (truncated): ~s~n", 
-                      [string:slice(Result, 0, min(500, length(Result)))]),
-            build_services_individually(BasePath, Rest, BuildArgs, Successes, [Service | Failures]);
+            io:format("[UPDATER] FAILED to build ~s - attempting LM Studio auto-fix~n", [Service]),
+            %% Try to auto-fix using LM Studio service
+            case try_lm_studio_fix(Service, Result) of
+                {ok, fixed} ->
+                    %% Retry the build after fix
+                    io:format("[UPDATER] LM Studio fix applied, retrying build...~n"),
+                    RetryResult = os:cmd(BuildCmd),
+                    RetryFailed = string:find(RetryResult, "failed to solve") =/= nomatch orelse
+                                  string:find(RetryResult, "error:") =/= nomatch,
+                    case RetryFailed of
+                        true ->
+                            io:format("[UPDATER] Build still failed after fix~n"),
+                            build_services_individually(BasePath, Rest, BuildArgs, Successes, [Service | Failures]);
+                        false ->
+                            io:format("[UPDATER] Build succeeded after LM Studio fix!~n"),
+                            build_services_individually(BasePath, Rest, BuildArgs, [Service | Successes], Failures)
+                    end;
+                {error, _Reason} ->
+                    io:format("[UPDATER] LM Studio fix failed, continuing...~n"),
+                    io:format("[UPDATER] Error output (truncated): ~s~n", 
+                              [string:slice(Result, 0, min(500, length(Result)))]),
+                    build_services_individually(BasePath, Rest, BuildArgs, Successes, [Service | Failures])
+            end;
         false ->
             io:format("[UPDATER] Successfully built ~s~n", [Service]),
             build_services_individually(BasePath, Rest, BuildArgs, [Service | Successes], Failures)
+    end.
+
+%% ============================================================================
+%% LM STUDIO AUTO-FIX INTEGRATION
+%% When a build fails, attempt to fix it using the LM Studio service
+%% ============================================================================
+
+try_lm_studio_fix(Service, BuildOutput) ->
+    io:format("[UPDATER] Calling LM Studio service to fix ~s~n", [Service]),
+    
+    %% Try to reach the LM Studio service
+    LmStudioUrl = "http://lm-studio-service:8030/api/lm/fix-build",
+    
+    %% Build the request body
+    RequestBody = jsx:encode(#{
+        <<"service_name">> => list_to_binary(Service),
+        <<"build_output">> => list_to_binary(string:slice(BuildOutput, 0, 5000))
+    }),
+    
+    case hackney:request(post, list_to_binary(LmStudioUrl),
+                         [{<<"Content-Type">>, <<"application/json">>}],
+                         RequestBody,
+                         [{timeout, 60000}, {recv_timeout, 60000}]) of
+        {ok, 200, _Headers, ClientRef} ->
+            {ok, ResponseBody} = hackney:body(ClientRef),
+            try
+                Response = jsx:decode(ResponseBody, [return_maps]),
+                case maps:get(<<"success">>, Response, false) of
+                    true ->
+                        io:format("[UPDATER] LM Studio provided a fix~n"),
+                        {ok, fixed};
+                    false ->
+                        Error = maps:get(<<"error">>, Response, <<"unknown">>),
+                        io:format("[UPDATER] LM Studio could not fix: ~s~n", [Error]),
+                        {error, Error}
+                end
+            catch
+                _:_ ->
+                    io:format("[UPDATER] Failed to parse LM Studio response~n"),
+                    {error, parse_failed}
+            end;
+        {ok, StatusCode, _Headers, _ClientRef} ->
+            io:format("[UPDATER] LM Studio returned HTTP ~p~n", [StatusCode]),
+            {error, {http_error, StatusCode}};
+        {error, Reason} ->
+            io:format("[UPDATER] Could not reach LM Studio: ~p~n", [Reason]),
+            %% LM Studio service might not be running, that's OK
+            {error, Reason}
     end.
 
 %% Restart only the services that built successfully
