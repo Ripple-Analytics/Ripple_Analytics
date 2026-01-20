@@ -5,6 +5,8 @@
 # Stop all services: docker-compose down
 # 
 # BULLETPROOF AUTO-UPDATE SYSTEM:
+# The auto-updater is the FIRST and MOST FUNDAMENTAL service.
+# It starts before all other services and can self-heal the system.
 # Multiple independent update sources with automatic fallback:
 #   1. GitHub Source (SSH → PAT → Public HTTPS)
 #   2. Google Drive Source (backup sync)
@@ -17,7 +19,114 @@
 
 services:
   # ============================================================================
+  # AUTO-UPDATER SERVICE - FIRST AND MOST FUNDAMENTAL SERVICE
+  # This service MUST start before all others and has NO dependencies.
+  # It can self-heal the system even if other services fail to start.
+  # ============================================================================
+  
+  # Auto-Updater - Primary instance (starts first, no dependencies)
+  # Port 8006 is exposed via nginx-proxy for blue-green routing
+  auto-updater-service:
+    build: ./auto_updater_service
+    container_name: mental-models-auto-updater
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - updater-repo:/repo
+      - updater-data:/data
+      - .:/services:ro
+      - ${SSH_KEY_PATH:-./ssh_deploy_key}:/root/.ssh/deploy_key:ro
+    environment:
+      - GITHUB_SSH_URL=git@github.com:Ripple-Analytics/Ripple_Analytics.git
+      - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
+      - GITHUB_BRANCH=release
+      - UPDATE_CHECK_INTERVAL=300
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
+      - GDRIVE_BACKUP_URL=${GDRIVE_BACKUP_URL:-}
+      - GITHUB_SOURCE_URL=http://github-source:8010
+      - GDRIVE_SOURCE_URL=http://gdrive-source:8011
+      - LOCAL_CACHE_URL=http://local-cache:8012
+      - DEPLOY_CONTROLLER_URL=http://nginx-proxy:8007
+      - DEPLOYMENT_ENV=blue
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - mental-models-network
+
+  # Auto-Updater - BLUE Environment (no dependencies, starts independently)
+  auto-updater-blue:
+    build: ./auto_updater_service
+    container_name: mental-models-auto-updater-blue
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - updater-repo:/repo
+      - updater-data:/data
+      - .:/services:ro
+      - ${SSH_KEY_PATH:-./ssh_deploy_key}:/root/.ssh/deploy_key:ro
+    environment:
+      - GITHUB_SSH_URL=git@github.com:Ripple-Analytics/Ripple_Analytics.git
+      - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
+      - GITHUB_BRANCH=release
+      - UPDATE_CHECK_INTERVAL=300
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
+      - GDRIVE_BACKUP_URL=${GDRIVE_BACKUP_URL:-}
+      - GITHUB_SOURCE_URL=http://github-source:8010
+      - GDRIVE_SOURCE_URL=http://gdrive-source:8011
+      - LOCAL_CACHE_URL=http://local-cache:8012
+      - DEPLOY_CONTROLLER_URL=http://nginx-proxy:8007
+      - DEPLOYMENT_ENV=blue
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - mental-models-network
+
+  # Auto-Updater - GREEN Environment (no dependencies, starts independently)
+  auto-updater-green:
+    build: ./auto_updater_service
+    container_name: mental-models-auto-updater-green
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - updater-repo:/repo
+      - updater-data:/data
+      - .:/services:ro
+      - ${SSH_KEY_PATH:-./ssh_deploy_key}:/root/.ssh/deploy_key:ro
+    environment:
+      - GITHUB_SSH_URL=git@github.com:Ripple-Analytics/Ripple_Analytics.git
+      - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
+      - GITHUB_BRANCH=release
+      - UPDATE_CHECK_INTERVAL=300
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
+      - GDRIVE_BACKUP_URL=${GDRIVE_BACKUP_URL:-}
+      - GITHUB_SOURCE_URL=http://github-source:8010
+      - GDRIVE_SOURCE_URL=http://gdrive-source:8011
+      - LOCAL_CACHE_URL=http://local-cache:8012
+      - DEPLOY_CONTROLLER_URL=http://nginx-proxy:8007
+      - DEPLOYMENT_ENV=green
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - mental-models-network
+
+  # ============================================================================
   # DEPLOYMENT CONTROLLER - Blue-Green Orchestration with Self-Update
+  # Depends on auto-updater being available for self-healing
   # ============================================================================
   
   # Deployment Controller - BLUE Environment
@@ -69,119 +178,8 @@ services:
       - mental-models-network
 
   # ============================================================================
-  # AUTO-UPDATER SERVICE - BLUE-GREEN BULLETPROOF CONFIGURATION
-  # Both instances run simultaneously for zero-downtime self-updates
-  # ============================================================================
-  
-  # Auto-Updater - BLUE Environment
-  # ZERO DEPENDENCIES - This is the foundational service that must always start
-  auto-updater-blue:
-    build: ./auto_updater_service
-    container_name: mental-models-auto-updater-blue
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - updater-repo:/repo
-      - updater-data:/data
-      - .:/services:ro
-      - ${SSH_KEY_PATH:-./ssh_deploy_key}:/root/.ssh/deploy_key:ro
-    environment:
-      - GITHUB_SSH_URL=git@github.com:Ripple-Analytics/Ripple_Analytics.git
-      - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
-      - GITHUB_BRANCH=release
-      - UPDATE_CHECK_INTERVAL=300
-      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
-      - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
-      - GDRIVE_BACKUP_URL=${GDRIVE_BACKUP_URL:-}
-      - GITHUB_SOURCE_URL=http://github-source:8010
-      - GDRIVE_SOURCE_URL=http://gdrive-source:8011
-      - LOCAL_CACHE_URL=http://local-cache:8012
-      - DEPLOY_CONTROLLER_URL=http://nginx-proxy:8007
-      - DEPLOYMENT_ENV=blue
-    # NO depends_on - auto-updater is foundational and must start independently
-    restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
-    networks:
-      - mental-models-network
-
-  # Auto-Updater - GREEN Environment
-  # ZERO DEPENDENCIES - This is the foundational service that must always start
-  auto-updater-green:
-    build: ./auto_updater_service
-    container_name: mental-models-auto-updater-green
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - updater-repo:/repo
-      - updater-data:/data
-      - .:/services:ro
-      - ${SSH_KEY_PATH:-./ssh_deploy_key}:/root/.ssh/deploy_key:ro
-    environment:
-      - GITHUB_SSH_URL=git@github.com:Ripple-Analytics/Ripple_Analytics.git
-      - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
-      - GITHUB_BRANCH=release
-      - UPDATE_CHECK_INTERVAL=300
-      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
-      - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
-      - GDRIVE_BACKUP_URL=${GDRIVE_BACKUP_URL:-}
-      - GITHUB_SOURCE_URL=http://github-source:8010
-      - GDRIVE_SOURCE_URL=http://gdrive-source:8011
-      - LOCAL_CACHE_URL=http://local-cache:8012
-      - DEPLOY_CONTROLLER_URL=http://nginx-proxy:8007
-      - DEPLOYMENT_ENV=green
-    # NO depends_on - auto-updater is foundational and must start independently
-    restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
-    networks:
-      - mental-models-network
-
-  # Legacy alias for backward compatibility
-  # ZERO DEPENDENCIES - This is the foundational service that must always start
-  auto-updater-service:
-    build: ./auto_updater_service
-    container_name: mental-models-auto-updater
-    ports:
-      - "8006:8006"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - updater-repo:/repo
-      - updater-data:/data
-      - .:/services:ro
-      - ${SSH_KEY_PATH:-./ssh_deploy_key}:/root/.ssh/deploy_key:ro
-    environment:
-      - GITHUB_SSH_URL=git@github.com:Ripple-Analytics/Ripple_Analytics.git
-      - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
-      - GITHUB_BRANCH=release
-      - UPDATE_CHECK_INTERVAL=300
-      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
-      - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
-      - GDRIVE_BACKUP_URL=${GDRIVE_BACKUP_URL:-}
-      - GITHUB_SOURCE_URL=http://github-source:8010
-      - GDRIVE_SOURCE_URL=http://gdrive-source:8011
-      - LOCAL_CACHE_URL=http://local-cache:8012
-      - DEPLOY_CONTROLLER_URL=http://nginx-proxy:8007
-      - DEPLOYMENT_ENV=blue
-    # NO depends_on - auto-updater is foundational and must start independently
-    restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
-    networks:
-      - mental-models-network
-
-  # ============================================================================
   # UPDATE SOURCE SERVICES - Independent backup sources
+  # These services provide update sources but are NOT required for auto-updater to start
   # ============================================================================
   
   # GitHub Source - Primary update source with multi-auth fallback
@@ -350,6 +348,8 @@ services:
     environment:
       - LM_STUDIO_URL=http://host.docker.internal:1234
       - DEPLOYMENT_ENV=blue
+    depends_on:
+      - auto-updater-service
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8001/health"]
@@ -367,6 +367,8 @@ services:
     environment:
       - LM_STUDIO_URL=http://host.docker.internal:1234
       - DEPLOYMENT_ENV=green
+    depends_on:
+      - auto-updater-service
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8001/health"]
@@ -383,6 +385,8 @@ services:
     container_name: mental-models-harvester-blue
     environment:
       - DEPLOYMENT_ENV=blue
+    depends_on:
+      - auto-updater-service
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8002/health"]
@@ -399,6 +403,8 @@ services:
     container_name: mental-models-harvester-green
     environment:
       - DEPLOYMENT_ENV=green
+    depends_on:
+      - auto-updater-service
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8002/health"]
@@ -417,6 +423,8 @@ services:
       - storage-data:/data
     environment:
       - DEPLOYMENT_ENV=blue
+    depends_on:
+      - auto-updater-service
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8003/health"]
@@ -435,6 +443,8 @@ services:
       - storage-data:/data
     environment:
       - DEPLOYMENT_ENV=green
+    depends_on:
+      - auto-updater-service
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8003/health"]
@@ -678,6 +688,7 @@ services:
       - "8001:8001"   # Analysis Service
       - "8002:8002"   # Harvester Service
       - "8003:8003"   # Storage Service
+      - "8006:8006"   # Auto-Updater (FUNDAMENTAL SERVICE - blue-green)
       - "8080:8080"   # Health check endpoint
       - "8007:8007"   # Deployment Controller
     volumes:
@@ -765,6 +776,36 @@ services:
     networks:
       - mental-models-network
 
+  # ============================================================================
+  # CODE IMPROVER SERVICE - Autonomous Code Improvement with Munger Philosophy
+  # Uses LM Studio to analyze and improve code 24/7 aligned with design philosophy
+  # ============================================================================
+  code-improver-service:
+    build: ./code_improver_service
+    container_name: mental-models-code-improver
+    volumes:
+      - updater-repo:/repo
+      - code-improver-backups:/repo/.code_improver_backups
+      - code-improver-logs:/repo/.code_improver_logs
+    environment:
+      - LM_STUDIO_URL=http://host.docker.internal:1234
+      - CHECK_INTERVAL=300000
+      - AUTO_DEPLOY=false
+      - REQUIRE_TESTS_PASS=true
+      - REQUIRE_LINT_PASS=true
+      - IMPROVEMENT_BATCH_SIZE=5
+    depends_on:
+      - auto-updater-service
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8010/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - mental-models-network
+
 networks:
   mental-models-network:
     driver: bridge
@@ -787,6 +828,10 @@ volumes:
   orchestrator-data:
     driver: local
   orchestrator-config:
+    driver: local
+  code-improver-backups:
+    driver: local
+  code-improver-logs:
     driver: local
   ai-improver-data:
     driver: local

@@ -398,7 +398,7 @@ rebuild_services() ->
         end,
         io:format("[UPDATER] Active environment: ~s, Standby: ~s~n", [ActiveEnv, StandbyEnv]),
         
-        %% Wait for services to be healthy
+%% Wait for services to be healthy
         io:format("[UPDATER] Waiting for services to be healthy...~n"),
         timer:sleep(10000),  %% Wait 10 seconds for containers to start
         

@@ -1,6 +1,7 @@
 FROM erlang:26-alpine
 
-RUN apk add --no-cache git docker-cli docker-compose
+# Install build dependencies (gcc, make needed for jiffy native compilation)
+RUN apk add --no-cache git docker-cli docker-compose build-base
 
 WORKDIR /app
 
@@ -17,6 +18,7 @@ ARG COMMIT_HASH=unknown
 ARG BUILD_TIME=unknown
 ENV COMMIT_HASH=${COMMIT_HASH}
 ENV BUILD_TIME=${BUILD_TIME}
+RUN echo "Building commit: ${COMMIT_HASH} at ${BUILD_TIME}"
 
 # Compile the application
 RUN ./rebar3 compile

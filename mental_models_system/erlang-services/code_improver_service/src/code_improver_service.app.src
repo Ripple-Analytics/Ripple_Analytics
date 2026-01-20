@@ -1,0 +1,30 @@
+{application, code_improver_service,
+ [{description, "Autonomous Code Improvement Service - Munger Philosophy Aligned"},
+  {vsn, "1.0.0"},
+  {registered, [improver_worker]},
+  {mod, {code_improver_app, []}},
+  {applications,
+   [kernel,
+    stdlib,
+    inets,
+    crypto,
+    ssl,
+    cowboy,
+    jsx
+   ]},
+  {env,[]},
+  {modules, [
+    code_improver_app,
+    code_improver_sup,
+    improver_worker,
+    lm_studio_client,
+    munger_prompts,
+    code_analyzer,
+    improvement_deployer,
+    health_handler,
+    improver_status_handler,
+    improver_trigger_handler
+  ]},
+  {licenses, ["Apache-2.0"]},
+  {links, []}
+ ]}.
