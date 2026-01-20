@@ -65,25 +65,25 @@ read_active_env() ->
 %% Internal: update nginx configs inside proxy container
 update_nginx_configs(Env) ->
     ProxyContainer = "mental-models-proxy",
-    %% Build proper nginx upstream config
     Upstream = "ui-" ++ Env,
-    Config = "upstream active_backend { server " ++ Upstream ++ ":3000; }\n"
-             "server {\n"
-             "    listen 80;\n"
-             "    location / {\n"
-             "        proxy_pass http://active_backend;\n"
-             "        proxy_http_version 1.1;\n"
-             "        proxy_set_header Upgrade $http_upgrade;\n"
-             "        proxy_set_header Connection 'upgrade';\n"
-             "        proxy_set_header Host $host;\n"
-             "    }\n"
-             "}\n",
-    %% Write config to container
-    WriteCmd = "echo '" ++ Config ++ "' > /etc/nginx/conf.d/default.conf",
+    %% Note: Using ~~ to escape ~ in format string, and proper escaping for shell
+    Config = lists:flatten(io_lib:format(
+        "upstream active_backend { server ~s:3000; }\\n"
+        "server {\\n"
+        "    listen 80;\\n"
+        "    location / {\\n"
+        "        proxy_pass http://active_backend;\\n"
+        "        proxy_http_version 1.1;\\n"
+        "        proxy_set_header Upgrade \\$http_upgrade;\\n"
+        "        proxy_set_header Connection upgrade;\\n"
+        "        proxy_set_header Host \\$host;\\n"
+        "    }\\n"
+        "}\\n", [Upstream])),
+    WriteCmd = "printf '" ++ Config ++ "' > /etc/nginx/conf.d/default.conf",
     docker_utils:exec_cmd(ProxyContainer, WriteCmd).
 
 %% Internal: reload nginx
 reload_nginx() ->
     ProxyContainer = "mental-models-proxy",
     Result = docker_utils:exec_cmd(ProxyContainer, "nginx -s reload"),
-    io:format("[BLUE-GREEN] Nginx reload: ~s~n", [Result]).
+    io:format("[BLUE-GREEN] Nginx reload: ~s~n", [lists:flatten(Result)]).

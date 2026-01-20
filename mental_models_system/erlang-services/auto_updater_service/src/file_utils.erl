@@ -43,12 +43,13 @@ ensure_dir(Path) ->
 ensure_parent_dir(Path) ->
     filelib:ensure_dir(Path).
 
-%% @doc Format value for logging
+%% @doc Format value for logging - always returns a flat string
 fmt(undefined) -> "undefined";
 fmt(Bin) when is_binary(Bin) -> binary_to_list(Bin);
-fmt(List) when is_list(List) -> List;
+fmt(List) when is_list(List) -> lists:flatten(List);
 fmt(Atom) when is_atom(Atom) -> atom_to_list(Atom);
-fmt(Other) -> io_lib:format("~p", [Other]).
+fmt(Int) when is_integer(Int) -> integer_to_list(Int);
+fmt(Other) -> lists:flatten(io_lib:format("~p", [Other])).
 
 %% @doc Format timestamp for JSON
 format_time(undefined) -> null;
@@ -63,9 +64,10 @@ format_time(_) -> null.
 
 %% @doc Truncate string
 truncate(Str, Max) when is_list(Str) ->
-    case length(Str) > Max of
-        true -> string:slice(Str, 0, Max) ++ "...";
-        false -> Str
+    Flat = lists:flatten(Str),
+    case length(Flat) > Max of
+        true -> string:slice(Flat, 0, Max) ++ "...";
+        false -> Flat
     end;
 truncate(Bin, Max) when is_binary(Bin) ->
     truncate(binary_to_list(Bin), Max);
