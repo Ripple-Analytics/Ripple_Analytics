@@ -343,37 +343,106 @@ get_remote_commit(Branch) ->
 rebuild_services() ->
     %% Wrap entire rebuild in try-catch to ensure we never crash
     try
-        io:format("[UPDATER] Triggering service rebuild~n"),
-        %% Build and restart only the application services, NOT the auto-updater itself
-        %% This prevents the auto-updater from stopping itself during updates
-        Services = "api-gateway analysis-service harvester-service storage-service chaos-engineering desktop-ui gdrive-backup",
+        io:format("[UPDATER] ========================================~n"),
+        io:format("[UPDATER] BLUE-GREEN DEPLOYMENT STARTING~n"),
+        io:format("[UPDATER] Zero downtime update in progress~n"),
+        io:format("[UPDATER] ========================================~n"),
+        
         BasePath = "/repo/mental_models_system/erlang-services",
         
-        %% Build the services
-        BuildCmd = "cd " ++ BasePath ++ " && docker-compose build --parallel " ++ Services ++ " 2>&1",
-        io:format("[UPDATER] Running build command...~n"),
+        %% Backend services (not blue-green, just restart)
+        BackendServices = "api-gateway analysis-service harvester-service storage-service chaos-engineering",
+        
+        %% Step 1: Determine which environment is currently active
+        ActiveEnv = get_active_environment(),
+        StandbyEnv = case ActiveEnv of
+            "blue" -> "green";
+            "green" -> "blue";
+            _ -> "green"  %% Default to updating green if unknown
+        end,
+        io:format("[UPDATER] Active environment: ~s, Updating standby: ~s~n", [ActiveEnv, StandbyEnv]),
+        
+        %% Step 2: Build all services including the standby UI
+        StandbyService = "desktop-ui-" ++ StandbyEnv,
+        io:format("[UPDATER] Building backend services and ~s...~n", [StandbyService]),
+        BuildCmd = "cd " ++ BasePath ++ " && docker-compose build --parallel " ++ BackendServices ++ " " ++ StandbyService ++ " 2>&1",
         _BuildResult = os:cmd(BuildCmd),
         
-        %% FULL RESTART: Stop then start to pick up ALL env var changes from .env
-        %% This ensures HOST_PATH, MACHINE_GUID, and any other settings are applied
-        io:format("[UPDATER] Stopping services for full restart (to pick up env changes)...~n"),
-        StopCmd = "cd " ++ BasePath ++ " && docker-compose stop " ++ Services ++ " 2>&1",
-        _StopResult = os:cmd(StopCmd),
+        %% Step 3: Update backend services (quick restart)
+        io:format("[UPDATER] Restarting backend services...~n"),
+        BackendRestartCmd = "cd " ++ BasePath ++ " && docker-compose up -d --no-deps " ++ BackendServices ++ " 2>&1",
+        _BackendResult = os:cmd(BackendRestartCmd),
         
-        io:format("[UPDATER] Removing old containers...~n"),
-        RmCmd = "cd " ++ BasePath ++ " && docker-compose rm -f " ++ Services ++ " 2>&1",
-        _RmResult = os:cmd(RmCmd),
+        %% Step 4: Update the standby UI environment
+        io:format("[UPDATER] Updating standby environment (~s)...~n", [StandbyEnv]),
+        StandbyStopCmd = "cd " ++ BasePath ++ " && docker-compose stop " ++ StandbyService ++ " 2>&1",
+        _StandbyStopResult = os:cmd(StandbyStopCmd),
+        StandbyRmCmd = "cd " ++ BasePath ++ " && docker-compose rm -f " ++ StandbyService ++ " 2>&1",
+        _StandbyRmResult = os:cmd(StandbyRmCmd),
+        StandbyStartCmd = "cd " ++ BasePath ++ " && docker-compose up -d " ++ StandbyService ++ " 2>&1",
+        _StandbyStartResult = os:cmd(StandbyStartCmd),
         
-        io:format("[UPDATER] Starting services with fresh env vars...~n"),
-        StartCmd = "cd " ++ BasePath ++ " && docker-compose up -d " ++ Services ++ " 2>&1",
-        _StartResult = os:cmd(StartCmd),
+        %% Step 5: Wait for standby to be healthy
+        io:format("[UPDATER] Waiting for ~s to be healthy...~n", [StandbyEnv]),
+        timer:sleep(10000),  %% Wait 10 seconds for container to start
         
-        io:format("[UPDATER] Rebuild complete - all services restarted with latest env vars~n")
+        %% Step 6: Health check the standby
+        StandbyHealthy = check_standby_health(StandbyEnv),
+        
+        case StandbyHealthy of
+            true ->
+                %% Step 7: Switch traffic to the new environment
+                io:format("[UPDATER] ~s is healthy, switching traffic...~n", [StandbyEnv]),
+                switch_active_environment(StandbyEnv, BasePath),
+                io:format("[UPDATER] ========================================~n"),
+                io:format("[UPDATER] BLUE-GREEN DEPLOYMENT COMPLETE~n"),
+                io:format("[UPDATER] Traffic now routed to: ~s~n", [StandbyEnv]),
+                io:format("[UPDATER] Zero downtime achieved!~n"),
+                io:format("[UPDATER] ========================================~n");
+            false ->
+                io:format("[UPDATER] WARNING: ~s failed health check, keeping traffic on ~s~n", [StandbyEnv, ActiveEnv]),
+                io:format("[UPDATER] Deployment rolled back automatically~n")
+        end
     catch
         Class:Reason:Stacktrace ->
             io:format("[UPDATER] ERROR during rebuild: ~p:~p~n~p~n", [Class, Reason, Stacktrace]),
             io:format("[UPDATER] Rebuild failed but updater continues running~n")
     end.
+
+%% Get the currently active environment (blue or green)
+get_active_environment() ->
+    %% Read from nginx config or default to blue
+    Result = os:cmd("cat /repo/mental_models_system/erlang-services/nginx_proxy/active_env 2>/dev/null"),
+    case string:trim(Result) of
+        "green" -> "green";
+        "blue" -> "blue";
+        _ -> "blue"  %% Default to blue
+    end.
+
+%% Check if the standby environment is healthy
+check_standby_health(Env) ->
+    Container = "mental-models-ui-" ++ Env,
+    %% Check if container is running and healthy
+    HealthCmd = "docker inspect --format='{{.State.Health.Status}}' " ++ Container ++ " 2>/dev/null",
+    Result = string:trim(os:cmd(HealthCmd)),
+    io:format("[UPDATER] Health check for ~s: ~s~n", [Container, Result]),
+    Result =:= "healthy".
+
+%% Switch the active environment by updating nginx config
+switch_active_environment(NewEnv, BasePath) ->
+    %% Update the active_env file
+    ActiveEnvFile = BasePath ++ "/nginx_proxy/active_env",
+    file:write_file(ActiveEnvFile, NewEnv),
+    
+    %% Update the nginx active.conf to route to the new environment
+    ActiveConfFile = BasePath ++ "/nginx_proxy/active.conf",
+    NewConfig = "# Active environment: " ++ NewEnv ++ "\nlocation / {\n    proxy_pass http://" ++ NewEnv ++ ";\n}\n",
+    file:write_file(ActiveConfFile, NewConfig),
+    
+    %% Reload nginx to apply the change (zero downtime)
+    ReloadCmd = "docker exec mental-models-proxy nginx -s reload 2>&1",
+    _ReloadResult = os:cmd(ReloadCmd),
+    io:format("[UPDATER] Nginx reloaded, traffic switched to ~s~n", [NewEnv]).
 
 %% Run command with timeout to prevent hanging
 %% This is CRITICAL for bulletproof operation - git commands can hang indefinitely

@@ -274,13 +274,35 @@ services:
       - mental-models-network
 
   # ============================================================================
-  # DESKTOP UI - Web Interface
+  # BLUE-GREEN DEPLOYMENT - Zero Downtime Updates
   # ============================================================================
-  desktop-ui:
-    build: ./desktop_ui
-    container_name: mental-models-ui
+  
+  # Nginx Proxy - Routes traffic to active environment (blue or green)
+  nginx-proxy:
+    build: ./nginx_proxy
+    container_name: mental-models-proxy
     ports:
       - "3000:3000"
+      - "8080:8080"
+    volumes:
+      - nginx-config:/etc/nginx/conf.d
+    depends_on:
+      - desktop-ui-blue
+      - desktop-ui-green
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - mental-models-network
+
+  # Desktop UI - BLUE Environment
+  desktop-ui-blue:
+    build: ./desktop_ui
+    container_name: mental-models-ui-blue
     environment:
       - API_GATEWAY_URL=http://api-gateway:8000
       - AUTO_UPDATER_URL=http://auto-updater-service:8006
@@ -288,20 +310,46 @@ services:
       - GDRIVE_SOURCE_URL=http://gdrive-source:8011
       - LOCAL_CACHE_URL=http://local-cache:8012
       - CHAOS_MONKEY_URL=http://update-chaos-monkey:8013
-      # Machine-specific licensing - pass host machine GUID to container
       - MACHINE_GUID=${MACHINE_GUID:-}
-      # Host path for display in UI - shows where the app is running from
       - HOST_PATH=${HOST_PATH:-}
+      - DEPLOYMENT_ENV=blue
     depends_on:
       - api-gateway
       - chaos-engineering
       - auto-updater-service
-      - update-chaos-monkey
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
-      interval: 30s
-      timeout: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # Desktop UI - GREEN Environment
+  desktop-ui-green:
+    build: ./desktop_ui
+    container_name: mental-models-ui-green
+    environment:
+      - API_GATEWAY_URL=http://api-gateway:8000
+      - AUTO_UPDATER_URL=http://auto-updater-service:8006
+      - GITHUB_SOURCE_URL=http://github-source:8010
+      - GDRIVE_SOURCE_URL=http://gdrive-source:8011
+      - LOCAL_CACHE_URL=http://local-cache:8012
+      - CHAOS_MONKEY_URL=http://update-chaos-monkey:8013
+      - MACHINE_GUID=${MACHINE_GUID:-}
+      - HOST_PATH=${HOST_PATH:-}
+      - DEPLOYMENT_ENV=green
+    depends_on:
+      - api-gateway
+      - chaos-engineering
+      - auto-updater-service
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
       retries: 3
       start_period: 30s
     networks:
@@ -323,4 +371,6 @@ volumes:
   gdrive-repo:
     driver: local
   local-cache-data:
+    driver: local
+  nginx-config:
     driver: local
