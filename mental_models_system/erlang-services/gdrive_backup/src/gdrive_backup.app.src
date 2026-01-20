@@ -1,0 +1,24 @@
+{application, gdrive_backup,
+ [{description, "Google Drive Backup Service for Mental Models System"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {mod, {gdrive_backup_app, []}},
+  {applications,
+   [kernel,
+    stdlib,
+    cowboy,
+    jsx,
+    hackney,
+    ssl,
+    inets
+   ]},
+  {env,[
+    {port, 8006},
+    {backup_interval, 3600},
+    {gdrive_folder_id, ""},
+    {backup_path, "/data/backups"}
+  ]},
+  {modules, []},
+  {licenses, ["Apache 2.0"]},
+  {links, []}
+ ]}.

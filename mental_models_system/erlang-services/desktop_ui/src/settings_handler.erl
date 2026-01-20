@@ -59,11 +59,61 @@ init(Req0, State) ->
                 <p><strong>Harvester Service:</strong> http://localhost:8002</p>
                 <p><strong>Storage Service:</strong> http://localhost:8003</p>
                 <p><strong>Chaos Engineering:</strong> http://localhost:8005</p>
+                <p><strong>GDrive Backup:</strong> http://localhost:8006</p>
+                <p><strong>Chaos Monkey:</strong> http://localhost:8007</p>
                 <p><strong>Desktop UI:</strong> http://localhost:3000</p>
             </div>
         </div>
+        
+        <div class=\"card\" style=\"border-left: 4px solid #28a745;\">
+            <h2>System Health Check</h2>
+            <p>Verify all services are running correctly.</p>
+            <div id=\"health-status\" style=\"margin: 15px 0;\">
+                <p class=\"loading\">Click button to check health...</p>
+            </div>
+            <button class=\"btn\" onclick=\"runHealthCheck()\">Run Health Check</button>
+        </div>
+        
+        <div class=\"card\" style=\"border-left: 4px solid #f59e0b;\">
+            <h2>Google Drive Backup</h2>
+            <p>Manage backups and configure Google Drive as fallback source.</p>
+            <div id=\"gdrive-status\" style=\"margin: 15px 0;\">
+                <p class=\"loading\">Loading backup status...</p>
+            </div>
+            <div style=\"display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;\">
+                <button class=\"btn\" onclick=\"triggerBackup()\">Create Backup Now</button>
+                <button class=\"btn btn-secondary\" onclick=\"listBackups()\">List Backups</button>
+                <button class=\"btn btn-secondary\" onclick=\"loadGdriveStatus()\">Refresh Status</button>
+            </div>
+            <div id=\"backup-list\" style=\"margin-top: 15px;\"></div>
+        </div>
+        
+        <div class=\"card\" style=\"border-left: 4px solid #dc3545;\">
+            <h2>Chaos Monkey</h2>
+            <p>Proactively test system resilience by randomly breaking things. <strong style=\"color: #dc3545;\">Use with caution!</strong></p>
+            <div id=\"chaos-monkey-status\" style=\"margin: 15px 0;\">
+                <p class=\"loading\">Loading chaos monkey status...</p>
+            </div>
+            <div style=\"display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;\">
+                <button class=\"btn\" id=\"chaos-toggle-btn\" onclick=\"toggleChaosMonkey()\">Enable Chaos Monkey</button>
+                <button class=\"btn btn-secondary\" onclick=\"triggerRandomAttack()\">Trigger Random Attack</button>
+                <button class=\"btn btn-secondary\" onclick=\"viewAttackHistory()\">View Attack History</button>
+            </div>
+            <div id=\"attack-types\" style=\"margin-top: 15px;\">
+                <h4>Manual Attack Types:</h4>
+                <div style=\"display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;\">
+                    <button class=\"btn btn-secondary\" onclick=\"triggerAttack('kill_container')\">Kill Container</button>
+                    <button class=\"btn btn-secondary\" onclick=\"triggerAttack('network_latency')\">Network Latency</button>
+                    <button class=\"btn btn-secondary\" onclick=\"triggerAttack('cpu_stress')\">CPU Stress</button>
+                    <button class=\"btn btn-secondary\" onclick=\"triggerAttack('memory_pressure')\">Memory Pressure</button>
+                    <button class=\"btn btn-secondary\" onclick=\"triggerAttack('service_restart')\">Service Restart</button>
+                </div>
+            </div>
+            <div id=\"chaos-monkey-results\" style=\"margin-top: 15px;\"></div>
+        </div>
+        
         <div class=\"card\">
-            <h2>Chaos Engineering</h2>
+            <h2>Chaos Engineering (Legacy)</h2>
             <p>Test system resilience with controlled chaos experiments.</p>
             <br>
             <div style=\"display: flex; gap: 10px; flex-wrap: wrap;\">
@@ -216,9 +266,291 @@ init(Req0, State) ->
             // Load status and config on page load
             loadUpdateStatus();
             loadConfig();
+            loadGdriveStatus();
+            loadChaosMonkeyStatus();
             setInterval(loadUpdateStatus, 30000);
+            setInterval(loadGdriveStatus, 60000);
+            setInterval(loadChaosMonkeyStatus, 30000);
             
-            // Chaos engineering functions
+            // Health check function
+            async function runHealthCheck() {
+                document.getElementById('health-status').innerHTML = '<p class=\"loading\">Checking all services...</p>';
+                
+                const services = [
+                    {name: 'API Gateway', url: 'http://localhost:8000/health'},
+                    {name: 'Analysis Service', url: 'http://localhost:8001/health'},
+                    {name: 'Harvester Service', url: 'http://localhost:8002/health'},
+                    {name: 'Storage Service', url: 'http://localhost:8003/health'},
+                    {name: 'Chaos Engineering', url: 'http://localhost:8005/health'},
+                    {name: 'GDrive Backup', url: 'http://localhost:8006/health'},
+                    {name: 'Chaos Monkey', url: 'http://localhost:8007/health'},
+                    {name: 'Desktop UI', url: '/health'}
+                ];
+                
+                let html = '<div style=\"display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;\">';
+                
+                for (const svc of services) {
+                    try {
+                        const res = await fetch(svc.url, {timeout: 5000});
+                        const data = await res.json();
+                        const isHealthy = res.ok && (data.status === 'healthy' || data.status === 'ok');
+                        const statusClass = isHealthy ? 'status-healthy' : 'status-unhealthy';
+                        const statusText = isHealthy ? 'Healthy' : 'Unhealthy';
+                        html += '<div style=\"padding: 10px; border-radius: 4px; background: #f8f9fa;\">';
+                        html += '<span class=\"' + statusClass + '\">●</span> <strong>' + svc.name + '</strong><br>';
+                        html += '<small>' + statusText + '</small></div>';
+                    } catch (e) {
+                        html += '<div style=\"padding: 10px; border-radius: 4px; background: #f8f9fa;\">';
+                        html += '<span class=\"status-unhealthy\">●</span> <strong>' + svc.name + '</strong><br>';
+                        html += '<small>Unreachable</small></div>';
+                    }
+                }
+                
+                html += '</div>';
+                document.getElementById('health-status').innerHTML = html;
+            }
+            
+            // Google Drive Backup functions
+            async function loadGdriveStatus() {
+                try {
+                    const res = await fetch('http://localhost:8006/api/backup/status');
+                    const data = await res.json();
+                    
+                    let html = '<div style=\"display: grid; grid-template-columns: 1fr 1fr; gap: 10px;\">';
+                    html += '<p><strong>Status:</strong> ' + (data.gdrive?.status || 'unknown') + '</p>';
+                    html += '<p><strong>Configured:</strong> ' + (data.gdrive?.gdrive_configured ? 'Yes' : 'No') + '</p>';
+                    html += '<p><strong>Last Sync:</strong> ' + (data.gdrive?.last_sync || 'never') + '</p>';
+                    html += '<p><strong>Backup Count:</strong> ' + (data.backup_count || 0) + '</p>';
+                    html += '</div>';
+                    
+                    document.getElementById('gdrive-status').innerHTML = html;
+                } catch (e) {
+                    document.getElementById('gdrive-status').innerHTML = 
+                        '<p class=\"status-unknown\">GDrive Backup service not available</p>';
+                }
+            }
+            
+            async function triggerBackup() {
+                document.getElementById('backup-list').innerHTML = '<p class=\"loading\">Creating backup...</p>';
+                try {
+                    const res = await fetch('http://localhost:8006/api/backup/create', {method: 'POST'});
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        document.getElementById('backup-list').innerHTML = 
+                            '<div class=\"alert alert-success\">Backup triggered successfully!</div>';
+                        loadGdriveStatus();
+                    } else {
+                        document.getElementById('backup-list').innerHTML = 
+                            '<div class=\"alert alert-error\">Failed to create backup</div>';
+                    }
+                } catch (e) {
+                    document.getElementById('backup-list').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
+            }
+            
+            async function listBackups() {
+                document.getElementById('backup-list').innerHTML = '<p class=\"loading\">Loading backups...</p>';
+                try {
+                    const res = await fetch('http://localhost:8006/api/backup/list');
+                    const data = await res.json();
+                    
+                    if (data.success && data.backups && data.backups.length > 0) {
+                        let html = '<table style=\"width: 100%; border-collapse: collapse;\">';
+                        html += '<tr style=\"background: #f8f9fa;\"><th style=\"padding: 8px; text-align: left;\">Name</th>';
+                        html += '<th style=\"padding: 8px; text-align: left;\">Size</th>';
+                        html += '<th style=\"padding: 8px; text-align: left;\">Modified</th></tr>';
+                        
+                        for (const backup of data.backups) {
+                            html += '<tr style=\"border-bottom: 1px solid #eee;\">';
+                            html += '<td style=\"padding: 8px;\">' + backup.name + '</td>';
+                            html += '<td style=\"padding: 8px;\">' + formatBytes(backup.size) + '</td>';
+                            html += '<td style=\"padding: 8px;\">' + backup.modified + '</td>';
+                            html += '</tr>';
+                        }
+                        html += '</table>';
+                        document.getElementById('backup-list').innerHTML = html;
+                    } else {
+                        document.getElementById('backup-list').innerHTML = 
+                            '<p>No backups found. Click \"Create Backup Now\" to create one.</p>';
+                    }
+                } catch (e) {
+                    document.getElementById('backup-list').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
+            }
+            
+            function formatBytes(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            // Chaos Monkey functions
+            let chaosMonkeyEnabled = false;
+            
+            async function loadChaosMonkeyStatus() {
+                try {
+                    const res = await fetch('http://localhost:8007/api/chaos/status');
+                    const data = await res.json();
+                    
+                    chaosMonkeyEnabled = data.engine?.enabled || false;
+                    
+                    let html = '<div style=\"display: grid; grid-template-columns: 1fr 1fr; gap: 10px;\">';
+                    html += '<p><strong>Status:</strong> <span class=\"' + (chaosMonkeyEnabled ? 'status-unhealthy' : 'status-healthy') + '\">' + 
+                            (chaosMonkeyEnabled ? 'ENABLED (Active)' : 'Disabled (Safe)') + '</span></p>';
+                    html += '<p><strong>Total Attacks:</strong> ' + (data.engine?.total_attacks || 0) + '</p>';
+                    html += '<p><strong>Recovery Rate:</strong> ' + (data.engine?.recovery_rate?.toFixed(1) || 100) + '%</p>';
+                    html += '<p><strong>Last Attack:</strong> ' + (data.engine?.last_attack || 'never') + '</p>';
+                    html += '</div>';
+                    
+                    document.getElementById('chaos-monkey-status').innerHTML = html;
+                    
+                    // Update toggle button
+                    const btn = document.getElementById('chaos-toggle-btn');
+                    if (chaosMonkeyEnabled) {
+                        btn.textContent = 'Disable Chaos Monkey';
+                        btn.style.background = '#dc3545';
+                    } else {
+                        btn.textContent = 'Enable Chaos Monkey';
+                        btn.style.background = '#4361ee';
+                    }
+                } catch (e) {
+                    document.getElementById('chaos-monkey-status').innerHTML = 
+                        '<p class=\"status-unknown\">Chaos Monkey service not available</p>';
+                }
+            }
+            
+            async function toggleChaosMonkey() {
+                const endpoint = chaosMonkeyEnabled ? 
+                    'http://localhost:8007/api/chaos/disable' : 
+                    'http://localhost:8007/api/chaos/enable';
+                
+                try {
+                    const res = await fetch(endpoint, {method: 'POST'});
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        loadChaosMonkeyStatus();
+                        document.getElementById('chaos-monkey-results').innerHTML = 
+                            '<div class=\"alert alert-success\">' + data.message + '</div>';
+                    }
+                } catch (e) {
+                    document.getElementById('chaos-monkey-results').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
+            }
+            
+            async function triggerRandomAttack() {
+                if (!chaosMonkeyEnabled) {
+                    document.getElementById('chaos-monkey-results').innerHTML = 
+                        '<div class=\"alert alert-error\">Chaos Monkey is disabled. Enable it first.</div>';
+                    return;
+                }
+                
+                document.getElementById('chaos-monkey-results').innerHTML = '<p class=\"loading\">Executing random attack...</p>';
+                try {
+                    const res = await fetch('http://localhost:8007/api/chaos/attack', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({type: 'random'})
+                    });
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        let html = '<div class=\"card\" style=\"margin-top: 10px;\">';
+                        html += '<h4>Attack Result</h4>';
+                        html += '<p><strong>Type:</strong> ' + (data.attack?.attack || 'unknown') + '</p>';
+                        html += '<p><strong>Target:</strong> ' + (data.attack?.target || 'N/A') + '</p>';
+                        html += '<p><strong>Recovered:</strong> ' + (data.attack?.recovered ? 'Yes' : 'No') + '</p>';
+                        html += '</div>';
+                        document.getElementById('chaos-monkey-results').innerHTML = html;
+                        loadChaosMonkeyStatus();
+                    } else {
+                        document.getElementById('chaos-monkey-results').innerHTML = 
+                            '<div class=\"alert alert-error\">' + (data.error || 'Attack failed') + '</div>';
+                    }
+                } catch (e) {
+                    document.getElementById('chaos-monkey-results').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
+            }
+            
+            async function triggerAttack(attackType) {
+                if (!chaosMonkeyEnabled) {
+                    document.getElementById('chaos-monkey-results').innerHTML = 
+                        '<div class=\"alert alert-error\">Chaos Monkey is disabled. Enable it first.</div>';
+                    return;
+                }
+                
+                document.getElementById('chaos-monkey-results').innerHTML = '<p class=\"loading\">Executing ' + attackType + ' attack...</p>';
+                try {
+                    const res = await fetch('http://localhost:8007/api/chaos/attack', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({type: attackType})
+                    });
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        let html = '<div class=\"card\" style=\"margin-top: 10px;\">';
+                        html += '<h4>Attack Result: ' + attackType + '</h4>';
+                        html += '<p><strong>Target:</strong> ' + (data.attack?.target || 'N/A') + '</p>';
+                        html += '<p><strong>Recovered:</strong> ' + (data.attack?.recovered ? 'Yes' : 'No') + '</p>';
+                        if (data.attack?.output) {
+                            html += '<p><strong>Output:</strong> <code>' + data.attack.output.substring(0, 200) + '</code></p>';
+                        }
+                        html += '</div>';
+                        document.getElementById('chaos-monkey-results').innerHTML = html;
+                        loadChaosMonkeyStatus();
+                    } else {
+                        document.getElementById('chaos-monkey-results').innerHTML = 
+                            '<div class=\"alert alert-error\">' + (data.error || 'Attack failed') + '</div>';
+                    }
+                } catch (e) {
+                    document.getElementById('chaos-monkey-results').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
+            }
+            
+            async function viewAttackHistory() {
+                document.getElementById('chaos-monkey-results').innerHTML = '<p class=\"loading\">Loading attack history...</p>';
+                try {
+                    const res = await fetch('http://localhost:8007/api/chaos/history');
+                    const data = await res.json();
+                    
+                    if (data.history && data.history.length > 0) {
+                        let html = '<div class=\"card\" style=\"margin-top: 10px;\">';
+                        html += '<h4>Attack History (Last ' + data.count + ')</h4>';
+                        html += '<table style=\"width: 100%; border-collapse: collapse;\">';
+                        html += '<tr style=\"background: #f8f9fa;\"><th style=\"padding: 8px; text-align: left;\">Type</th>';
+                        html += '<th style=\"padding: 8px; text-align: left;\">Timestamp</th>';
+                        html += '<th style=\"padding: 8px; text-align: left;\">Recovered</th></tr>';
+                        
+                        for (const attack of data.history.slice(0, 10)) {
+                            html += '<tr style=\"border-bottom: 1px solid #eee;\">';
+                            html += '<td style=\"padding: 8px;\">' + attack.type + '</td>';
+                            html += '<td style=\"padding: 8px;\">' + attack.timestamp + '</td>';
+                            html += '<td style=\"padding: 8px;\"><span class=\"' + (attack.recovered ? 'status-healthy' : 'status-unhealthy') + '\">●</span> ' + 
+                                    (attack.recovered ? 'Yes' : 'No') + '</td>';
+                            html += '</tr>';
+                        }
+                        html += '</table></div>';
+                        document.getElementById('chaos-monkey-results').innerHTML = html;
+                    } else {
+                        document.getElementById('chaos-monkey-results').innerHTML = 
+                            '<p>No attack history yet.</p>';
+                    }
+                } catch (e) {
+                    document.getElementById('chaos-monkey-results').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
+            }
+            
+            // Chaos engineering functions (legacy)
             async function runLoadTest() {
                 document.getElementById('chaos-results').innerHTML = '<div class=\"loading\">Running load test...</div>';
                 try {

@@ -184,6 +184,55 @@ services:
     networks:
       - mental-models-network
 
+  # Google Drive Backup Service - Independent backup management
+  gdrive-backup:
+    build: ./gdrive_backup
+    container_name: mental-models-gdrive-backup
+    ports:
+      - "8006:8006"
+    volumes:
+      - gdrive-data:/data
+    environment:
+      - GDRIVE_URL=${GDRIVE_BACKUP_URL:-}
+      - BACKUP_INTERVAL=3600
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # Chaos Monkey - Proactive resilience testing
+  chaos-monkey:
+    build: ./chaos_monkey
+    container_name: mental-models-chaos-monkey
+    ports:
+      - "8007:8007"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - chaos-data:/data
+    environment:
+      - ENABLED=${CHAOS_MONKEY_ENABLED:-false}
+      - ATTACK_INTERVAL=300
+      - TARGET_SERVICES=mental-models-api-gateway,mental-models-analysis,mental-models-harvester,mental-models-storage
+      - API_GATEWAY_URL=http://api-gateway:8000
+      - DESKTOP_UI_URL=http://desktop-ui:3000
+    depends_on:
+      - api-gateway
+      - desktop-ui
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8007/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
 networks:
   mental-models-network:
     driver: bridge
@@ -194,4 +243,8 @@ volumes:
   updater-repo:
     driver: local
   updater-data:
+    driver: local
+  gdrive-data:
+    driver: local
+  chaos-data:
     driver: local

@@ -1,0 +1,26 @@
+{application, chaos_monkey,
+ [{description, "Chaos Monkey - Proactive Resilience Testing"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {mod, {chaos_monkey_app, []}},
+  {applications,
+   [kernel,
+    stdlib,
+    cowboy,
+    jsx
+   ]},
+  {env, [
+    {port, 8007},
+    {enabled, false},
+    {attack_interval, 300},
+    {target_services, [
+        "mental-models-api-gateway",
+        "mental-models-analysis",
+        "mental-models-harvester",
+        "mental-models-storage"
+    ]}
+  ]},
+  {modules, []},
+  {licenses, ["MIT"]},
+  {links, []}
+ ]}.
