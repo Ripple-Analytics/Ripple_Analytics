@@ -12,11 +12,25 @@ init(Req0, State) ->
             <h2>Analyze Text</h2>
             <p>Enter text to identify relevant mental models and detect cognitive biases.</p>
             <br>
+            
+            <div style=\"margin-bottom: 15px;\">
+                <label style=\"font-weight: bold; display: block; margin-bottom: 8px;\">Quick Templates:</label>
+                <div style=\"display: flex; gap: 8px; flex-wrap: wrap;\">
+                    <button class=\"btn btn-secondary\" style=\"font-size: 12px; padding: 6px 12px;\" onclick=\"loadTemplate('decision')\">Decision Analysis</button>
+                    <button class=\"btn btn-secondary\" style=\"font-size: 12px; padding: 6px 12px;\" onclick=\"loadTemplate('problem')\">Problem Solving</button>
+                    <button class=\"btn btn-secondary\" style=\"font-size: 12px; padding: 6px 12px;\" onclick=\"loadTemplate('strategy')\">Strategy Review</button>
+                    <button class=\"btn btn-secondary\" style=\"font-size: 12px; padding: 6px 12px;\" onclick=\"loadTemplate('negotiation')\">Negotiation Prep</button>
+                    <button class=\"btn btn-secondary\" style=\"font-size: 12px; padding: 6px 12px;\" onclick=\"loadTemplate('investment')\">Investment Analysis</button>
+                    <button class=\"btn btn-secondary\" style=\"font-size: 12px; padding: 6px 12px;\" onclick=\"loadTemplate('meeting')\">Meeting Notes</button>
+                </div>
+            </div>
+            
             <textarea id=\"analysis-text\" placeholder=\"Enter text to analyze...\"></textarea>
             <div style=\"display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;\">
                 <button class=\"btn\" onclick=\"analyzeText()\">Analyze for Models</button>
                 <button class=\"btn btn-secondary\" onclick=\"detectBiases()\">Detect Biases</button>
                 <button class=\"btn btn-secondary\" onclick=\"runFullAnalysis()\">Full Analysis</button>
+                <button class=\"btn btn-secondary\" onclick=\"document.getElementById('analysis-text').value=''\">Clear</button>
             </div>
         </div>
         <div id=\"results\"></div>
@@ -34,6 +48,21 @@ init(Req0, State) ->
         <script>
             let lastAnalysisResult = null;
             let lastAnalysisType = null;
+            
+            const templates = {
+                decision: 'DECISION ANALYSIS\\n\\nDecision to make: [Describe the decision]\\n\\nOptions:\\n1. [Option A]\\n2. [Option B]\\n3. [Option C]\\n\\nPros and Cons:\\n- Option A: [pros/cons]\\n- Option B: [pros/cons]\\n- Option C: [pros/cons]\\n\\nKey factors to consider:\\n- [Factor 1]\\n- [Factor 2]\\n\\nTimeline: [When decision needs to be made]\\n\\nStakeholders affected: [Who is impacted]',
+                problem: 'PROBLEM SOLVING\\n\\nProblem statement: [Describe the problem clearly]\\n\\nCurrent situation: [What is happening now]\\n\\nDesired outcome: [What should be happening]\\n\\nRoot causes identified:\\n1. [Cause 1]\\n2. [Cause 2]\\n\\nPotential solutions:\\n1. [Solution 1]\\n2. [Solution 2]\\n\\nConstraints: [Time, budget, resources]\\n\\nSuccess metrics: [How will we know it is solved]',
+                strategy: 'STRATEGY REVIEW\\n\\nObjective: [What are we trying to achieve]\\n\\nCurrent strategy: [Describe current approach]\\n\\nMarket conditions: [External factors]\\n\\nCompetitive landscape: [Key competitors and their moves]\\n\\nStrengths to leverage:\\n- [Strength 1]\\n- [Strength 2]\\n\\nWeaknesses to address:\\n- [Weakness 1]\\n- [Weakness 2]\\n\\nOpportunities identified:\\n- [Opportunity 1]\\n\\nThreats to mitigate:\\n- [Threat 1]\\n\\nProposed changes: [What should we do differently]',
+                negotiation: 'NEGOTIATION PREPARATION\\n\\nNegotiation context: [What is being negotiated]\\n\\nOur position: [What we want]\\n\\nTheir likely position: [What they want]\\n\\nOur BATNA (Best Alternative): [What we do if no deal]\\n\\nTheir likely BATNA: [What they do if no deal]\\n\\nKey interests (ours):\\n- [Interest 1]\\n- [Interest 2]\\n\\nKey interests (theirs):\\n- [Interest 1]\\n- [Interest 2]\\n\\nPotential trade-offs: [What can we give up]\\n\\nDeal breakers: [What we cannot accept]\\n\\nOpening offer: [Where to start]\\n\\nTarget outcome: [Ideal result]',
+                investment: 'INVESTMENT ANALYSIS\\n\\nInvestment opportunity: [Describe the investment]\\n\\nAmount: [How much]\\n\\nExpected return: [ROI expectations]\\n\\nTime horizon: [Investment period]\\n\\nRisk factors:\\n1. [Risk 1]\\n2. [Risk 2]\\n3. [Risk 3]\\n\\nMitigation strategies: [How to reduce risks]\\n\\nMarket analysis: [Industry trends]\\n\\nCompetitive moat: [What protects this investment]\\n\\nExit strategy: [How and when to exit]\\n\\nAlternative investments considered: [Other options]',
+                meeting: 'MEETING NOTES\\n\\nDate: [Date]\\nAttendees: [Who was present]\\nPurpose: [Why we met]\\n\\nKey discussion points:\\n1. [Topic 1]: [Summary]\\n2. [Topic 2]: [Summary]\\n3. [Topic 3]: [Summary]\\n\\nDecisions made:\\n- [Decision 1]\\n- [Decision 2]\\n\\nAction items:\\n- [Action 1] - Owner: [Name] - Due: [Date]\\n- [Action 2] - Owner: [Name] - Due: [Date]\\n\\nOpen questions:\\n- [Question 1]\\n\\nNext steps: [What happens next]\\n\\nFollow-up meeting: [If scheduled]'
+            };
+            
+            function loadTemplate(type) {
+                if (templates[type]) {
+                    document.getElementById('analysis-text').value = templates[type];
+                }
+            }
             
             async function saveToHistory(type, inputText, models, biases) {
                 try {
