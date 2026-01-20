@@ -458,11 +458,18 @@ init(Req0, State) ->
                 renderComparison(analyses);
             }
             
+            let currentComparisonData = [];
+            
             function renderComparison(analyses) {
+                currentComparisonData = analyses;
                 let html = '<div class=\"card\" style=\"margin-bottom: 20px;\">';
                 html += '<div style=\"display: flex; justify-content: space-between; align-items: center;\">';
                 html += '<h2>Analysis Comparison</h2>';
+                html += '<div style=\"display: flex; gap: 10px;\">';
+                html += '<button class=\"btn\" onclick=\"exportComparisonCSV()\">Export CSV</button>';
+                html += '<button class=\"btn btn-secondary\" onclick=\"exportComparisonJSON()\">Export JSON</button>';
                 html += '<button class=\"btn btn-secondary\" onclick=\"document.getElementById(\\'compare-panel\\').style.display=\\'none\\'\">Close</button>';
+                html += '</div>';
                 html += '</div>';
                 
                 // Create comparison table
@@ -526,6 +533,95 @@ init(Req0, State) ->
                 document.getElementById('compare-panel').innerHTML = html;
                 document.getElementById('compare-panel').style.display = 'block';
                 document.getElementById('compare-panel').scrollIntoView({behavior: 'smooth'});
+            }
+            
+            function exportComparisonCSV() {
+                if (currentComparisonData.length === 0) {
+                    alert('No comparison data to export');
+                    return;
+                }
+                
+                let csv = 'Attribute';
+                for (const a of currentComparisonData) {
+                    csv += ',' + new Date(a.timestamp * 1000).toLocaleDateString();
+                }
+                csv += '\\n';
+                
+                csv += 'Type';
+                for (const a of currentComparisonData) {
+                    csv += ',' + a.type;
+                }
+                csv += '\\n';
+                
+                csv += 'Models Detected';
+                for (const a of currentComparisonData) {
+                    csv += ',' + (a.model_count || 0);
+                }
+                csv += '\\n';
+                
+                csv += 'Biases Detected';
+                for (const a of currentComparisonData) {
+                    csv += ',' + (a.bias_count || 0);
+                }
+                csv += '\\n';
+                
+                csv += 'Models';
+                for (const a of currentComparisonData) {
+                    const models = (a.models || []).map(m => m.name || m).join('; ') || 'None';
+                    csv += ',\"' + models.replace(/\"/g, '\"\"') + '\"';
+                }
+                csv += '\\n';
+                
+                csv += 'Biases';
+                for (const a of currentComparisonData) {
+                    const biases = (a.biases || []).map(b => b.bias || b).join('; ') || 'None';
+                    csv += ',\"' + biases.replace(/\"/g, '\"\"') + '\"';
+                }
+                csv += '\\n';
+                
+                csv += 'Input Text';
+                for (const a of currentComparisonData) {
+                    csv += ',\"' + (a.input_text || 'N/A').replace(/\"/g, '\"\"') + '\"';
+                }
+                csv += '\\n';
+                
+                downloadFile('comparison_' + Date.now() + '.csv', csv, 'text/csv');
+            }
+            
+            function exportComparisonJSON() {
+                if (currentComparisonData.length === 0) {
+                    alert('No comparison data to export');
+                    return;
+                }
+                
+                const exportData = {
+                    exported_at: new Date().toISOString(),
+                    analyses: currentComparisonData.map(a => ({
+                        id: a.id,
+                        type: a.type,
+                        timestamp: a.timestamp,
+                        date: new Date(a.timestamp * 1000).toISOString(),
+                        model_count: a.model_count || 0,
+                        bias_count: a.bias_count || 0,
+                        models: (a.models || []).map(m => m.name || m),
+                        biases: (a.biases || []).map(b => b.bias || b),
+                        input_text: a.input_text || ''
+                    }))
+                };
+                
+                downloadFile('comparison_' + Date.now() + '.json', JSON.stringify(exportData, null, 2), 'application/json');
+            }
+            
+            function downloadFile(filename, content, mimeType) {
+                const blob = new Blob([content], {type: mimeType});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
             }
             
             // Load history on page load
