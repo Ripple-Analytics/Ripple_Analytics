@@ -189,6 +189,10 @@ services:
       - HARVESTER_SERVICE_URL=http://nginx-proxy:8002
       - STORAGE_SERVICE_URL=http://nginx-proxy:8003
       - DEPLOYMENT_ENV=blue
+    depends_on:
+      - analysis-service-blue
+      - harvester-service-blue
+      - storage-service-blue
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8000/health"]
@@ -208,6 +212,10 @@ services:
       - HARVESTER_SERVICE_URL=http://nginx-proxy:8002
       - STORAGE_SERVICE_URL=http://nginx-proxy:8003
       - DEPLOYMENT_ENV=green
+    depends_on:
+      - analysis-service-green
+      - harvester-service-green
+      - storage-service-green
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8000/health"]
@@ -320,36 +328,19 @@ services:
     networks:
       - mental-models-network
 
-  # Chaos Engineering - BLUE Environment
-  chaos-engineering-blue:
-    build: ./chaos_engineering
-    container_name: mental-models-chaos-blue
+  # Storage Service - GREEN Environment
+  storage-service-green:
+    build: ./storage_service
+    container_name: mental-models-storage-green
+    volumes:
+      - storage-data:/data
     environment:
       - API_GATEWAY_URL=http://nginx-proxy:8000
       - ANALYSIS_SERVICE_URL=http://nginx-proxy:8001
       - HARVESTER_SERVICE_URL=http://nginx-proxy:8002
       - STORAGE_SERVICE_URL=http://nginx-proxy:8003
-      - DEPLOYMENT_ENV=blue
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8005/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    networks:
-      - mental-models-network
-
-  # Chaos Engineering - GREEN Environment
-  chaos-engineering-green:
-    build: ./chaos_engineering
-    container_name: mental-models-chaos-green
-    environment:
-      - API_GATEWAY_URL=http://nginx-proxy:8000
-      - ANALYSIS_SERVICE_URL=http://nginx-proxy:8001
-      - HARVESTER_SERVICE_URL=http://nginx-proxy:8002
-      - STORAGE_SERVICE_URL=http://nginx-proxy:8003
-      - DEPLOYMENT_ENV=green
+    depends_on:
+      - nginx-proxy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8005/health"]
@@ -369,13 +360,12 @@ services:
     build: ./nginx_proxy
     container_name: mental-models-proxy
     ports:
-      - "3000:3000"      # Desktop UI
-      - "8000:8000"      # API Gateway
-      - "8001:8001"      # Analysis Service
-      - "8002:8002"      # Harvester Service
-      - "8003:8003"      # Storage Service
-      - "8005:8005"      # Chaos Engineering
-      - "8080:8080"      # Health check endpoint
+      - "3000:3000"   # Desktop UI
+      - "8000:8000"   # API Gateway
+      - "8001:8001"   # Analysis Service
+      - "8002:8002"   # Harvester Service
+      - "8003:8003"   # Storage Service
+      - "8080:8080"   # Health check endpoint
     volumes:
       - nginx-config:/etc/nginx/conf.d
     depends_on:
@@ -389,8 +379,6 @@ services:
       - harvester-service-green
       - storage-service-blue
       - storage-service-green
-      - chaos-engineering-blue
-      - chaos-engineering-green
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
@@ -407,6 +395,7 @@ services:
     container_name: mental-models-ui-blue
     environment:
       - API_GATEWAY_URL=http://api-gateway-blue:8000
+      - ANALYSIS_SERVICE_URL=http://analysis-service-blue:8001
       - AUTO_UPDATER_URL=http://auto-updater-service:8006
       - GITHUB_SOURCE_URL=http://github-source:8010
       - GDRIVE_SOURCE_URL=http://gdrive-source:8011
@@ -417,7 +406,7 @@ services:
       - DEPLOYMENT_ENV=blue
     depends_on:
       - api-gateway-blue
-      - chaos-engineering-blue
+      - analysis-service-blue
       - auto-updater-service
     restart: unless-stopped
     healthcheck:
@@ -435,6 +424,7 @@ services:
     container_name: mental-models-ui-green
     environment:
       - API_GATEWAY_URL=http://api-gateway-green:8000
+      - ANALYSIS_SERVICE_URL=http://analysis-service-green:8001
       - AUTO_UPDATER_URL=http://auto-updater-service:8006
       - GITHUB_SOURCE_URL=http://github-source:8010
       - GDRIVE_SOURCE_URL=http://gdrive-source:8011
@@ -445,7 +435,7 @@ services:
       - DEPLOYMENT_ENV=green
     depends_on:
       - api-gateway-green
-      - chaos-engineering-green
+      - analysis-service-green
       - auto-updater-service
     restart: unless-stopped
     healthcheck:
