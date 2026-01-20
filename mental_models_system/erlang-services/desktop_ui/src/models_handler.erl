@@ -8,13 +8,30 @@
 
 init(Req0, State) ->
     Content = [
-        <<"<div class=\"card\">
+        <<"<div id=\"recommendations-section\" style=\"display: none; margin-bottom: 20px;\">
+            <div class=\"card\" style=\"border-left: 4px solid #28a745;\">
+                <h2>Recommended for You</h2>
+                <p>Based on your analysis history, you might find these models useful:</p>
+                <div id=\"recommendations-list\" style=\"margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;\"></div>
+            </div>
+        </div>
+        
+        <div id=\"trending-section\" style=\"display: none; margin-bottom: 20px;\">
+            <div class=\"card\" style=\"border-left: 4px solid #f59e0b;\">
+                <h2>Trending Models</h2>
+                <p>Most frequently detected models in your recent analyses:</p>
+                <div id=\"trending-list\" style=\"margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;\"></div>
+            </div>
+        </div>
+        
+        <div class=\"card\">
             <h2>Mental Models Library</h2>
             <p>Browse and search through 174+ mental models across multiple categories.</p>
             <br>
             <div style=\"display: flex; gap: 10px; margin-bottom: 15px;\">
                 <button class=\"btn\" id=\"all-tab\" onclick=\"showAllModels()\" style=\"flex: 1;\">All Models</button>
                 <button class=\"btn btn-secondary\" id=\"favorites-tab\" onclick=\"showFavorites()\" style=\"flex: 1;\">Favorites (<span id=\"fav-count\">0</span>)</button>
+                <button class=\"btn btn-secondary\" id=\"recommended-tab\" onclick=\"showRecommended()\" style=\"flex: 1;\">Recommended</button>
             </div>
             <input type=\"text\" id=\"search\" placeholder=\"Search models...\" onkeyup=\"filterModels()\">
             <select id=\"category-filter\" onchange=\"filterModels()\" style=\"padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0; margin-left: 10px;\">
@@ -28,6 +45,8 @@ init(Req0, State) ->
             let allModels = [];
             let favorites = [];
             let showingFavorites = false;
+            let recommendedModels = [];
+            let trendingModels = [];
             
             async function loadFavorites() {
                 try {
@@ -89,9 +108,82 @@ init(Req0, State) ->
                 showingFavorites = true;
                 document.getElementById('all-tab').className = 'btn btn-secondary';
                 document.getElementById('favorites-tab').className = 'btn';
+                document.getElementById('recommended-tab').className = 'btn btn-secondary';
                 
                 const favoriteModels = allModels.filter(m => isFavorite(m.name));
                 renderModels(favoriteModels);
+            }
+            
+            function showRecommended() {
+                showingFavorites = false;
+                document.getElementById('all-tab').className = 'btn btn-secondary';
+                document.getElementById('favorites-tab').className = 'btn btn-secondary';
+                document.getElementById('recommended-tab').className = 'btn';
+                
+                // Show models that appear frequently in history but aren't favorites yet
+                const recommendedNotFavorite = recommendedModels.filter(name => !isFavorite(name));
+                const models = allModels.filter(m => recommendedNotFavorite.includes(m.name));
+                renderModels(models);
+            }
+            
+            async function loadRecommendations() {
+                try {
+                    const res = await fetch('/api/storage/history?limit=100');
+                    const data = await res.json();
+                    const analyses = data.analyses || [];
+                    
+                    // Count model occurrences
+                    const modelCounts = {};
+                    for (const analysis of analyses) {
+                        const models = analysis.models || [];
+                        for (const model of models) {
+                            const name = model.name || model;
+                            modelCounts[name] = (modelCounts[name] || 0) + 1;
+                        }
+                    }
+                    
+                    // Sort by count and get top 10
+                    const sorted = Object.entries(modelCounts)
+                        .sort((a, b) => b[1] - a[1])
+                        .slice(0, 10);
+                    
+                    trendingModels = sorted.map(([name, count]) => ({name, count}));
+                    recommendedModels = sorted.map(([name]) => name);
+                    
+                    // Show trending section if we have data
+                    if (trendingModels.length > 0) {
+                        document.getElementById('trending-section').style.display = 'block';
+                        let html = '';
+                        for (const {name, count} of trendingModels.slice(0, 5)) {
+                            html += '<div style=\"background: #fff3cd; padding: 8px 15px; border-radius: 20px; display: flex; align-items: center; gap: 8px;\">';
+                            html += '<span style=\"font-weight: bold;\">' + name + '</span>';
+                            html += '<span style=\"background: #f59e0b; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px;\">' + count + 'x</span>';
+                            html += '</div>';
+                        }
+                        document.getElementById('trending-list').innerHTML = html;
+                    }
+                    
+                    // Show recommendations section if we have models not in favorites
+                    const recommendedNotFav = recommendedModels.filter(name => !isFavorite(name));
+                    if (recommendedNotFav.length > 0) {
+                        document.getElementById('recommendations-section').style.display = 'block';
+                        let html = '';
+                        for (const name of recommendedNotFav.slice(0, 5)) {
+                            html += '<div style=\"background: #d1e7dd; padding: 8px 15px; border-radius: 20px; cursor: pointer;\" onclick=\"searchForModel(\\'' + name.replace(/'/g, "\\\\'") + '\\')\">';
+                            html += '<span>' + name + '</span>';
+                            html += '</div>';
+                        }
+                        document.getElementById('recommendations-list').innerHTML = html;
+                    }
+                } catch (e) {
+                    console.error('Error loading recommendations:', e);
+                }
+            }
+            
+            function searchForModel(name) {
+                document.getElementById('search').value = name;
+                showAllModels();
+                filterModels();
             }
             
             async function loadModels() {
@@ -212,10 +304,11 @@ init(Req0, State) ->
                 window.location.href = '/analysis';
             }
             
-            // Initialize: load favorites first, then models
+            // Initialize: load favorites first, then models, then recommendations
             async function init() {
                 await loadFavorites();
                 await loadModels();
+                await loadRecommendations();
             }
             init();
         </script>">>
