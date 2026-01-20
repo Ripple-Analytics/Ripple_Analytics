@@ -389,57 +389,25 @@ rebuild_services() ->
         %% Only restart services that built successfully
         restart_successful_services(BasePath, SuccessfulServices),
         
-        %% Legacy backend services variable for compatibility
-        BackendServices = "api-gateway analysis-service harvester-service storage-service chaos-engineering",
-        
-        %% Step 1: Determine which environment is currently active
+        %% Determine which environment is currently active for UI switching
         ActiveEnv = get_active_environment(),
         StandbyEnv = case ActiveEnv of
             "blue" -> "green";
             "green" -> "blue";
             _ -> "green"  %% Default to updating green if unknown
         end,
-        io:format("[UPDATER] Active environment: ~s, Updating standby: ~s~n", [ActiveEnv, StandbyEnv]),
+        io:format("[UPDATER] Active environment: ~s, Standby: ~s~n", [ActiveEnv, StandbyEnv]),
         
-        %% Step 2: Build all services including the standby UI
-        %% Use --build-arg to bust Docker cache and ensure source changes are picked up
-        StandbyService = "desktop-ui-" ++ StandbyEnv,
-        CommitHash = get_current_commit(),
-        CommitHashStr = case CommitHash of
-            undefined -> "unknown";
-            Hash -> binary_to_list(Hash)
-        end,
-        BuildTime = calendar:system_time_to_rfc3339(erlang:system_time(second), [{unit, second}]),
-        io:format("[UPDATER] Building backend services and ~s with commit ~s...~n", [StandbyService, CommitHashStr]),
-        BuildArgs = "--build-arg COMMIT_HASH=" ++ CommitHashStr ++ " --build-arg BUILD_TIME=" ++ BuildTime,
-        BuildCmd = "cd " ++ BasePath ++ " && docker-compose build --no-cache " ++ BuildArgs ++ " " ++ BackendServices ++ " " ++ StandbyService ++ " 2>&1",
-        io:format("[UPDATER] Build command: ~s~n", [BuildCmd]),
-        _BuildResult = os:cmd(BuildCmd),
+        %% Wait for services to be healthy
+        io:format("[UPDATER] Waiting for services to be healthy...~n"),
+        timer:sleep(10000),  %% Wait 10 seconds for containers to start
         
-        %% Step 3: Update backend services (quick restart)
-        io:format("[UPDATER] Restarting backend services...~n"),
-        BackendRestartCmd = "cd " ++ BasePath ++ " && docker-compose up -d --no-deps " ++ BackendServices ++ " 2>&1",
-        _BackendResult = os:cmd(BackendRestartCmd),
-        
-        %% Step 4: Update the standby UI environment
-        io:format("[UPDATER] Updating standby environment (~s)...~n", [StandbyEnv]),
-        StandbyStopCmd = "cd " ++ BasePath ++ " && docker-compose stop " ++ StandbyService ++ " 2>&1",
-        _StandbyStopResult = os:cmd(StandbyStopCmd),
-        StandbyRmCmd = "cd " ++ BasePath ++ " && docker-compose rm -f " ++ StandbyService ++ " 2>&1",
-        _StandbyRmResult = os:cmd(StandbyRmCmd),
-        StandbyStartCmd = "cd " ++ BasePath ++ " && docker-compose up -d " ++ StandbyService ++ " 2>&1",
-        _StandbyStartResult = os:cmd(StandbyStartCmd),
-        
-        %% Step 5: Wait for standby to be healthy
-        io:format("[UPDATER] Waiting for ~s to be healthy...~n", [StandbyEnv]),
-        timer:sleep(10000),  %% Wait 10 seconds for container to start
-        
-        %% Step 6: Health check the standby
+        %% Health check the standby UI
         StandbyHealthy = check_standby_health(StandbyEnv),
         
         case StandbyHealthy of
             true ->
-                %% Step 7: Switch traffic to the new environment
+                %% Switch traffic to the new environment
                 io:format("[UPDATER] ~s is healthy, switching traffic...~n", [StandbyEnv]),
                 switch_active_environment(StandbyEnv, BasePath),
                 io:format("[UPDATER] ========================================~n"),
@@ -449,7 +417,7 @@ rebuild_services() ->
                 io:format("[UPDATER] ========================================~n");
             false ->
                 io:format("[UPDATER] WARNING: ~s failed health check, keeping traffic on ~s~n", [StandbyEnv, ActiveEnv]),
-                io:format("[UPDATER] Deployment rolled back automatically~n")
+                io:format("[UPDATER] Will retry on next update cycle~n")
         end
     catch
         Class:Reason:Stacktrace ->
