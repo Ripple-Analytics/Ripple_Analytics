@@ -1,0 +1,255 @@
+version: '3.8'
+
+# Mental Models System - Complete Electric Clojure Architecture
+# 
+# This docker-compose file orchestrates ALL services for the Mental Models System:
+# - Backend Microservices (API Gateway, Analysis, Harvester, Storage, Chaos Engineering)
+# - Desktop Services (UI, Worker, Sync)
+#
+# Usage:
+#   docker-compose up -d          # Start all services
+#   docker-compose up -d --build  # Rebuild and start
+#   docker-compose logs -f        # View logs
+#   docker-compose down           # Stop all services
+#
+# Service Ports:
+#   Backend:
+#     - api-gateway: 8000
+#     - analysis-service: 8001
+#     - harvester-service: 8002
+#     - storage-service: 8003
+#     - chaos-engineering: 8005
+#   Desktop:
+#     - desktop-ui: 3000
+#     - desktop-worker: 3001
+#     - desktop-sync: 3002
+
+services:
+  # ============================================
+  # BACKEND MICROSERVICES
+  # ============================================
+
+  # API Gateway - Routes requests to backend services
+  api-gateway:
+    build:
+      context: ./microservices/api-gateway
+      dockerfile: Dockerfile
+    container_name: mental-models-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - ANALYSIS_SERVICE_URL=http://analysis-service:8001
+      - HARVESTER_SERVICE_URL=http://harvester-service:8002
+      - STORAGE_SERVICE_URL=http://storage-service:8003
+    depends_on:
+      analysis-service:
+        condition: service_healthy
+      harvester-service:
+        condition: service_healthy
+      storage-service:
+        condition: service_healthy
+    networks:
+      - mental-models-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Analysis Service - Mental model analysis
+  analysis-service:
+    build:
+      context: ./microservices/analysis-service
+      dockerfile: Dockerfile
+    container_name: mental-models-analysis
+    ports:
+      - "8001:8001"
+    environment:
+      - PORT=8001
+      - LM_STUDIO_URL=${LM_STUDIO_URL:-http://host.docker.internal:1234}
+    networks:
+      - mental-models-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Harvester Service - Web scraping and data collection
+  harvester-service:
+    build:
+      context: ./microservices/harvester-service
+      dockerfile: Dockerfile
+    container_name: mental-models-harvester
+    ports:
+      - "8002:8002"
+    environment:
+      - PORT=8002
+    networks:
+      - mental-models-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Storage Service - Data persistence
+  storage-service:
+    build:
+      context: ./microservices/storage-service
+      dockerfile: Dockerfile
+    container_name: mental-models-storage
+    ports:
+      - "8003:8003"
+    environment:
+      - PORT=8003
+    volumes:
+      - storage-data:/data
+    networks:
+      - mental-models-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Chaos Engineering Service - Resilience testing
+  chaos-engineering:
+    build:
+      context: ./microservices/chaos-engineering
+      dockerfile: Dockerfile
+    container_name: mental-models-chaos
+    ports:
+      - "8005:8005"
+    environment:
+      - PORT=8005
+      - API_GATEWAY_URL=http://api-gateway:8000
+      - ANALYSIS_SERVICE_URL=http://analysis-service:8001
+      - HARVESTER_SERVICE_URL=http://harvester-service:8002
+      - STORAGE_SERVICE_URL=http://storage-service:8003
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - mental-models-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # ============================================
+  # DESKTOP SERVICES
+  # ============================================
+
+  # Desktop UI Service - Electric Clojure reactive web UI
+  desktop-ui:
+    build:
+      context: ./desktop-electric/desktop-ui
+      dockerfile: Dockerfile
+    container_name: mental-models-desktop-ui
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - API_GATEWAY_URL=http://api-gateway:8000
+      - WORKER_SERVICE_URL=http://desktop-worker:3001
+      - SYNC_SERVICE_URL=http://desktop-sync:3002
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+      desktop-worker:
+        condition: service_healthy
+      desktop-sync:
+        condition: service_healthy
+    networks:
+      - mental-models-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Desktop Worker Service - Background processing
+  desktop-worker:
+    build:
+      context: ./desktop-electric/desktop-worker
+      dockerfile: Dockerfile
+    container_name: mental-models-desktop-worker
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - API_GATEWAY_URL=http://api-gateway:8000
+      - HARVESTER_SERVICE_URL=http://harvester-service:8002
+    volumes:
+      - worker-data:/data
+      - watched-files:/watched
+    networks:
+      - mental-models-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Desktop Sync Service - State synchronization
+  desktop-sync:
+    build:
+      context: ./desktop-electric/desktop-sync
+      dockerfile: Dockerfile
+    container_name: mental-models-desktop-sync
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - API_GATEWAY_URL=http://api-gateway:8000
+      - STORAGE_SERVICE_URL=http://storage-service:8003
+      - DATA_DIR=/data
+    volumes:
+      - sync-data:/data
+    networks:
+      - mental-models-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  mental-models-network:
+    driver: bridge
+    name: mental-models-network
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  storage-data:
+    name: mental-models-storage-data
+  worker-data:
+    name: mental-models-worker-data
+  watched-files:
+    name: mental-models-watched-files
+  sync-data:
+    name: mental-models-sync-data

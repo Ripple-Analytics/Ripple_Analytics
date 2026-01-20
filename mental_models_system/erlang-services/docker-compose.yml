@@ -1,0 +1,183 @@
+# Mental Models System - Erlang/OTP Microservices Architecture
+# 
+# Start all services: docker-compose up -d
+# View logs: docker-compose logs -f
+# Stop all services: docker-compose down
+# 
+# AUTO-UPDATE: The system automatically checks GitHub every 5 minutes for updates.
+# If GitHub is unavailable, it falls back to Google Drive backup.
+# Configure Google Drive backup URL via GDRIVE_BACKUP_URL environment variable.
+# 
+# Access the UI at: http://localhost:3000
+
+services:
+  # Auto-Updater - Automatically pulls updates from GitHub (with Google Drive fallback)
+  # When GitHub fails, creates a GitHub issue to alert Devin to fix the problem
+  auto-updater:
+    build: ./auto_updater
+    container_name: mental-models-auto-updater
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - updater-repo:/repo
+      - updater-data:/data
+      - .:/services:ro
+    environment:
+      - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
+      - GITHUB_BRANCH=master
+      - UPDATE_CHECK_INTERVAL=300
+      # GitHub token for creating alert issues when GitHub fails (required for alerts)
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
+      # Configure Google Drive backup URL (optional)
+      # Format: https://drive.google.com/file/d/FILE_ID/view or direct download link
+      - GDRIVE_BACKUP_URL=${GDRIVE_BACKUP_URL:-}
+      # Optional webhook URL for custom alerts
+      - ALERT_WEBHOOK_URL=${ALERT_WEBHOOK_URL:-}
+    restart: unless-stopped
+    networks:
+      - mental-models-network
+
+  # Watchtower - Automatically updates containers when images change
+  watchtower:
+    image: containrrr/watchtower
+    container_name: mental-models-watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=300
+      - WATCHTOWER_INCLUDE_RESTARTING=true
+    restart: unless-stopped
+    networks:
+      - mental-models-network
+  # API Gateway - Routes requests to backend services
+  api-gateway:
+    build: ./api_gateway
+    container_name: mental-models-api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      - ANALYSIS_SERVICE_URL=http://analysis-service:8001
+      - HARVESTER_SERVICE_URL=http://harvester-service:8002
+      - STORAGE_SERVICE_URL=http://storage-service:8003
+    depends_on:
+      - analysis-service
+      - harvester-service
+      - storage-service
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # Analysis Service - Mental model analysis and LLM integration
+  analysis-service:
+    build: ./analysis_service
+    container_name: mental-models-analysis
+    ports:
+      - "8001:8001"
+    environment:
+      - LM_STUDIO_URL=http://host.docker.internal:1234
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # Harvester Service - Web scraping and file processing
+  harvester-service:
+    build: ./harvester_service
+    container_name: mental-models-harvester
+    ports:
+      - "8002:8002"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # Storage Service - Data persistence with DETS
+  storage-service:
+    build: ./storage_service
+    container_name: mental-models-storage
+    ports:
+      - "8003:8003"
+    volumes:
+      - storage-data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # Chaos Engineering Service - Resilience testing
+  chaos-engineering:
+    build: ./chaos_engineering
+    container_name: mental-models-chaos
+    ports:
+      - "8005:8005"
+    environment:
+      - API_GATEWAY_URL=http://api-gateway:8000
+      - ANALYSIS_SERVICE_URL=http://analysis-service:8001
+      - HARVESTER_SERVICE_URL=http://harvester-service:8002
+      - STORAGE_SERVICE_URL=http://storage-service:8003
+    depends_on:
+      - api-gateway
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # Desktop UI - Web-based interface
+  desktop-ui:
+    build: ./desktop_ui
+    container_name: mental-models-ui
+    ports:
+      - "3000:3000"
+    environment:
+      - API_GATEWAY_URL=http://api-gateway:8000
+    depends_on:
+      - api-gateway
+      - chaos-engineering
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+networks:
+  mental-models-network:
+    driver: bridge
+
+volumes:
+  storage-data:
+    driver: local
+  updater-repo:
+    driver: local
+  updater-data:
+    driver: local

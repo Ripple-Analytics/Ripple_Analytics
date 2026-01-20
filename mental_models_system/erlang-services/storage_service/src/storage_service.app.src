@@ -1,0 +1,10 @@
+{application, storage_service,
+ [{description, "Mental Models Storage Service - Erlang/OTP"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {mod, {storage_service_app, []}},
+  {applications, [kernel, stdlib, cowboy, jsx]},
+  {env, [{port, 8003}, {data_dir, "/data"}]},
+  {modules, []},
+  {licenses, ["MIT"]}
+ ]}.

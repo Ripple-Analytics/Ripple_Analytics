@@ -398,8 +398,8 @@
   (metrics/create-counter! :circuitbreakerv2/successful-calls "Successful calls")
   (metrics/create-counter! :circuitbreakerv2/failed-calls "Failed calls")
   (metrics/create-counter! :circuitbreakerv2/rejected-calls "Rejected calls")
-  (metrics/create-gauge! :circuitbreakerv2/open-breakers "Open breakers"
-                         #(count (filter #(= (get-state %) :open) (list-breakers))))
+    (metrics/create-gauge! :circuitbreakerv2/open-breakers "Open breakers"
+                           (fn [] (count (filter (fn [b] (= (get-state b) :open)) (list-breakers)))))
   (log/info "Circuit breaker v2 initialized"))
 
 ;; =============================================================================

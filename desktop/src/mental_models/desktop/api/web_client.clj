@@ -691,3 +691,86 @@
   (let [response (trpc-query "auth.me")]
     {:authenticated? (:success? response)
      :user (get-in response [:body :result :data])}))
+
+;; =============================================================================
+;; Settings Sync API
+;; =============================================================================
+
+(defn sync-settings
+  "Sync settings to web app"
+  [settings-data]
+  (let [response (trpc-mutation "settings.sync" settings-data)]
+    (:success? response)))
+
+(defn get-settings
+  "Fetch settings from web app"
+  []
+  (let [response (trpc-query "settings.get")]
+    (when (:success? response)
+      (get-in response [:body :result :data]))))
+
+(defn sync-custom-models
+  "Sync custom model definitions to web app"
+  [models]
+  (let [response (trpc-mutation "settings.syncCustomModels" {:models models})]
+    (:success? response)))
+
+(defn sync-alert-rules
+  "Sync alert rules to web app"
+  [rules]
+  (let [response (trpc-mutation "settings.syncAlertRules" {:rules rules})]
+    (:success? response)))
+
+;; =============================================================================
+;; Notification Preferences API
+;; =============================================================================
+
+(defn sync-notification-preferences
+  "Sync notification preferences to web app"
+  [preferences]
+  (let [response (trpc-mutation "notifications.syncPreferences" preferences)]
+    (:success? response)))
+
+(defn get-notification-preferences
+  "Fetch notification preferences from web app"
+  []
+  (let [response (trpc-query "notifications.getPreferences")]
+    (when (:success? response)
+      (get-in response [:body :result :data]))))
+
+(defn get-notifications
+  "Fetch notifications from web app"
+  [& {:keys [limit unread-only] :or {limit 50 unread-only false}}]
+  (let [response (trpc-query "notifications.list" {:limit limit :unreadOnly unread-only})]
+    (when (:success? response)
+      (get-in response [:body :result :data]))))
+
+(defn mark-notification-read
+  "Mark a notification as read on web app"
+  [notification-id]
+  (let [response (trpc-mutation "notifications.markRead" {:id notification-id})]
+    (:success? response)))
+
+;; =============================================================================
+;; Device Registration API
+;; =============================================================================
+
+(defn register-device
+  "Register this device with web app"
+  [device-info]
+  (let [response (trpc-mutation "devices.register" device-info)]
+    (when (:success? response)
+      (get-in response [:body :result :data]))))
+
+(defn get-devices
+  "Get list of registered devices"
+  []
+  (let [response (trpc-query "devices.list")]
+    (when (:success? response)
+      (get-in response [:body :result :data]))))
+
+(defn unregister-device
+  "Unregister a device"
+  [device-id]
+  (let [response (trpc-mutation "devices.unregister" {:id device-id})]
+    (:success? response)))

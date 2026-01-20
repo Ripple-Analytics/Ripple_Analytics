@@ -361,10 +361,10 @@
   (flags/register-flag! "health-aggregator" "Enable health aggregator" true)
   ;; Create metrics
   (metrics/create-counter! :health/components-registered "Components registered")
-  (metrics/create-gauge! :health/healthy-components "Healthy components"
-                         #(count (filter #(= (:status %) :healthy) (vals (:components @health-state)))))
-  (metrics/create-gauge! :health/unhealthy-components "Unhealthy components"
-                         #(count (filter #(= (:status %) :unhealthy) (vals (:components @health-state)))))
+    (metrics/create-gauge! :health/healthy-components "Healthy components"
+                           (fn [] (count (filter (fn [c] (= (:status c) :healthy)) (vals (:components @health-state))))))
+    (metrics/create-gauge! :health/unhealthy-components "Unhealthy components"
+                           (fn [] (count (filter (fn [c] (= (:status c) :unhealthy)) (vals (:components @health-state))))))
   (log/info "Health aggregator initialized"))
 
 ;; =============================================================================

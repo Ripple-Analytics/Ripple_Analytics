@@ -27,9 +27,9 @@ const store = new Store({
     apiUrl: 'http://localhost:8000',
     autoStart: true,
     minimizeToTray: true,
-    checkUpdatesOnStart: true,
+    checkUpdatesOnStart: false,  // Disabled by default - no release server configured
     updateChannel: 'latest',
-    theme: 'system',
+    theme: 'light',  // Default to light mode
     windowBounds: { width: 1200, height: 800 },
     watchedDirs: [],
     scrapeUrls: []
@@ -135,7 +135,7 @@ function createWindow() {
     },
     icon: path.join(__dirname, 'build', 'icon.png'),
     show: false,
-    backgroundColor: '#1a1a2e'
+    backgroundColor: '#f8f9fa'  // Light mode background
   });
 
   // Load the app

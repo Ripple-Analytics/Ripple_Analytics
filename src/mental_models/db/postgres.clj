@@ -62,20 +62,26 @@
   [sql-params]
   (jdbc/execute! (get-datasource) sql-params jdbc-opts))
 
+(def execute execute!)
+
 (defn execute-one!
   "Execute a SQL statement and return first result"
   [sql-params]
   (jdbc/execute-one! (get-datasource) sql-params jdbc-opts))
 
 (defn query
-  "Execute a HoneySQL query"
-  [hsql-map]
-  (execute! (hsql/format hsql-map)))
+  "Execute a HoneySQL query or raw SQL with params"
+  ([hsql-map]
+   (execute! (hsql/format hsql-map)))
+  ([sql params]
+   (execute! (into [sql] params))))
 
 (defn query-one
-  "Execute a HoneySQL query and return first result"
-  [hsql-map]
-  (execute-one! (hsql/format hsql-map)))
+  "Execute a HoneySQL query and return first result, or raw SQL with params"
+  ([hsql-map]
+   (execute-one! (hsql/format hsql-map)))
+  ([sql params]
+   (execute-one! (into [sql] params))))
 
 ;; -- Schema Management -------------------------------------------------------
 

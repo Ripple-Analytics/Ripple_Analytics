@@ -1,0 +1,19 @@
+{application, harvester_service,
+ [{description, "Mental Models Harvester Service - Erlang/OTP"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {mod, {harvester_service_app, []}},
+  {applications,
+   [kernel,
+    stdlib,
+    cowboy,
+    jsx,
+    hackney
+   ]},
+  {env, [
+    {port, 8002}
+  ]},
+  {modules, []},
+  {licenses, ["MIT"]},
+  {links, []}
+ ]}.

@@ -1,0 +1,22 @@
+{application, api_gateway,
+ [{description, "Mental Models API Gateway - Erlang/OTP"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {mod, {api_gateway_app, []}},
+  {applications,
+   [kernel,
+    stdlib,
+    cowboy,
+    jsx,
+    hackney
+   ]},
+  {env, [
+    {port, 8000},
+    {analysis_service_url, "http://analysis-service:8001"},
+    {harvester_service_url, "http://harvester-service:8002"},
+    {storage_service_url, "http://storage-service:8003"}
+  ]},
+  {modules, []},
+  {licenses, ["MIT"]},
+  {links, []}
+ ]}.

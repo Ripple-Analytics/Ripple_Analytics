@@ -1,0 +1,16 @@
+{application, chaos_engineering,
+ [{description, "Mental Models Chaos Engineering Service - Erlang/OTP"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {mod, {chaos_engineering_app, []}},
+  {applications, [kernel, stdlib, cowboy, jsx, hackney]},
+  {env, [
+    {port, 8005},
+    {api_gateway_url, "http://api-gateway:8000"},
+    {analysis_service_url, "http://analysis-service:8001"},
+    {harvester_service_url, "http://harvester-service:8002"},
+    {storage_service_url, "http://storage-service:8003"}
+  ]},
+  {modules, []},
+  {licenses, ["MIT"]}
+ ]}.
