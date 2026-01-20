@@ -1,0 +1,63 @@
+(ns mental-models.models.index
+  "Mental Models Index - Loads all model category modules.
+   
+   This namespace requires all model category modules to ensure
+   all models are registered in the global registry."
+  (:require
+   [mental-models.models.core]
+   [mental-models.models.decision-making]
+   [mental-models.models.psychology]
+   [mental-models.models.systems]
+   [mental-models.models.economics]
+   [mental-models.models.physics-biology]
+   [mental-models.models.mathematics]
+   [mental-models.models.strategy]
+   [mental-models.models.communication]
+   [mental-models.models.learning]
+   [mental-models.models.productivity]
+   [mental-models.models.risk]
+   [mental-models.models.innovation]
+   [mental-models.models.human-nature]
+   [mental-models.models.finance]
+   [mental-models.models.negotiation]
+   [mental-models.models.operations]
+   [mental-models.models.investing]
+   [mental-models.models.science]
+   [mental-models.models.technology]
+   [mental-models.models.ecology]
+   [mental-models.models.philosophy-part1]
+   [mental-models.models.philosophy-part2]
+   [mental-models.models.military-warfare]
+   [mental-models.models.design]
+   [mental-models.models.management]
+   [mental-models.models.history]
+   [mental-models.models.complexity-part1]
+   [mental-models.models.complexity-part2]
+   [mental-models.models.complexity-part3]
+   [mental-models.models.complexity-part4]
+   [mental-models.models.complexity-part5]
+   [mental-models.models.complexity-part6]
+   [mental-models.models.complexity-part7]
+   [mental-models.models.quantitative-finance-renaissance-technologies]
+   [mental-models.models.organizational-design-ray-dalio]
+   [mental-models.models.governance-lee-kuan-yew]
+   [mental-models.models.risk-management-nassim-taleb]
+   [mental-models.models.quantitative-finance-ed-thorp]
+   [mental-models.models.cognitive-biases-daniel-kahneman-part1]
+   [mental-models.models.cognitive-biases-daniel-kahneman-part2]
+   [mental-models.models.cognitive-biases-daniel-kahneman-part3]
+   [mental-models.models.renaissance-technologies-jim-simons]
+   [mental-models.models.ray-dalio-bridgewater-principles]
+   [mental-models.models.lee-kuan-yew-singapore-model-part1]
+   [mental-models.models.lee-kuan-yew-singapore-model-part2]
+   [mental-models.models.lee-kuan-yew-singapore-model-part3]
+   [mental-models.models.lee-kuan-yew-singapore-model-part4]
+   [mental-models.models.lee-kuan-yew-singapore-model-part5]
+   [mental-models.models.lee-kuan-yew-singapore-model-part6]
+   [mental-models.models.lee-kuan-yew-singapore-model-part7]
+   [mental-models.models.lee-kuan-yew-singapore-model-part8]))
+
+(defn loaded?
+  "Returns true if all model modules have been loaded."
+  []
+  true)
