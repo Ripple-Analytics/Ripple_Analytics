@@ -67,6 +67,15 @@ init([]) ->
             shutdown => 5000,
             type => worker,
             modules => [notification_service]
+        },
+        %% Analytics service - aggregated statistics and trends
+        #{
+            id => analytics_service,
+            start => {analytics_service, start_link, []},
+            restart => permanent,
+            shutdown => 5000,
+            type => worker,
+            modules => [analytics_service]
         }
     ],
     
