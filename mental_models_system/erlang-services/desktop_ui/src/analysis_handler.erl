@@ -29,6 +29,7 @@ init(Req0, State) ->
             <div style=\"display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;\">
                 <button class=\"btn\" onclick=\"analyzeText()\">Analyze for Models</button>
                 <button class=\"btn btn-secondary\" onclick=\"detectBiases()\">Detect Biases</button>
+                <button class=\"btn btn-secondary\" onclick=\"runBayesianAnalysis()\">Bayesian Analysis</button>
                 <button class=\"btn btn-secondary\" onclick=\"runFullAnalysis()\">Full Analysis</button>
                 <button class=\"btn btn-secondary\" onclick=\"document.getElementById('analysis-text').value=''\">Clear</button>
             </div>
@@ -171,6 +172,83 @@ init(Req0, State) ->
                         html += '<p>No obvious cognitive biases detected.</p>';
                     }
                     html += '</div>';
+                    document.getElementById('results').innerHTML = html;
+                    document.getElementById('export-buttons').style.display = 'block';
+                } catch (e) {
+                    document.getElementById('results').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
+            }
+            
+            async function runBayesianAnalysis() {
+                const text = document.getElementById('analysis-text').value;
+                if (!text.trim()) {
+                    alert('Please enter some text to analyze');
+                    return;
+                }
+                
+                document.getElementById('results').innerHTML = '<div class=\"loading\">Running Bayesian analysis...</div>';
+                document.getElementById('export-buttons').style.display = 'none';
+                
+                try {
+                    const res = await fetch('/api/analysis/bayesian', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({text: text, top_n: 10})
+                    });
+                    const data = await res.json();
+                    lastAnalysisResult = data;
+                    lastAnalysisType = 'bayesian';
+                    
+                    // Save to history
+                    saveToHistory('bayesian', text, data.models || [], []);
+                    
+                    let html = '<div class=\"card\">';
+                    html += '<h2>Bayesian Analysis Results</h2>';
+                    html += '<p>Using Bayes\\' theorem to calculate posterior probabilities for mental model relevance.</p>';
+                    html += '<p style=\"font-size: 12px; color: #666; margin-top: 5px;\">Evidence extracted: ' + (data.evidence_extracted || 0) + ' terms</p>';
+                    html += '</div>';
+                    
+                    if (data.models && data.models.length > 0) {
+                        html += '<div class=\"card\"><h2>Models by Posterior Probability</h2>';
+                        html += '<p>Models ranked by P(Model|Evidence) using Bayesian inference:</p><br>';
+                        for (const model of data.models) {
+                            const score = model.bayesian_score || 0;
+                            const scoreColor = score >= 70 ? '#28a745' : score >= 40 ? '#ffc107' : '#6c757d';
+                            html += '<div class=\"model-card\">';
+                            html += '<div style=\"display: flex; justify-content: space-between; align-items: center;\">';
+                            html += '<h4>' + model.name + '</h4>';
+                            html += '<span style=\"background: ' + scoreColor + '; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;\">' + score + '% posterior</span>';
+                            html += '</div>';
+                            html += '<span class=\"category\">' + model.category + '</span>';
+                            html += '<p>' + model.description + '</p>';
+                            html += '<div style=\"margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 6px; font-size: 12px;\">';
+                            html += '<div style=\"display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;\">';
+                            html += '<div><strong>Prior:</strong> ' + (model.prior || 0) + '%</div>';
+                            html += '<div><strong>Likelihood:</strong> ' + (model.likelihood || 0) + '%</div>';
+                            html += '<div><strong>Evidence:</strong> ' + (model.evidence_count || 0) + ' matches</div>';
+                            html += '</div>';
+                            html += '<div style=\"margin-top: 8px;\"><strong>95% CI:</strong> [' + (model.confidence_lower || 0) + '%, ' + (model.confidence_upper || 0) + '%]</div>';
+                            html += '</div>';
+                            html += '</div>';
+                        }
+                        html += '</div>';
+                    } else {
+                        html += '<div class=\"card\"><p>No models found with significant posterior probability.</p></div>';
+                    }
+                    
+                    html += '<div class=\"card\">';
+                    html += '<h2>About Bayesian Analysis</h2>';
+                    html += '<p>Bayesian inference uses Bayes\\' theorem to update our beliefs about which mental models apply:</p>';
+                    html += '<p style=\"text-align: center; font-family: monospace; margin: 15px 0; font-size: 14px;\">P(Model|Evidence) = P(Evidence|Model) × P(Model) / P(Evidence)</p>';
+                    html += '<ul style=\"margin-top: 10px;\">';
+                    html += '<li><strong>Prior P(Model):</strong> Base probability that a model applies (based on category)</li>';
+                    html += '<li><strong>Likelihood P(Evidence|Model):</strong> How likely we\\'d see this evidence if the model applies</li>';
+                    html += '<li><strong>Posterior P(Model|Evidence):</strong> Updated probability after seeing the evidence</li>';
+                    html += '<li><strong>95% CI:</strong> Confidence interval for the posterior estimate</li>';
+                    html += '</ul>';
+                    html += '</div>';
+                    
                     document.getElementById('results').innerHTML = html;
                     document.getElementById('export-buttons').style.display = 'block';
                 } catch (e) {
