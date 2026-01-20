@@ -345,7 +345,7 @@ rebuild_services() ->
     try
         io:format("[UPDATER] ========================================~n"),
         io:format("[UPDATER] BLUE-GREEN DEPLOYMENT STARTING~n"),
-        io:format("[UPDATER] Zero downtime update in progress~n"),
+        io:format("[UPDATER] Zero downtime update for ALL CORE SERVICES~n"),
         io:format("[UPDATER] ========================================~n"),
         
         BasePath = "/repo/mental_models_system/erlang-services",
@@ -353,9 +353,6 @@ rebuild_services() ->
         %% Step 0: Auto-detect and set HOST_PATH in .env file
         %% This ensures the UI shows the correct folder path without manual intervention
         detect_and_set_host_path(BasePath),
-        
-        %% Backend services (not blue-green, just restart)
-        BackendServices = "api-gateway analysis-service harvester-service storage-service chaos-engineering",
         
         %% Step 1: Determine which environment is currently active
         ActiveEnv = get_active_environment(),
@@ -366,51 +363,58 @@ rebuild_services() ->
         end,
         io:format("[UPDATER] Active environment: ~s, Updating standby: ~s~n", [ActiveEnv, StandbyEnv]),
         
-        %% Step 2: Build all services including the standby UI
+        %% Step 2: Build ALL standby services (blue-green for all core services)
         %% Use --build-arg to bust Docker cache and ensure source changes are picked up
-        StandbyService = "desktop-ui-" ++ StandbyEnv,
+        StandbyServices = [
+            "desktop-ui-" ++ StandbyEnv,
+            "api-gateway-" ++ StandbyEnv,
+            "analysis-service-" ++ StandbyEnv,
+            "harvester-service-" ++ StandbyEnv,
+            "storage-service-" ++ StandbyEnv,
+            "chaos-engineering-" ++ StandbyEnv
+        ],
+        StandbyServicesStr = string:join(StandbyServices, " "),
+        
         CommitHash = get_current_commit(),
         CommitHashStr = case CommitHash of
             undefined -> "unknown";
             Hash -> binary_to_list(Hash)
         end,
         BuildTime = calendar:system_time_to_rfc3339(erlang:system_time(second), [{unit, second}]),
-        io:format("[UPDATER] Building backend services and ~s with commit ~s...~n", [StandbyService, CommitHashStr]),
+        io:format("[UPDATER] Building all standby services (~s) with commit ~s...~n", [StandbyEnv, CommitHashStr]),
         BuildArgs = "--build-arg COMMIT_HASH=" ++ CommitHashStr ++ " --build-arg BUILD_TIME=" ++ BuildTime,
-        BuildCmd = "cd " ++ BasePath ++ " && docker-compose build --no-cache " ++ BuildArgs ++ " " ++ BackendServices ++ " " ++ StandbyService ++ " 2>&1",
+        BuildCmd = "cd " ++ BasePath ++ " && docker-compose build --no-cache " ++ BuildArgs ++ " " ++ StandbyServicesStr ++ " 2>&1",
         io:format("[UPDATER] Build command: ~s~n", [BuildCmd]),
         _BuildResult = os:cmd(BuildCmd),
         
-        %% Step 3: Update backend services (quick restart)
-        io:format("[UPDATER] Restarting backend services...~n"),
-        BackendRestartCmd = "cd " ++ BasePath ++ " && docker-compose up -d --no-deps " ++ BackendServices ++ " 2>&1",
-        _BackendResult = os:cmd(BackendRestartCmd),
-        
-        %% Step 4: Update the standby UI environment
-        io:format("[UPDATER] Updating standby environment (~s)...~n", [StandbyEnv]),
-        StandbyStopCmd = "cd " ++ BasePath ++ " && docker-compose stop " ++ StandbyService ++ " 2>&1",
+        %% Step 3: Stop and remove all standby services
+        io:format("[UPDATER] Stopping standby environment (~s)...~n", [StandbyEnv]),
+        StandbyStopCmd = "cd " ++ BasePath ++ " && docker-compose stop " ++ StandbyServicesStr ++ " 2>&1",
         _StandbyStopResult = os:cmd(StandbyStopCmd),
-        StandbyRmCmd = "cd " ++ BasePath ++ " && docker-compose rm -f " ++ StandbyService ++ " 2>&1",
+        StandbyRmCmd = "cd " ++ BasePath ++ " && docker-compose rm -f " ++ StandbyServicesStr ++ " 2>&1",
         _StandbyRmResult = os:cmd(StandbyRmCmd),
-        StandbyStartCmd = "cd " ++ BasePath ++ " && docker-compose up -d " ++ StandbyService ++ " 2>&1",
+        
+        %% Step 4: Start all standby services
+        io:format("[UPDATER] Starting standby environment (~s)...~n", [StandbyEnv]),
+        StandbyStartCmd = "cd " ++ BasePath ++ " && docker-compose up -d " ++ StandbyServicesStr ++ " 2>&1",
         _StandbyStartResult = os:cmd(StandbyStartCmd),
         
         %% Step 5: Wait for standby to be healthy
-        io:format("[UPDATER] Waiting for ~s to be healthy...~n", [StandbyEnv]),
-        timer:sleep(10000),  %% Wait 10 seconds for container to start
+        io:format("[UPDATER] Waiting for ~s environment to be healthy...~n", [StandbyEnv]),
+        timer:sleep(15000),  %% Wait 15 seconds for all containers to start
         
-        %% Step 6: Health check the standby
-        StandbyHealthy = check_standby_health(StandbyEnv),
+        %% Step 6: Health check all standby services
+        AllHealthy = check_all_standby_health(StandbyEnv),
         
-        case StandbyHealthy of
+        case AllHealthy of
             true ->
-                %% Step 7: Switch traffic to the new environment
-                io:format("[UPDATER] ~s is healthy, switching traffic...~n", [StandbyEnv]),
-                switch_active_environment(StandbyEnv, BasePath),
+                %% Step 7: Switch traffic to the new environment for ALL services
+                io:format("[UPDATER] All ~s services are healthy, switching traffic...~n", [StandbyEnv]),
+                switch_all_active_environments(StandbyEnv, BasePath),
                 io:format("[UPDATER] ========================================~n"),
                 io:format("[UPDATER] BLUE-GREEN DEPLOYMENT COMPLETE~n"),
-                io:format("[UPDATER] Traffic now routed to: ~s~n", [StandbyEnv]),
-                io:format("[UPDATER] Zero downtime achieved!~n"),
+                io:format("[UPDATER] All traffic now routed to: ~s~n", [StandbyEnv]),
+                io:format("[UPDATER] Zero downtime achieved for ALL services!~n"),
                 io:format("[UPDATER] ========================================~n");
             false ->
                 io:format("[UPDATER] WARNING: ~s failed health check, keeping traffic on ~s~n", [StandbyEnv, ActiveEnv]),
@@ -478,16 +482,34 @@ get_active_environment() ->
         _ -> "blue"  %% Default to blue
     end.
 
-%% Check if the standby environment is healthy
+%% Check if a single standby service is healthy
 check_standby_health(Env) ->
     Container = "mental-models-ui-" ++ Env,
-    %% Check if container is running and healthy
+    check_container_health(Container).
+
+%% Check if a container is healthy
+check_container_health(Container) ->
     HealthCmd = "docker inspect --format='{{.State.Health.Status}}' " ++ Container ++ " 2>/dev/null",
     Result = string:trim(os:cmd(HealthCmd)),
     io:format("[UPDATER] Health check for ~s: ~s~n", [Container, Result]),
     Result =:= "healthy".
 
-%% Switch the active environment by updating nginx config
+%% Check if ALL standby services are healthy
+check_all_standby_health(Env) ->
+    Containers = [
+        "mental-models-ui-" ++ Env,
+        "mental-models-api-gateway-" ++ Env,
+        "mental-models-analysis-" ++ Env,
+        "mental-models-harvester-" ++ Env,
+        "mental-models-storage-" ++ Env,
+        "mental-models-chaos-" ++ Env
+    ],
+    Results = [check_container_health(C) || C <- Containers],
+    AllHealthy = lists:all(fun(R) -> R =:= true end, Results),
+    io:format("[UPDATER] All ~s services healthy: ~p~n", [Env, AllHealthy]),
+    AllHealthy.
+
+%% Switch the active environment by updating nginx config (legacy - single service)
 switch_active_environment(NewEnv, BasePath) ->
     %% Update the active_env file
     ActiveEnvFile = BasePath ++ "/nginx_proxy/active_env",
@@ -495,13 +517,56 @@ switch_active_environment(NewEnv, BasePath) ->
     
     %% Update the nginx active.conf to route to the new environment
     ActiveConfFile = BasePath ++ "/nginx_proxy/active.conf",
-    NewConfig = "# Active environment: " ++ NewEnv ++ "\nlocation / {\n    proxy_pass http://" ++ NewEnv ++ ";\n}\n",
+    NewConfig = "# Active environment: " ++ NewEnv ++ "\nlocation / {\n    proxy_pass http://ui-" ++ NewEnv ++ ";\n}\n",
     file:write_file(ActiveConfFile, NewConfig),
     
     %% Reload nginx to apply the change (zero downtime)
     ReloadCmd = "docker exec mental-models-proxy nginx -s reload 2>&1",
     _ReloadResult = os:cmd(ReloadCmd),
     io:format("[UPDATER] Nginx reloaded, traffic switched to ~s~n", [NewEnv]).
+
+%% Switch ALL active environments by updating all nginx config files
+switch_all_active_environments(NewEnv, BasePath) ->
+    io:format("[UPDATER] Switching all services to ~s environment...~n", [NewEnv]),
+    
+    %% Update the active_env file
+    ActiveEnvFile = BasePath ++ "/nginx_proxy/active_env",
+    file:write_file(ActiveEnvFile, NewEnv),
+    
+    %% Update Desktop UI config
+    UIConfFile = BasePath ++ "/nginx_proxy/active.conf",
+    UIConfig = "# Active environment for Desktop UI: " ++ NewEnv ++ "\nlocation / {\n    proxy_pass http://ui-" ++ NewEnv ++ ";\n}\n",
+    file:write_file(UIConfFile, UIConfig),
+    
+    %% Update API Gateway config
+    APIConfFile = BasePath ++ "/nginx_proxy/active-api-gateway.conf",
+    APIConfig = "# Active environment for API Gateway: " ++ NewEnv ++ "\nlocation / {\n    proxy_pass http://api-gateway-" ++ NewEnv ++ ";\n}\n",
+    file:write_file(APIConfFile, APIConfig),
+    
+    %% Update Analysis Service config
+    AnalysisConfFile = BasePath ++ "/nginx_proxy/active-analysis.conf",
+    AnalysisConfig = "# Active environment for Analysis Service: " ++ NewEnv ++ "\nlocation / {\n    proxy_pass http://analysis-" ++ NewEnv ++ ";\n}\n",
+    file:write_file(AnalysisConfFile, AnalysisConfig),
+    
+    %% Update Harvester Service config
+    HarvesterConfFile = BasePath ++ "/nginx_proxy/active-harvester.conf",
+    HarvesterConfig = "# Active environment for Harvester Service: " ++ NewEnv ++ "\nlocation / {\n    proxy_pass http://harvester-" ++ NewEnv ++ ";\n}\n",
+    file:write_file(HarvesterConfFile, HarvesterConfig),
+    
+    %% Update Storage Service config
+    StorageConfFile = BasePath ++ "/nginx_proxy/active-storage.conf",
+    StorageConfig = "# Active environment for Storage Service: " ++ NewEnv ++ "\nlocation / {\n    proxy_pass http://storage-" ++ NewEnv ++ ";\n}\n",
+    file:write_file(StorageConfFile, StorageConfig),
+    
+    %% Update Chaos Engineering config
+    ChaosConfFile = BasePath ++ "/nginx_proxy/active-chaos.conf",
+    ChaosConfig = "# Active environment for Chaos Engineering: " ++ NewEnv ++ "\nlocation / {\n    proxy_pass http://chaos-" ++ NewEnv ++ ";\n}\n",
+    file:write_file(ChaosConfFile, ChaosConfig),
+    
+    %% Reload nginx to apply all changes (zero downtime)
+    ReloadCmd = "docker exec mental-models-proxy nginx -s reload 2>&1",
+    _ReloadResult = os:cmd(ReloadCmd),
+    io:format("[UPDATER] Nginx reloaded, all traffic switched to ~s~n", [NewEnv]).
 
 %% Run command with timeout to prevent hanging
 %% This is CRITICAL for bulletproof operation - git commands can hang indefinitely

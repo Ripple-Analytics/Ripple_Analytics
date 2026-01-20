@@ -176,22 +176,19 @@ services:
       - mental-models-network
 
   # ============================================================================
-  # CORE SERVICES
+  # CORE SERVICES - BLUE-GREEN DEPLOYMENT
+  # All core services now have blue and green environments for zero-downtime updates
   # ============================================================================
   
-  api-gateway:
+  # API Gateway - BLUE Environment
+  api-gateway-blue:
     build: ./api_gateway
-    container_name: mental-models-api-gateway
-    ports:
-      - "8000:8000"
+    container_name: mental-models-api-gateway-blue
     environment:
-      - ANALYSIS_SERVICE_URL=http://analysis-service:8001
-      - HARVESTER_SERVICE_URL=http://harvester-service:8002
-      - STORAGE_SERVICE_URL=http://storage-service:8003
-    depends_on:
-      - analysis-service
-      - harvester-service
-      - storage-service
+      - ANALYSIS_SERVICE_URL=http://nginx-proxy:8001
+      - HARVESTER_SERVICE_URL=http://nginx-proxy:8002
+      - STORAGE_SERVICE_URL=http://nginx-proxy:8003
+      - DEPLOYMENT_ENV=blue
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8000/health"]
@@ -202,13 +199,32 @@ services:
     networks:
       - mental-models-network
 
-  analysis-service:
+  # API Gateway - GREEN Environment
+  api-gateway-green:
+    build: ./api_gateway
+    container_name: mental-models-api-gateway-green
+    environment:
+      - ANALYSIS_SERVICE_URL=http://nginx-proxy:8001
+      - HARVESTER_SERVICE_URL=http://nginx-proxy:8002
+      - STORAGE_SERVICE_URL=http://nginx-proxy:8003
+      - DEPLOYMENT_ENV=green
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # Analysis Service - BLUE Environment
+  analysis-service-blue:
     build: ./analysis_service
-    container_name: mental-models-analysis
-    ports:
-      - "8001:8001"
+    container_name: mental-models-analysis-blue
     environment:
       - LM_STUDIO_URL=http://host.docker.internal:1234
+      - DEPLOYMENT_ENV=blue
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8001/health"]
@@ -219,11 +235,29 @@ services:
     networks:
       - mental-models-network
 
-  harvester-service:
+  # Analysis Service - GREEN Environment
+  analysis-service-green:
+    build: ./analysis_service
+    container_name: mental-models-analysis-green
+    environment:
+      - LM_STUDIO_URL=http://host.docker.internal:1234
+      - DEPLOYMENT_ENV=green
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # Harvester Service - BLUE Environment
+  harvester-service-blue:
     build: ./harvester_service
-    container_name: mental-models-harvester
-    ports:
-      - "8002:8002"
+    container_name: mental-models-harvester-blue
+    environment:
+      - DEPLOYMENT_ENV=blue
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8002/health"]
@@ -234,13 +268,30 @@ services:
     networks:
       - mental-models-network
 
-  storage-service:
+  # Harvester Service - GREEN Environment
+  harvester-service-green:
+    build: ./harvester_service
+    container_name: mental-models-harvester-green
+    environment:
+      - DEPLOYMENT_ENV=green
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # Storage Service - BLUE Environment
+  storage-service-blue:
     build: ./storage_service
-    container_name: mental-models-storage
-    ports:
-      - "8003:8003"
+    container_name: mental-models-storage-blue
     volumes:
       - storage-data:/data
+    environment:
+      - DEPLOYMENT_ENV=blue
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8003/health"]
@@ -251,18 +302,54 @@ services:
     networks:
       - mental-models-network
 
-  chaos-engineering:
-    build: ./chaos_engineering
-    container_name: mental-models-chaos
-    ports:
-      - "8005:8005"
+  # Storage Service - GREEN Environment
+  storage-service-green:
+    build: ./storage_service
+    container_name: mental-models-storage-green
+    volumes:
+      - storage-data:/data
     environment:
-      - API_GATEWAY_URL=http://api-gateway:8000
-      - ANALYSIS_SERVICE_URL=http://analysis-service:8001
-      - HARVESTER_SERVICE_URL=http://harvester-service:8002
-      - STORAGE_SERVICE_URL=http://storage-service:8003
-    depends_on:
-      - api-gateway
+      - DEPLOYMENT_ENV=green
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # Chaos Engineering - BLUE Environment
+  chaos-engineering-blue:
+    build: ./chaos_engineering
+    container_name: mental-models-chaos-blue
+    environment:
+      - API_GATEWAY_URL=http://nginx-proxy:8000
+      - ANALYSIS_SERVICE_URL=http://nginx-proxy:8001
+      - HARVESTER_SERVICE_URL=http://nginx-proxy:8002
+      - STORAGE_SERVICE_URL=http://nginx-proxy:8003
+      - DEPLOYMENT_ENV=blue
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # Chaos Engineering - GREEN Environment
+  chaos-engineering-green:
+    build: ./chaos_engineering
+    container_name: mental-models-chaos-green
+    environment:
+      - API_GATEWAY_URL=http://nginx-proxy:8000
+      - ANALYSIS_SERVICE_URL=http://nginx-proxy:8001
+      - HARVESTER_SERVICE_URL=http://nginx-proxy:8002
+      - STORAGE_SERVICE_URL=http://nginx-proxy:8003
+      - DEPLOYMENT_ENV=green
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8005/health"]
@@ -277,18 +364,33 @@ services:
   # BLUE-GREEN DEPLOYMENT - Zero Downtime Updates
   # ============================================================================
   
-  # Nginx Proxy - Routes traffic to active environment (blue or green)
+  # Nginx Proxy - Routes traffic to active environment (blue or green) for ALL services
   nginx-proxy:
     build: ./nginx_proxy
     container_name: mental-models-proxy
     ports:
-      - "3000:3000"
-      - "8080:8080"
+      - "3000:3000"      # Desktop UI
+      - "8000:8000"      # API Gateway
+      - "8001:8001"      # Analysis Service
+      - "8002:8002"      # Harvester Service
+      - "8003:8003"      # Storage Service
+      - "8005:8005"      # Chaos Engineering
+      - "8080:8080"      # Health check endpoint
     volumes:
       - nginx-config:/etc/nginx/conf.d
     depends_on:
       - desktop-ui-blue
       - desktop-ui-green
+      - api-gateway-blue
+      - api-gateway-green
+      - analysis-service-blue
+      - analysis-service-green
+      - harvester-service-blue
+      - harvester-service-green
+      - storage-service-blue
+      - storage-service-green
+      - chaos-engineering-blue
+      - chaos-engineering-green
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
@@ -304,18 +406,18 @@ services:
     build: ./desktop_ui
     container_name: mental-models-ui-blue
     environment:
-      - API_GATEWAY_URL=http://api-gateway:8000
+      - API_GATEWAY_URL=http://api-gateway-blue:8000
       - AUTO_UPDATER_URL=http://auto-updater-service:8006
       - GITHUB_SOURCE_URL=http://github-source:8010
       - GDRIVE_SOURCE_URL=http://gdrive-source:8011
       - LOCAL_CACHE_URL=http://local-cache:8012
-      - CHAOS_MONKEY_URL=http://update-chaos-monkey:8013
+      - CHAOS_MONKEY_URL=http://chaos-engineering-blue:8005
       - MACHINE_GUID=${MACHINE_GUID:-}
       - HOST_PATH=${HOST_PATH:-}
       - DEPLOYMENT_ENV=blue
     depends_on:
-      - api-gateway
-      - chaos-engineering
+      - api-gateway-blue
+      - chaos-engineering-blue
       - auto-updater-service
     restart: unless-stopped
     healthcheck:
@@ -332,18 +434,18 @@ services:
     build: ./desktop_ui
     container_name: mental-models-ui-green
     environment:
-      - API_GATEWAY_URL=http://api-gateway:8000
+      - API_GATEWAY_URL=http://api-gateway-green:8000
       - AUTO_UPDATER_URL=http://auto-updater-service:8006
       - GITHUB_SOURCE_URL=http://github-source:8010
       - GDRIVE_SOURCE_URL=http://gdrive-source:8011
       - LOCAL_CACHE_URL=http://local-cache:8012
-      - CHAOS_MONKEY_URL=http://update-chaos-monkey:8013
+      - CHAOS_MONKEY_URL=http://chaos-engineering-green:8005
       - MACHINE_GUID=${MACHINE_GUID:-}
       - HOST_PATH=${HOST_PATH:-}
       - DEPLOYMENT_ENV=green
     depends_on:
-      - api-gateway
-      - chaos-engineering
+      - api-gateway-green
+      - chaos-engineering-green
       - auto-updater-service
     restart: unless-stopped
     healthcheck:
