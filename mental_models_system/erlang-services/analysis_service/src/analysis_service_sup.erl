@@ -49,6 +49,15 @@ init([]) ->
             shutdown => 5000,
             type => worker,
             modules => [llm_client]
+        },
+        %% Folder watcher - monitors folders for automatic analysis
+        #{
+            id => folder_watcher,
+            start => {folder_watcher, start_link, []},
+            restart => permanent,
+            shutdown => 5000,
+            type => worker,
+            modules => [folder_watcher]
         }
     ],
     

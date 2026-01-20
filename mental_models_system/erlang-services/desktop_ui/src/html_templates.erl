@@ -410,6 +410,7 @@ nav_html(ActivePage) ->
         {<<"Dashboard">>, <<"/">>},
         {<<"Analysis">>, <<"/analysis">>},
         {<<"Folder">>, <<"/folder">>},
+        {<<"Watcher">>, <<"/watcher">>},
         {<<"Models">>, <<"/models">>},
         {<<"History">>, <<"/history">>},
         {<<"Harvester">>, <<"/harvester">>},
