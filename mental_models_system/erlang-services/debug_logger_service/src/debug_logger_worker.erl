@@ -231,12 +231,29 @@ do_heartbeat(State) ->
 
 do_push_sync() ->
     try
+        %% Get GitHub token from environment
+        Token = case os:getenv("GITHUB_TOKEN") of
+            false -> "";
+            T -> T
+        end,
+        
         %% Configure git
         os:cmd("cd " ++ ?REPO_PATH ++ " && git config user.email 'debug@mental-models.local' 2>&1"),
         os:cmd("cd " ++ ?REPO_PATH ++ " && git config user.name 'Debug Logger' 2>&1"),
         
+        %% Set up authenticated remote URL if token is available
+        case Token of
+            "" -> 
+                io:format("[DEBUG_LOGGER] No GITHUB_TOKEN found, using default auth~n");
+            _ ->
+                AuthUrl = "https://" ++ Token ++ "@github.com/Ripple-Analytics/Ripple_Analytics.git",
+                os:cmd("cd " ++ ?REPO_PATH ++ " && git remote set-url origin '" ++ AuthUrl ++ "' 2>&1"),
+                io:format("[DEBUG_LOGGER] Set authenticated remote URL~n")
+        end,
+        
         %% Fetch first to ensure we have remote refs
-        os:cmd("cd " ++ ?REPO_PATH ++ " && git fetch origin release2 2>&1"),
+        FetchResult = os:cmd("cd " ++ ?REPO_PATH ++ " && git fetch origin release2 2>&1"),
+        io:format("[DEBUG_LOGGER] Fetch result: ~s~n", [truncate(FetchResult, 100)]),
         
         %% Checkout release2 branch (create if needed)
         os:cmd("cd " ++ ?REPO_PATH ++ " && git checkout -B release2 origin/release2 2>&1"),
