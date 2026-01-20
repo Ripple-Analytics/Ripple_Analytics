@@ -46,6 +46,7 @@ start_services() ->
             {"/history", history_handler, []},
             {"/harvester", harvester_handler, []},
             {"/folder", folder_handler, []},
+            {"/watcher", watcher_handler, []},
             {"/settings", settings_handler, []},
             {"/api/system/info", system_info_handler, []},
             {"/api/update/[...]", update_handler, []},

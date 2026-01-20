@@ -29,6 +29,8 @@ start(_StartType, _StartArgs) ->
             {"/api/analysis/patterns", patterns_handler, []},
             {"/api/analysis/detect-biases", biases_handler, []},
             {"/api/analysis/folder", folder_scraper_handler, []},
+            {"/api/analysis/watcher", folder_watcher_handler, []},
+            {"/api/analysis/report", report_handler, []},
             {"/[...]", not_found_handler, []}
         ]}
     ]),
