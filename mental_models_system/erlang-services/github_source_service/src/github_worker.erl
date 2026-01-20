@@ -159,7 +159,16 @@ do_check_updates(State) ->
     Current = get_commit(RepoPath),
     Remote = get_remote_commit(RepoPath, Branch),
     
-    UpdateAvailable = (Current =/= undefined) andalso (Remote =/= undefined) andalso (Current =/= Remote),
+    %% Check last processed commit to prevent loops
+    LastProcessed = read_last_processed_commit(RepoPath),
+    
+    UpdateAvailable = (Current =/= undefined) andalso 
+                      (Remote =/= undefined) andalso 
+                      (Current =/= Remote) andalso
+                      (Remote =/= LastProcessed),
+    
+    io:format("[GITHUB-WORKER] Current: ~p, Remote: ~p, LastProcessed: ~p, Update: ~p~n",
+              [Current, Remote, LastProcessed, UpdateAvailable]),
     
     Now = erlang:timestamp(),
     State#state{
@@ -178,6 +187,10 @@ do_fetch_latest(State) ->
     os:cmd(Cmd),
     
     NewCommit = get_commit(RepoPath),
+    
+    %% Save as processed to prevent loops
+    save_last_processed_commit(RepoPath, NewCommit),
+    
     State#state{current_commit = NewCommit, update_available = false, status = idle}.
 
 get_commit(RepoPath) ->
@@ -189,11 +202,32 @@ get_commit(RepoPath) ->
     end.
 
 get_remote_commit(RepoPath, Branch) ->
-    Result = os:cmd("cd " ++ RepoPath ++ " && git rev-parse origin/" ++ Branch ++ " 2>/dev/null"),
-    case string:trim(Result) of
-        "" -> undefined;
-        C when length(C) >= 7 -> list_to_binary(string:sub_string(C, 1, 7));
-        _ -> undefined
+    %% First ensure we have the latest refs
+    FetchCmd = "cd " ++ RepoPath ++ " && git fetch origin " ++ Branch ++ " 2>&1",
+    _FetchResult = os:cmd(FetchCmd),
+    
+    %% Now get the remote commit
+    Cmd = "cd " ++ RepoPath ++ " && git rev-parse origin/" ++ Branch ++ " 2>/dev/null",
+    Result = os:cmd(Cmd),
+    TrimmedResult = string:trim(Result),
+    
+    %% Debug logging
+    io:format("[GITHUB-WORKER] get_remote_commit result: ~s~n", [TrimmedResult]),
+    
+    case TrimmedResult of
+        "" -> 
+            %% Try FETCH_HEAD as fallback
+            FallbackCmd = "cd " ++ RepoPath ++ " && git rev-parse FETCH_HEAD 2>/dev/null",
+            FallbackResult = string:trim(os:cmd(FallbackCmd)),
+            case FallbackResult of
+                "" -> undefined;
+                FB when length(FB) >= 7 -> list_to_binary(string:sub_string(FB, 1, 7));
+                _ -> undefined
+            end;
+        C when length(C) >= 7 -> 
+            list_to_binary(string:sub_string(C, 1, 7));
+        _ -> 
+            undefined
     end.
 
 run_git(Cmd) ->
@@ -202,3 +236,33 @@ run_git(Cmd) ->
         nomatch -> ok;
         _ -> {error, Result}
     end.
+
+
+%% ============================================================================
+%% COMMIT TRACKING - Prevents continuous update loops
+%% ============================================================================
+
+read_last_processed_commit(RepoPath) ->
+    FilePath = RepoPath ++ "/.last_processed_commit",
+    case file:read_file(FilePath) of
+        {ok, Bin} -> 
+            Commit = string:trim(binary_to_list(Bin)),
+            case length(Commit) >= 7 of
+                true -> list_to_binary(Commit);
+                false -> undefined
+            end;
+        {error, _} -> undefined
+    end.
+
+save_last_processed_commit(RepoPath, Commit) when is_binary(Commit) ->
+    FilePath = RepoPath ++ "/.last_processed_commit",
+    case file:write_file(FilePath, Commit) of
+        ok -> 
+            io:format("[GITHUB-WORKER] Saved processed commit: ~s~n", [Commit]),
+            ok;
+        {error, Reason} ->
+            io:format("[GITHUB-WORKER] WARNING: Could not save processed commit: ~p~n", [Reason]),
+            {error, Reason}
+    end;
+save_last_processed_commit(_, _) ->
+    ok.
