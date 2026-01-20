@@ -44,7 +44,7 @@ services:
       - GITHUB_SSH_URL=git@github.com:Ripple-Analytics/Ripple_Analytics.git
       # HTTPS URL for public/fallback access
       - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
-      - GITHUB_BRANCH=master
+      - GITHUB_BRANCH=release
       - UPDATE_CHECK_INTERVAL=300
       # GitHub token for authenticated HTTPS (from .env file)
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
