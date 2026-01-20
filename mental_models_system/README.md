@@ -4,43 +4,41 @@
 
 Built for 100 years. Planck knowledge, not chauffeur knowledge.
 
-**Now fully refactored to Electric Clojure with Dockerized Microservices Architecture.**
+**Now fully refactored to Erlang/OTP with Dockerized Microservices Architecture for unmatched reliability.**
 
-## Electric Clojure Microservices Architecture
+## Erlang/OTP Microservices Architecture
 
-The system is organized into two main service groups, all built in Electric Clojure:
+The system is built on Erlang/OTP for maximum reliability with the "let it crash" philosophy, automatic supervisor restarts, and hot code swapping. All services are containerized with Docker.
 
 ### Backend Microservices (Ports 8000-8005)
 
 | Service | Port | Description |
 |---------|------|-------------|
-| API Gateway | 8000 | Routes requests to backend services, handles CORS |
-| Analysis Service | 8001 | Mental model analysis, pattern detection, LLM integration |
+| API Gateway | 8000 | Routes requests, circuit breaker, service registry |
+| Analysis Service | 8001 | Mental model analysis, LLM integration, bias detection |
 | Harvester Service | 8002 | Web scraping, file processing, data collection |
-| Storage Service | 8003 | Data persistence, document storage |
+| Storage Service | 8003 | Data persistence with DETS, document storage |
 | Chaos Engineering | 8005 | Resilience testing, fault injection, load testing |
 
-### Desktop Services (Ports 3000-3002)
+### Desktop UI Service (Port 3000)
 
 | Service | Port | Description |
 |---------|------|-------------|
-| Desktop UI | 3000 | Electric Clojure reactive web UI (light mode) |
-| Desktop Worker | 3001 | Background processing, file watching, scheduled tasks |
-| Desktop Sync | 3002 | State synchronization, offline queue, caching |
+| Desktop UI | 3000 | Web-based interface (light mode), connects to all backend services |
+
+### Key Erlang/OTP Features
+
+- **Supervisor Trees**: Automatic process restart on failure
+- **Circuit Breaker Pattern**: Fault tolerance with fail-fast behavior
+- **Hot Code Swapping**: Zero-downtime updates
+- **Lightweight Processes**: Millions of concurrent processes
+- **ETS/DETS Storage**: Fast in-memory and persistent storage
 
 ## Quick Start (Docker)
 
 ```bash
-# Start ALL services (backend + desktop)
-cd mental_models_system
-docker-compose up -d
-
-# Start only backend microservices
-cd mental_models_system/microservices
-docker-compose up -d
-
-# Start only desktop services
-cd mental_models_system/desktop-electric
+# Start all Erlang/OTP services
+cd mental_models_system/erlang-services
 docker-compose up -d
 
 # View logs
@@ -57,7 +55,7 @@ Access the Desktop UI at: http://localhost:3000
 | Metric | Value |
 |--------|-------|
 | Total Lines of Code | 86,051 |
-| Electric Clojure Code | 14,632+ lines |
+| Erlang/OTP Code | 3,000+ lines |
 | Swift Code | 4,000+ lines |
 | JSON Data | 22,395 lines |
 | HTML/Templates | 1,200+ lines |
@@ -65,7 +63,7 @@ Access the Desktop UI at: http://localhost:3000
 | Total Files | 220+ |
 | Mental Models | 174+ |
 | Failure Modes | 845 |
-| Microservices | 8 |
+| Microservices | 6 |
 | Connectors | 11 |
 
 **Last Updated:** January 20, 2026
@@ -74,17 +72,25 @@ Access the Desktop UI at: http://localhost:3000
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│              MENTAL MODELS SYSTEM (Electric Clojure)         │
+│              MENTAL MODELS SYSTEM (Erlang/OTP)               │
 ├─────────────────────────────────────────────────────────────┤
-│  BACKEND MICROSERVICES          │  DESKTOP SERVICES          │
+│  BACKEND MICROSERVICES          │  DESKTOP UI                │
 │  ─────────────────────────────  │  ──────────────────────── │
-│  • API Gateway (8000)           │  • Desktop UI (3000)       │
-│  • Analysis Service (8001)      │  • Desktop Worker (3001)   │
-│  • Harvester Service (8002)     │  • Desktop Sync (3002)     │
+│  • API Gateway (8000)           │  • Web UI (3000)           │
+│    - Circuit Breaker            │    - Light Mode Theme      │
+│    - Service Registry           │    - Dashboard             │
+│  • Analysis Service (8001)      │    - Analysis Page         │
+│    - Model Registry (ETS)       │    - Models Browser        │
+│    - LLM Client                 │    - Harvester Page        │
+│  • Harvester Service (8002)     │    - Settings/Chaos        │
+│    - Scraper Pool               │                            │
 │  • Storage Service (8003)       │                            │
+│    - DETS Persistence           │                            │
 │  • Chaos Engineering (8005)     │                            │
+│    - Load Tester                │                            │
 ├─────────────────────────────────────────────────────────────┤
-│  All services: Electric Clojure + Docker + Ring/Jetty        │
+│  All services: Erlang/OTP + Cowboy + Docker                  │
+│  Reliability: Supervisor Trees + Circuit Breakers            │
 └─────────────────────────────────────────────────────────────┘
 ```
 

@@ -1,0 +1,13 @@
+{application, desktop_ui,
+ [{description, "Mental Models Desktop UI - Erlang/OTP Web Interface"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {mod, {desktop_ui_app, []}},
+  {applications, [kernel, stdlib, cowboy, jsx, hackney]},
+  {env, [
+    {port, 3000},
+    {api_gateway_url, "http://api-gateway:8000"}
+  ]},
+  {modules, []},
+  {licenses, ["MIT"]}
+ ]}.

@@ -1,0 +1,20 @@
+{application, analysis_service,
+ [{description, "Mental Models Analysis Service - Erlang/OTP"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {mod, {analysis_service_app, []}},
+  {applications,
+   [kernel,
+    stdlib,
+    cowboy,
+    jsx,
+    hackney
+   ]},
+  {env, [
+    {port, 8001},
+    {lm_studio_url, "http://host.docker.internal:1234"}
+  ]},
+  {modules, []},
+  {licenses, ["MIT"]},
+  {links, []}
+ ]}.

@@ -1,0 +1,63 @@
+%%%-------------------------------------------------------------------
+%%% @doc Biases Handler
+%%% 
+%%% Handles requests for detecting cognitive biases in text.
+%%% @end
+%%%-------------------------------------------------------------------
+-module(biases_handler).
+-behaviour(cowboy_handler).
+
+-export([init/2]).
+
+%%--------------------------------------------------------------------
+%% @doc Handle bias detection request
+%% @end
+%%--------------------------------------------------------------------
+init(Req0, State) ->
+    Method = cowboy_req:method(Req0),
+    
+    case Method of
+        <<"POST">> ->
+            {ok, Body, Req1} = cowboy_req:read_body(Req0),
+            handle_detect(Body, Req1, State);
+        <<"OPTIONS">> ->
+            Req = cowboy_req:reply(200, cors_headers(), <<>>, Req0),
+            {ok, Req, State};
+        _ ->
+            Req = cowboy_req:reply(405, cors_headers(),
+                jsx:encode(#{<<"error">> => <<"Method not allowed">>}), Req0),
+            {ok, Req, State}
+    end.
+
+handle_detect(Body, Req0, State) ->
+    try
+        Params = jsx:decode(Body, [return_maps]),
+        Text = maps:get(<<"text">>, Params, <<>>),
+        
+        case Text of
+            <<>> ->
+                Req = cowboy_req:reply(400, cors_headers(),
+                    jsx:encode(#{<<"error">> => <<"No text provided">>}), Req0),
+                {ok, Req, State};
+            _ ->
+                Result = llm_client:detect_biases(Text),
+                Response = case Result of
+                    {ok, Data} -> Data;
+                    Data when is_map(Data) -> Data
+                end,
+                Req = cowboy_req:reply(200, cors_headers(),
+                    jsx:encode(Response), Req0),
+                {ok, Req, State}
+        end
+    catch
+        _:_ ->
+            Req = cowboy_req:reply(400, cors_headers(),
+                jsx:encode(#{<<"error">> => <<"Invalid JSON">>}), Req0),
+            {ok, Req, State}
+    end.
+
+cors_headers() ->
+    #{<<"content-type">> => <<"application/json">>,
+      <<"access-control-allow-origin">> => <<"*">>,
+      <<"access-control-allow-methods">> => <<"GET, POST, OPTIONS">>,
+      <<"access-control-allow-headers">> => <<"Content-Type">>}.
