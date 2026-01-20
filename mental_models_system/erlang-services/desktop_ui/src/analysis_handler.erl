@@ -949,22 +949,22 @@ init(Req0, State) ->
                     const textAnalysis = comprehensiveData.text_analysis || {};
                     const textModels = textAnalysis.top_models || [];
                     if (textModels.length > 0) {
-                        html += '<div class="card">';
+                        html += '<div class=\"card\">';
                         html += '<h2>Keyword-Based Detection</h2>';
-                        html += '<p style="font-size: 12px; color: #666;">Text analysis detected ' + (textAnalysis.models || []).length + ' patterns across ' + (textAnalysis.text_length || 0) + ' characters:</p>';
-                        html += '<div style="display: grid; gap: 10px; margin-top: 15px;">';
+                        html += '<p style=\"font-size: 12px; color: #666;">Text analysis detected ' + (textAnalysis.models || []).length + ' patterns across ' + (textAnalysis.text_length || 0) + ' characters:</p>';
+                        html += '<div style=\"display: grid; gap: 10px; margin-top: 15px;">';
                         for (const tm of textModels) {
                             const score = tm.score || 0;
                             const scoreColor = score >= 70 ? '#28a745' : score >= 40 ? '#ffc107' : '#6c757d';
-                            html += '<div class="model-card">';
-                            html += '<div style="display: flex; justify-content: space-between; align-items: flex-start;">';
-                            html += '<div><h4 style="margin: 0;">' + tm.name + '</h4>';
-                            html += '<span class="category">' + tm.category + '</span></div>';
-                            html += '<span style="background: ' + scoreColor + '; color: white; padding: 3px 10px; border-radius: 12px; font-size: 11px;">' + score + '%</span>';
+                            html += '<div class=\"model-card\">';
+                            html += '<div style=\"display: flex; justify-content: space-between; align-items: flex-start;">';
+                            html += '<div><h4 style=\"margin: 0;">' + tm.name + '</h4>';
+                            html += '<span class=\"category\">' + tm.category + '</span></div>';
+                            html += '<span style=\"background: ' + scoreColor + '; color: white; padding: 3px 10px; border-radius: 12px; font-size: 11px;">' + score + '%</span>';
                             html += '</div>';
-                            html += '<p style="margin-top: 8px; font-size: 12px;"><strong>Confidence:</strong> ' + (tm.confidence || 'Low') + '</p>';
+                            html += '<p style=\"margin-top: 8px; font-size: 12px;"><strong>Confidence:</strong> ' + (tm.confidence || 'Low') + '</p>';
                             if (tm.evidence) {
-                                html += '<p style="font-size: 11px; color: #666;">Evidence: ' + (tm.evidence.keywords || 0) + ' keywords, ' + (tm.evidence.patterns || 0) + ' patterns</p>';
+                                html += '<p style=\"font-size: 11px; color: #666;">Evidence: ' + (tm.evidence.keywords || 0) + ' keywords, ' + (tm.evidence.patterns || 0) + ' patterns</p>';
                             }
                             html += '</div>';
                         }

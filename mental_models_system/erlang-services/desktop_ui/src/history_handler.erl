@@ -794,7 +794,7 @@ init(Req0, State) ->
                         const data = JSON.parse(text);
                         
                         if (!data.analyses || !Array.isArray(data.analyses)) {
-                            alert('Invalid file format. Expected JSON with "analyses" array.');
+                            alert('Invalid file format. Expected JSON with \"analyses\" array.');
                             return;
                         }
                         
