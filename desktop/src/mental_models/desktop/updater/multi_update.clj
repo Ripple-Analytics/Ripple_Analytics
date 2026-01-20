@@ -268,12 +268,30 @@
 ;; Update Method 4: Full Download (Fallback)
 ;; =============================================================================
 
+(def ^:private github-token (atom nil))
+
+(defn set-github-token!
+  "Set GitHub Personal Access Token for private repo access.
+   Token needs 'repo' scope or fine-grained 'contents:read' permission."
+  [token]
+  (reset! github-token token)
+  (log "GitHub token configured:" (if token "yes" "no")))
+
+(defn- github-auth-headers
+  "Get headers with GitHub authentication if token is set"
+  []
+  (cond-> {"Accept" "application/vnd.github.v3+json"
+           "User-Agent" "MentalModels-Desktop/1.0"}
+    @github-token (assoc "Authorization" (str "token " @github-token))))
+
 (defn- try-full-download-github
-  "Fallback: Download full package from GitHub releases"
+  "Fallback: Download full package from GitHub releases.
+   Uses GitHub token for authentication if configured (required for private repos)."
   []
   (log "Attempting full download from GitHub...")
+  (log "GitHub token configured:" (if @github-token "yes" "no"))
   (let [response (http-request "GET" (:github-releases-url update-config)
-                               {:headers {"Accept" "application/vnd.github.v3+json"}})]
+                               {:headers (github-auth-headers)})]
     (if (:success response)
       (try
         (let [release (json/read-str (:body response) :key-fn keyword)
@@ -283,7 +301,9 @@
           (if download-url
             (let [temp-zip (str (System/getProperty "java.io.tmpdir")
                                 "/mm-update-" (System/currentTimeMillis) ".zip")
-                  result (download-file download-url temp-zip {})]
+                  ;; Add Authorization header for private repo downloads
+                  result (download-file download-url temp-zip 
+                                        {:headers (github-auth-headers)})]
               (if (:success result)
                 (do
                   (swap! update-state update-in [:stats :full-downloads] inc)

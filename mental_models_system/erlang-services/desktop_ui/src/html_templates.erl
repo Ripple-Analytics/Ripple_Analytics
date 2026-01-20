@@ -191,6 +191,11 @@ base_layout(Title, Content) ->
                 // Only refresh when user is idle to avoid interrupting tasks
                 if (!isUserIdle()) return;
                 
+                // Store current focus to restore after refresh (prevents tab switching)
+                const currentFocus = document.activeElement;
+                const currentScrollY = window.scrollY;
+                const currentScrollX = window.scrollX;
+                
                 try {
                     const res = await fetch('http://localhost:8006/api/updater/status');
                     const data = await res.json();
@@ -200,11 +205,12 @@ base_layout(Title, Content) ->
                         // Try to get branch from config
                         const configRes = await fetch('http://localhost:8006/api/updater/config');
                         const config = await configRes.json();
-                        branchEl.textContent = config.github_branch || 'release';
-                        commitEl.textContent = data.current_commit.substring(0, 8);
+                        if (branchEl) branchEl.textContent = config.github_branch || 'release';
+                        if (commitEl) commitEl.textContent = data.current_commit.substring(0, 8);
                     }
                 } catch (e) {
-                    document.getElementById('git-branch-nav').textContent = 'offline';
+                    const branchEl = document.getElementById('git-branch-nav');
+                    if (branchEl) branchEl.textContent = 'offline';
                 }
                 
                 // Load host path from settings API
@@ -219,6 +225,12 @@ base_layout(Title, Content) ->
                 } catch (e) {
                     // Silently fail if system info not available
                 }
+                
+                // Restore focus and scroll position to prevent any UI disruption
+                if (currentFocus && currentFocus !== document.body) {
+                    try { currentFocus.focus({ preventScroll: true }); } catch (e) {}
+                }
+                window.scrollTo(currentScrollX, currentScrollY);
             }
             
             // Initial load (always runs)

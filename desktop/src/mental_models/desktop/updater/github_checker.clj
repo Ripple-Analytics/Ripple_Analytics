@@ -159,20 +159,31 @@
 ;; =============================================================================
 
 (defn download-archive [sha]
-  "Download the repository archive for a specific commit"
-  (let [url (str "https://github.com/" 
+  "Download the repository archive for a specific commit.
+   Uses GitHub token for authentication if configured (required for private repos)."
+  (let [url (str "https://api.github.com/repos/" 
                  (:github-owner @config) "/" 
                  (:github-repo @config) 
-                 "/archive/" sha ".zip")
+                 "/zipball/" sha)
         staging-dir (io/file (:staging-dir @config))
-        archive-file (io/file staging-dir (str sha ".zip"))]
+        archive-file (io/file staging-dir (str sha ".zip"))
+        token (:github-token @config)]
     (io/make-parents archive-file)
     (swap! update-state assoc :downloading true :download-progress 0)
     (try
       (log/info "Downloading update:" sha)
-      (with-open [in (io/input-stream url)
-                  out (io/output-stream archive-file)]
-        (io/copy in out))
+      (log/info "Using GitHub API URL with authentication:" (if token "yes" "no"))
+      ;; Use clj-http with proper authentication headers for private repos
+      (let [headers (cond-> {"Accept" "application/vnd.github.v3+json"
+                             "User-Agent" "MentalModels-Desktop"}
+                      token (assoc "Authorization" (str "token " token)))
+            response (http/get url {:headers headers
+                                    :as :stream
+                                    :socket-timeout 300000
+                                    :connection-timeout 30000})]
+        (with-open [in (:body response)
+                    out (io/output-stream archive-file)]
+          (io/copy in out)))
       (swap! update-state assoc :downloading false :download-progress 100)
       (log/info "Download complete:" (.getAbsolutePath archive-file))
       {:success true :file archive-file}

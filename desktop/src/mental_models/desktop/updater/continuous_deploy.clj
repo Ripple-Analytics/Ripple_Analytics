@@ -243,6 +243,23 @@
 ;; Pipeline Control
 ;; =============================================================================
 
+(defn init-github-token!
+  "Initialize GitHub token from environment variable or config file.
+   Token is required for private repo access."
+  []
+  (let [env-token (System/getenv "GITHUB_TOKEN")
+        config-file (io/file (str (System/getProperty "user.home") "/.mental-models/github-token"))
+        file-token (when (.exists config-file)
+                     (try (clojure.string/trim (slurp config-file))
+                          (catch Exception _ nil)))
+        token (or env-token file-token)]
+    (when token
+      (log/info "GitHub token configured from" (if env-token "environment" "config file"))
+      (github/set-github-token! token))
+    (when-not token
+      (log/warn "No GitHub token configured - private repo access will fail"))
+    token))
+
 (defn start-pipeline!
   "Start the continuous deployment pipeline"
   []
@@ -255,6 +272,9 @@
   (log/info "╚════════════════════════════════════════════════════════════╝")
   
   (reset! pipeline-running true)
+  
+  ;; Initialize GitHub token for private repo access
+  (init-github-token!)
   
   ;; Start GitHub checker
   (github/start-update-checker!)
