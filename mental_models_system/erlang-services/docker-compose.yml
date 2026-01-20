@@ -19,6 +19,23 @@
 
 services:
   # ============================================================================
+  # DEBUG LOGGER - STARTS FIRST, LOGS EVERYTHING TO GITHUB
+  # This service starts before ALL others and captures all errors
+  # ============================================================================
+  debug-logger:
+    build: ./debug_logger_service
+    container_name: mental-models-debug-logger
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - updater-repo:/repo
+      - .:/repo/mental_models_system/erlang-services
+    environment:
+      - GITHUB_BRANCH=release2
+    networks:
+      - mental-models-network
+
+  # ============================================================================
   # BOOTSTRAP WATCHER - Watches for updates and restarts auto-updater
   # This solves the chicken-and-egg problem where broken auto-updater can't update itself
   # ============================================================================

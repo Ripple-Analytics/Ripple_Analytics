@@ -1,0 +1,18 @@
+{application, debug_logger_service,
+ [{description, "Debug Logger Service - Pushes logs to GitHub"},
+  {vsn, "1.0.0"},
+  {registered, [debug_logger_worker]},
+  {mod, {debug_logger_app, []}},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, [
+    debug_logger_app,
+    debug_logger_sup,
+    debug_logger_worker
+  ]},
+  {licenses, ["Apache-2.0"]},
+  {links, []}
+ ]}.
