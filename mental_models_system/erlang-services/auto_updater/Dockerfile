@@ -1,6 +1,6 @@
 FROM alpine:3.19
 
-# Install required tools
+# Install required tools including openssh for SSH authentication
 RUN apk add --no-cache \
     bash \
     curl \
@@ -8,10 +8,14 @@ RUN apk add --no-cache \
     docker-cli \
     docker-cli-compose \
     unzip \
-    jq
+    jq \
+    openssh-client
 
 # Create app directory
 WORKDIR /updater
+
+# Create SSH directory
+RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh
 
 # Copy update script
 COPY auto_update.sh /updater/auto_update.sh

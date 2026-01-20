@@ -11,8 +11,13 @@
 # Access the UI at: http://localhost:3000
 
 services:
-  # Auto-Updater - Automatically pulls updates from GitHub (with Google Drive fallback)
-  # When GitHub fails, creates a GitHub issue to alert Devin to fix the problem
+  # Auto-Updater - Bulletproof update system with multiple fallback sources
+  # Update Source Priority:
+  #   1. SSH (private repo with deploy key) - Primary
+  #   2. HTTPS with token (authenticated) - Fallback 1
+  #   3. HTTPS public (if repo is public) - Fallback 2
+  #   4. Google Drive backup - Fallback 3
+  # When primary sources fail, creates a GitHub issue to alert Devin
   auto-updater:
     build: ./auto_updater
     container_name: mental-models-auto-updater
@@ -21,13 +26,22 @@ services:
       - updater-repo:/repo
       - updater-data:/data
       - .:/services:ro
+      # Mount SSH deploy key for private repo access (optional but recommended)
+      # Create key with: ssh-keygen -t ed25519 -f ./ssh_deploy_key -N ""
+      # Add public key to GitHub repo Settings > Deploy keys (read-only)
+      - ${SSH_KEY_PATH:-./ssh_deploy_key}:/ssh/deploy_key:ro
     environment:
+      # SSH URL for private repo access (primary)
+      - GITHUB_SSH_URL=git@github.com:Ripple-Analytics/Ripple_Analytics.git
+      # HTTPS URL for public/fallback access
       - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
       - GITHUB_BRANCH=master
       - UPDATE_CHECK_INTERVAL=300
-      # GitHub token for creating alert issues when GitHub fails (required for alerts)
+      # GitHub token for authenticated HTTPS and creating alert issues
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
       - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
+      # SSH key path inside container
+      - SSH_KEY_PATH=/ssh/deploy_key
       # Configure Google Drive backup URL (optional)
       # Format: https://drive.google.com/file/d/FILE_ID/view or direct download link
       - GDRIVE_BACKUP_URL=${GDRIVE_BACKUP_URL:-}

@@ -1,23 +1,30 @@
 #!/bin/bash
 # Mental Models System - Auto Updater Service
-# Checks GitHub for updates every 5 minutes, with Google Drive as fallback
-# Creates GitHub issue to alert Devin when GitHub fails
+# Bulletproof update chain with multiple fallback sources:
+# 1. SSH (private repo with deploy key) - Primary
+# 2. HTTPS with token (authenticated) - Fallback 1
+# 3. HTTPS public (if repo is public) - Fallback 2
+# 4. Google Drive backup - Fallback 3
+# Creates GitHub issue to alert Devin when primary sources fail
 
 set -e
 
 # Configuration
-REPO_URL="${GITHUB_REPO_URL:-https://github.com/Ripple-Analytics/Ripple_Analytics.git}"
+REPO_SSH_URL="${GITHUB_SSH_URL:-git@github.com:Ripple-Analytics/Ripple_Analytics.git}"
+REPO_HTTPS_URL="${GITHUB_REPO_URL:-https://github.com/Ripple-Analytics/Ripple_Analytics.git}"
 BRANCH="${GITHUB_BRANCH:-master}"
 CHECK_INTERVAL="${UPDATE_CHECK_INTERVAL:-300}"  # 5 minutes default
 GDRIVE_BACKUP_URL="${GDRIVE_BACKUP_URL:-}"  # Optional Google Drive backup URL
-GITHUB_TOKEN="${GITHUB_TOKEN:-}"  # GitHub token for creating issues
+GITHUB_TOKEN="${GITHUB_TOKEN:-}"  # GitHub token for authenticated HTTPS and creating issues
 GITHUB_REPO="${GITHUB_REPO:-Ripple-Analytics/Ripple_Analytics}"  # Repo for issues
 ALERT_WEBHOOK_URL="${ALERT_WEBHOOK_URL:-}"  # Optional webhook for alerts
 REPO_PATH="/repo"
 SERVICES_PATH="/repo/mental_models_system/erlang-services"
 STATUS_FILE="/data/updater_status.json"
+SSH_KEY_PATH="${SSH_KEY_PATH:-/ssh/deploy_key}"
 GITHUB_FAILURE_COUNT=0
 LAST_ALERT_TIME=0
+CURRENT_SOURCE=""
 
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1"
@@ -37,16 +44,47 @@ write_status() {
     "github_available": $github_ok,
     "last_check": "$(date -Iseconds)",
     "github_failure_count": $GITHUB_FAILURE_COUNT,
-    "update_source": "${UPDATE_SOURCE:-github}"
+    "update_source": "${CURRENT_SOURCE:-unknown}",
+    "sources_tried": "${SOURCES_TRIED:-}"
 }
 EOF
 }
 
-# Create GitHub issue to alert about GitHub failure
+# Setup SSH for GitHub
+setup_ssh() {
+    if [ -f "$SSH_KEY_PATH" ]; then
+        log "Setting up SSH authentication..."
+        mkdir -p ~/.ssh
+        cp "$SSH_KEY_PATH" ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        
+        # Add GitHub to known hosts
+        ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts 2>/dev/null
+        
+        # Configure git to use SSH
+        git config --global core.sshCommand "ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no"
+        
+        log "SSH authentication configured."
+        return 0
+    else
+        log "No SSH key found at $SSH_KEY_PATH"
+        return 1
+    fi
+}
+
+# Get authenticated HTTPS URL
+get_authenticated_https_url() {
+    if [ -n "$GITHUB_TOKEN" ]; then
+        echo "https://${GITHUB_TOKEN}@github.com/${GITHUB_REPO}.git"
+    else
+        echo ""
+    fi
+}
+
+# Create GitHub issue to alert about failures
 create_github_alert_issue() {
     if [ -z "$GITHUB_TOKEN" ]; then
         log "WARNING: No GITHUB_TOKEN configured - cannot create alert issue"
-        log "Please set GITHUB_TOKEN environment variable to enable automatic alerts"
         return 1
     fi
     
@@ -58,31 +96,34 @@ create_github_alert_issue() {
         return 0
     fi
     
-    log "Creating GitHub issue to alert about GitHub failure..."
+    log "Creating GitHub issue to alert about update source degradation..."
     
-    ISSUE_TITLE="[AUTO-ALERT] GitHub Update Failed - Using Google Drive Fallback"
+    ISSUE_TITLE="[AUTO-ALERT] Primary Update Sources Failed - Using Fallback"
     ISSUE_BODY="## Automatic Alert from Mental Models Auto-Updater
 
 **Time:** $(date -Iseconds)
-**Status:** GitHub connection failed, using Google Drive backup
+**Status:** Primary update sources failed, using fallback
+**Current Source:** $CURRENT_SOURCE
+**Sources Tried:** $SOURCES_TRIED
 
 ### Details
-- GitHub URL: $REPO_URL
+- SSH URL: $REPO_SSH_URL
+- HTTPS URL: $REPO_HTTPS_URL
 - Branch: $BRANCH
 - Failure Count: $GITHUB_FAILURE_COUNT
-- Fallback: Google Drive backup was used successfully
 
 ### Action Required
-Please investigate why GitHub is not accessible:
-1. Check if the repository is available
-2. Check network connectivity
-3. Check if there are any GitHub outages
+Please investigate why primary sources are not accessible:
+1. Check SSH deploy key configuration
+2. Check GitHub token validity
+3. Check if the repository is available
+4. Check network connectivity
 
 ### For Devin
 If you see this issue, please:
-1. Check the GitHub repository status
-2. Verify the auto-updater configuration
-3. Fix any issues preventing GitHub access
+1. Verify the auto-updater configuration
+2. Check deploy key and token settings
+3. Fix any issues preventing primary source access
 
 ---
 *This issue was automatically created by the Mental Models Auto-Updater service.*"
@@ -116,11 +157,12 @@ send_webhook_alert() {
     log "Sending webhook alert..."
     
     PAYLOAD="{
-        \"event\": \"github_failure\",
+        \"event\": \"update_source_degradation\",
         \"timestamp\": \"$(date -Iseconds)\",
-        \"message\": \"GitHub update failed, using Google Drive fallback\",
+        \"message\": \"Primary update sources failed, using fallback\",
         \"details\": {
-            \"repo_url\": \"$REPO_URL\",
+            \"current_source\": \"$CURRENT_SOURCE\",
+            \"sources_tried\": \"$SOURCES_TRIED\",
             \"branch\": \"$BRANCH\",
             \"failure_count\": $GITHUB_FAILURE_COUNT
         }
@@ -132,66 +174,57 @@ send_webhook_alert() {
         "$ALERT_WEBHOOK_URL" 2>/dev/null || log "Webhook alert failed"
 }
 
-# Alert when GitHub fails and Google Drive is used
-alert_github_failure() {
+# Alert when primary sources fail
+alert_source_degradation() {
     GITHUB_FAILURE_COUNT=$((GITHUB_FAILURE_COUNT + 1))
     
     log "=========================================="
-    log "ALERT: GitHub update failed!"
-    log "Using Google Drive backup as fallback."
+    log "ALERT: Primary update sources failed!"
+    log "Using fallback source: $CURRENT_SOURCE"
+    log "Sources tried: $SOURCES_TRIED"
     log "Failure count: $GITHUB_FAILURE_COUNT"
     log "=========================================="
     
     # Write failure status
-    write_status "fallback" "GitHub failed, using Google Drive backup" "false"
+    write_status "fallback" "Using fallback source: $CURRENT_SOURCE" "false"
     
-    # Create GitHub issue to alert
+    # Create GitHub issue to alert (if we have a token)
     create_github_alert_issue
     
     # Send webhook if configured
     send_webhook_alert
 }
 
-# Initialize repository if not exists
-init_repo() {
-    if [ ! -d "$REPO_PATH/.git" ]; then
-        log "Cloning repository from GitHub..."
-        git clone --depth 1 --branch "$BRANCH" "$REPO_URL" "$REPO_PATH" || return 1
-    fi
-    return 0
-}
-
-# Check for updates from GitHub
-check_github_updates() {
-    log "Checking GitHub for updates..."
-    cd "$REPO_PATH"
-    
-    # Fetch latest changes
-    git fetch origin "$BRANCH" --depth 1 2>/dev/null || return 1
-    
-    # Check if there are new commits
-    LOCAL_HASH=$(git rev-parse HEAD)
-    REMOTE_HASH=$(git rev-parse "origin/$BRANCH")
-    
-    if [ "$LOCAL_HASH" != "$REMOTE_HASH" ]; then
-        log "New updates available on GitHub!"
-        return 0
-    else
-        log "No updates available."
+# Try to clone/init via SSH
+init_via_ssh() {
+    if [ ! -f "$SSH_KEY_PATH" ]; then
         return 1
     fi
+    
+    setup_ssh || return 1
+    
+    log "Attempting to clone via SSH..."
+    git clone --depth 1 --branch "$BRANCH" "$REPO_SSH_URL" "$REPO_PATH" 2>/dev/null
+    return $?
 }
 
-# Pull updates from GitHub
-pull_github_updates() {
-    log "Pulling updates from GitHub..."
-    cd "$REPO_PATH"
+# Try to clone/init via authenticated HTTPS
+init_via_https_auth() {
+    if [ -z "$GITHUB_TOKEN" ]; then
+        return 1
+    fi
     
-    git reset --hard "origin/$BRANCH" || return 1
-    git pull origin "$BRANCH" --depth 1 || return 1
-    
-    log "GitHub update successful!"
-    return 0
+    AUTH_URL=$(get_authenticated_https_url)
+    log "Attempting to clone via authenticated HTTPS..."
+    git clone --depth 1 --branch "$BRANCH" "$AUTH_URL" "$REPO_PATH" 2>/dev/null
+    return $?
+}
+
+# Try to clone/init via public HTTPS
+init_via_https_public() {
+    log "Attempting to clone via public HTTPS..."
+    git clone --depth 1 --branch "$BRANCH" "$REPO_HTTPS_URL" "$REPO_PATH" 2>/dev/null
+    return $?
 }
 
 # Download from Google Drive as fallback
@@ -242,6 +275,166 @@ download_from_gdrive() {
     return 0
 }
 
+# Initialize repository with fallback chain
+init_repo() {
+    if [ -d "$REPO_PATH/.git" ]; then
+        log "Repository already initialized."
+        return 0
+    fi
+    
+    SOURCES_TRIED=""
+    
+    # Try SSH first (private repo with deploy key)
+    SOURCES_TRIED="ssh"
+    if init_via_ssh; then
+        CURRENT_SOURCE="ssh"
+        log "Repository initialized via SSH."
+        return 0
+    fi
+    log "SSH clone failed."
+    
+    # Try authenticated HTTPS
+    SOURCES_TRIED="$SOURCES_TRIED,https-auth"
+    if init_via_https_auth; then
+        CURRENT_SOURCE="https-auth"
+        log "Repository initialized via authenticated HTTPS."
+        return 0
+    fi
+    log "Authenticated HTTPS clone failed."
+    
+    # Try public HTTPS
+    SOURCES_TRIED="$SOURCES_TRIED,https-public"
+    if init_via_https_public; then
+        CURRENT_SOURCE="https-public"
+        log "Repository initialized via public HTTPS."
+        return 0
+    fi
+    log "Public HTTPS clone failed."
+    
+    # Try Google Drive
+    SOURCES_TRIED="$SOURCES_TRIED,gdrive"
+    if download_from_gdrive; then
+        CURRENT_SOURCE="gdrive"
+        log "Repository initialized via Google Drive backup."
+        alert_source_degradation
+        return 0
+    fi
+    log "Google Drive backup failed."
+    
+    log "CRITICAL: All initialization sources failed!"
+    write_status "error" "All initialization sources failed" "false"
+    return 1
+}
+
+# Check for updates from current remote
+check_updates() {
+    log "Checking for updates..."
+    cd "$REPO_PATH"
+    
+    # Determine which remote URL to use based on what worked during init
+    case "$CURRENT_SOURCE" in
+        ssh)
+            setup_ssh 2>/dev/null
+            git remote set-url origin "$REPO_SSH_URL" 2>/dev/null
+            ;;
+        https-auth)
+            AUTH_URL=$(get_authenticated_https_url)
+            git remote set-url origin "$AUTH_URL" 2>/dev/null
+            ;;
+        https-public|*)
+            git remote set-url origin "$REPO_HTTPS_URL" 2>/dev/null
+            ;;
+    esac
+    
+    # Fetch latest changes
+    if ! git fetch origin "$BRANCH" --depth 1 2>/dev/null; then
+        log "Fetch failed with current source, trying fallbacks..."
+        return 2  # Signal to try fallbacks
+    fi
+    
+    # Check if there are new commits
+    LOCAL_HASH=$(git rev-parse HEAD)
+    REMOTE_HASH=$(git rev-parse "origin/$BRANCH")
+    
+    if [ "$LOCAL_HASH" != "$REMOTE_HASH" ]; then
+        log "New updates available!"
+        return 0
+    else
+        log "No updates available."
+        return 1
+    fi
+}
+
+# Pull updates with fallback chain
+pull_updates() {
+    cd "$REPO_PATH"
+    SOURCES_TRIED=""
+    
+    # Try SSH first
+    if [ -f "$SSH_KEY_PATH" ]; then
+        SOURCES_TRIED="ssh"
+        setup_ssh 2>/dev/null
+        git remote set-url origin "$REPO_SSH_URL" 2>/dev/null
+        log "Trying to pull via SSH..."
+        if git fetch origin "$BRANCH" --depth 1 2>/dev/null && \
+           git reset --hard "origin/$BRANCH" 2>/dev/null; then
+            CURRENT_SOURCE="ssh"
+            log "Update successful via SSH."
+            write_status "ok" "Updated via SSH (private)" "true"
+            GITHUB_FAILURE_COUNT=0
+            return 0
+        fi
+        log "SSH pull failed."
+    fi
+    
+    # Try authenticated HTTPS
+    if [ -n "$GITHUB_TOKEN" ]; then
+        SOURCES_TRIED="$SOURCES_TRIED,https-auth"
+        AUTH_URL=$(get_authenticated_https_url)
+        git remote set-url origin "$AUTH_URL" 2>/dev/null
+        log "Trying to pull via authenticated HTTPS..."
+        if git fetch origin "$BRANCH" --depth 1 2>/dev/null && \
+           git reset --hard "origin/$BRANCH" 2>/dev/null; then
+            CURRENT_SOURCE="https-auth"
+            log "Update successful via authenticated HTTPS."
+            write_status "ok" "Updated via authenticated HTTPS" "true"
+            GITHUB_FAILURE_COUNT=0
+            return 0
+        fi
+        log "Authenticated HTTPS pull failed."
+    fi
+    
+    # Try public HTTPS
+    SOURCES_TRIED="$SOURCES_TRIED,https-public"
+    git remote set-url origin "$REPO_HTTPS_URL" 2>/dev/null
+    log "Trying to pull via public HTTPS..."
+    if git fetch origin "$BRANCH" --depth 1 2>/dev/null && \
+       git reset --hard "origin/$BRANCH" 2>/dev/null; then
+        CURRENT_SOURCE="https-public"
+        log "Update successful via public HTTPS."
+        write_status "ok" "Updated via public HTTPS" "true"
+        # Alert that we fell back to public
+        if [ -f "$SSH_KEY_PATH" ] || [ -n "$GITHUB_TOKEN" ]; then
+            alert_source_degradation
+        fi
+        return 0
+    fi
+    log "Public HTTPS pull failed."
+    
+    # Try Google Drive
+    SOURCES_TRIED="$SOURCES_TRIED,gdrive"
+    log "Trying Google Drive backup..."
+    if download_from_gdrive; then
+        CURRENT_SOURCE="gdrive"
+        alert_source_degradation
+        return 0
+    fi
+    
+    log "CRITICAL: All update sources failed!"
+    write_status "error" "All update sources failed" "false"
+    return 1
+}
+
 # Rebuild and restart services
 rebuild_services() {
     log "Rebuilding services..."
@@ -267,58 +460,56 @@ rebuild_services() {
     return 0
 }
 
-# Main update function
-perform_update() {
-    UPDATE_SOURCE="github"
-    
-    # Try GitHub first
-    if pull_github_updates; then
-        write_status "ok" "Updated from GitHub" "true"
-        GITHUB_FAILURE_COUNT=0  # Reset failure count on success
-        rebuild_services
-        return 0
-    fi
-    
-    log "GitHub update failed, trying Google Drive backup..."
-    UPDATE_SOURCE="gdrive"
-    
-    # Try Google Drive as fallback
-    if download_from_gdrive; then
-        # ALERT: GitHub failed, using Google Drive fallback
-        alert_github_failure
-        rebuild_services
-        return 0
-    fi
-    
-    log "All update sources failed."
-    write_status "error" "All update sources failed" "false"
-    return 1
-}
-
 # Main loop
 main() {
     log "=========================================="
     log "Mental Models Auto-Updater Starting"
     log "=========================================="
-    log "GitHub Repo: $REPO_URL"
+    log "SSH URL: $REPO_SSH_URL"
+    log "HTTPS URL: $REPO_HTTPS_URL"
     log "Branch: $BRANCH"
     log "Check Interval: ${CHECK_INTERVAL}s"
+    log "SSH Key: ${SSH_KEY_PATH} ($([ -f "$SSH_KEY_PATH" ] && echo 'found' || echo 'not found'))"
+    log "GitHub Token: $([ -n "$GITHUB_TOKEN" ] && echo 'configured' || echo 'not configured')"
     log "Google Drive Backup: ${GDRIVE_BACKUP_URL:-Not configured}"
+    log "=========================================="
+    log "Update Source Priority:"
+    log "  1. SSH (private repo with deploy key)"
+    log "  2. HTTPS with token (authenticated)"
+    log "  3. HTTPS public (if repo is public)"
+    log "  4. Google Drive backup"
     log "=========================================="
     
     # Initialize repository
     if ! init_repo; then
-        log "Failed to initialize repository from GitHub, trying Google Drive..."
-        download_from_gdrive || log "Could not initialize from any source"
+        log "CRITICAL: Could not initialize from any source!"
+        log "Waiting 60 seconds before retry..."
+        sleep 60
+        exec "$0"  # Restart the script
     fi
     
     # Main update loop
     while true; do
-        log "Checking for updates..."
+        CHECK_RESULT=$(check_updates; echo $?)
         
-        if check_github_updates; then
-            perform_update
-        fi
+        case "$CHECK_RESULT" in
+            0)
+                # Updates available
+                if pull_updates; then
+                    rebuild_services
+                fi
+                ;;
+            2)
+                # Fetch failed, try full fallback pull
+                log "Fetch failed, attempting full fallback chain..."
+                if pull_updates; then
+                    rebuild_services
+                fi
+                ;;
+            *)
+                # No updates or check failed
+                ;;
+        esac
         
         log "Next check in ${CHECK_INTERVAL} seconds..."
         sleep "$CHECK_INTERVAL"
