@@ -17,12 +17,135 @@
 
 services:
   # ============================================================================
-  # UPDATE ORCHESTRATOR - Coordinates all update sources
+  # DEPLOYMENT CONTROLLER - Blue-Green Orchestration with Self-Update
   # ============================================================================
+  
+  # Deployment Controller - BLUE Environment
+  deployment-controller-blue:
+    build: ./deployment_controller
+    container_name: mental-models-deploy-ctrl-blue
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - updater-repo:/repo
+      - updater-data:/data
+    environment:
+      - DEPLOYMENT_ENV=blue
+      - PEER_URL=http://deployment-controller-green:8007
+      - PORT=8007
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8007/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - mental-models-network
+
+  # Deployment Controller - GREEN Environment
+  deployment-controller-green:
+    build: ./deployment_controller
+    container_name: mental-models-deploy-ctrl-green
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - updater-repo:/repo
+      - updater-data:/data
+    environment:
+      - DEPLOYMENT_ENV=green
+      - PEER_URL=http://deployment-controller-blue:8007
+      - PORT=8007
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8007/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - mental-models-network
+
   # ============================================================================
-  # AUTO-UPDATER SERVICE - BULLETPROOF CONFIGURATION
-  # This service MUST NEVER STOP - it is the core of the auto-update system
+  # AUTO-UPDATER SERVICE - BLUE-GREEN BULLETPROOF CONFIGURATION
+  # Both instances run simultaneously for zero-downtime self-updates
   # ============================================================================
+  
+  # Auto-Updater - BLUE Environment
+  auto-updater-blue:
+    build: ./auto_updater_service
+    container_name: mental-models-auto-updater-blue
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - updater-repo:/repo
+      - updater-data:/data
+      - .:/services:ro
+      - ${SSH_KEY_PATH:-./ssh_deploy_key}:/root/.ssh/deploy_key:ro
+    environment:
+      - GITHUB_SSH_URL=git@github.com:Ripple-Analytics/Ripple_Analytics.git
+      - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
+      - GITHUB_BRANCH=release
+      - UPDATE_CHECK_INTERVAL=300
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
+      - GDRIVE_BACKUP_URL=${GDRIVE_BACKUP_URL:-}
+      - GITHUB_SOURCE_URL=http://github-source:8010
+      - GDRIVE_SOURCE_URL=http://gdrive-source:8011
+      - LOCAL_CACHE_URL=http://local-cache:8012
+      - DEPLOY_CONTROLLER_URL=http://nginx-proxy:8007
+      - DEPLOYMENT_ENV=blue
+    depends_on:
+      - github-source
+      - gdrive-source
+      - local-cache
+      - deployment-controller-blue
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - mental-models-network
+
+  # Auto-Updater - GREEN Environment
+  auto-updater-green:
+    build: ./auto_updater_service
+    container_name: mental-models-auto-updater-green
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - updater-repo:/repo
+      - updater-data:/data
+      - .:/services:ro
+      - ${SSH_KEY_PATH:-./ssh_deploy_key}:/root/.ssh/deploy_key:ro
+    environment:
+      - GITHUB_SSH_URL=git@github.com:Ripple-Analytics/Ripple_Analytics.git
+      - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
+      - GITHUB_BRANCH=release
+      - UPDATE_CHECK_INTERVAL=300
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
+      - GDRIVE_BACKUP_URL=${GDRIVE_BACKUP_URL:-}
+      - GITHUB_SOURCE_URL=http://github-source:8010
+      - GDRIVE_SOURCE_URL=http://gdrive-source:8011
+      - LOCAL_CACHE_URL=http://local-cache:8012
+      - DEPLOY_CONTROLLER_URL=http://nginx-proxy:8007
+      - DEPLOYMENT_ENV=green
+    depends_on:
+      - github-source
+      - gdrive-source
+      - local-cache
+      - deployment-controller-green
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - mental-models-network
+
+  # Legacy alias for backward compatibility
   auto-updater-service:
     build: ./auto_updater_service
     container_name: mental-models-auto-updater
@@ -42,16 +165,15 @@ services:
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
       - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
       - GDRIVE_BACKUP_URL=${GDRIVE_BACKUP_URL:-}
-      # Internal source service URLs
       - GITHUB_SOURCE_URL=http://github-source:8010
       - GDRIVE_SOURCE_URL=http://gdrive-source:8011
       - LOCAL_CACHE_URL=http://local-cache:8012
+      - DEPLOY_CONTROLLER_URL=http://nginx-proxy:8007
+      - DEPLOYMENT_ENV=blue
     depends_on:
       - github-source
       - gdrive-source
       - local-cache
-    # CRITICAL: Use 'always' instead of 'unless-stopped' to ensure auto-updater
-    # restarts even after manual stops or system reboots
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
@@ -327,6 +449,51 @@ services:
     networks:
       - mental-models-network
 
+  # Chaos Engineering - BLUE Environment
+  chaos-engineering-blue:
+    build: ./chaos_engineering
+    container_name: mental-models-chaos-blue
+    environment:
+      - API_GATEWAY_URL=http://nginx-proxy:8000
+      - ANALYSIS_SERVICE_URL=http://nginx-proxy:8001
+      - HARVESTER_SERVICE_URL=http://nginx-proxy:8002
+      - STORAGE_SERVICE_URL=http://nginx-proxy:8003
+      - DEPLOYMENT_ENV=blue
+    depends_on:
+      - nginx-proxy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # Chaos Engineering - GREEN Environment
+  chaos-engineering-green:
+    build: ./chaos_engineering
+    container_name: mental-models-chaos-green
+    environment:
+      - API_GATEWAY_URL=http://nginx-proxy:8000
+      - ANALYSIS_SERVICE_URL=http://nginx-proxy:8001
+      - HARVESTER_SERVICE_URL=http://nginx-proxy:8002
+      - STORAGE_SERVICE_URL=http://nginx-proxy:8003
+      - DEPLOYMENT_ENV=green
+    depends_on:
+      - nginx-proxy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8005/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # Legacy alias for backward compatibility
   chaos-engineering:
     build: ./chaos_engineering
     container_name: mental-models-chaos
@@ -364,21 +531,18 @@ services:
       - "8002:8002"   # Harvester Service
       - "8003:8003"   # Storage Service
       - "8080:8080"   # Health check endpoint
+      - "8007:8007"   # Deployment Controller
     volumes:
       - nginx-config:/etc/nginx/conf.d
+      - ./nginx_proxy/active_env:/etc/nginx/active_env:ro
+      - ./nginx_proxy/conf.d:/etc/nginx/conf.d/custom:ro
     depends_on:
-      - desktop-ui-blue
-      - desktop-ui-green
-      - api-gateway-blue
-      - api-gateway-green
-      - analysis-service-blue
-      - analysis-service-green
-      - harvester-service-blue
-      - harvester-service-green
-      - storage-service-blue
-      - storage-service-green
-    restart: unless-stopped
-    healthcheck:
+      - deployment-controller-blue
+      - deployment-controller-green
+      - auto-updater-blue
+      - auto-updater-green
+      - chaos-engineering-blue
+      - chaos-eng    restart: unless-stopped    healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
       interval: 10s
       timeout: 5s

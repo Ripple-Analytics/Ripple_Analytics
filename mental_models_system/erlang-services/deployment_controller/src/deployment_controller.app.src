@@ -1,0 +1,17 @@
+{application, deployment_controller,
+ [{description, "Blue-Green Deployment Controller with Self-Update"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {mod, {deployment_controller_app, []}},
+  {applications,
+   [kernel,
+    stdlib,
+    cowboy,
+    jiffy,
+    hackney
+   ]},
+  {env, []},
+  {modules, []},
+  {licenses, ["Proprietary"]},
+  {links, []}
+ ]}.
