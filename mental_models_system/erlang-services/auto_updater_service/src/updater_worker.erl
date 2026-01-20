@@ -69,7 +69,8 @@ init([]) ->
     io:format("[UPDATER] Active: ~s, Standby: ~s~n", [ActiveEnv, StandbyEnv]),
     
     self() ! init_repo,
-    TimerRef = erlang:send_after(Interval, self(), check_timer),
+    %% Check immediately on startup, then every Interval after
+    TimerRef = erlang:send_after(5000, self(), check_timer),  %% First check in 5 seconds
     HeartbeatRef = erlang:send_after(60000, self(), heartbeat),
     
     {ok, #state{
