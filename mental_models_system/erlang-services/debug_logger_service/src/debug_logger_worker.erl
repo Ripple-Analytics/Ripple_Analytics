@@ -235,15 +235,22 @@ do_push_sync() ->
         os:cmd("cd " ++ ?REPO_PATH ++ " && git config user.email 'debug@mental-models.local' 2>&1"),
         os:cmd("cd " ++ ?REPO_PATH ++ " && git config user.name 'Debug Logger' 2>&1"),
         
+        %% Fetch first to ensure we have remote refs
+        os:cmd("cd " ++ ?REPO_PATH ++ " && git fetch origin release2 2>&1"),
+        
+        %% Checkout release2 branch (create if needed)
+        os:cmd("cd " ++ ?REPO_PATH ++ " && git checkout -B release2 origin/release2 2>&1"),
+        
         %% Add logs
         os:cmd("cd " ++ ?REPO_PATH ++ " && git add mental_models_system/erlang-services/debug_logs/ 2>&1"),
         
         %% Commit
         CommitMsg = "debug: " ++ format_timestamp(),
-        os:cmd("cd " ++ ?REPO_PATH ++ " && git commit -m '" ++ CommitMsg ++ "' 2>&1"),
+        CommitResult = os:cmd("cd " ++ ?REPO_PATH ++ " && git commit -m '" ++ CommitMsg ++ "' 2>&1"),
+        io:format("[DEBUG_LOGGER] Commit result: ~s~n", [truncate(CommitResult, 100)]),
         
-        %% Push
-        Result = os:cmd("cd " ++ ?REPO_PATH ++ " && git push origin release2 2>&1"),
+        %% Push using HEAD:release2 to be explicit
+        Result = os:cmd("cd " ++ ?REPO_PATH ++ " && git push origin HEAD:release2 2>&1"),
         io:format("[DEBUG_LOGGER] Push result: ~s~n", [truncate(Result, 200)]),
         ok
     catch
