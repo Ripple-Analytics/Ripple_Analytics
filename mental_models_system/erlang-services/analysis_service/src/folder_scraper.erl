@@ -7,6 +7,8 @@
 %%%-------------------------------------------------------------------
 -module(folder_scraper).
 
+-include_lib("kernel/include/file.hrl").
+
 -export([scan_folder/1, scan_folder/2, analyze_file/1, analyze_file/2,
          get_supported_extensions/0, scan_and_analyze/1, scan_and_analyze/2]).
 
@@ -165,11 +167,11 @@ has_extension(Filename, Extensions) ->
 
 file_info(FilePath) ->
     case file:read_file_info(FilePath) of
-        {ok, Info} ->
+        {ok, #file_info{size = Size}} ->
             #{
                 <<"path">> => list_to_binary(FilePath),
                 <<"name">> => list_to_binary(filename:basename(FilePath)),
-                <<"size">> => element(2, Info),
+                <<"size">> => Size,
                 <<"extension">> => list_to_binary(filename:extension(FilePath))
             };
         {error, _} ->
