@@ -7,8 +7,8 @@ WORKDIR /app
 COPY rebar.config .
 COPY src/ src/
 
-RUN rebar3 compile
-RUN rebar3 release
+RUN ./rebar3 compile
+RUN ./rebar3 release
 
 EXPOSE 8020
 

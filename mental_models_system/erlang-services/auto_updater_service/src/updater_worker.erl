@@ -287,12 +287,19 @@ do_check_updates(State) ->
     CurrentCommit = get_current_commit(),
     RemoteCommit = get_remote_commit(State#state.branch),
     
+    %% Only trigger update if:
+    %% 1. Both commits are valid
+    %% 2. Remote is different from current
+    %% 3. We haven't already processed this remote commit (prevents loops)
+    LastProcessedCommit = read_last_processed_commit(),
+    
     UpdateAvailable = (CurrentCommit =/= undefined) andalso 
                       (RemoteCommit =/= undefined) andalso 
-                      (CurrentCommit =/= RemoteCommit),
+                      (CurrentCommit =/= RemoteCommit) andalso
+                      (RemoteCommit =/= LastProcessedCommit),
     
-    io:format("[UPDATER] Current: ~p, Remote: ~p, Update: ~p~n", 
-              [CurrentCommit, RemoteCommit, UpdateAvailable]),
+    io:format("[UPDATER] Current: ~p, Remote: ~p, LastProcessed: ~p, Update: ~p~n", 
+              [CurrentCommit, RemoteCommit, LastProcessedCommit, UpdateAvailable]),
     
     State#state{
         status = idle,
@@ -311,6 +318,9 @@ do_perform_update(State) ->
     
     NewCommit = get_current_commit(),
     io:format("[UPDATER] Updated to: ~p~n", [NewCommit]),
+    
+    %% Save this commit as processed to prevent rebuild loops
+    save_last_processed_commit(NewCommit),
     
     %% Trigger rebuild in background
     spawn(fun() -> rebuild_services() end),
@@ -650,4 +660,35 @@ restart_successful_services(BasePath, Services) ->
     RestartCmd = "cd " ++ BasePath ++ " && docker-compose up -d --no-deps " ++ ServiceList ++ " 2>&1",
     _Result = os:cmd(RestartCmd),
     io:format("[UPDATER] Restart command completed~n"),
+    ok.
+
+%% ============================================================================
+%% COMMIT TRACKING - Prevents continuous rebuild loops
+%% ============================================================================
+
+%% Read the last processed commit from persistent storage
+read_last_processed_commit() ->
+    case file:read_file("/data/last_processed_commit") of
+        {ok, Bin} -> 
+            Commit = string:trim(binary_to_list(Bin)),
+            case length(Commit) >= 7 of
+                true -> list_to_binary(Commit);
+                false -> undefined
+            end;
+        {error, _} -> undefined
+    end.
+
+%% Save the processed commit to prevent rebuild loops
+save_last_processed_commit(Commit) when is_binary(Commit) ->
+    %% Ensure /data directory exists
+    filelib:ensure_dir("/data/"),
+    case file:write_file("/data/last_processed_commit", Commit) of
+        ok -> 
+            io:format("[UPDATER] Saved processed commit: ~s~n", [Commit]),
+            ok;
+        {error, Reason} ->
+            io:format("[UPDATER] WARNING: Could not save processed commit: ~p~n", [Reason]),
+            {error, Reason}
+    end;
+save_last_processed_commit(_) ->
     ok.

@@ -3,13 +3,15 @@ FROM erlang:26-alpine
 WORKDIR /app
 
 # Install build dependencies
-RUN apk add --no-cache git
+RUN apk add --no-cache git curl
+# Download rebar3
+RUN curl -o rebar3 https://s3.amazonaws.com/rebar3/rebar3 && chmod +x rebar3
 
 # Copy rebar config
 COPY rebar.config .
 
 # Fetch dependencies
-RUN rebar3 get-deps
+RUN ./rebar3 get-deps
 
 # Copy source code
 # CACHE BUSTER: This ARG changes with each commit, forcing rebuild of src layer
@@ -20,7 +22,7 @@ RUN echo "Building commit: ${COMMIT_HASH} at ${BUILD_TIME}"
 COPY src src/
 
 # Compile
-RUN rebar3 compile
+RUN ./rebar3 compile
 
 # Expose port
 EXPOSE 8000

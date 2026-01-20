@@ -1,10 +1,13 @@
 FROM erlang:26-alpine
 
 WORKDIR /app
-RUN apk add --no-cache git
+RUN apk add --no-cache git curl
+
+# Download rebar3
+RUN curl -o rebar3 https://s3.amazonaws.com/rebar3/rebar3 && chmod +x rebar3
 
 COPY rebar.config .
-RUN rebar3 get-deps
+RUN ./rebar3 get-deps
 
 # CACHE BUSTER: This ARG changes with each commit, forcing rebuild of src layer
 # Pass --build-arg COMMIT_HASH=$(git rev-parse HEAD) during docker build
@@ -16,7 +19,7 @@ RUN echo "Building commit: ${COMMIT_HASH} at ${BUILD_TIME}"
 COPY src src/
 
 # Compile the application
-RUN rebar3 compile
+RUN ./rebar3 compile
 
 EXPOSE 3000
 

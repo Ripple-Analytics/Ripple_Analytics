@@ -4,13 +4,15 @@ WORKDIR /app
 
 # Install build dependencies and Docker CLI for container manipulation
 RUN apk add --no-cache git curl docker-cli iproute2
+# Download rebar3
+RUN curl -o rebar3 https://s3.amazonaws.com/rebar3/rebar3 && chmod +x rebar3
 
 # Copy source files
 COPY rebar.config .
 COPY src/ src/
 
 # Build the application
-RUN rebar3 compile && rebar3 release
+RUN ./rebar3 compile && rebar3 release
 
 # Expose port
 EXPOSE 8007
