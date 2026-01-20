@@ -168,7 +168,29 @@ base_layout(Title, Content) ->
             </div>
         </div>
         <script>
-            (async function loadBranchInfo() {
+            // Smart auto-refresh - only updates when user is idle (not typing or interacting)
+            let lastInteraction = 0;
+            const IDLE_THRESHOLD = 2000; // Wait 2 seconds after last interaction
+            
+            // Track user interactions
+            document.addEventListener('keydown', () => { lastInteraction = Date.now(); });
+            document.addEventListener('mousedown', () => { lastInteraction = Date.now(); });
+            document.addEventListener('input', () => { lastInteraction = Date.now(); });
+            
+            function isUserIdle() {
+                // Don't refresh if user is typing in an input
+                const active = document.activeElement;
+                if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) {
+                    return false;
+                }
+                // Don't refresh if user interacted recently
+                return (Date.now() - lastInteraction) > IDLE_THRESHOLD;
+            }
+            
+            async function refreshStatusBar() {
+                // Only refresh when user is idle to avoid interrupting tasks
+                if (!isUserIdle()) return;
+                
                 try {
                     const res = await fetch('http://localhost:8006/api/updater/status');
                     const data = await res.json();
@@ -197,7 +219,17 @@ base_layout(Title, Content) ->
                 } catch (e) {
                     // Silently fail if system info not available
                 }
+            }
+            
+            // Initial load (always runs)
+            (async function() { 
+                lastInteraction = 0; // Force initial load
+                await refreshStatusBar();
+                lastInteraction = Date.now();
             })();
+            
+            // Auto-refresh every 1 second, but only when user is idle
+            setInterval(refreshStatusBar, 1000);
         </script>
         ">>, nav_html(Title), <<"
         ">>, Content, <<"
