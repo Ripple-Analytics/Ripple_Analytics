@@ -393,7 +393,7 @@ init(Req0, State) ->
             document.addEventListener('DOMContentLoaded', refreshAllSources);
             
             // Set branch info
-            document.getElementById('git-branch').textContent = 'master';
+            document.getElementById('git-branch').textContent = 'release';
         </script>">>
     ],
     Html = html_templates:base_layout(<<"Settings">>, Content),

@@ -39,7 +39,7 @@ if not exist ".env" (
 echo [1/5] Checking for updates...
 cd ..\..
 git fetch origin 2>nul
-git reset --hard origin/master 2>nul
+git reset --hard origin/release 2>nul
 if errorlevel 1 (
     echo [WARN] Git update failed, using local files...
 ) else (
