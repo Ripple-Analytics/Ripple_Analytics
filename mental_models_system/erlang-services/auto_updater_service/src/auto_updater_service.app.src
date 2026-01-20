@@ -1,0 +1,16 @@
+{application, auto_updater_service,
+ [{description, "Mental Models Auto-Updater Service"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {mod, {auto_updater_app, []}},
+  {applications,
+   [kernel,
+    stdlib,
+    cowboy,
+    jsx
+   ]},
+  {env,[]},
+  {modules, []},
+  {licenses, ["Apache-2.0"]},
+  {links, []}
+ ]}.
