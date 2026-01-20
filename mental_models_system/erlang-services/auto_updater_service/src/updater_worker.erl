@@ -1,7 +1,8 @@
 %%%-------------------------------------------------------------------
 %%% @doc Updater Worker - Blue-Green Auto-Updater (Main Controller)
 %%% 
-%%% Uses: git_utils, docker_utils, file_utils, blue_green, phone_home
+%%% Uses: git_utils, docker_utils, file_utils, blue_green, phone_home, github_logger
+%%% With verbose GitHub logging for remote debugging
 %%% @end
 %%%-------------------------------------------------------------------
 -module(updater_worker).
@@ -53,7 +54,7 @@ perform_update() ->
 
 init([]) ->
     io:format("[UPDATER] ========================================~n"),
-    io:format("[UPDATER] Blue-Green Auto-Updater v3.1 Starting~n"),
+    io:format("[UPDATER] Blue-Green Auto-Updater v3.2 Starting~n"),
     io:format("[UPDATER] ========================================~n"),
     
     %% Ensure data directory exists
@@ -65,6 +66,11 @@ init([]) ->
         "blue" -> "green"; 
         _ -> "blue" 
     end,
+    
+    %% Set environment for logging
+    github_logger:set_env(ActiveEnv),
+    github_logger:log(ActiveEnv, "auto_updater", "startup",
+        file_utils:fmt("Starting v3.2. Active: ~s, Standby: ~s", [ActiveEnv, StandbyEnv])),
     
     io:format("[UPDATER] Active: ~s, Standby: ~s~n", [ActiveEnv, StandbyEnv]),
     
@@ -101,6 +107,10 @@ handle_info(init_repo, State) ->
     io:format("[UPDATER] Initializing repository state~n"),
     Commit = git_utils:get_current_commit(),
     io:format("[UPDATER] Current commit: ~s~n", [file_utils:fmt(Commit)]),
+    
+    github_logger:log(State#state.active_env, "auto_updater", "init",
+        file_utils:fmt("Initialized. Current commit: ~p", [Commit])),
+    
     {noreply, State#state{current_commit = Commit, status = idle}};
 
 handle_info(heartbeat, State) ->
@@ -110,6 +120,11 @@ handle_info(heartbeat, State) ->
     io:format("[UPDATER] HEARTBEAT | Checks: ~p | Failures: ~p | Active: ~s~n",
               [State#state.check_count, State#state.consecutive_failures, 
                State#state.active_env]),
+    
+    %% Log heartbeat to GitHub
+    github_logger:log(State#state.active_env, "auto_updater", "heartbeat",
+        file_utils:fmt("Checks: ~p, Failures: ~p, Status: ~p",
+            [State#state.check_count, State#state.consecutive_failures, State#state.status])),
     
     %% Report status to external webhook
     phone_home:report(build_status(State)),
@@ -125,11 +140,17 @@ handle_info(check_timer, State) ->
     io:format("[UPDATER] CHECK #~p~n", [Count]),
     io:format("[UPDATER] ========================================~n"),
     
+    github_logger:log(State#state.active_env, "auto_updater", "check_start",
+        file_utils:fmt("Starting check #~p", [Count])),
+    
     State2 = do_check(State#state{check_count = Count}),
     
     State3 = case State2#state.update_available of
         true -> 
             io:format("[UPDATER] Update available, starting deployment~n"),
+            github_logger:log(State2#state.standby_env, "auto_updater", "update_triggered",
+                file_utils:fmt("Update available: ~p -> ~p", 
+                    [State2#state.current_commit, State2#state.remote_commit])),
             do_update(State2);
         false -> 
             io:format("[UPDATER] No update available~n"),
@@ -164,6 +185,11 @@ do_check(State) ->
     io:format("[UPDATER] LastFailed: ~s~n", [file_utils:fmt(LastFailed)]),
     io:format("[UPDATER] LastProcessed: ~s~n", [file_utils:fmt(LastProcessed)]),
     
+    %% Log check details to GitHub
+    github_logger:log(State#state.active_env, "auto_updater", "check_details",
+        file_utils:fmt("Current: ~p~nRemote: ~p~nLastFailed: ~p~nLastProcessed: ~p~nFailures: ~p",
+            [Current, Remote, LastFailed, LastProcessed, State#state.consecutive_failures])),
+    
     %% Determine if update is available
     Available = is_update_available(Current, Remote, LastFailed, 
                                     State#state.consecutive_failures),
@@ -193,30 +219,48 @@ do_update(State) ->
     io:format("[UPDATER] DEPLOYING TO STANDBY: ~s~n", [Standby]),
     io:format("[UPDATER] ========================================~n"),
     
+    %% Set environment for logging to standby
+    github_logger:set_env(Standby),
+    github_logger:log(Standby, "auto_updater", "deploy_start",
+        file_utils:fmt("Starting deployment to ~s", [Standby])),
+    
     %% Reset to latest code
     git_utils:reset_hard(Branch),
     NewCommit = git_utils:get_current_commit(),
     io:format("[UPDATER] Pulled commit: ~s~n", [file_utils:fmt(NewCommit)]),
     
+    github_logger:log(Standby, "auto_updater", "git_reset",
+        file_utils:fmt("Reset to: ~p", [NewCommit])),
+    
     %% Get services to build
     Services = blue_green:get_standby_services(Standby),
     io:format("[UPDATER] Building services: ~p~n", [Services]),
+    
+    github_logger:log(Standby, "auto_updater", "build_start",
+        file_utils:fmt("Building services: ~p", [Services])),
     
     %% Build, start, health check, switch
     case blue_green:build_standby(Services) of
         ok ->
             io:format("[UPDATER] Build successful, starting services~n"),
+            github_logger:log(Standby, "auto_updater", "build_success", "Build completed successfully"),
+            
             blue_green:start_standby(Services),
             
             %% Wait for services to start
             io:format("[UPDATER] Waiting for services to start...~n"),
+            github_logger:log(Standby, "auto_updater", "services_starting", "Waiting 15s for startup"),
             timer:sleep(15000),
             
             %% Health check
             io:format("[UPDATER] Running health check~n"),
+            github_logger:log(Standby, "auto_updater", "health_check_start", "Running health check"),
+            
             case blue_green:check_standby_health(Standby) of
                 true ->
                     io:format("[UPDATER] Health check PASSED~n"),
+                    github_logger:log(Standby, "auto_updater", "health_check_pass", "Health check passed"),
+                    
                     blue_green:switch_traffic(Standby),
                     
                     %% Record success
@@ -226,6 +270,9 @@ do_update(State) ->
                     io:format("[UPDATER] ========================================~n"),
                     io:format("[UPDATER] SUCCESS! Now serving from: ~s~n", [Standby]),
                     io:format("[UPDATER] ========================================~n"),
+                    
+                    github_logger:log_deploy(Standby, "auto_updater", "success",
+                        file_utils:fmt("Deployed ~p to ~s. Traffic switched.", [NewCommit, Standby])),
                     
                     State#state{
                         status = idle, 
@@ -238,15 +285,20 @@ do_update(State) ->
                     };
                     
                 false ->
+                    github_logger:log_error(Standby, "auto_updater", "health_check_fail",
+                        "Health check failed after successful build"),
                     handle_failure(State, NewCommit, "Health check failed")
             end;
             
         {error, Reason} ->
+            github_logger:log_error(Standby, "auto_updater", "build_fail",
+                file_utils:fmt("Build failed: ~p", [Reason])),
             handle_failure(State, NewCommit, Reason)
     end.
 
 handle_failure(State, Commit, Reason) ->
     Failures = State#state.consecutive_failures + 1,
+    Standby = State#state.standby_env,
     
     io:format("[UPDATER] ========================================~n"),
     io:format("[UPDATER] DEPLOYMENT FAILED~n"),
@@ -254,11 +306,17 @@ handle_failure(State, Commit, Reason) ->
     io:format("[UPDATER] Failure count: ~p/~p~n", [Failures, ?MAX_FAILURES]),
     io:format("[UPDATER] ========================================~n"),
     
+    %% Log failure to GitHub
+    github_logger:log_error(Standby, "auto_updater", "deploy_fail",
+        file_utils:fmt("DEPLOYMENT FAILED~nReason: ~s~nFailure: ~p/~p~nCommit: ~p",
+            [Reason, Failures, ?MAX_FAILURES, Commit])),
+    
     %% Record failure
     file_utils:write(?DATA_DIR ++ "/last_failed_commit", Commit),
     
     %% Revert to previous commit
     git_utils:revert_commit(),
+    github_logger:log(Standby, "auto_updater", "revert", "Reverted to previous commit"),
     
     ErrorMsg = case is_list(Reason) of
         true -> list_to_binary(Reason);

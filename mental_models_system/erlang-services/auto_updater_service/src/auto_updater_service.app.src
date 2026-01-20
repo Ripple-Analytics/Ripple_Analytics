@@ -21,6 +21,7 @@
     file_utils,
     blue_green,
     phone_home,
+    github_logger,
     lm_studio_fixer,
     health_handler,
     updater_status_handler,
