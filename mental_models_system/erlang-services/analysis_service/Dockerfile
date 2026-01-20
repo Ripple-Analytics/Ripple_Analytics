@@ -17,9 +17,6 @@ COPY src src/
 # Compile
 RUN rebar3 compile
 
-# Build release
-RUN rebar3 release
-
 # Expose port
 EXPOSE 8001
 
@@ -27,5 +24,5 @@ EXPOSE 8001
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD wget -q --spider http://localhost:8001/health || exit 1
 
-# Run the release
-CMD ["_build/default/rel/analysis_service/bin/analysis_service", "foreground"]
+# Run the application
+CMD ["erl", "-pa", "_build/default/lib/*/ebin", "-s", "analysis_service_app", "-noshell"]

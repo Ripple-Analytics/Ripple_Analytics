@@ -7,11 +7,11 @@ COPY rebar.config .
 RUN rebar3 get-deps
 
 COPY src src/
-RUN rebar3 compile && rebar3 release
+RUN rebar3 compile
 
 EXPOSE 8002
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD wget -q --spider http://localhost:8002/health || exit 1
 
-CMD ["_build/default/rel/harvester_service/bin/harvester_service", "foreground"]
+CMD ["erl", "-pa", "_build/default/lib/*/ebin", "-s", "harvester_service_app", "-noshell"]
