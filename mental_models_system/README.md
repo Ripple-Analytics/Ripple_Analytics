@@ -4,38 +4,87 @@
 
 Built for 100 years. Planck knowledge, not chauffeur knowledge.
 
+**Now fully refactored to Electric Clojure with Dockerized Microservices Architecture.**
+
+## Electric Clojure Microservices Architecture
+
+The system is organized into two main service groups, all built in Electric Clojure:
+
+### Backend Microservices (Ports 8000-8005)
+
+| Service | Port | Description |
+|---------|------|-------------|
+| API Gateway | 8000 | Routes requests to backend services, handles CORS |
+| Analysis Service | 8001 | Mental model analysis, pattern detection, LLM integration |
+| Harvester Service | 8002 | Web scraping, file processing, data collection |
+| Storage Service | 8003 | Data persistence, document storage |
+| Chaos Engineering | 8005 | Resilience testing, fault injection, load testing |
+
+### Desktop Services (Ports 3000-3002)
+
+| Service | Port | Description |
+|---------|------|-------------|
+| Desktop UI | 3000 | Electric Clojure reactive web UI (light mode) |
+| Desktop Worker | 3001 | Background processing, file watching, scheduled tasks |
+| Desktop Sync | 3002 | State synchronization, offline queue, caching |
+
+## Quick Start (Docker)
+
+```bash
+# Start ALL services (backend + desktop)
+cd mental_models_system
+docker-compose up -d
+
+# Start only backend microservices
+cd mental_models_system/microservices
+docker-compose up -d
+
+# Start only desktop services
+cd mental_models_system/desktop-electric
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+```
+
+Access the Desktop UI at: http://localhost:3000
+
 ## Project Statistics
 
 | Metric | Value |
 |--------|-------|
 | Total Lines of Code | 86,051 |
-| Electric Clojure Code | 14,632 lines |
+| Electric Clojure Code | 14,632+ lines |
 | Swift Code | 4,000+ lines |
 | JSON Data | 22,395 lines |
 | HTML/Templates | 1,200+ lines |
 | YAML/Config | 1,957 lines |
 | Total Files | 220+ |
-| Mental Models | 169 |
+| Mental Models | 174+ |
 | Failure Modes | 845 |
+| Microservices | 8 |
 | Connectors | 11 |
-| Task Handlers | 9 |
-| Statistical Analysis Functions | 15+ |
-| iOS/watchOS Views | 20+ |
 
-**Last Updated:** January 18, 2026 12:30 UTC
+**Last Updated:** January 20, 2026
 
 ## Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    MENTAL MODELS SYSTEM                      │
+│              MENTAL MODELS SYSTEM (Electric Clojure)         │
 ├─────────────────────────────────────────────────────────────┤
-│  PostgreSQL          │  PySpark              │  Excel/API   │
-│  ─────────────────   │  ─────────────────    │  ──────────  │
-│  • 1.2M+ Case Studies│  • Monte Carlo Sims   │  • Reports   │
-│  • 113 Mental Models │  • Bayesian Inference │  • Dashboards│
-│  • 264 Principles    │  • HMM Regime Detect  │  • Exports   │
-│  • Planck Matrix     │  • Lollapalooza Calc  │  • API       │
+│  BACKEND MICROSERVICES          │  DESKTOP SERVICES          │
+│  ─────────────────────────────  │  ──────────────────────── │
+│  • API Gateway (8000)           │  • Desktop UI (3000)       │
+│  • Analysis Service (8001)      │  • Desktop Worker (3001)   │
+│  • Harvester Service (8002)     │  • Desktop Sync (3002)     │
+│  • Storage Service (8003)       │                            │
+│  • Chaos Engineering (8005)     │                            │
+├─────────────────────────────────────────────────────────────┤
+│  All services: Electric Clojure + Docker + Ring/Jetty        │
 └─────────────────────────────────────────────────────────────┘
 ```
 

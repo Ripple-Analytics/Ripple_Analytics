@@ -1,0 +1,35 @@
+{:paths ["src" "resources"]
+ 
+ :mvn/repos {"clojars" {:url "https://repo.clojars.org/"}}
+ 
+ :deps {org.clojure/clojure {:mvn/version "1.11.1"}
+        
+        ;; Server
+        ring/ring-core {:mvn/version "1.10.0"}
+        ring/ring-jetty-adapter {:mvn/version "1.10.0"}
+        ring/ring-defaults {:mvn/version "0.4.0"}
+        ring/ring-json {:mvn/version "0.5.1"}
+        
+        ;; HTTP Client
+        clj-http/clj-http {:mvn/version "3.12.3"}
+        
+        ;; JSON
+        cheshire/cheshire {:mvn/version "5.12.0"}
+        
+        ;; Async for background processing
+        org.clojure/core.async {:mvn/version "1.6.681"}
+        
+        ;; Scheduling
+        clojurewerkz/quartzite {:mvn/version "2.1.0"}
+        
+        ;; File watching
+        hawk/hawk {:mvn/version "0.2.11"}
+        
+        ;; Logging
+        org.clojure/tools.logging {:mvn/version "1.2.4"}
+        ch.qos.logback/logback-classic {:mvn/version "1.4.11"}}
+ 
+ :aliases
+ {:run {:main-opts ["-m" "desktop.worker.core"]}
+  :dev {:extra-paths ["dev"]
+        :extra-deps {nrepl/nrepl {:mvn/version "1.1.0"}}}}}

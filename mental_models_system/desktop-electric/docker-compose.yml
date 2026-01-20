@@ -1,0 +1,108 @@
+version: '3.8'
+
+# Mental Models System - Electric Clojure Desktop Services
+# Dockerized microservices architecture for the desktop application
+
+services:
+  # ============================================
+  # Desktop UI Service
+  # ============================================
+  desktop-ui:
+    build:
+      context: ./desktop-ui
+      dockerfile: Dockerfile
+    container_name: mental-models-desktop-ui
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - API_GATEWAY_URL=http://api-gateway:8000
+      - WORKER_SERVICE_URL=http://desktop-worker:3001
+      - SYNC_SERVICE_URL=http://desktop-sync:3002
+    depends_on:
+      desktop-worker:
+        condition: service_healthy
+      desktop-sync:
+        condition: service_healthy
+    networks:
+      - mental-models-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ============================================
+  # Desktop Worker Service
+  # ============================================
+  desktop-worker:
+    build:
+      context: ./desktop-worker
+      dockerfile: Dockerfile
+    container_name: mental-models-desktop-worker
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - API_GATEWAY_URL=http://api-gateway:8000
+      - HARVESTER_SERVICE_URL=http://harvester-service:8002
+    volumes:
+      - worker-data:/data
+      - watched-files:/watched
+    networks:
+      - mental-models-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # ============================================
+  # Desktop Sync Service
+  # ============================================
+  desktop-sync:
+    build:
+      context: ./desktop-sync
+      dockerfile: Dockerfile
+    container_name: mental-models-desktop-sync
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - API_GATEWAY_URL=http://api-gateway:8000
+      - STORAGE_SERVICE_URL=http://storage-service:8003
+      - DATA_DIR=/data
+    volumes:
+      - sync-data:/data
+    networks:
+      - mental-models-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  mental-models-network:
+    driver: bridge
+    name: mental-models-network
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  worker-data:
+    name: mental-models-worker-data
+  watched-files:
+    name: mental-models-watched-files
+  sync-data:
+    name: mental-models-sync-data
