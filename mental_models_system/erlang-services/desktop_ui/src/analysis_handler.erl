@@ -146,8 +146,9 @@ init(Req0, State) ->
                         <h3 style=\"margin: 0; font-size: 14px;\">Export Analysis Results</h3>
                         <p style=\"margin: 5px 0 0 0; font-size: 11px; color: #666;\">Download or share your analysis in various formats</p>
                     </div>
-                    <div style=\"display: flex; gap: 8px;\">
-                        <button class=\"btn\" onclick=\"exportJSON()\" style=\"font-size: 12px; padding: 6px 12px;\">Export as JSON</button>
+                    <div style=\"display: flex; gap: 8px; flex-wrap: wrap;\">
+                        <button class=\"btn\" onclick=\"exportHTMLReport()\" style=\"font-size: 12px; padding: 6px 12px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\">Export HTML Report</button>
+                        <button class=\"btn btn-secondary\" onclick=\"exportJSON()\" style=\"font-size: 12px; padding: 6px 12px;\">Export as JSON</button>
                         <button class=\"btn btn-secondary\" onclick=\"exportPDF()\" style=\"font-size: 12px; padding: 6px 12px;\">Export as PDF</button>
                         <button class=\"btn btn-secondary\" onclick=\"exportMarkdown()\" style=\"font-size: 12px; padding: 6px 12px;\">Export as Markdown</button>
                         <button class=\"btn btn-secondary\" onclick=\"copyToClipboard()\" style=\"font-size: 12px; padding: 6px 12px;\">Copy to Clipboard</button>
@@ -1175,6 +1176,48 @@ init(Req0, State) ->
                     console.error('Failed to copy:', err);
                     alert('Failed to copy to clipboard');
                 });
+            }
+            
+            async function exportHTMLReport() {
+                if (!lastAnalysisResult) {
+                    alert('No analysis results to export');
+                    return;
+                }
+                
+                setStatus('Generating report...', 'yellow');
+                
+                try {
+                    const reportData = {
+                        action: 'generate',
+                        result: lastAnalysisResult,
+                        title: 'Mental Models Analysis Report',
+                        format: 'html'
+                    };
+                    
+                    const response = await fetch('/api/analysis/report', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(reportData)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to generate report');
+                    }
+                    
+                    const blob = await response.blob();
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'mental-models-report-' + new Date().toISOString().split('T')[0] + '.html';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    
+                    setStatus('Report downloaded', 'green');
+                } catch (e) {
+                    console.error('Report generation error:', e);
+                    alert('Failed to generate HTML report: ' + e.message);
+                    setStatus('Error', 'red');
+                }
             }
         </script>">>
     ],
