@@ -194,6 +194,78 @@ base_layout(Title, Content) ->
             const res = await fetch('/api' + endpoint, opts);
             return res.json();
         }
+        
+        // Global keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Don't trigger shortcuts when typing in inputs
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            
+            // Ctrl/Cmd + key shortcuts
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key.toLowerCase()) {
+                    case 'h': // Go to History
+                        e.preventDefault();
+                        window.location.href = '/history';
+                        break;
+                    case 'm': // Go to Models
+                        e.preventDefault();
+                        window.location.href = '/models';
+                        break;
+                    case 'a': // Go to Analysis
+                        e.preventDefault();
+                        window.location.href = '/analysis';
+                        break;
+                    case 'd': // Go to Dashboard
+                        e.preventDefault();
+                        window.location.href = '/';
+                        break;
+                    case 's': // Go to Settings
+                        e.preventDefault();
+                        window.location.href = '/settings';
+                        break;
+                    case 'k': // Show keyboard shortcuts help
+                        e.preventDefault();
+                        showKeyboardShortcuts();
+                        break;
+                }
+            }
+            
+            // Single key shortcuts (when not in input)
+            switch(e.key) {
+                case '?': // Show help
+                    showKeyboardShortcuts();
+                    break;
+                case 'Escape': // Close modals
+                    const modal = document.querySelector('.modal-overlay');
+                    if (modal) modal.remove();
+                    const shortcuts = document.getElementById('shortcuts-modal');
+                    if (shortcuts) shortcuts.remove();
+                    break;
+            }
+        });
+        
+        function showKeyboardShortcuts() {
+            // Remove existing modal if present
+            const existing = document.getElementById('shortcuts-modal');
+            if (existing) { existing.remove(); return; }
+            
+            let html = '<div id=\"shortcuts-modal\" style=\"position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;\" onclick=\"this.remove()\">';
+            html += '<div style=\"background: white; padding: 30px; border-radius: 12px; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.2);\" onclick=\"event.stopPropagation()\">';
+            html += '<h2 style=\"margin-bottom: 20px; color: #4361ee;\">Keyboard Shortcuts</h2>';
+            html += '<table style=\"width: 100%;\">';
+            html += '<tr><td style=\"padding: 8px 0;\"><kbd style=\"background: #e9ecef; padding: 4px 8px; border-radius: 4px;\">Ctrl+D</kbd></td><td>Dashboard</td></tr>';
+            html += '<tr><td style=\"padding: 8px 0;\"><kbd style=\"background: #e9ecef; padding: 4px 8px; border-radius: 4px;\">Ctrl+A</kbd></td><td>Analysis</td></tr>';
+            html += '<tr><td style=\"padding: 8px 0;\"><kbd style=\"background: #e9ecef; padding: 4px 8px; border-radius: 4px;\">Ctrl+M</kbd></td><td>Models</td></tr>';
+            html += '<tr><td style=\"padding: 8px 0;\"><kbd style=\"background: #e9ecef; padding: 4px 8px; border-radius: 4px;\">Ctrl+H</kbd></td><td>History</td></tr>';
+            html += '<tr><td style=\"padding: 8px 0;\"><kbd style=\"background: #e9ecef; padding: 4px 8px; border-radius: 4px;\">Ctrl+S</kbd></td><td>Settings</td></tr>';
+            html += '<tr><td style=\"padding: 8px 0;\"><kbd style=\"background: #e9ecef; padding: 4px 8px; border-radius: 4px;\">Ctrl+K</kbd></td><td>Show shortcuts</td></tr>';
+            html += '<tr><td style=\"padding: 8px 0;\"><kbd style=\"background: #e9ecef; padding: 4px 8px; border-radius: 4px;\">?</kbd></td><td>Show shortcuts</td></tr>';
+            html += '<tr><td style=\"padding: 8px 0;\"><kbd style=\"background: #e9ecef; padding: 4px 8px; border-radius: 4px;\">Esc</kbd></td><td>Close modals</td></tr>';
+            html += '</table>';
+            html += '<button onclick=\"this.parentElement.parentElement.remove()\" style=\"margin-top: 20px; padding: 10px 20px; background: #4361ee; color: white; border: none; border-radius: 6px; cursor: pointer;\">Close</button>';
+            html += '</div></div>';
+            document.body.insertAdjacentHTML('beforeend', html);
+        }
     </script>
 </body>
 </html>">>
