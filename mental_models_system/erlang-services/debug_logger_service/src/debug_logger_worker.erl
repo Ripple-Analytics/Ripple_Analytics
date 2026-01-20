@@ -263,20 +263,22 @@ do_push_sync() ->
         %% Reset remote to clean URL (no embedded token)
         os:cmd("cd " ++ ?REPO_PATH ++ " && git remote set-url origin https://github.com/Ripple-Analytics/Ripple_Analytics.git 2>&1"),
         
-        %% Fetch latest from remote
-        FetchResult = os:cmd("cd " ++ ?REPO_PATH ++ " && git fetch origin release2 2>&1"),
+        %% Fetch ALL branches from remote
+        FetchResult = os:cmd("cd " ++ ?REPO_PATH ++ " && git fetch origin 2>&1"),
         io:format("[DEBUG_LOGGER] Fetch result: ~s~n", [truncate(FetchResult, 100)]),
         
         %% Copy log files to temp location before git operations
-        os:cmd("cp -r " ++ ?LOG_BASE ++ " /tmp/debug_logs_backup 2>&1"),
+        os:cmd("mkdir -p /tmp/debug_logs_backup 2>&1"),
+        os:cmd("cp -r " ++ ?LOG_BASE ++ "/* /tmp/debug_logs_backup/ 2>&1"),
         
-        %% Hard reset to remote release2 (clean slate)
-        os:cmd("cd " ++ ?REPO_PATH ++ " && git checkout -f release2 2>&1"),
-        ResetResult = os:cmd("cd " ++ ?REPO_PATH ++ " && git reset --hard origin/release2 2>&1"),
-        io:format("[DEBUG_LOGGER] Reset result: ~s~n", [truncate(ResetResult, 100)]),
+        %% Create release2 branch from remote if it doesn't exist locally
+        os:cmd("cd " ++ ?REPO_PATH ++ " && git branch -D release2 2>&1"),
+        CreateBranch = os:cmd("cd " ++ ?REPO_PATH ++ " && git checkout -b release2 origin/release2 2>&1"),
+        io:format("[DEBUG_LOGGER] Create branch result: ~s~n", [truncate(CreateBranch, 100)]),
         
         %% Ensure debug_logs directory exists
         filelib:ensure_dir(?LOG_BASE ++ "/"),
+        os:cmd("mkdir -p " ++ ?LOG_BASE ++ " 2>&1"),
         
         %% Copy log files back from backup
         os:cmd("cp -r /tmp/debug_logs_backup/* " ++ ?LOG_BASE ++ "/ 2>&1"),
