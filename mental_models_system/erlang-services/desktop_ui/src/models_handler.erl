@@ -70,7 +70,7 @@ init(Req0, State) ->
                 
                 let html = '<div class=\"grid\">';
                 for (const model of models) {
-                    html += '<div class=\"model-card\">';
+                    html += '<div class=\"model-card\" onclick=\"showModelDetails(\\'' + encodeURIComponent(JSON.stringify(model)) + '\\')\" style=\"cursor:pointer;\">';
                     html += '<h4>' + model.name + '</h4>';
                     html += '<span class=\"category\">' + model.category + '</span>';
                     html += '<p>' + model.description + '</p>';
@@ -80,11 +80,57 @@ init(Req0, State) ->
                     if (model.failure_modes && model.failure_modes.length > 0) {
                         html += '<p style=\"margin-top:10px;font-size:12px;\"><strong>Failure Modes:</strong> ' + model.failure_modes.join(', ') + '</p>';
                     }
+                    html += '<div style=\"margin-top:10px;\">';
+                    html += '<button class=\"btn btn-secondary\" onclick=\"event.stopPropagation(); analyzeWithModel(\\'' + model.name + '\\')\" style=\"font-size:12px;padding:5px 10px;\">Use in Analysis</button>';
+                    html += '</div>';
                     html += '</div>';
                 }
                 html += '</div>';
                 html += '<p style=\"margin-top:20px;color:#666;\">Showing ' + models.length + ' of ' + allModels.length + ' models</p>';
                 document.getElementById('models-list').innerHTML = html;
+            }
+            
+            function showModelDetails(encodedModel) {
+                const model = JSON.parse(decodeURIComponent(encodedModel));
+                let html = '<div class=\"modal-overlay\" onclick=\"closeModal()\">';
+                html += '<div class=\"modal-content\" onclick=\"event.stopPropagation()\">';
+                html += '<button class=\"modal-close\" onclick=\"closeModal()\">&times;</button>';
+                html += '<h2>' + model.name + '</h2>';
+                html += '<span class=\"category\">' + model.category + '</span>';
+                html += '<p style=\"margin-top:15px;\">' + model.description + '</p>';
+                if (model.key_insight) {
+                    html += '<div style=\"margin-top:15px;padding:15px;background:#f8f9fa;border-radius:8px;\">';
+                    html += '<strong>Key Insight:</strong><br>' + model.key_insight;
+                    html += '</div>';
+                }
+                if (model.keywords && model.keywords.length > 0) {
+                    html += '<div style=\"margin-top:15px;\"><strong>Keywords:</strong> ';
+                    html += model.keywords.map(k => '<span style=\"background:#e9ecef;padding:2px 8px;border-radius:4px;margin-right:5px;\">' + k + '</span>').join('');
+                    html += '</div>';
+                }
+                if (model.failure_modes && model.failure_modes.length > 0) {
+                    html += '<div style=\"margin-top:15px;\"><strong>Failure Modes:</strong><ul>';
+                    for (const fm of model.failure_modes) {
+                        html += '<li>' + fm + '</li>';
+                    }
+                    html += '</ul></div>';
+                }
+                html += '<div style=\"margin-top:20px;\">';
+                html += '<button class=\"btn\" onclick=\"analyzeWithModel(\\'' + model.name + '\\')\">Use in Analysis</button>';
+                html += '</div>';
+                html += '</div></div>';
+                document.body.insertAdjacentHTML('beforeend', html);
+            }
+            
+            function closeModal() {
+                const modal = document.querySelector('.modal-overlay');
+                if (modal) modal.remove();
+            }
+            
+            function analyzeWithModel(modelName) {
+                // Store the model name and redirect to analysis page
+                sessionStorage.setItem('selectedModel', modelName);
+                window.location.href = '/analysis';
             }
             
             loadModels();
