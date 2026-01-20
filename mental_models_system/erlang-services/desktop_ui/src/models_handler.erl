@@ -12,6 +12,10 @@ init(Req0, State) ->
             <h2>Mental Models Library</h2>
             <p>Browse and search through 174+ mental models across multiple categories.</p>
             <br>
+            <div style=\"display: flex; gap: 10px; margin-bottom: 15px;\">
+                <button class=\"btn\" id=\"all-tab\" onclick=\"showAllModels()\" style=\"flex: 1;\">All Models</button>
+                <button class=\"btn btn-secondary\" id=\"favorites-tab\" onclick=\"showFavorites()\" style=\"flex: 1;\">Favorites (<span id=\"fav-count\">0</span>)</button>
+            </div>
             <input type=\"text\" id=\"search\" placeholder=\"Search models...\" onkeyup=\"filterModels()\">
             <select id=\"category-filter\" onchange=\"filterModels()\" style=\"padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0; margin-left: 10px;\">
                 <option value=\"\">All Categories</option>
@@ -22,6 +26,73 @@ init(Req0, State) ->
         </div>
         <script>
             let allModels = [];
+            let favorites = [];
+            let showingFavorites = false;
+            
+            async function loadFavorites() {
+                try {
+                    const res = await fetch('/api/storage/favorites');
+                    const data = await res.json();
+                    favorites = data.favorites || [];
+                    document.getElementById('fav-count').textContent = favorites.length;
+                } catch (e) {
+                    console.error('Error loading favorites:', e);
+                    favorites = [];
+                }
+            }
+            
+            function isFavorite(modelName) {
+                return favorites.some(f => f.name === modelName || f.id === modelName);
+            }
+            
+            async function toggleFavorite(modelName, category, event) {
+                if (event) event.stopPropagation();
+                
+                if (isFavorite(modelName)) {
+                    // Remove from favorites
+                    try {
+                        await fetch('/api/storage/favorites?model_id=' + encodeURIComponent(modelName), {method: 'DELETE'});
+                        favorites = favorites.filter(f => f.name !== modelName && f.id !== modelName);
+                    } catch (e) {
+                        console.error('Error removing favorite:', e);
+                    }
+                } else {
+                    // Add to favorites
+                    try {
+                        await fetch('/api/storage/favorites', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({model_id: modelName, model_name: modelName, category: category})
+                        });
+                        favorites.push({id: modelName, name: modelName, category: category});
+                    } catch (e) {
+                        console.error('Error adding favorite:', e);
+                    }
+                }
+                
+                document.getElementById('fav-count').textContent = favorites.length;
+                if (showingFavorites) {
+                    showFavorites();
+                } else {
+                    filterModels();
+                }
+            }
+            
+            function showAllModels() {
+                showingFavorites = false;
+                document.getElementById('all-tab').className = 'btn';
+                document.getElementById('favorites-tab').className = 'btn btn-secondary';
+                filterModels();
+            }
+            
+            function showFavorites() {
+                showingFavorites = true;
+                document.getElementById('all-tab').className = 'btn btn-secondary';
+                document.getElementById('favorites-tab').className = 'btn';
+                
+                const favoriteModels = allModels.filter(m => isFavorite(m.name));
+                renderModels(favoriteModels);
+            }
             
             async function loadModels() {
                 try {
@@ -63,15 +134,23 @@ init(Req0, State) ->
             
             function renderModels(models) {
                 if (models.length === 0) {
+                    const msg = showingFavorites ? 'No favorites yet. Click the star icon on any model to add it to your favorites.' : 'No models found matching your criteria.';
                     document.getElementById('models-list').innerHTML = 
-                        '<div class=\"alert alert-info\">No models found matching your criteria.</div>';
+                        '<div class=\"alert alert-info\">' + msg + '</div>';
                     return;
                 }
                 
                 let html = '<div class=\"grid\">';
                 for (const model of models) {
+                    const isFav = isFavorite(model.name);
+                    const starStyle = isFav ? 'color: #ffc107; font-size: 20px;' : 'color: #ccc; font-size: 20px;';
+                    const starChar = isFav ? '&#9733;' : '&#9734;';
+                    
                     html += '<div class=\"model-card\" onclick=\"showModelDetails(\\'' + encodeURIComponent(JSON.stringify(model)) + '\\')\" style=\"cursor:pointer;\">';
-                    html += '<h4>' + model.name + '</h4>';
+                    html += '<div style=\"display: flex; justify-content: space-between; align-items: start;\">';
+                    html += '<h4 style=\"margin: 0;\">' + model.name + '</h4>';
+                    html += '<button onclick=\"toggleFavorite(\\'' + model.name.replace(/'/g, "\\\\'") + '\\', \\'' + model.category + '\\', event)\" style=\"background: none; border: none; cursor: pointer; ' + starStyle + '\" title=\"' + (isFav ? 'Remove from favorites' : 'Add to favorites') + '\">' + starChar + '</button>';
+                    html += '</div>';
                     html += '<span class=\"category\">' + model.category + '</span>';
                     html += '<p>' + model.description + '</p>';
                     if (model.key_insight) {
@@ -133,7 +212,12 @@ init(Req0, State) ->
                 window.location.href = '/analysis';
             }
             
-            loadModels();
+            // Initialize: load favorites first, then models
+            async function init() {
+                await loadFavorites();
+                await loadModels();
+            }
+            init();
         </script>">>
     ],
     Html = html_templates:base_layout(<<"Models">>, Content),
