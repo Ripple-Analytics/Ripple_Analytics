@@ -101,25 +101,47 @@ check_availability(Url) ->
     end.
 
 llm_analyze(Url, Text, TopN) ->
+    SystemPrompt = <<"You are an expert analyst trained in mental models, cognitive frameworks, and decision-making tools. You have deep knowledge of:
+
+THINKING TOOLS: First Principles, Inversion, Circle of Competence, Second-Order Thinking, Occam's Razor, Hanlon's Razor, Probabilistic Thinking
+
+PSYCHOLOGY & BIASES: Confirmation Bias, Loss Aversion, Availability Heuristic, Anchoring, Hindsight Bias, Sunk Cost Fallacy, Dunning-Kruger Effect, Social Proof, Recency Bias, Status Quo Bias
+
+ECONOMICS & FINANCE: Margin of Safety, Compound Interest, Opportunity Cost, Supply & Demand, Incentives, Comparative Advantage, Diminishing Returns, Network Effects
+
+SYSTEMS THINKING: Feedback Loops, Emergence, Bottlenecks, Leverage Points, Redundancy
+
+PHYSICS MODELS: Entropy, Inertia, Critical Mass, Activation Energy
+
+BIOLOGY MODELS: Natural Selection, Adaptation, Red Queen Effect, Ecosystems
+
+MATHEMATICS: Regression to Mean, Power Laws, Bayes' Theorem, Law of Large Numbers
+
+ORGANIZATIONAL: Economies of Scale, Switching Costs, Brand Moats, Principal-Agent Problem, Bureaucracy
+
+Analyze text to identify which mental models are most relevant and explain how they apply.">>,
+
     Prompt = <<"Analyze the following text and identify the top ", 
                (integer_to_binary(TopN))/binary, 
                " most relevant mental models that apply:\n\n",
                Text/binary,
-               "\n\nFor each mental model, provide:\n",
-               "1. Name of the model\n",
-               "2. Relevance score (0-100)\n",
-               "3. Brief explanation of how it applies\n",
-               "Format as JSON array.">>,
+               "\n\nFor each mental model, provide a JSON object with:\n",
+               "- \"name\": The model name\n",
+               "- \"category\": The category (Thinking Tools, Psychology, Economics, etc.)\n",
+               "- \"relevance\": Score from 0-100\n",
+               "- \"explanation\": How this model applies to the text\n",
+               "- \"actionable_insight\": What action or decision this suggests\n\n",
+               "Return a JSON array of objects. Be specific and practical.">>,
     
     RequestBody = jsx:encode(#{
         <<"model">> => <<"local-model">>,
         <<"messages">> => [
             #{<<"role">> => <<"system">>, 
-              <<"content">> => <<"You are an expert in mental models and cognitive frameworks.">>},
+              <<"content">> => SystemPrompt},
             #{<<"role">> => <<"user">>, 
               <<"content">> => Prompt}
         ],
-        <<"max_tokens">> => 1000,
+        <<"max_tokens">> => 1500,
         <<"temperature">> => 0.7
     }),
     
@@ -137,30 +159,53 @@ llm_analyze(Url, Text, TopN) ->
     end.
 
 llm_detect_biases(Url, Text) ->
+    SystemPrompt = <<"You are an expert in cognitive biases, behavioral psychology, and decision-making errors. You can identify subtle patterns of biased thinking in text, including:
+
+JUDGMENT BIASES:
+- Confirmation Bias: Seeking information that confirms existing beliefs
+- Anchoring: Over-relying on first piece of information
+- Availability Heuristic: Overweighting easily recalled examples
+- Hindsight Bias: Believing past events were predictable
+
+DECISION BIASES:
+- Loss Aversion: Preferring to avoid losses over acquiring gains
+- Sunk Cost Fallacy: Continuing due to past investment
+- Status Quo Bias: Preference for current state of affairs
+- Endowment Effect: Overvaluing what we own
+
+SOCIAL BIASES:
+- Social Proof: Following the crowd
+- Authority Bias: Over-trusting authority figures
+- In-group Bias: Favoring one's own group
+- Halo Effect: Letting one trait influence overall judgment
+
+SELF-ASSESSMENT BIASES:
+- Dunning-Kruger Effect: Overestimating competence when unskilled
+- Overconfidence: Excessive certainty in own answers
+- Self-Serving Bias: Attributing success to self, failure to others
+
+Analyze text carefully for evidence of these biases.">>,
+
     Prompt = <<"Analyze the following text for cognitive biases:\n\n",
                Text/binary,
-               "\n\nLook for these biases:\n",
-               "- Confirmation bias\n",
-               "- Loss aversion\n",
-               "- Availability heuristic\n",
-               "- Anchoring\n",
-               "- Hindsight bias\n",
-               "- Dunning-Kruger effect\n",
-               "- Status quo bias\n",
-               "- Social proof\n",
-               "- Narrative fallacy\n\n",
-               "For each bias detected, explain the evidence and severity (low/medium/high).\n",
-               "Format as JSON.">>,
+               "\n\nFor each bias detected, provide a JSON object with:\n",
+               "- \"bias\": The bias name (snake_case)\n",
+               "- \"category\": Judgment, Decision, Social, or Self-Assessment\n",
+               "- \"severity\": low, medium, or high\n",
+               "- \"evidence\": Array of specific phrases/patterns that indicate this bias\n",
+               "- \"explanation\": Why this indicates the bias\n",
+               "- \"mitigation\": How to counteract this bias\n\n",
+               "Return a JSON array. Only include biases with clear evidence.">>,
     
     RequestBody = jsx:encode(#{
         <<"model">> => <<"local-model">>,
         <<"messages">> => [
             #{<<"role">> => <<"system">>, 
-              <<"content">> => <<"You are an expert in cognitive biases and behavioral psychology.">>},
+              <<"content">> => SystemPrompt},
             #{<<"role">> => <<"user">>, 
               <<"content">> => Prompt}
         ],
-        <<"max_tokens">> => 1000,
+        <<"max_tokens">> => 1500,
         <<"temperature">> => 0.7
     }),
     
@@ -237,12 +282,22 @@ keyword_analyze(Text, TopN) ->
 
 keyword_detect_biases(Text) ->
     BiasKeywords = [
-        {<<"confirmation_bias">>, [<<"confirms">>, <<"proves">>, <<"knew it">>, <<"always said">>]},
-        {<<"loss_aversion">>, [<<"can't lose">>, <<"risk">>, <<"afraid">>, <<"protect">>]},
-        {<<"availability_heuristic">>, [<<"recently">>, <<"just saw">>, <<"heard about">>, <<"news">>]},
-        {<<"anchoring">>, [<<"first">>, <<"original">>, <<"started at">>, <<"initial">>]},
-        {<<"hindsight_bias">>, [<<"obvious">>, <<"should have known">>, <<"predictable">>]},
-        {<<"social_proof">>, [<<"everyone">>, <<"popular">>, <<"trending">>, <<"others">>]}
+        %% Judgment Biases
+        {<<"confirmation_bias">>, [<<"confirms">>, <<"proves">>, <<"knew it">>, <<"always said">>, <<"evidence supports">>, <<"validates">>]},
+        {<<"anchoring">>, [<<"first">>, <<"original">>, <<"started at">>, <<"initial">>, <<"reference point">>, <<"baseline">>]},
+        {<<"availability_heuristic">>, [<<"recently">>, <<"just saw">>, <<"heard about">>, <<"news">>, <<"remember when">>, <<"last time">>]},
+        {<<"hindsight_bias">>, [<<"obvious">>, <<"should have known">>, <<"predictable">>, <<"saw it coming">>, <<"inevitable">>]},
+        {<<"recency_bias">>, [<<"lately">>, <<"recent">>, <<"just happened">>, <<"this week">>, <<"trending now">>]},
+        %% Decision Biases
+        {<<"loss_aversion">>, [<<"can't lose">>, <<"risk">>, <<"afraid">>, <<"protect">>, <<"downside">>, <<"worst case">>]},
+        {<<"sunk_cost_fallacy">>, [<<"already invested">>, <<"come this far">>, <<"too late to stop">>, <<"wasted if">>, <<"put so much">>]},
+        {<<"status_quo_bias">>, [<<"always done">>, <<"why change">>, <<"working fine">>, <<"tradition">>, <<"usual way">>]},
+        %% Social Biases
+        {<<"social_proof">>, [<<"everyone">>, <<"popular">>, <<"trending">>, <<"others">>, <<"majority">>, <<"most people">>]},
+        {<<"authority_bias">>, [<<"expert says">>, <<"according to">>, <<"studies show">>, <<"research proves">>, <<"scientists">>]},
+        %% Self-Assessment Biases
+        {<<"dunning_kruger">>, [<<"easy">>, <<"simple">>, <<"anyone can">>, <<"obvious solution">>, <<"no big deal">>]},
+        {<<"overconfidence">>, [<<"definitely">>, <<"guaranteed">>, <<"100%">>, <<"certain">>, <<"no doubt">>, <<"absolutely">>]}
     ],
     
     TextLower = string:lowercase(binary_to_list(Text)),
