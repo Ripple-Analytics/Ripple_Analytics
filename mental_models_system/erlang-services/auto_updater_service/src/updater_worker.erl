@@ -367,10 +367,14 @@ rebuild_services() ->
         io:format("[UPDATER] Active environment: ~s, Updating standby: ~s~n", [ActiveEnv, StandbyEnv]),
         
         %% Step 2: Build all services including the standby UI
+        %% CRITICAL: Use --no-cache to ensure Erlang code changes are picked up
+        %% Without --no-cache, Docker may use cached layers and skip recompiling .erl files
         StandbyService = "desktop-ui-" ++ StandbyEnv,
-        io:format("[UPDATER] Building backend services and ~s...~n", [StandbyService]),
-        BuildCmd = "cd " ++ BasePath ++ " && docker-compose build --parallel " ++ BackendServices ++ " " ++ StandbyService ++ " 2>&1",
-        _BuildResult = os:cmd(BuildCmd),
+        io:format("[UPDATER] Building backend services and ~s (with --no-cache to ensure code changes are applied)...~n", [StandbyService]),
+        BuildCmd = "cd " ++ BasePath ++ " && docker-compose build --no-cache --parallel " ++ BackendServices ++ " " ++ StandbyService ++ " 2>&1",
+        io:format("[UPDATER] Build command: ~s~n", [BuildCmd]),
+        BuildResult = os:cmd(BuildCmd),
+        io:format("[UPDATER] Build output (last 500 chars): ~s~n", [string:slice(BuildResult, max(0, length(BuildResult) - 500))]),
         
         %% Step 3: Update backend services (quick restart)
         io:format("[UPDATER] Restarting backend services...~n"),
