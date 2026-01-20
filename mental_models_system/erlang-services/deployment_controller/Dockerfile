@@ -1,6 +1,7 @@
 FROM erlang:26-alpine
 
-RUN apk add --no-cache git docker-cli docker-compose
+# Install build dependencies (gcc, make needed for jiffy native compilation)
+RUN apk add --no-cache git docker-cli docker-compose build-base
 
 WORKDIR /app
 
