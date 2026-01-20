@@ -35,6 +35,23 @@ init(Req0, State) ->
             let lastAnalysisResult = null;
             let lastAnalysisType = null;
             
+            async function saveToHistory(type, inputText, models, biases) {
+                try {
+                    await fetch('/api/storage/history', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            type: type,
+                            input_text: inputText,
+                            models: models || [],
+                            biases: biases || []
+                        })
+                    });
+                } catch (e) {
+                    console.log('Failed to save to history:', e);
+                }
+            }
+            
             async function analyzeText() {
                 const text = document.getElementById('analysis-text').value;
                 if (!text.trim()) {
@@ -54,6 +71,9 @@ init(Req0, State) ->
                     const data = await res.json();
                     lastAnalysisResult = data;
                     lastAnalysisType = 'models';
+                    
+                    // Save to history
+                    saveToHistory('models', text, data.models || [], []);
                     
                     let html = '<div class=\"card\"><h2>Analysis Results</h2>';
                     if (data.models && data.models.length > 0) {
@@ -100,6 +120,9 @@ init(Req0, State) ->
                     const data = await res.json();
                     lastAnalysisResult = data;
                     lastAnalysisType = 'biases';
+                    
+                    // Save to history
+                    saveToHistory('biases', text, [], data.biases || []);
                     
                     let html = '<div class=\"card\"><h2>Bias Detection Results</h2>';
                     if (data.biases && data.biases.length > 0) {
@@ -161,6 +184,9 @@ init(Req0, State) ->
                         inputText: text.substring(0, 200) + (text.length > 200 ? '...' : '')
                     };
                     lastAnalysisType = 'full';
+                    
+                    // Save to history
+                    saveToHistory('full', text, modelsData.models || [], biasesData.biases || []);
                     
                     let html = '<div class=\"card\"><h2>Full Analysis Results</h2>';
                     
