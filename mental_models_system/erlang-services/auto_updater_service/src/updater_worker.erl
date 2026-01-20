@@ -249,10 +249,11 @@ do_perform_update(State) ->
     NewCommit = get_current_commit(),
     io:format("[UPDATER] Pulled commit: ~s~n", [fmt(NewCommit)]),
     
-    %% Step 1.5: Run pre-build syntax check and auto-fix
+    %% Step 1.5: Run pre-build syntax check and auto-fix (optional - don't fail if missing)
     io:format("[UPDATER] Running pre-build syntax check...~n"),
-    PreBuildResult = os:cmd("cd /repo/mental_models_system/erlang-services && bash scripts/fix_erlang_syntax.sh 2>&1"),
-    io:format("[UPDATER] Pre-build result: ~s~n", [string:sub_string(PreBuildResult, 1, erlang:min(500, length(PreBuildResult)))]),
+    PreBuildResult = os:cmd("cd /repo/mental_models_system/erlang-services && if [ -f scripts/fix_erlang_syntax.sh ]; then bash scripts/fix_erlang_syntax.sh 2>&1; else echo 'Syntax script not found, skipping'; fi"),
+    PreBuildLen = case is_list(PreBuildResult) of true -> length(PreBuildResult); false -> 0 end,
+    io:format("[UPDATER] Pre-build result: ~s~n", [case PreBuildLen of 0 -> "(no output)"; N when N > 500 -> string:sub_string(PreBuildResult, 1, 500); _ -> PreBuildResult end]),
     
     %% Step 2: Build ONLY the standby services
     StandbyServices = get_standby_services(StandbyEnv),
@@ -342,9 +343,14 @@ build_services(BasePath, [Service | Rest], Failed) ->
     Cmd = "cd " ++ BasePath ++ " && docker-compose build --no-cache " ++ Service ++ " 2>&1",
     Result = os:cmd(Cmd),
     
-    %% Log last 1000 chars of build output
-    OutputLen = length(Result),
-    TruncatedOutput = if OutputLen > 1000 -> string:sub_string(Result, OutputLen - 999, OutputLen); true -> Result end,
+    %% Log last 1000 chars of build output (with safe string handling)
+    SafeResult = case is_list(Result) of true -> Result; false -> "" end,
+    OutputLen = length(SafeResult),
+    TruncatedOutput = case OutputLen of
+        0 -> "(empty output)";
+        N when N > 1000 -> string:sub_string(SafeResult, N - 999, N);
+        _ -> SafeResult
+    end,
     io:format("[UPDATER] Build output (last 1000 chars):~n~s~n", [TruncatedOutput]),
     
     case is_build_error(Result) of
@@ -381,11 +387,13 @@ build_services(BasePath, [Service | Rest], Failed) ->
             build_services(BasePath, Rest, Failed)
     end.
 
-is_build_error(Output) ->
+is_build_error(Output) when is_list(Output) ->
     string:find(Output, "failed to solve") =/= nomatch orelse
     string:find(Output, "error:") =/= nomatch orelse
     string:find(Output, "ERROR:") =/= nomatch orelse
-    string:find(Output, "FAILED") =/= nomatch.
+    string:find(Output, "FAILED") =/= nomatch;
+is_build_error(_) ->
+    true.  %% If output is not a string, assume error
 
 %% Attempt to fix build errors using LM Studio
 %% This runs on the STANDBY environment - active stays untouched
