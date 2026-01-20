@@ -1,0 +1,61 @@
+# MINIMAL DOCKER-COMPOSE - Only essential services for auto-updater
+# Use this to bootstrap the system, then switch to full docker-compose.yml
+
+services:
+  # Auto-Updater - Primary instance (starts first, no dependencies)
+  auto-updater-service:
+    build: ./auto_updater_service
+    container_name: mental-models-auto-updater
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - updater-repo:/repo
+      - updater-data:/data
+      - .:/services:ro
+      - ${SSH_KEY_PATH:-./ssh_deploy_key}:/root/.ssh/deploy_key:ro
+    environment:
+      - GITHUB_SSH_URL=git@github.com:Ripple-Analytics/Ripple_Analytics.git
+      - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
+      - GITHUB_BRANCH=release
+      - UPDATE_CHECK_INTERVAL=300
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
+      - DEPLOYMENT_ENV=blue
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - mental-models-network
+    ports:
+      - "8006:8006"
+
+  # Desktop UI - BLUE Environment (for testing)
+  desktop-ui-blue:
+    build: ./desktop_ui
+    container_name: mental-models-ui-blue
+    environment:
+      - ANALYSIS_SERVICE_URL=http://analysis-service-blue:8001
+      - STORAGE_SERVICE_URL=http://storage-service-blue:8003
+      - DEPLOYMENT_ENV=blue
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+    ports:
+      - "3000:3000"
+
+networks:
+  mental-models-network:
+    driver: bridge
+
+volumes:
+  updater-repo:
+  updater-data:
