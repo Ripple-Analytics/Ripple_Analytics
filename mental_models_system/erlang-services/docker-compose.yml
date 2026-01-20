@@ -19,6 +19,23 @@
 
 services:
   # ============================================================================
+  # BOOTSTRAP WATCHER - Watches for updates and restarts auto-updater
+  # This solves the chicken-and-egg problem where broken auto-updater can't update itself
+  # ============================================================================
+  bootstrap-watcher:
+    build: ./bootstrap_watcher
+    container_name: mental-models-bootstrap
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - .:/services
+    environment:
+      - GITHUB_BRANCH=release2
+      - BOOTSTRAP_INTERVAL=60
+    networks:
+      - mental-models-network
+
+  # ============================================================================
   # AUTO-UPDATER SERVICE - FIRST AND MOST FUNDAMENTAL SERVICE
   # This service MUST start before all others and has NO dependencies.
   # It can self-heal the system even if other services fail to start.
