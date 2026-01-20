@@ -36,6 +36,18 @@ write_status() {
     local message="$2"
     local github_ok="$3"
     
+    # Get current git info if available
+    local current_branch=""
+    local current_commit=""
+    local commit_date=""
+    if [ -d "$REPO_PATH/.git" ]; then
+        cd "$REPO_PATH"
+        current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
+        current_commit=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+        commit_date=$(git log -1 --format=%ci 2>/dev/null || echo "unknown")
+        cd - >/dev/null
+    fi
+    
     mkdir -p /data
     cat > "$STATUS_FILE" << EOF
 {
@@ -45,7 +57,11 @@ write_status() {
     "last_check": "$(date -Iseconds)",
     "github_failure_count": $GITHUB_FAILURE_COUNT,
     "update_source": "${CURRENT_SOURCE:-unknown}",
-    "sources_tried": "${SOURCES_TRIED:-}"
+    "sources_tried": "${SOURCES_TRIED:-}",
+    "branch": "$current_branch",
+    "commit": "$current_commit",
+    "commit_date": "$commit_date",
+    "version": "1.2.0"
 }
 EOF
 }

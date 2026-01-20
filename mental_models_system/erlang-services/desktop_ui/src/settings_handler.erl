@@ -47,7 +47,10 @@ init(Req0, State) ->
             <div class=\"card\">
                 <h2>System Information</h2>
                 <p><strong>Architecture:</strong> Erlang/OTP Microservices</p>
-                <p><strong>Version:</strong> <span id=\"app-version\">1.1.0</span></p>
+                <p><strong>Version:</strong> <span id=\"app-version\">1.2.0</span></p>
+                <p><strong>Branch:</strong> <span id=\"git-branch\" style=\"font-family: monospace; background: #f0f0f0; padding: 2px 6px; border-radius: 3px;\">loading...</span></p>
+                <p><strong>Commit:</strong> <span id=\"git-commit\" style=\"font-family: monospace; background: #f0f0f0; padding: 2px 6px; border-radius: 3px;\">loading...</span></p>
+                <p><strong>Commit Date:</strong> <span id=\"commit-date\">loading...</span></p>
                 <p><strong>Runtime:</strong> Erlang/OTP <span id=\"erlang-version\">26</span></p>
                 <p><strong>UI Theme:</strong> Light Mode</p>
                 <p><strong>Auto-Update:</strong> <span id=\"auto-update-status\">Enabled</span></p>
@@ -158,6 +161,16 @@ init(Req0, State) ->
                     }
                     if (data.erlang_version) {
                         document.getElementById('erlang-version').textContent = data.erlang_version;
+                    }
+                    if (data.branch) {
+                        document.getElementById('git-branch').textContent = data.branch;
+                        document.getElementById('git-branch').style.color = data.branch === 'master' ? '#28a745' : '#f59e0b';
+                    }
+                    if (data.commit) {
+                        document.getElementById('git-commit').textContent = data.commit;
+                    }
+                    if (data.commit_date) {
+                        document.getElementById('commit-date').textContent = data.commit_date;
                     }
                 } catch (e) {
                     document.getElementById('update-status').innerHTML = 
