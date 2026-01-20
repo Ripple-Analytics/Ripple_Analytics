@@ -151,10 +151,39 @@ base_layout(Title, Content) ->
 </head>
 <body>
     <div class=\"container\">
-        <div class=\"header\">
-            <h1>Mental Models System</h1>
-            <p>Erlang/OTP Microservices Architecture</p>
+        <div class=\"header\" style=\"display: flex; justify-content: space-between; align-items: center;\">
+            <div>
+                <h1>Mental Models System</h1>
+                <p>Erlang/OTP Microservices Architecture</p>
+            </div>
+            <div id=\"branch-indicator\" style=\"text-align: right; font-size: 12px;\">
+                <span style=\"background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 4px;\">
+                    <span id=\"git-branch-nav\">loading...</span>
+                </span>
+                <div style=\"margin-top: 4px; opacity: 0.8;\">
+                    <span id=\"git-commit-nav\"></span>
+                </div>
+            </div>
         </div>
+        <script>
+            (async function loadBranchInfo() {
+                try {
+                    const res = await fetch('http://localhost:8006/api/updater/status');
+                    const data = await res.json();
+                    if (data.current_commit) {
+                        const branchEl = document.getElementById('git-branch-nav');
+                        const commitEl = document.getElementById('git-commit-nav');
+                        // Try to get branch from config
+                        const configRes = await fetch('http://localhost:8006/api/updater/config');
+                        const config = await configRes.json();
+                        branchEl.textContent = config.github_branch || 'release';
+                        commitEl.textContent = data.current_commit.substring(0, 8);
+                    }
+                } catch (e) {
+                    document.getElementById('git-branch-nav').textContent = 'offline';
+                }
+            })();
+        </script>
         ">>, nav_html(Title), <<"
         ">>, Content, <<"
     </div>
