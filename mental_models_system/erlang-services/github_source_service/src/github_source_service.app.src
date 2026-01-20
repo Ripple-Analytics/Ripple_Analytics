@@ -1,0 +1,13 @@
+{application, github_source_service,
+ [{description, "GitHub Update Source Service"},
+  {vsn, "1.0.0"},
+  {registered, [github_worker]},
+  {mod, {github_source_app, []}},
+  {applications, [kernel, stdlib, inets, crypto, cowboy, jsx]},
+  {env, []},
+  {modules, [
+    github_source_app, github_source_sup, github_worker,
+    health_handler, source_status_handler, source_check_handler,
+    source_fetch_handler, source_download_handler
+  ]}
+ ]}.

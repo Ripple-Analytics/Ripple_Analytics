@@ -1,0 +1,13 @@
+{application, chaos_monkey_service,
+ [{description, "Update Chaos Monkey Service"},
+  {vsn, "1.0.0"},
+  {registered, [chaos_worker]},
+  {mod, {chaos_monkey_app, []}},
+  {applications, [kernel, stdlib, inets, crypto, cowboy, jsx]},
+  {env, []},
+  {modules, [
+    chaos_monkey_app, chaos_monkey_sup, chaos_worker,
+    health_handler, chaos_status_handler, chaos_run_handler,
+    chaos_scenarios_handler, chaos_results_handler, chaos_config_handler
+  ]}
+ ]}.

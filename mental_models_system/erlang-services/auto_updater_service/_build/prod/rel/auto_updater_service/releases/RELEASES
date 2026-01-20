@@ -1,0 +1,16 @@
+%% coding: utf-8
+[{release,"auto_updater_service","1.0.0","12.2.1",
+          [{kernel,"8.2","./lib/kernel-8.2"},
+           {stdlib,"3.17","./lib/stdlib-3.17"},
+           {inets,"7.5","./lib/inets-7.5"},
+           {crypto,"5.0.5","./lib/crypto-5.0.5"},
+           {cowlib,"2.12.1","./lib/cowlib-2.12.1"},
+           {asn1,"5.0.17","./lib/asn1-5.0.17"},
+           {public_key,"1.11.3","./lib/public_key-1.11.3"},
+           {ssl,"10.6.1","./lib/ssl-10.6.1"},
+           {ranch,"1.8.0","./lib/ranch-1.8.0"},
+           {cowboy,"2.10.0","./lib/cowboy-2.10.0"},
+           {jsx,"3.1.0","./lib/jsx-3.1.0"},
+           {auto_updater_service,"1.0.0","./lib/auto_updater_service-1.0.0"},
+           {sasl,"4.1.1","./lib/sasl-4.1.1"}],
+          permanent}].
