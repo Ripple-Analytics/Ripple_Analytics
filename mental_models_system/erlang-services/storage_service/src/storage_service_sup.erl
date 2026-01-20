@@ -16,6 +16,11 @@ init([]) ->
           start => {document_store, start_link, []},
           restart => permanent,
           shutdown => 5000,
+          type => worker},
+        #{id => history_store,
+          start => {history_store, start_link, []},
+          restart => permanent,
+          shutdown => 5000,
           type => worker}
     ],
     {ok, {SupFlags, ChildSpecs}}.

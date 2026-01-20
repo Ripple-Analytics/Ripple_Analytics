@@ -15,6 +15,9 @@ start(_StartType, _StartArgs) ->
             {"/api/storage/documents", documents_handler, []},
             {"/api/storage/documents/:id", document_handler, []},
             {"/api/storage/search", search_handler, []},
+            {"/api/storage/history", history_handler, []},
+            {"/api/storage/history/stats", history_stats_handler, []},
+            {"/api/storage/history/:id", history_item_handler, []},
             {"/[...]", not_found_handler, []}
         ]}
     ]),
