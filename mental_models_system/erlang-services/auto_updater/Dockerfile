@@ -9,17 +9,15 @@ RUN apk add --no-cache \
     docker-cli-compose \
     unzip \
     jq \
-    openssh-client
+    openssh-client \
+    dos2unix
 
 # Create app directory
 WORKDIR /updater
 
-# Create SSH directory
-RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh
-
-# Copy update script
+# Copy update script and fix line endings (handles Windows CRLF)
 COPY auto_update.sh /updater/auto_update.sh
-RUN chmod +x /updater/auto_update.sh
+RUN dos2unix /updater/auto_update.sh && chmod +x /updater/auto_update.sh
 
 # Run the auto-updater
 CMD ["/updater/auto_update.sh"]
