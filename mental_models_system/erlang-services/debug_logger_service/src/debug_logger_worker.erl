@@ -263,12 +263,19 @@ do_push_sync() ->
         %% Reset remote to clean URL (no embedded token)
         os:cmd("cd " ++ ?REPO_PATH ++ " && git remote set-url origin https://github.com/Ripple-Analytics/Ripple_Analytics.git 2>&1"),
         
-        %% Fetch first to ensure we have remote refs
+        %% Fetch latest from remote
         FetchResult = os:cmd("cd " ++ ?REPO_PATH ++ " && git fetch origin release2 2>&1"),
         io:format("[DEBUG_LOGGER] Fetch result: ~s~n", [truncate(FetchResult, 100)]),
         
-        %% Checkout release2 branch (create if needed)
-        os:cmd("cd " ++ ?REPO_PATH ++ " && git checkout -B release2 origin/release2 2>&1"),
+        %% Ensure we're on release2 branch
+        os:cmd("cd " ++ ?REPO_PATH ++ " && git checkout release2 2>&1"),
+        
+        %% Pull with rebase to get latest changes while preserving our logs
+        PullResult = os:cmd("cd " ++ ?REPO_PATH ++ " && git pull --rebase origin release2 2>&1"),
+        io:format("[DEBUG_LOGGER] Pull result: ~s~n", [truncate(PullResult, 100)]),
+        
+        %% Ensure debug_logs directory exists
+        filelib:ensure_dir(?LOG_BASE ++ "/"),
         
         %% Add logs
         os:cmd("cd " ++ ?REPO_PATH ++ " && git add mental_models_system/erlang-services/debug_logs/ 2>&1"),
@@ -278,8 +285,8 @@ do_push_sync() ->
         CommitResult = os:cmd("cd " ++ ?REPO_PATH ++ " && git commit -m '" ++ CommitMsg ++ "' 2>&1"),
         io:format("[DEBUG_LOGGER] Commit result: ~s~n", [truncate(CommitResult, 100)]),
         
-        %% Push using HEAD:release2 to be explicit
-        Result = os:cmd("cd " ++ ?REPO_PATH ++ " && git push origin HEAD:release2 2>&1"),
+        %% Push to release2
+        Result = os:cmd("cd " ++ ?REPO_PATH ++ " && git push origin release2 2>&1"),
         io:format("[DEBUG_LOGGER] Push result: ~s~n", [truncate(Result, 200)]),
         ok
     catch
