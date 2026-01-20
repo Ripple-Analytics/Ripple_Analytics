@@ -16,6 +16,7 @@ start(_StartType, _StartArgs) ->
         {'_', [
             {"/health", health_handler, []},
             {"/api/harvester/scrape", scrape_handler, []},
+            {"/api/harvester/batch-scrape", batch_scrape_handler, []},
             {"/api/harvester/process", process_handler, []},
             {"/api/harvester/stats", stats_handler, []},
             {"/[...]", not_found_handler, []}

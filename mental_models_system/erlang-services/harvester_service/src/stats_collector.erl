@@ -4,7 +4,7 @@
 -module(stats_collector).
 -behaviour(gen_server).
 
--export([start_link/0, record_scrape/1, record_process/1, get_stats/0]).
+-export([start_link/0, record_scrape/1, record_process/1, record_batch_scrape/2, get_stats/0]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2]).
 
 start_link() ->
@@ -16,6 +16,9 @@ record_scrape(Result) ->
 record_process(Result) ->
     gen_server:cast(?MODULE, {process, Result}).
 
+record_batch_scrape(Total, Successful) ->
+    gen_server:cast(?MODULE, {batch_scrape, Total, Successful}).
+
 get_stats() ->
     gen_server:call(?MODULE, get_stats).
 
@@ -24,6 +27,9 @@ init([]) ->
         urls_scraped => 0,
         files_processed => 0,
         bytes_downloaded => 0,
+        batch_scrapes => 0,
+        batch_urls_total => 0,
+        batch_urls_successful => 0,
         errors => 0,
         start_time => erlang:system_time(second)
     }}.
@@ -51,6 +57,15 @@ handle_cast({process, {ok, _}}, State) ->
 
 handle_cast({process, {error, _}}, State) ->
     {noreply, State#{errors := maps:get(errors, State) + 1}};
+
+handle_cast({batch_scrape, Total, Successful}, State) ->
+    NewState = State#{
+        batch_scrapes := maps:get(batch_scrapes, State) + 1,
+        batch_urls_total := maps:get(batch_urls_total, State) + Total,
+        batch_urls_successful := maps:get(batch_urls_successful, State) + Successful,
+        errors := maps:get(errors, State) + (Total - Successful)
+    },
+    {noreply, NewState};
 
 handle_cast(_Msg, State) ->
     {noreply, State}.
