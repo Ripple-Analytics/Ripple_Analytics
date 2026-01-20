@@ -15,4 +15,4 @@ VOLUME /data
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD wget -q --spider http://localhost:8003/health || exit 1
 
-CMD ["erl", "-pa", "_build/default/lib/*/ebin", "-s", "storage_service_app", "-noshell"]
+CMD ["sh", "-c", "erl -pa _build/default/lib/*/ebin -eval 'application:ensure_all_started(storage_service)' -noshell -noinput"]
