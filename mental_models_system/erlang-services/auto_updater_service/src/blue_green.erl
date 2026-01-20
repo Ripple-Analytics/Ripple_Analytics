@@ -20,6 +20,7 @@ build_standby(Services) ->
 
 build_services([]) -> ok;
 build_services([S | Rest]) ->
+    io:format("[BLUE-GREEN] Building service: ~s~n", [S]),
     case docker_utils:build_service(?BASE_PATH, S) of
         ok -> build_services(Rest);
         Err -> Err
@@ -27,16 +28,28 @@ build_services([S | Rest]) ->
 
 %% @doc Start standby services
 start_standby(Services) ->
+    io:format("[BLUE-GREEN] Starting services: ~p~n", [Services]),
     docker_utils:start_services(?BASE_PATH, Services).
 
 %% @doc Check if standby is healthy
 check_standby_health(Env) ->
     Container = "mental-models-ui-" ++ Env,
-    docker_utils:check_health(Container).
+    io:format("[BLUE-GREEN] Health check: ~s~n", [Container]),
+    %% Try multiple times with delay
+    check_health_with_retry(Container, 3).
+
+check_health_with_retry(_, 0) -> false;
+check_health_with_retry(Container, Retries) ->
+    case docker_utils:check_health(Container) of
+        true -> true;
+        false ->
+            timer:sleep(5000),
+            check_health_with_retry(Container, Retries - 1)
+    end.
 
 %% @doc Switch traffic to new environment
 switch_traffic(NewEnv) ->
-    io:format("[BLUE-GREEN] Switching to: ~s~n", [NewEnv]),
+    io:format("[BLUE-GREEN] Switching traffic to: ~s~n", [NewEnv]),
     file_utils:write(?DATA_DIR ++ "/active_env", NewEnv),
     update_nginx_configs(NewEnv),
     reload_nginx().
@@ -45,18 +58,32 @@ switch_traffic(NewEnv) ->
 read_active_env() ->
     case file_utils:read(?DATA_DIR ++ "/active_env") of
         undefined -> "blue";
-        Env -> binary_to_list(Env)
+        Env when is_binary(Env) -> binary_to_list(Env);
+        Env when is_list(Env) -> Env
     end.
 
-%% Internal: update nginx configs
+%% Internal: update nginx configs inside proxy container
 update_nginx_configs(Env) ->
-    Configs = [{"active.conf", "ui-" ++ Env}],
-    lists:foreach(fun({File, Upstream}) ->
-        Content = "location / { proxy_pass http://" ++ Upstream ++ "; }",
-        Cmd = "echo '" ++ Content ++ "' > /etc/nginx/conf.d/" ++ File,
-        docker_utils:exec_cmd("mental-models-proxy", Cmd)
-    end, Configs).
+    ProxyContainer = "mental-models-proxy",
+    %% Build proper nginx upstream config
+    Upstream = "ui-" ++ Env,
+    Config = "upstream active_backend { server " ++ Upstream ++ ":3000; }\n"
+             "server {\n"
+             "    listen 80;\n"
+             "    location / {\n"
+             "        proxy_pass http://active_backend;\n"
+             "        proxy_http_version 1.1;\n"
+             "        proxy_set_header Upgrade $http_upgrade;\n"
+             "        proxy_set_header Connection 'upgrade';\n"
+             "        proxy_set_header Host $host;\n"
+             "    }\n"
+             "}\n",
+    %% Write config to container
+    WriteCmd = "echo '" ++ Config ++ "' > /etc/nginx/conf.d/default.conf",
+    docker_utils:exec_cmd(ProxyContainer, WriteCmd).
 
 %% Internal: reload nginx
 reload_nginx() ->
-    docker_utils:exec_cmd("mental-models-proxy", "nginx -s reload").
+    ProxyContainer = "mental-models-proxy",
+    Result = docker_utils:exec_cmd(ProxyContainer, "nginx -s reload"),
+    io:format("[BLUE-GREEN] Nginx reload: ~s~n", [Result]).
