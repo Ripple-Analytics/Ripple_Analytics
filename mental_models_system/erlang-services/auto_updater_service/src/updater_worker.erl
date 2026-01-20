@@ -21,7 +21,9 @@
     update_source = undefined,
     error_message = undefined,
     check_interval = 300000,
-    timer_ref = undefined
+    timer_ref = undefined,
+    heartbeat_ref = undefined,
+    check_count = 0
 }).
 
 %%====================================================================
@@ -48,11 +50,16 @@ get_config() ->
 %%====================================================================
 
 init([]) ->
-    io:format("[UPDATER] Worker starting~n"),
+    io:format("[UPDATER] ========================================~n"),
+    io:format("[UPDATER] BULLETPROOF AUTO-UPDATER STARTING~n"),
+    io:format("[UPDATER] This service will NEVER stop~n"),
+    io:format("[UPDATER] ========================================~n"),
     Interval = get_check_interval(),
     self() ! init_repo,
     TimerRef = erlang:send_after(Interval, self(), check_timer),
-    {ok, #state{check_interval = Interval, timer_ref = TimerRef}}.
+    %% Heartbeat every 60 seconds to show we're alive
+    HeartbeatRef = erlang:send_after(60000, self(), heartbeat),
+    {ok, #state{check_interval = Interval, timer_ref = TimerRef, heartbeat_ref = HeartbeatRef}}.
 
 handle_call(get_status, _From, State) ->
     Status = #{
@@ -112,27 +119,71 @@ handle_info(init_repo, State) ->
     end,
     {noreply, NewState};
 
+handle_info(heartbeat, State) ->
+    %% CRITICAL: Always reschedule heartbeat FIRST
+    HeartbeatRef = erlang:send_after(60000, self(), heartbeat),
+    
+    %% Log heartbeat to show we're alive
+    CheckCount = State#state.check_count,
+    NextCheckIn = case State#state.timer_ref of
+        undefined -> <<"unknown">>;
+        _ -> 
+            Remaining = erlang:read_timer(State#state.timer_ref),
+            case Remaining of
+                false -> <<"imminent">>;
+                Ms -> list_to_binary(integer_to_list(Ms div 1000) ++ "s")
+            end
+    end,
+    io:format("[UPDATER] HEARTBEAT - Alive and running | Checks completed: ~p | Next check in: ~s~n", 
+              [CheckCount, NextCheckIn]),
+    
+    %% Watchdog: If timer_ref is undefined or invalid, recreate it
+    NewTimerRef = case State#state.timer_ref of
+        undefined ->
+            io:format("[UPDATER] WATCHDOG: Timer was missing, recreating!~n"),
+            erlang:send_after(State#state.check_interval, self(), check_timer);
+        Ref ->
+            case erlang:read_timer(Ref) of
+                false ->
+                    io:format("[UPDATER] WATCHDOG: Timer expired without firing, recreating!~n"),
+                    erlang:send_after(State#state.check_interval, self(), check_timer);
+                _ -> Ref
+            end
+    end,
+    
+    {noreply, State#state{heartbeat_ref = HeartbeatRef, timer_ref = NewTimerRef}};
+
 handle_info(check_timer, State) ->
     %% CRITICAL: Always reschedule timer FIRST to ensure we never stop checking
     %% This is the most important line - it ensures the updater NEVER stops
     TimerRef = erlang:send_after(State#state.check_interval, self(), check_timer),
+    NewCheckCount = State#state.check_count + 1,
+    
+    io:format("[UPDATER] ========================================~n"),
+    io:format("[UPDATER] CHECK #~p STARTING~n", [NewCheckCount]),
+    io:format("[UPDATER] ========================================~n"),
     
     %% Now do the actual work in a try-catch to prevent any crashes
     FinalState = try
         io:format("[UPDATER] Periodic check triggered~n"),
-        NewState = do_check_updates(State#state{status = checking}),
+        NewState = do_check_updates(State#state{status = checking, check_count = NewCheckCount}),
         case NewState#state.update_available of
             true ->
                 io:format("[UPDATER] Update available, auto-updating~n"),
                 do_perform_update(NewState#state{status = updating});
             false ->
+                io:format("[UPDATER] No updates available~n"),
                 NewState
         end
     catch
         Class:Reason:Stacktrace ->
             io:format("[UPDATER] ERROR during check: ~p:~p~n~p~n", [Class, Reason, Stacktrace]),
-            State#state{status = error, error_message = <<"Check failed, will retry">>}
+            io:format("[UPDATER] Will retry on next check - updater continues running~n"),
+            State#state{status = error, error_message = <<"Check failed, will retry">>, check_count = NewCheckCount}
     end,
+    
+    io:format("[UPDATER] CHECK #~p COMPLETE - Next check in ~p seconds~n", 
+              [NewCheckCount, State#state.check_interval div 1000]),
     {noreply, FinalState#state{timer_ref = TimerRef}};
 
 handle_info(_Info, State) ->
@@ -309,15 +360,37 @@ rebuild_services() ->
             io:format("[UPDATER] Rebuild failed but updater continues running~n")
     end.
 
+%% Run command with timeout to prevent hanging
+%% This is CRITICAL for bulletproof operation - git commands can hang indefinitely
 run_cmd(Cmd) ->
-    Result = os:cmd(Cmd),
-    case string:find(Result, "fatal:") of
-        nomatch ->
-            case string:find(Result, "error:") of
-                nomatch -> ok;
+    run_cmd_with_timeout(Cmd, 30000).  %% 30 second default timeout
+
+run_cmd_with_timeout(Cmd, Timeout) ->
+    Parent = self(),
+    Ref = make_ref(),
+    
+    %% Spawn a process to run the command
+    Pid = spawn(fun() ->
+        Result = os:cmd(Cmd),
+        Parent ! {Ref, done, Result}
+    end),
+    
+    %% Wait for result with timeout
+    receive
+        {Ref, done, Result} ->
+            case string:find(Result, "fatal:") of
+                nomatch ->
+                    case string:find(Result, "error:") of
+                        nomatch -> ok;
+                        _ -> {error, Result}
+                    end;
                 _ -> {error, Result}
-            end;
-        _ -> {error, Result}
+            end
+    after Timeout ->
+        %% Kill the hung process
+        exit(Pid, kill),
+        io:format("[UPDATER] WARNING: Command timed out after ~p ms: ~s~n", [Timeout, Cmd]),
+        {error, timeout}
     end.
 
 format_time(undefined) -> null;

@@ -19,6 +19,10 @@ services:
   # ============================================================================
   # UPDATE ORCHESTRATOR - Coordinates all update sources
   # ============================================================================
+  # ============================================================================
+  # AUTO-UPDATER SERVICE - BULLETPROOF CONFIGURATION
+  # This service MUST NEVER STOP - it is the core of the auto-update system
+  # ============================================================================
   auto-updater-service:
     build: ./auto_updater_service
     container_name: mental-models-auto-updater
@@ -46,7 +50,9 @@ services:
       - github-source
       - gdrive-source
       - local-cache
-    restart: unless-stopped
+    # CRITICAL: Use 'always' instead of 'unless-stopped' to ensure auto-updater
+    # restarts even after manual stops or system reboots
+    restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
       interval: 30s
