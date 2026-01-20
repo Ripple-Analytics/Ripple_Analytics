@@ -31,6 +31,8 @@ start(_StartType, _StartArgs) ->
             {"/api/analysis/folder", folder_scraper_handler, []},
             {"/api/analysis/watcher", folder_watcher_handler, []},
             {"/api/analysis/report", report_handler, []},
+            {"/api/analysis/notifications", notification_handler, []},
+            {"/api/analysis/notifications/recent", notification_handler, []},
             {"/[...]", not_found_handler, []}
         ]}
     ]),

@@ -378,6 +378,51 @@ base_layout(Title, Content) ->
         // Check for updates every 60 seconds
         setInterval(checkForUpdatesNotification, 60000);
         
+        // Real-time notifications via Server-Sent Events
+        let notificationEventSource = null;
+        
+        function connectToNotifications() {
+            if (notificationEventSource) {
+                notificationEventSource.close();
+            }
+            
+            try {
+                notificationEventSource = new EventSource('/api/analysis/notifications');
+                
+                notificationEventSource.addEventListener('connected', function(e) {
+                    console.log('Connected to notification service');
+                });
+                
+                notificationEventSource.addEventListener('lollapalooza', function(e) {
+                    const data = JSON.parse(e.data);
+                    const msg = '<strong>LOLLAPALOOZA DETECTED!</strong><br>' + 
+                                data.data.file + '<br>' +
+                                '<small>' + (data.data.models || []).join(', ') + '</small>';
+                    showNotification(msg, 'warning', 15000);
+                });
+                
+                notificationEventSource.addEventListener('analysis_complete', function(e) {
+                    const data = JSON.parse(e.data);
+                    const msg = '<strong>Analysis Complete</strong><br>' + 
+                                data.data.file + '<br>' +
+                                '<small>' + (data.data.models_found || 0) + ' models found</small>';
+                    showNotification(msg, 'success', 8000);
+                });
+                
+                notificationEventSource.onerror = function(e) {
+                    console.log('Notification connection error, will retry...');
+                    notificationEventSource.close();
+                    setTimeout(connectToNotifications, 5000);
+                };
+            } catch (e) {
+                console.log('Could not connect to notifications:', e);
+                setTimeout(connectToNotifications, 10000);
+            }
+        }
+        
+        // Connect to notifications on page load
+        connectToNotifications();
+        
         function showKeyboardShortcuts() {
             // Remove existing modal if present
             const existing = document.getElementById('shortcuts-modal');
