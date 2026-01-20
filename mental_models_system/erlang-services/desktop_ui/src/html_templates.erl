@@ -409,6 +409,7 @@ nav_html(ActivePage) ->
     Pages = [
         {<<"Dashboard">>, <<"/">>},
         {<<"Analysis">>, <<"/analysis">>},
+        {<<"Folder">>, <<"/folder">>},
         {<<"Models">>, <<"/models">>},
         {<<"History">>, <<"/history">>},
         {<<"Harvester">>, <<"/harvester">>},
