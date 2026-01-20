@@ -12,9 +12,9 @@
 -export([log/3, log/4, error/3, error/4, startup/1, heartbeat/0]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2]).
 
--define(REPO_PATH, "/repo").
--define(LOG_BASE, "/repo/mental_models_system/erlang-services/debug_logs").
--define(HEARTBEAT_INTERVAL, 60000).  %% 1 minute
+-define(CLONE_PATH, "/tmp/debug_repo").
+-define(LOG_BASE, "/tmp/debug_repo/mental_models_system/erlang-services/debug_logs").
+-define(HEARTBEAT_INTERVAL, 60000).
 
 -record(state, {
     env :: string(),
@@ -23,83 +23,67 @@
 }).
 
 %%====================================================================
-%% API - All wrapped in try/catch, NEVER crash
+%% API
 %%====================================================================
 
 start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
 
-%% Log message (async, never blocks)
 log(Service, Category, Message) ->
     safe_cast({log, "blue", Service, Category, Message, "INFO"}).
 
 log(Env, Service, Category, Message) ->
     safe_cast({log, Env, Service, Category, Message, "INFO"}).
 
-%% Log error (async, pushes immediately)
 error(Service, Category, Message) ->
     safe_cast({log, "blue", Service, Category, Message, "ERROR"}).
 
 error(Env, Service, Category, Message) ->
     safe_cast({log, Env, Service, Category, Message, "ERROR"}).
 
-%% Log startup (sync, waits for push)
 startup(Service) ->
     safe_call({startup, Service}).
 
-%% Trigger heartbeat
 heartbeat() ->
     safe_cast(heartbeat).
 
 %%====================================================================
-%% Safe wrappers - NEVER crash
+%% Safe wrappers
 %%====================================================================
 
 safe_cast(Msg) ->
-    try
-        gen_server:cast(?MODULE, Msg)
-    catch
-        _:_ -> ok
-    end.
+    try gen_server:cast(?MODULE, Msg) catch _:_ -> ok end.
 
 safe_call(Msg) ->
-    try
-        gen_server:call(?MODULE, Msg, 30000)
-    catch
-        _:_ -> {error, logger_unavailable}
-    end.
+    try gen_server:call(?MODULE, Msg, 30000) catch _:_ -> {error, logger_unavailable} end.
 
 %%====================================================================
 %% gen_server callbacks
 %%====================================================================
 
 init([]) ->
+    io:format("[DEBUG_LOGGER] ========================================~n"),
+    io:format("[DEBUG_LOGGER] Debug Logger Service Starting~n"),
+    io:format("[DEBUG_LOGGER] ========================================~n"),
     io:format("[DEBUG_LOGGER] Initializing...~n"),
     
-    %% Read deployment environment from env var (default to blue)
     Env = case os:getenv("DEPLOYMENT_ENV") of
         false -> "blue";
         E -> E
     end,
     io:format("[DEBUG_LOGGER] Environment: ~s~n", [Env]),
     
-    %% IMMEDIATELY log startup and push to GitHub
     self() ! immediate_startup_log,
-    
-    %% Schedule heartbeat
     erlang:send_after(?HEARTBEAT_INTERVAL, self(), heartbeat_timer),
     
     {ok, #state{env = Env, start_time = erlang:timestamp()}}.
 
 handle_call({startup, Service}, _From, State) ->
-    %% Synchronous startup log - waits for push
     try
         do_log(State#state.env, Service, "startup", 
                "Service started at " ++ format_timestamp(), "INFO"),
         do_push_sync()
-    catch
-        _:_ -> ok
-    end,
+    catch _:_ -> ok end,
     {reply, ok, State};
 
 handle_call(_Request, _From, State) ->
@@ -112,17 +96,11 @@ handle_cast({log, Env, Service, Category, Message, Level}, State) ->
             "ERROR" -> spawn(fun() -> do_push_async() end);
             _ -> ok
         end
-    catch
-        _:_ -> ok
-    end,
+    catch _:_ -> ok end,
     {noreply, State#state{log_count = State#state.log_count + 1}};
 
 handle_cast(heartbeat, State) ->
-    try
-        do_heartbeat(State)
-    catch
-        _:_ -> ok
-    end,
+    try do_heartbeat(State) catch _:_ -> ok end,
     {noreply, State};
 
 handle_cast(_Msg, State) ->
@@ -131,21 +109,12 @@ handle_cast(_Msg, State) ->
 handle_info(immediate_startup_log, State) ->
     io:format("[DEBUG_LOGGER] Pushing immediate startup log to GitHub...~n"),
     try
-        %% Get system info
-        Hostname = safe_cmd("hostname"),
-        DockerPs = safe_cmd("docker ps -a --format 'table {{.Names}}\\t{{.Status}}' 2>&1"),
-        GitStatus = safe_cmd("cd " ++ ?REPO_PATH ++ " && git log --oneline -1 2>&1"),
-        
         StartupMsg = io_lib:format(
             "DEBUG LOGGER STARTED~n"
             "====================~n"
             "Timestamp: ~s~n"
-            "Hostname: ~s~n"
-            "Erlang OTP: ~s~n~n"
-            "Git Status:~n~s~n~n"
-            "Docker Containers:~n~s~n",
-            [format_timestamp(), Hostname, erlang:system_info(otp_release),
-             GitStatus, DockerPs]),
+            "Erlang OTP: ~s~n",
+            [format_timestamp(), erlang:system_info(otp_release)]),
         
         do_log("blue", "debug_logger", "startup", lists:flatten(StartupMsg), "INFO"),
         do_push_sync(),
@@ -157,176 +126,107 @@ handle_info(immediate_startup_log, State) ->
     {noreply, State};
 
 handle_info(heartbeat_timer, State) ->
-    %% Reschedule first
     erlang:send_after(?HEARTBEAT_INTERVAL, self(), heartbeat_timer),
-    
-    try
-        do_heartbeat(State)
-    catch
-        _:_ -> ok
-    end,
+    try do_heartbeat(State) catch _:_ -> ok end,
     {noreply, State};
 
 handle_info(_Info, State) ->
     {noreply, State}.
 
 %%====================================================================
-%% Internal Functions - All wrapped in try/catch
+%% Internal Functions
 %%====================================================================
 
 do_log(Env, Service, Category, Message, Level) ->
     try
-        %% Ensure directories exist
         LogsDir = ?LOG_BASE ++ "/" ++ Env ++ "_logs/" ++ safe_name(Service),
-        StateDir = ?LOG_BASE ++ "/" ++ Env ++ "/" ++ safe_name(Service),
-        
         filelib:ensure_dir(LogsDir ++ "/"),
-        filelib:ensure_dir(StateDir ++ "/"),
         
-        %% Build log content
         Timestamp = format_timestamp(),
         LogFile = LogsDir ++ "/" ++ Category ++ "_" ++ Timestamp ++ ".log",
-        LatestFile = LogsDir ++ "/" ++ Category ++ "_latest.log",
         
         Content = io_lib:format(
-            "================================================================================~n"
             "~s | ~s | ~s | ~s~n"
-            "Timestamp: ~s~n"
-            "================================================================================~n~n"
-            "~s~n~n"
-            "================================================================================~n",
+            "Timestamp: ~s~n~n"
+            "~s~n",
             [Level, Env, Service, Category, Timestamp, Message]),
         
-        FlatContent = lists:flatten(Content),
-        
-        %% Write files
-        file:write_file(LogFile, FlatContent),
-        file:write_file(LatestFile, FlatContent),
-        
-        %% Append to state log
-        StateFile = StateDir ++ "/state.log",
-        StateLine = io_lib:format("~s | ~s | ~s | ~s~n", 
-                                  [Timestamp, Level, Category, truncate(Message, 100)]),
-        file:write_file(StateFile, lists:flatten(StateLine), [append]),
-        
+        file:write_file(LogFile, lists:flatten(Content)),
         io:format("[DEBUG_LOGGER] Logged: ~s/~s/~s~n", [Env, Service, Category])
-    catch
-        _:_ -> ok
-    end.
+    catch _:_ -> ok end.
 
 do_heartbeat(State) ->
     Uptime = timer:now_diff(erlang:timestamp(), State#state.start_time) div 1000000,
-    DockerPs = safe_cmd("docker ps -a --format 'table {{.Names}}\\t{{.Status}}' 2>&1"),
-    
-    Msg = io_lib:format(
-        "HEARTBEAT~n"
-        "=========~n"
-        "Uptime: ~p seconds~n"
-        "Logs written: ~p~n~n"
-        "Docker Status:~n~s~n",
-        [Uptime, State#state.log_count, DockerPs]),
-    
+    Msg = io_lib:format("HEARTBEAT - Uptime: ~p seconds, Logs: ~p~n",
+                        [Uptime, State#state.log_count]),
     do_log(State#state.env, "debug_logger", "heartbeat", lists:flatten(Msg), "INFO"),
     spawn(fun() -> do_push_async() end).
 
 do_push_sync() ->
     try
-        %% Get GitHub token from environment and clean it
+        %% Get token
         RawToken = case os:getenv("GITHUB_TOKEN") of
             false -> "";
             T -> T
         end,
-        %% Trim whitespace, newlines, and carriage returns
         Token = string:trim(RawToken, both, " \t\n\r"),
-        
         io:format("[DEBUG_LOGGER] Token length: ~p~n", [length(Token)]),
         
-        %% Configure git
-        os:cmd("cd " ++ ?REPO_PATH ++ " && git config user.email 'debug@mental-models.local' 2>&1"),
-        os:cmd("cd " ++ ?REPO_PATH ++ " && git config user.name 'Debug Logger' 2>&1"),
-        
-        %% Set up authenticated remote URL if token is available
-        case Token of
-            "" -> 
-                io:format("[DEBUG_LOGGER] No GITHUB_TOKEN found, using default auth~n");
-            _ when length(Token) > 30 ->
-                %% Use credential helper instead of embedding in URL
-                os:cmd("cd " ++ ?REPO_PATH ++ " && git config credential.helper store 2>&1"),
-                %% Write credentials to git credentials file
-                CredLine = "https://" ++ Token ++ ":x-oauth-basic@github.com\n",
-                file:write_file("/root/.git-credentials", CredLine),
-                io:format("[DEBUG_LOGGER] Set up git credentials~n");
-            _ ->
-                io:format("[DEBUG_LOGGER] Token too short (~p chars), skipping auth~n", [length(Token)])
-        end,
-        
-        %% Reset remote to clean URL (no embedded token)
-        os:cmd("cd " ++ ?REPO_PATH ++ " && git remote set-url origin https://github.com/Ripple-Analytics/Ripple_Analytics.git 2>&1"),
-        
-        %% Fetch ALL branches from remote
-        FetchResult = os:cmd("cd " ++ ?REPO_PATH ++ " && git fetch origin 2>&1"),
-        io:format("[DEBUG_LOGGER] Fetch result: ~s~n", [truncate(FetchResult, 100)]),
-        
-        %% Copy log files to temp location before git operations
-        os:cmd("mkdir -p /tmp/debug_logs_backup 2>&1"),
-        os:cmd("cp -r " ++ ?LOG_BASE ++ "/* /tmp/debug_logs_backup/ 2>&1"),
-        
-        %% Create release2 branch from remote if it doesn't exist locally
-        os:cmd("cd " ++ ?REPO_PATH ++ " && git branch -D release2 2>&1"),
-        CreateBranch = os:cmd("cd " ++ ?REPO_PATH ++ " && git checkout -b release2 origin/release2 2>&1"),
-        io:format("[DEBUG_LOGGER] Create branch result: ~s~n", [truncate(CreateBranch, 100)]),
-        
-        %% Ensure debug_logs directory exists
-        filelib:ensure_dir(?LOG_BASE ++ "/"),
-        os:cmd("mkdir -p " ++ ?LOG_BASE ++ " 2>&1"),
-        
-        %% Copy log files back from backup
-        os:cmd("cp -r /tmp/debug_logs_backup/* " ++ ?LOG_BASE ++ "/ 2>&1"),
-        
-        %% Add logs
-        os:cmd("cd " ++ ?REPO_PATH ++ " && git add mental_models_system/erlang-services/debug_logs/ 2>&1"),
-        
-        %% Commit
-        CommitMsg = "debug: " ++ format_timestamp(),
-        CommitResult = os:cmd("cd " ++ ?REPO_PATH ++ " && git commit -m '" ++ CommitMsg ++ "' 2>&1"),
-        io:format("[DEBUG_LOGGER] Commit result: ~s~n", [truncate(CommitResult, 100)]),
-        
-        %% Push to release2
-        Result = os:cmd("cd " ++ ?REPO_PATH ++ " && git push origin release2 2>&1"),
-        io:format("[DEBUG_LOGGER] Push result: ~s~n", [truncate(Result, 200)]),
-        ok
-    catch
-        _:_ -> {error, push_failed}
-    end.
+        case length(Token) > 30 of
+            true ->
+                %% Remove old clone
+                os:cmd("rm -rf " ++ ?CLONE_PATH ++ " 2>&1"),
+                
+                %% Clone fresh with token in URL
+                CloneUrl = "https://" ++ Token ++ "@github.com/Ripple-Analytics/Ripple_Analytics.git",
+                CloneCmd = "git clone --depth 1 --branch release2 " ++ CloneUrl ++ " " ++ ?CLONE_PATH ++ " 2>&1",
+                CloneResult = os:cmd(CloneCmd),
+                io:format("[DEBUG_LOGGER] Clone result: ~s~n", [truncate(CloneResult, 100)]),
+                
+                %% Configure git
+                os:cmd("cd " ++ ?CLONE_PATH ++ " && git config user.email 'debug@mental-models.local' 2>&1"),
+                os:cmd("cd " ++ ?CLONE_PATH ++ " && git config user.name 'Debug Logger' 2>&1"),
+                
+                %% Ensure log directory exists
+                filelib:ensure_dir(?LOG_BASE ++ "/"),
+                os:cmd("mkdir -p " ++ ?LOG_BASE ++ " 2>&1"),
+                
+                %% Write a simple test file
+                TestFile = ?LOG_BASE ++ "/test_" ++ format_timestamp() ++ ".log",
+                file:write_file(TestFile, "Debug logger test at " ++ format_timestamp() ++ "\n"),
+                
+                %% Add, commit, push
+                os:cmd("cd " ++ ?CLONE_PATH ++ " && git add -A 2>&1"),
+                CommitMsg = "debug: " ++ format_timestamp(),
+                CommitResult = os:cmd("cd " ++ ?CLONE_PATH ++ " && git commit -m '" ++ CommitMsg ++ "' 2>&1"),
+                io:format("[DEBUG_LOGGER] Commit result: ~s~n", [truncate(CommitResult, 100)]),
+                
+                PushResult = os:cmd("cd " ++ ?CLONE_PATH ++ " && git push origin release2 2>&1"),
+                io:format("[DEBUG_LOGGER] Push result: ~s~n", [truncate(PushResult, 200)]),
+                ok;
+            false ->
+                io:format("[DEBUG_LOGGER] No valid token, skipping push~n"),
+                ok
+        end
+    catch _:_ -> {error, push_failed} end.
 
 do_push_async() ->
-    timer:sleep(2000),  %% Small delay to batch
+    timer:sleep(2000),
     do_push_sync().
-
-safe_cmd(Cmd) ->
-    try
-        string:trim(os:cmd(Cmd))
-    catch
-        _:_ -> "command failed"
-    end.
 
 safe_name(Name) ->
     try
         S1 = string:replace(Name, "-", "_", all),
         S2 = string:replace(S1, " ", "_", all),
         lists:flatten(S2)
-    catch
-        _:_ -> "unknown"
-    end.
+    catch _:_ -> "unknown" end.
 
 format_timestamp() ->
     try
         {{Y, M, D}, {H, Mi, S}} = calendar:local_time(),
         lists:flatten(io_lib:format("~4..0B-~2..0B-~2..0B_~2..0B-~2..0B-~2..0B",
                                     [Y, M, D, H, Mi, S]))
-    catch
-        _:_ -> "unknown_time"
-    end.
+    catch _:_ -> "unknown_time" end.
 
 truncate(Str, Max) when is_list(Str) ->
     try
@@ -334,7 +234,5 @@ truncate(Str, Max) when is_list(Str) ->
             true -> string:slice(Str, 0, Max) ++ "...";
             false -> Str
         end
-    catch
-        _:_ -> "..."
-    end;
+    catch _:_ -> "..." end;
 truncate(_, _) -> "...".
