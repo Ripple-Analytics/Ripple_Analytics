@@ -459,6 +459,7 @@ nav_html(ActivePage) ->
         {<<"Models">>, <<"/models">>},
         {<<"History">>, <<"/history">>},
         {<<"Harvester">>, <<"/harvester">>},
+        {<<"AI Improver">>, <<"/ai-improver">>},
         {<<"Settings">>, <<"/settings">>}
     ],
     Links = [begin

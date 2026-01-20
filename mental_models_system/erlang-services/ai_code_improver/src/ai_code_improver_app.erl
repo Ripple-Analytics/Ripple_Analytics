@@ -17,7 +17,13 @@ start(_StartType, _StartArgs) ->
             {"/api/improver/validate", code_validator_handler, []},
             {"/api/improver/deploy", autonomous_deployer_handler, []},
             {"/api/prompts/philosophy", design_philosophy_handler, []},
-            {"/api/prompts/templates", prompt_templates_handler, []}
+            {"/api/prompts/templates", prompt_templates_handler, []},
+            {"/api/git/status", git_handler, []},
+            {"/api/git/branch", git_handler, []},
+            {"/api/git/commits", git_handler, []},
+            {"/api/git/commit", git_handler, []},
+            {"/api/git/push", git_handler, []},
+            {"/api/metrics", metrics_handler, []}
         ]}
     ]),
     {ok, _} = cowboy:start_clear(ai_code_improver_http,

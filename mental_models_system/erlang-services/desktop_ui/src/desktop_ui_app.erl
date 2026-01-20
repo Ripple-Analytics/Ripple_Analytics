@@ -48,6 +48,7 @@ start_services() ->
             {"/folder", folder_handler, []},
             {"/watcher", watcher_handler, []},
             {"/settings", settings_handler, []},
+            {"/ai-improver", ai_improver_handler, []},
             {"/api/system/info", system_info_handler, []},
             {"/api/update/[...]", update_handler, []},
             {"/api/[...]", api_proxy_handler, []},

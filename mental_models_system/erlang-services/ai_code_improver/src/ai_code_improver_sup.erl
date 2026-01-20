@@ -45,6 +45,22 @@ init([]) ->
             shutdown => 5000,
             type => worker,
             modules => [improvement_history]
+        },
+        #{
+            id => git_integration,
+            start => {git_integration, start_link, []},
+            restart => permanent,
+            shutdown => 5000,
+            type => worker,
+            modules => [git_integration]
+        },
+        #{
+            id => improvement_metrics,
+            start => {improvement_metrics, start_link, []},
+            restart => permanent,
+            shutdown => 5000,
+            type => worker,
+            modules => [improvement_metrics]
         }
     ],
     {ok, {SupFlags, ChildSpecs}}.
