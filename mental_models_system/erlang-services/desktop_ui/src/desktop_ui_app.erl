@@ -22,6 +22,7 @@ start(_StartType, _StartArgs) ->
             {"/models", models_handler, []},
             {"/harvester", harvester_handler, []},
             {"/settings", settings_handler, []},
+            {"/api/update/[...]", update_handler, []},
             {"/api/[...]", api_proxy_handler, []},
             {"/static/[...]", cowboy_static, {priv_dir, desktop_ui, "static"}},
             {"/[...]", not_found_handler, []}
