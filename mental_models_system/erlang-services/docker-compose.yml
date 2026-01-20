@@ -3,11 +3,33 @@
 # Start all services: docker-compose up -d
 # View logs: docker-compose logs -f
 # Stop all services: docker-compose down
-# Update from GitHub: run update.bat (Windows) or ./update.sh (Linux/Mac)
+# 
+# AUTO-UPDATE: The system automatically checks GitHub every 5 minutes for updates.
+# If GitHub is unavailable, it falls back to Google Drive backup.
+# Configure Google Drive backup URL via GDRIVE_BACKUP_URL environment variable.
 # 
 # Access the UI at: http://localhost:3000
 
 services:
+  # Auto-Updater - Automatically pulls updates from GitHub (with Google Drive fallback)
+  auto-updater:
+    build: ./auto_updater
+    container_name: mental-models-auto-updater
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - updater-repo:/repo
+      - .:/services:ro
+    environment:
+      - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
+      - GITHUB_BRANCH=master
+      - UPDATE_CHECK_INTERVAL=300
+      # Configure Google Drive backup URL (optional)
+      # Format: https://drive.google.com/file/d/FILE_ID/view or direct download link
+      - GDRIVE_BACKUP_URL=${GDRIVE_BACKUP_URL:-}
+    restart: unless-stopped
+    networks:
+      - mental-models-network
+
   # Watchtower - Automatically updates containers when images change
   watchtower:
     image: containrrr/watchtower
@@ -147,4 +169,6 @@ networks:
 
 volumes:
   storage-data:
+    driver: local
+  updater-repo:
     driver: local
