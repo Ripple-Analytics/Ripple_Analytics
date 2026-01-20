@@ -12,6 +12,7 @@ WORKDIR /build
 # Copy source files
 COPY rebar.config .
 COPY src/ src/
+COPY config/ config/
 
 # Fetch dependencies and compile
 RUN rebar3 compile
