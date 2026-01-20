@@ -347,13 +347,28 @@ rebuild_services() ->
         %% Build and restart only the application services, NOT the auto-updater itself
         %% This prevents the auto-updater from stopping itself during updates
         Services = "api-gateway analysis-service harvester-service storage-service chaos-engineering desktop-ui gdrive-backup",
-        BuildCmd = "cd /repo/mental_models_system/erlang-services && docker-compose build --parallel " ++ Services ++ " 2>&1",
-        RestartCmd = "cd /repo/mental_models_system/erlang-services && docker-compose up -d --no-deps " ++ Services ++ " 2>&1",
+        BasePath = "/repo/mental_models_system/erlang-services",
+        
+        %% Build the services
+        BuildCmd = "cd " ++ BasePath ++ " && docker-compose build --parallel " ++ Services ++ " 2>&1",
         io:format("[UPDATER] Running build command...~n"),
         _BuildResult = os:cmd(BuildCmd),
-        io:format("[UPDATER] Running restart command...~n"),
-        _RestartResult = os:cmd(RestartCmd),
-        io:format("[UPDATER] Rebuild complete~n")
+        
+        %% FULL RESTART: Stop then start to pick up ALL env var changes from .env
+        %% This ensures HOST_PATH, MACHINE_GUID, and any other settings are applied
+        io:format("[UPDATER] Stopping services for full restart (to pick up env changes)...~n"),
+        StopCmd = "cd " ++ BasePath ++ " && docker-compose stop " ++ Services ++ " 2>&1",
+        _StopResult = os:cmd(StopCmd),
+        
+        io:format("[UPDATER] Removing old containers...~n"),
+        RmCmd = "cd " ++ BasePath ++ " && docker-compose rm -f " ++ Services ++ " 2>&1",
+        _RmResult = os:cmd(RmCmd),
+        
+        io:format("[UPDATER] Starting services with fresh env vars...~n"),
+        StartCmd = "cd " ++ BasePath ++ " && docker-compose up -d " ++ Services ++ " 2>&1",
+        _StartResult = os:cmd(StartCmd),
+        
+        io:format("[UPDATER] Rebuild complete - all services restarted with latest env vars~n")
     catch
         Class:Reason:Stacktrace ->
             io:format("[UPDATER] ERROR during rebuild: ~p:~p~n~p~n", [Class, Reason, Stacktrace]),
