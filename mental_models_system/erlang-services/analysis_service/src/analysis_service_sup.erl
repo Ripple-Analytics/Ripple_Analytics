@@ -58,6 +58,15 @@ init([]) ->
             shutdown => 5000,
             type => worker,
             modules => [folder_watcher]
+        },
+        %% Notification service - real-time analysis alerts
+        #{
+            id => notification_service,
+            start => {notification_service, start_link, []},
+            restart => permanent,
+            shutdown => 5000,
+            type => worker,
+            modules => [notification_service]
         }
     ],
     

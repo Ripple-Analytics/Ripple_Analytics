@@ -276,10 +276,42 @@ analyze_files(Files, State) ->
 analyze_single_file(FilePath) ->
     io:format("[FolderWatcher] Analyzing: ~s~n", [FilePath]),
     Result = folder_scraper:analyze_file(FilePath, #{analysis_type => full}),
+    
+    %% Send notification for new file analysis
+    FileName = list_to_binary(filename:basename(FilePath)),
+    notify_file_analyzed(FileName, Result),
+    
     Result#{
         <<"analyzed_at">> => format_datetime(calendar:local_time()),
         <<"auto_analyzed">> => true
     }.
+
+notify_file_analyzed(FileName, Result) ->
+    LollapaloozaDetected = maps:get(<<"lollapalooza_detected">>, Result, false),
+    Models = maps:get(<<"models">>, Result, []),
+    TopModels = lists:sublist([maps:get(<<"name">>, M, <<"Unknown">>) || M <- Models], 3),
+    
+    case LollapaloozaDetected of
+        true ->
+            notification_service:notify(lollapalooza, #{
+                <<"file">> => FileName,
+                <<"message">> => <<"Lollapalooza effect detected!">>,
+                <<"models">> => TopModels,
+                <<"severity">> => <<"high">>
+            });
+        false when length(Models) > 0 ->
+            notification_service:notify(analysis_complete, #{
+                <<"file">> => FileName,
+                <<"message">> => <<"Analysis complete">>,
+                <<"models_found">> => length(Models),
+                <<"top_models">> => TopModels
+            });
+        _ ->
+            notification_service:notify(analysis_complete, #{
+                <<"file">> => FileName,
+                <<"message">> => <<"Analysis complete - no models detected">>
+            })
+    end.
 
 format_datetime(undefined) -> <<"never">>;
 format_datetime({{Y, M, D}, {H, Mi, S}}) ->
