@@ -8,12 +8,13 @@ COPY rebar.config .
 
 RUN wget https://s3.amazonaws.com/rebar3/rebar3 && chmod +x rebar3
 RUN ./rebar3 get-deps
-RUN ./rebar3 compile
 
+# CACHE BUSTER: This ARG changes with each commit, forcing rebuild of src layer
 ARG COMMIT_HASH=unknown
 ARG BUILD_TIME=unknown
 ENV COMMIT_HASH=${COMMIT_HASH}
 ENV BUILD_TIME=${BUILD_TIME}
+RUN echo "Building commit: ${COMMIT_HASH} at ${BUILD_TIME}"
 
 COPY src src/
 RUN ./rebar3 compile
