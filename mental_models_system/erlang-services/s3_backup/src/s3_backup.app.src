@@ -1,0 +1,9 @@
+{application, s3_backup,
+ [{description, "S3/MinIO Backup Service for Mental Models System"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {mod, {s3_backup_app, []}},
+  {applications, [kernel, stdlib, cowboy, jsx, inets, ssl, crypto]},
+  {env, []},
+  {modules, []}
+ ]}.

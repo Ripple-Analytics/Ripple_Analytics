@@ -1,0 +1,9 @@
+{application, lan_backup,
+ [{description, "LAN/Local Network Backup Service for Mental Models System"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {mod, {lan_backup_app, []}},
+  {applications, [kernel, stdlib, cowboy, jsx, inets]},
+  {env, []},
+  {modules, []}
+ ]}.

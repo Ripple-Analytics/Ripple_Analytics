@@ -233,6 +233,73 @@ services:
     networks:
       - mental-models-network
 
+  # S3/MinIO Backup Service - Cloud storage backup
+  s3-backup:
+    build: ./s3_backup
+    container_name: mental-models-s3-backup
+    ports:
+      - "8008:8008"
+    volumes:
+      - s3-data:/data
+    environment:
+      - S3_ENDPOINT=${S3_ENDPOINT:-}
+      - S3_BUCKET=${S3_BUCKET:-}
+      - S3_ACCESS_KEY=${S3_ACCESS_KEY:-}
+      - S3_SECRET_KEY=${S3_SECRET_KEY:-}
+      - S3_REGION=${S3_REGION:-us-east-1}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8008/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # HTTP/HTTPS Backup Service - Direct URL downloads
+  http-backup:
+    build: ./http_backup
+    container_name: mental-models-http-backup
+    ports:
+      - "8009:8009"
+    volumes:
+      - http-data:/data
+    environment:
+      - HTTP_BACKUP_URL=${HTTP_BACKUP_URL:-}
+      - CHECK_INTERVAL=3600
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8009/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # LAN/Local Network Backup Service - Peer-to-peer sync
+  lan-backup:
+    build: ./lan_backup
+    container_name: mental-models-lan-backup
+    ports:
+      - "8010:8010"
+      - "8011:8011/udp"
+    volumes:
+      - lan-data:/data
+    environment:
+      - LAN_BROADCAST_PORT=8011
+      - LAN_DISCOVERY_ENABLED=true
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8010/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
 networks:
   mental-models-network:
     driver: bridge
@@ -247,4 +314,10 @@ volumes:
   gdrive-data:
     driver: local
   chaos-data:
+    driver: local
+  s3-data:
+    driver: local
+  http-data:
+    driver: local
+  lan-data:
     driver: local

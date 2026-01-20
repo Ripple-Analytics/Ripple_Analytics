@@ -64,6 +64,9 @@ init(Req0, State) ->
                 <p><strong>Chaos Engineering:</strong> http://localhost:8005</p>
                 <p><strong>GDrive Backup:</strong> http://localhost:8006</p>
                 <p><strong>Chaos Monkey:</strong> http://localhost:8007</p>
+                <p><strong>S3/MinIO Backup:</strong> http://localhost:8008</p>
+                <p><strong>HTTP Backup:</strong> http://localhost:8009</p>
+                <p><strong>LAN Backup:</strong> http://localhost:8010</p>
                 <p><strong>Desktop UI:</strong> http://localhost:3000</p>
             </div>
         </div>
@@ -113,6 +116,48 @@ init(Req0, State) ->
                 </div>
             </div>
             <div id=\"chaos-monkey-results\" style=\"margin-top: 15px;\"></div>
+        </div>
+        
+        <div class=\"card\" style=\"border-left: 4px solid #6366f1;\">
+            <h2>S3/MinIO Backup</h2>
+            <p>Cloud storage backup using S3-compatible storage (AWS S3, MinIO, etc).</p>
+            <div id=\"s3-status\" style=\"margin: 15px 0;\">
+                <p class=\"loading\">Loading S3 status...</p>
+            </div>
+            <div style=\"display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;\">
+                <button class=\"btn\" onclick=\"testS3Connection()\">Test Connection</button>
+                <button class=\"btn btn-secondary\" onclick=\"createS3Backup()\">Create Backup</button>
+                <button class=\"btn btn-secondary\" onclick=\"listS3Backups()\">List Backups</button>
+            </div>
+            <div id=\"s3-results\" style=\"margin-top: 15px;\"></div>
+        </div>
+        
+        <div class=\"card\" style=\"border-left: 4px solid #8b5cf6;\">
+            <h2>HTTP/HTTPS Backup</h2>
+            <p>Download updates from any HTTP/HTTPS URL source.</p>
+            <div id=\"http-status\" style=\"margin: 15px 0;\">
+                <p class=\"loading\">Loading HTTP backup status...</p>
+            </div>
+            <div style=\"display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;\">
+                <button class=\"btn\" onclick=\"testHttpSource()\">Test Source</button>
+                <button class=\"btn btn-secondary\" onclick=\"downloadFromHttp()\">Download Now</button>
+                <button class=\"btn btn-secondary\" onclick=\"listHttpSources()\">List Sources</button>
+            </div>
+            <div id=\"http-results\" style=\"margin-top: 15px;\"></div>
+        </div>
+        
+        <div class=\"card\" style=\"border-left: 4px solid #ec4899;\">
+            <h2>LAN/Local Network Backup</h2>
+            <p>Peer-to-peer sync with other instances on your local network.</p>
+            <div id=\"lan-status\" style=\"margin: 15px 0;\">
+                <p class=\"loading\">Loading LAN status...</p>
+            </div>
+            <div style=\"display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;\">
+                <button class=\"btn\" onclick=\"discoverPeers()\">Discover Peers</button>
+                <button class=\"btn btn-secondary\" onclick=\"broadcastUpdate()\">Broadcast Update</button>
+                <button class=\"btn btn-secondary\" onclick=\"listPeers()\">List Peers</button>
+            </div>
+            <div id=\"lan-results\" style=\"margin-top: 15px;\"></div>
         </div>
         
         <div class=\"card\">
@@ -297,6 +342,9 @@ init(Req0, State) ->
                     {name: 'Chaos Engineering', url: 'http://localhost:8005/health'},
                     {name: 'GDrive Backup', url: 'http://localhost:8006/health'},
                     {name: 'Chaos Monkey', url: 'http://localhost:8007/health'},
+                    {name: 'S3/MinIO Backup', url: 'http://localhost:8008/health'},
+                    {name: 'HTTP Backup', url: 'http://localhost:8009/health'},
+                    {name: 'LAN Backup', url: 'http://localhost:8010/health'},
                     {name: 'Desktop UI', url: '/health'}
                 ];
                 
@@ -664,6 +712,269 @@ init(Req0, State) ->
                         '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
                 }
             }
+            
+            // S3/MinIO Backup functions
+            async function loadS3Status() {
+                try {
+                    const res = await fetch('http://localhost:8008/api/s3/status');
+                    const data = await res.json();
+                    
+                    let html = '<div style=\"display: grid; grid-template-columns: 1fr 1fr; gap: 10px;\">';
+                    html += '<p><strong>Configured:</strong> ' + (data.s3?.configured ? 'Yes' : 'No') + '</p>';
+                    html += '<p><strong>Endpoint:</strong> ' + (data.s3?.endpoint || 'Not set') + '</p>';
+                    html += '<p><strong>Bucket:</strong> ' + (data.s3?.bucket || 'Not set') + '</p>';
+                    html += '<p><strong>Connection:</strong> ' + (data.s3?.connection_status || 'unknown') + '</p>';
+                    html += '</div>';
+                    
+                    document.getElementById('s3-status').innerHTML = html;
+                } catch (e) {
+                    document.getElementById('s3-status').innerHTML = 
+                        '<p class=\"status-unknown\">S3 Backup service not available</p>';
+                }
+            }
+            
+            async function testS3Connection() {
+                document.getElementById('s3-results').innerHTML = '<p class=\"loading\">Testing S3 connection...</p>';
+                try {
+                    const res = await fetch('http://localhost:8008/api/s3/test', {method: 'POST'});
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        document.getElementById('s3-results').innerHTML = 
+                            '<div class=\"alert alert-success\">Connection successful!</div>';
+                        loadS3Status();
+                    } else {
+                        document.getElementById('s3-results').innerHTML = 
+                            '<div class=\"alert alert-error\">' + (data.error || 'Connection failed') + '</div>';
+                    }
+                } catch (e) {
+                    document.getElementById('s3-results').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
+            }
+            
+            async function createS3Backup() {
+                document.getElementById('s3-results').innerHTML = '<p class=\"loading\">Creating S3 backup...</p>';
+                try {
+                    const res = await fetch('http://localhost:8008/api/s3/backup/create', {method: 'POST'});
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        document.getElementById('s3-results').innerHTML = 
+                            '<div class=\"alert alert-success\">Backup created: ' + data.backup?.name + '</div>';
+                    } else {
+                        document.getElementById('s3-results').innerHTML = 
+                            '<div class=\"alert alert-error\">' + (data.error || 'Backup failed') + '</div>';
+                    }
+                } catch (e) {
+                    document.getElementById('s3-results').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
+            }
+            
+            async function listS3Backups() {
+                document.getElementById('s3-results').innerHTML = '<p class=\"loading\">Loading S3 backups...</p>';
+                try {
+                    const res = await fetch('http://localhost:8008/api/s3/backup/list');
+                    const data = await res.json();
+                    
+                    if (data.success && data.backups?.length > 0) {
+                        let html = '<table style=\"width: 100%; border-collapse: collapse;\">';
+                        html += '<tr style=\"background: #f8f9fa;\"><th style=\"padding: 8px;\">Name</th><th style=\"padding: 8px;\">Size</th></tr>';
+                        for (const b of data.backups) {
+                            html += '<tr><td style=\"padding: 8px;\">' + b.name + '</td><td style=\"padding: 8px;\">' + formatBytes(b.size) + '</td></tr>';
+                        }
+                        html += '</table>';
+                        document.getElementById('s3-results').innerHTML = html;
+                    } else {
+                        document.getElementById('s3-results').innerHTML = '<p>No backups found.</p>';
+                    }
+                } catch (e) {
+                    document.getElementById('s3-results').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
+            }
+            
+            // HTTP/HTTPS Backup functions
+            async function loadHttpStatus() {
+                try {
+                    const res = await fetch('http://localhost:8009/api/http/status');
+                    const data = await res.json();
+                    
+                    let html = '<div style=\"display: grid; grid-template-columns: 1fr 1fr; gap: 10px;\">';
+                    html += '<p><strong>Sources:</strong> ' + (data.http?.source_count || 0) + '</p>';
+                    html += '<p><strong>Primary URL:</strong> ' + (data.http?.primary_url || 'Not set') + '</p>';
+                    html += '<p><strong>Last Download:</strong> ' + (data.http?.last_download || 'never') + '</p>';
+                    html += '<p><strong>Downloads:</strong> ' + (data.http?.download_count || 0) + '</p>';
+                    html += '</div>';
+                    
+                    document.getElementById('http-status').innerHTML = html;
+                } catch (e) {
+                    document.getElementById('http-status').innerHTML = 
+                        '<p class=\"status-unknown\">HTTP Backup service not available</p>';
+                }
+            }
+            
+            async function testHttpSource() {
+                document.getElementById('http-results').innerHTML = '<p class=\"loading\">Testing HTTP source...</p>';
+                try {
+                    const res = await fetch('http://localhost:8009/api/http/test', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({source: 'primary'})
+                    });
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        document.getElementById('http-results').innerHTML = 
+                            '<div class=\"alert alert-success\">Source reachable! Latency: ' + data.test?.latency_ms + 'ms</div>';
+                    } else {
+                        document.getElementById('http-results').innerHTML = 
+                            '<div class=\"alert alert-error\">' + (data.error || 'Test failed') + '</div>';
+                    }
+                } catch (e) {
+                    document.getElementById('http-results').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
+            }
+            
+            async function downloadFromHttp() {
+                document.getElementById('http-results').innerHTML = '<p class=\"loading\">Downloading from HTTP source...</p>';
+                try {
+                    const res = await fetch('http://localhost:8009/api/http/download', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({source: 'primary'})
+                    });
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        document.getElementById('http-results').innerHTML = 
+                            '<div class=\"alert alert-success\">Download complete!</div>';
+                        loadHttpStatus();
+                    } else {
+                        document.getElementById('http-results').innerHTML = 
+                            '<div class=\"alert alert-error\">' + (data.error || 'Download failed') + '</div>';
+                    }
+                } catch (e) {
+                    document.getElementById('http-results').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
+            }
+            
+            async function listHttpSources() {
+                document.getElementById('http-results').innerHTML = '<p class=\"loading\">Loading HTTP sources...</p>';
+                try {
+                    const res = await fetch('http://localhost:8009/api/http/sources');
+                    const data = await res.json();
+                    
+                    if (data.success && data.sources?.length > 0) {
+                        let html = '<table style=\"width: 100%; border-collapse: collapse;\">';
+                        html += '<tr style=\"background: #f8f9fa;\"><th style=\"padding: 8px;\">Name</th><th style=\"padding: 8px;\">URL</th></tr>';
+                        for (const s of data.sources) {
+                            html += '<tr><td style=\"padding: 8px;\">' + s.name + '</td><td style=\"padding: 8px;\">' + s.url + '</td></tr>';
+                        }
+                        html += '</table>';
+                        document.getElementById('http-results').innerHTML = html;
+                    } else {
+                        document.getElementById('http-results').innerHTML = '<p>No sources configured.</p>';
+                    }
+                } catch (e) {
+                    document.getElementById('http-results').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
+            }
+            
+            // LAN/Local Network Backup functions
+            async function loadLanStatus() {
+                try {
+                    const res = await fetch('http://localhost:8010/api/lan/status');
+                    const data = await res.json();
+                    
+                    let html = '<div style=\"display: grid; grid-template-columns: 1fr 1fr; gap: 10px;\">';
+                    html += '<p><strong>Peers:</strong> ' + (data.lan?.peer_count || 0) + '</p>';
+                    html += '<p><strong>Discovery:</strong> ' + (data.lan?.discovery_enabled ? 'Enabled' : 'Disabled') + '</p>';
+                    html += '<p><strong>Last Sync:</strong> ' + (data.lan?.last_sync || 'never') + '</p>';
+                    html += '<p><strong>Syncs:</strong> ' + (data.lan?.sync_count || 0) + '</p>';
+                    html += '</div>';
+                    
+                    document.getElementById('lan-status').innerHTML = html;
+                } catch (e) {
+                    document.getElementById('lan-status').innerHTML = 
+                        '<p class=\"status-unknown\">LAN Backup service not available</p>';
+                }
+            }
+            
+            async function discoverPeers() {
+                document.getElementById('lan-results').innerHTML = '<p class=\"loading\">Discovering peers...</p>';
+                try {
+                    const res = await fetch('http://localhost:8010/api/lan/discover', {method: 'POST'});
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        const count = data.peers?.length || 0;
+                        document.getElementById('lan-results').innerHTML = 
+                            '<div class=\"alert alert-success\">Found ' + count + ' peer(s) on local network</div>';
+                        loadLanStatus();
+                    } else {
+                        document.getElementById('lan-results').innerHTML = 
+                            '<div class=\"alert alert-error\">' + (data.error || 'Discovery failed') + '</div>';
+                    }
+                } catch (e) {
+                    document.getElementById('lan-results').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
+            }
+            
+            async function broadcastUpdate() {
+                document.getElementById('lan-results').innerHTML = '<p class=\"loading\">Broadcasting update...</p>';
+                try {
+                    const res = await fetch('http://localhost:8010/api/lan/broadcast', {method: 'POST'});
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        document.getElementById('lan-results').innerHTML = 
+                            '<div class=\"alert alert-success\">Broadcast sent to ' + (data.broadcast?.peers_notified || 0) + ' peer(s)</div>';
+                    } else {
+                        document.getElementById('lan-results').innerHTML = 
+                            '<div class=\"alert alert-error\">' + (data.error || 'Broadcast failed') + '</div>';
+                    }
+                } catch (e) {
+                    document.getElementById('lan-results').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
+            }
+            
+            async function listPeers() {
+                document.getElementById('lan-results').innerHTML = '<p class=\"loading\">Loading peers...</p>';
+                try {
+                    const res = await fetch('http://localhost:8010/api/lan/peers');
+                    const data = await res.json();
+                    
+                    if (data.success && data.peers?.length > 0) {
+                        let html = '<table style=\"width: 100%; border-collapse: collapse;\">';
+                        html += '<tr style=\"background: #f8f9fa;\"><th style=\"padding: 8px;\">ID</th><th style=\"padding: 8px;\">Address</th></tr>';
+                        for (const p of data.peers) {
+                            html += '<tr><td style=\"padding: 8px;\">' + p.id + '</td><td style=\"padding: 8px;\">' + p.address + '</td></tr>';
+                        }
+                        html += '</table>';
+                        document.getElementById('lan-results').innerHTML = html;
+                    } else {
+                        document.getElementById('lan-results').innerHTML = '<p>No peers found. Click \"Discover Peers\" to scan.</p>';
+                    }
+                } catch (e) {
+                    document.getElementById('lan-results').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
+            }
+            
+            // Load all backup statuses on page load
+            loadS3Status();
+            loadHttpStatus();
+            loadLanStatus();
+            setInterval(loadS3Status, 60000);
+            setInterval(loadHttpStatus, 60000);
+            setInterval(loadLanStatus, 60000);
         </script>">>
     ],
     Html = html_templates:base_layout(<<"Settings">>, Content),
