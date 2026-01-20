@@ -50,13 +50,40 @@ fetch_branch(Branch) ->
     Cmd = "cd " ++ ?REPO_PATH ++ " && git fetch origin " ++ Branch ++ " 2>&1",
     os:cmd(Cmd).
 
-%% @doc Reset to origin branch
+%% @doc Reset to origin branch - fetch first, then use FETCH_HEAD if origin/branch fails
 reset_hard(Branch) ->
     io:format("[GIT] Resetting to origin/~s~n", [Branch]),
-    Cmd = "cd " ++ ?REPO_PATH ++ " && git fetch origin " ++ Branch ++ " && git reset --hard origin/" ++ Branch ++ " 2>&1",
-    Result = os:cmd(Cmd),
-    io:format("[GIT] Reset result: ~s~n", [truncate(Result, 200)]),
-    ok.
+    
+    %% Step 1: Fetch the branch
+    FetchCmd = "cd " ++ ?REPO_PATH ++ " && git fetch origin " ++ Branch ++ " 2>&1",
+    FetchResult = os:cmd(FetchCmd),
+    io:format("[GIT] Fetch result: ~s~n", [truncate(FetchResult, 200)]),
+    
+    %% Step 2: Try reset to origin/branch first
+    ResetCmd1 = "cd " ++ ?REPO_PATH ++ " && git reset --hard origin/" ++ Branch ++ " 2>&1",
+    Result1 = os:cmd(ResetCmd1),
+    
+    case string:find(Result1, "fatal:") of
+        nomatch ->
+            io:format("[GIT] Reset result: ~s~n", [truncate(Result1, 200)]),
+            ok;
+        _ ->
+            %% Fallback: use FETCH_HEAD
+            io:format("[GIT] origin/~s not found, using FETCH_HEAD~n", [Branch]),
+            ResetCmd2 = "cd " ++ ?REPO_PATH ++ " && git reset --hard FETCH_HEAD 2>&1",
+            Result2 = os:cmd(ResetCmd2),
+            io:format("[GIT] Reset result: ~s~n", [truncate(Result2, 200)]),
+            case string:find(Result2, "fatal:") of
+                nomatch -> ok;
+                _ ->
+                    %% Last resort: pull with force
+                    io:format("[GIT] FETCH_HEAD failed, trying git pull --force~n"),
+                    PullCmd = "cd " ++ ?REPO_PATH ++ " && git pull origin " ++ Branch ++ " --force 2>&1",
+                    PullResult = os:cmd(PullCmd),
+                    io:format("[GIT] Pull result: ~s~n", [truncate(PullResult, 200)]),
+                    ok
+            end
+    end.
 
 %% @doc Revert to previous commit
 revert_commit() ->
