@@ -32,6 +32,8 @@ init(Req0, State) ->
                 <button class=\"btn\" onclick=\"compareSelected()\" id=\"compare-action-btn\" style=\"display: none;\">Compare Selected (<span id=\"compare-count\">0</span>)</button>
                 <button class=\"btn btn-secondary\" onclick=\"toggleBulkMode()\" id=\"bulk-btn\">Bulk Actions</button>
                 <button class=\"btn\" onclick=\"exportAllHistory()\" style=\"background: #28a745;\">Export All</button>
+                <button class=\"btn btn-secondary\" onclick=\"showImportDialog()\">Import</button>
+                <button class=\"btn\" onclick=\"clearAllHistory()\" style=\"background: #dc3545;\">Clear All</button>
             </div>
             
             <div id=\"bulk-actions-bar\" style=\"display: none; background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #e0e0e0;\">
@@ -775,6 +777,73 @@ init(Req0, State) ->
                     downloadFile('all_analyses_' + Date.now() + '.json', JSON.stringify(exportData, null, 2), 'application/json');
                 } catch (e) {
                     alert('Export failed: ' + e.message);
+                }
+            }
+            
+            // Import history from JSON file
+            function showImportDialog() {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.json';
+                input.onchange = async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    try {
+                        const text = await file.text();
+                        const data = JSON.parse(text);
+                        
+                        if (!data.analyses || !Array.isArray(data.analyses)) {
+                            alert('Invalid file format. Expected JSON with "analyses" array.');
+                            return;
+                        }
+                        
+                        if (!confirm('Import ' + data.analyses.length + ' analyses? This will add them to your existing history.')) {
+                            return;
+                        }
+                        
+                        const res = await fetch('/api/storage/history/import', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({analyses: data.analyses})
+                        });
+                        const result = await res.json();
+                        
+                        if (result.success) {
+                            alert('Successfully imported ' + result.imported + ' of ' + result.total + ' analyses');
+                            await loadHistory();
+                        } else {
+                            alert('Import failed: ' + (result.error || 'Unknown error'));
+                        }
+                    } catch (err) {
+                        alert('Error reading file: ' + err.message);
+                    }
+                };
+                input.click();
+            }
+            
+            // Clear all history
+            async function clearAllHistory() {
+                if (!confirm('Are you sure you want to delete ALL analysis history? This cannot be undone!')) {
+                    return;
+                }
+                
+                if (!confirm('This will permanently delete all ' + allAnalysesData.length + ' analyses. Are you REALLY sure?')) {
+                    return;
+                }
+                
+                try {
+                    const res = await fetch('/api/storage/history', {method: 'DELETE'});
+                    const result = await res.json();
+                    
+                    if (result.success) {
+                        alert('All history cleared successfully');
+                        await loadHistory();
+                    } else {
+                        alert('Failed to clear history: ' + (result.error || 'Unknown error'));
+                    }
+                } catch (e) {
+                    alert('Error clearing history: ' + e.message);
                 }
             }
             

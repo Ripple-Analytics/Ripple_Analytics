@@ -5,7 +5,7 @@
 -behaviour(gen_server).
 
 -export([start_link/0, save_analysis/1, get_analysis/1, list_analyses/0, 
-         list_analyses/1, delete_analysis/1, get_stats/0]).
+         list_analyses/1, delete_analysis/1, get_stats/0, clear_all/0]).
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2]).
 
 -define(TABLE, analysis_history).
@@ -30,6 +30,9 @@ delete_analysis(Id) ->
 
 get_stats() ->
     gen_server:call(?MODULE, get_stats).
+
+clear_all() ->
+    gen_server:call(?MODULE, clear_all).
 
 init([]) ->
     DataDir = application:get_env(storage_service, data_dir, "/data"),
@@ -113,6 +116,11 @@ handle_call(get_stats, _From, State) ->
         }
     end, #{total => 0, by_type => #{}, total_models_detected => 0, total_biases_detected => 0}, ?TABLE),
     {reply, {ok, Stats}, State};
+
+handle_call(clear_all, _From, State) ->
+    %% Delete all records from the table
+    ok = dets:delete_all_objects(?TABLE),
+    {reply, ok, State};
 
 handle_call(_Request, _From, State) ->
     {reply, ok, State}.
