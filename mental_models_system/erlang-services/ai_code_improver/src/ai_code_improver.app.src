@@ -1,0 +1,23 @@
+{application, ai_code_improver,
+ [{description, "Autonomous AI Code Improver using LM Studio"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {mod, {ai_code_improver_app, []}},
+  {applications,
+   [kernel,
+    stdlib,
+    cowboy,
+    jsx,
+    hackney
+   ]},
+  {env,[
+    {lm_studio_url, "http://host.docker.internal:1234"},
+    {improvement_interval, 300000},  % 5 minutes between improvement cycles
+    {max_changes_per_cycle, 3},
+    {auto_deploy, true},
+    {require_validation, true}
+  ]},
+  {modules, []},
+  {licenses, ["Apache 2.0"]},
+  {links, []}
+ ]}.

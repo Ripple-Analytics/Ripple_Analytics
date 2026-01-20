@@ -1,0 +1,50 @@
+-module(ai_code_improver_sup).
+-behaviour(supervisor).
+
+-export([start_link/0]).
+-export([init/1]).
+
+start_link() ->
+    supervisor:start_link({local, ?MODULE}, ?MODULE, []).
+
+init([]) ->
+    SupFlags = #{
+        strategy => one_for_one,
+        intensity => 10,
+        period => 60
+    },
+    ChildSpecs = [
+        #{
+            id => improvement_scheduler,
+            start => {improvement_scheduler, start_link, []},
+            restart => permanent,
+            shutdown => 5000,
+            type => worker,
+            modules => [improvement_scheduler]
+        },
+        #{
+            id => lm_studio_client,
+            start => {lm_studio_client, start_link, []},
+            restart => permanent,
+            shutdown => 5000,
+            type => worker,
+            modules => [lm_studio_client]
+        },
+        #{
+            id => code_analyzer,
+            start => {code_analyzer, start_link, []},
+            restart => permanent,
+            shutdown => 5000,
+            type => worker,
+            modules => [code_analyzer]
+        },
+        #{
+            id => improvement_history,
+            start => {improvement_history, start_link, []},
+            restart => permanent,
+            shutdown => 5000,
+            type => worker,
+            modules => [improvement_history]
+        }
+    ],
+    {ok, {SupFlags, ChildSpecs}}.
