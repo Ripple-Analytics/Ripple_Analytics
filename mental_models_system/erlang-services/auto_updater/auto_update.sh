@@ -156,7 +156,9 @@ alert_github_failure() {
 init_repo() {
     if [ ! -d "$REPO_PATH/.git" ]; then
         log "Cloning repository from GitHub..."
-        git clone --depth 1 --branch "$BRANCH" "$REPO_URL" "$REPO_PATH" || return 1
+        # Disable credential prompts for public repos
+        export GIT_TERMINAL_PROMPT=0
+        git clone --depth 1 --branch "$BRANCH" "$REPO_URL" "$REPO_PATH" 2>&1 || return 1
     fi
     return 0
 }
@@ -165,6 +167,9 @@ init_repo() {
 check_github_updates() {
     log "Checking GitHub for updates..."
     cd "$REPO_PATH"
+    
+    # Disable credential prompts for public repos
+    export GIT_TERMINAL_PROMPT=0
     
     # Fetch latest changes
     git fetch origin "$BRANCH" --depth 1 2>/dev/null || return 1
@@ -186,6 +191,9 @@ check_github_updates() {
 pull_github_updates() {
     log "Pulling updates from GitHub..."
     cd "$REPO_PATH"
+    
+    # Disable credential prompts for public repos
+    export GIT_TERMINAL_PROMPT=0
     
     git reset --hard "origin/$BRANCH" || return 1
     git pull origin "$BRANCH" --depth 1 || return 1
