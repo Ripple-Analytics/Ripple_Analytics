@@ -21,6 +21,10 @@ start(_StartType, _StartArgs) ->
             {"/api/storage/favorites", favorites_handler, []},
             {"/api/storage/notes", notes_handler, []},
             {"/api/storage/tags", tags_handler, []},
+            %% Scheduled analysis tasks
+            {"/scheduler", scheduler_handler, []},
+            {"/scheduler/due", scheduler_handler, []},
+            {"/scheduler/:id", scheduler_handler, []},
             {"/[...]", not_found_handler, []}
         ]}
     ]),

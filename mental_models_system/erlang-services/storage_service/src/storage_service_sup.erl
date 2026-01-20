@@ -21,6 +21,11 @@ init([]) ->
           start => {history_store, start_link, []},
           restart => permanent,
           shutdown => 5000,
+          type => worker},
+        #{id => scheduler_store,
+          start => {scheduler_store, start_link, []},
+          restart => permanent,
+          shutdown => 5000,
           type => worker}
     ],
     {ok, {SupFlags, ChildSpecs}}.
