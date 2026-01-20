@@ -249,7 +249,7 @@ keyword_analyze(Text, TopN) ->
     
     %% Score each model based on keyword matches
     Scored = lists:map(fun(Model) ->
-        Keywords = element(9, Model), %% #model.keywords
+        Keywords = maps:get(<<"keywords">>, Model, []),
         Score = lists:foldl(fun(Keyword, Acc) ->
             KeywordStr = string:lowercase(binary_to_list(Keyword)),
             case string:find(TextLower, KeywordStr) of
@@ -266,10 +266,10 @@ keyword_analyze(Text, TopN) ->
     
     Results = lists:map(fun({Score, Model}) ->
         #{
-            <<"name">> => element(3, Model), %% #model.name
-            <<"category">> => element(4, Model), %% #model.category
+            <<"name">> => maps:get(<<"name">>, Model, <<>>),
+            <<"category">> => maps:get(<<"category">>, Model, <<>>),
             <<"relevance">> => Score,
-            <<"description">> => element(5, Model) %% #model.description
+            <<"description">> => maps:get(<<"description">>, Model, <<>>)
         }
     end, TopModels),
     

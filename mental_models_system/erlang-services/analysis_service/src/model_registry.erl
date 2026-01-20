@@ -62,7 +62,9 @@ init([]) ->
 
 handle_call(get_all, _From, State) ->
     Models = ets:tab2list(models),
-    {reply, Models, State};
+    %% Convert records to maps for easier consumption by other modules
+    ModelMaps = lists:map(fun(M) -> model_to_map(M) end, Models),
+    {reply, ModelMaps, State};
 
 handle_call({get, Id}, _From, State) ->
     case ets:lookup(models, Id) of
@@ -106,6 +108,22 @@ terminate(_Reason, _State) ->
 %%====================================================================
 %% Internal functions
 %%====================================================================
+
+%% @doc Convert a model record to a map for easier consumption
+model_to_map(#model{id = Id, name = Name, category = Category, 
+                    description = Description, key_insight = KeyInsight,
+                    application = Application, failure_modes = FailureModes,
+                    keywords = Keywords}) ->
+    #{
+        <<"id">> => Id,
+        <<"name">> => Name,
+        <<"category">> => Category,
+        <<"description">> => Description,
+        <<"key_insight">> => KeyInsight,
+        <<"application">> => Application,
+        <<"failure_modes">> => FailureModes,
+        <<"keywords">> => Keywords
+    }.
 
 load_default_models() ->
     Models = [
