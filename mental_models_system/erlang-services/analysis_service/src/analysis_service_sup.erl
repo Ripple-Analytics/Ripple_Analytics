@@ -76,6 +76,15 @@ init([]) ->
             shutdown => 5000,
             type => worker,
             modules => [analytics_service]
+        },
+        %% Code improver service - autonomous code improvement with LM Studio
+        #{
+            id => code_improver_service,
+            start => {code_improver_service, start_link, []},
+            restart => permanent,
+            shutdown => 5000,
+            type => worker,
+            modules => [code_improver_service]
         }
     ],
     
