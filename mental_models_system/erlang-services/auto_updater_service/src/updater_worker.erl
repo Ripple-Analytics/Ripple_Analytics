@@ -249,7 +249,7 @@ do_perform_update(State) ->
     %% Step 1.5: Run pre-build syntax check and auto-fix
     io:format("[UPDATER] Running pre-build syntax check...~n"),
     PreBuildResult = os:cmd("cd /repo/mental_models_system/erlang-services && bash scripts/fix_erlang_syntax.sh 2>&1"),
-    io:format("[UPDATER] Pre-build result: ~s~n", [string:sub_string(PreBuildResult, 1, min(500, length(PreBuildResult)))]),
+    io:format("[UPDATER] Pre-build result: ~s~n", [string:sub_string(PreBuildResult, 1, erlang:min(500, length(PreBuildResult)))]),
     
     %% Step 2: Build ONLY the standby services
     StandbyServices = get_standby_services(StandbyEnv),
@@ -522,7 +522,7 @@ get_remote_commit(Branch) ->
     io:format("[UPDATER] Fetching from remote...~n"),
     FetchCmd = "cd /repo && git fetch origin " ++ Branch ++ " 2>&1",
     FetchResult = os:cmd(FetchCmd),
-    io:format("[UPDATER] Fetch result: ~s~n", [string:sub_string(FetchResult, 1, min(200, length(FetchResult)))]),
+    io:format("[UPDATER] Fetch result: ~s~n", [string:sub_string(FetchResult, 1, erlang:min(200, length(FetchResult)))]),
     
     %% Now get the remote commit hash
     Cmd = "cd /repo && git rev-parse origin/" ++ Branch ++ " 2>/dev/null",
