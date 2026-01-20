@@ -17,7 +17,7 @@
 -define(HEARTBEAT_INTERVAL, 60000).  %% 1 minute
 
 -record(state, {
-    env = "blue" :: string(),
+    env :: string(),
     start_time :: erlang:timestamp(),
     log_count = 0 :: non_neg_integer()
 }).
@@ -76,13 +76,20 @@ safe_call(Msg) ->
 init([]) ->
     io:format("[DEBUG_LOGGER] Initializing...~n"),
     
+    %% Read deployment environment from env var (default to blue)
+    Env = case os:getenv("DEPLOYMENT_ENV") of
+        false -> "blue";
+        E -> E
+    end,
+    io:format("[DEBUG_LOGGER] Environment: ~s~n", [Env]),
+    
     %% IMMEDIATELY log startup and push to GitHub
     self() ! immediate_startup_log,
     
     %% Schedule heartbeat
     erlang:send_after(?HEARTBEAT_INTERVAL, self(), heartbeat_timer),
     
-    {ok, #state{start_time = erlang:timestamp()}}.
+    {ok, #state{env = Env, start_time = erlang:timestamp()}}.
 
 handle_call({startup, Service}, _From, State) ->
     %% Synchronous startup log - waits for push

@@ -20,11 +20,14 @@
 services:
   # ============================================================================
   # DEBUG LOGGER - STARTS FIRST, LOGS EVERYTHING TO GITHUB
+  # Blue-Green deployment for zero-downtime updates
   # This service starts before ALL others and captures all errors
   # ============================================================================
-  debug-logger:
+  
+  # Debug Logger - BLUE Environment
+  debug-logger-blue:
     build: ./debug_logger_service
-    container_name: mental-models-debug-logger
+    container_name: mental-models-debug-logger-blue
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -32,6 +35,22 @@ services:
       - .:/repo/mental_models_system/erlang-services
     environment:
       - GITHUB_BRANCH=release2
+      - DEPLOYMENT_ENV=blue
+    networks:
+      - mental-models-network
+
+  # Debug Logger - GREEN Environment
+  debug-logger-green:
+    build: ./debug_logger_service
+    container_name: mental-models-debug-logger-green
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - updater-repo:/repo
+      - .:/repo/mental_models_system/erlang-services
+    environment:
+      - GITHUB_BRANCH=release2
+      - DEPLOYMENT_ENV=green
     networks:
       - mental-models-network
 

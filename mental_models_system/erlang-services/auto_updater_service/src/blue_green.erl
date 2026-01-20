@@ -12,8 +12,9 @@
 -define(BASE_PATH, "/repo/mental_models_system/erlang-services").
 
 %% @doc Get list of standby service names
+%% Includes debug-logger for blue-green updates
 get_standby_services(Env) ->
-    Services = ["desktop-ui-" ++ Env, "analysis-service-" ++ Env],
+    Services = ["debug-logger-" ++ Env, "desktop-ui-" ++ Env, "analysis-service-" ++ Env],
     github_logger:log("blue_green", "get_services", 
         lists:flatten(io_lib:format("Standby env: ~s~nServices: ~p", [Env, Services]))),
     Services.
