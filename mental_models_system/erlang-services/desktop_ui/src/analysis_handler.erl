@@ -1,5 +1,5 @@
 %%%-------------------------------------------------------------------
-%%% @doc Analysis Handler - Mental model analysis page
+%%% @doc Analysis Handler - Mental model analysis page with export
 %%%-------------------------------------------------------------------
 -module(analysis_handler).
 -behaviour(cowboy_handler).
@@ -13,13 +13,28 @@ init(Req0, State) ->
             <p>Enter text to identify relevant mental models and detect cognitive biases.</p>
             <br>
             <textarea id=\"analysis-text\" placeholder=\"Enter text to analyze...\"></textarea>
-            <div style=\"display: flex; gap: 10px; margin-top: 10px;\">
+            <div style=\"display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;\">
                 <button class=\"btn\" onclick=\"analyzeText()\">Analyze for Models</button>
                 <button class=\"btn btn-secondary\" onclick=\"detectBiases()\">Detect Biases</button>
+                <button class=\"btn btn-secondary\" onclick=\"runFullAnalysis()\">Full Analysis</button>
             </div>
         </div>
         <div id=\"results\"></div>
+        <div id=\"export-buttons\" style=\"display: none; margin-top: 15px;\">
+            <div class=\"card\">
+                <h2>Export Results</h2>
+                <p>Download your analysis results in different formats:</p>
+                <div style=\"display: flex; gap: 10px; margin-top: 10px;\">
+                    <button class=\"btn\" onclick=\"exportJSON()\">Export as JSON</button>
+                    <button class=\"btn btn-secondary\" onclick=\"exportPDF()\">Export as PDF</button>
+                    <button class=\"btn btn-secondary\" onclick=\"copyToClipboard()\">Copy to Clipboard</button>
+                </div>
+            </div>
+        </div>
         <script>
+            let lastAnalysisResult = null;
+            let lastAnalysisType = null;
+            
             async function analyzeText() {
                 const text = document.getElementById('analysis-text').value;
                 if (!text.trim()) {
@@ -28,6 +43,7 @@ init(Req0, State) ->
                 }
                 
                 document.getElementById('results').innerHTML = '<div class=\"loading\">Analyzing...</div>';
+                document.getElementById('export-buttons').style.display = 'none';
                 
                 try {
                     const res = await fetch('/api/analysis/analyze', {
@@ -36,6 +52,8 @@ init(Req0, State) ->
                         body: JSON.stringify({text: text, top_n: 5})
                     });
                     const data = await res.json();
+                    lastAnalysisResult = data;
+                    lastAnalysisType = 'models';
                     
                     let html = '<div class=\"card\"><h2>Analysis Results</h2>';
                     if (data.models && data.models.length > 0) {
@@ -56,6 +74,7 @@ init(Req0, State) ->
                     html += '<p style=\"margin-top:15px;font-size:12px;color:#666;\">Method: ' + (data.method || 'keyword_matching') + '</p>';
                     html += '</div>';
                     document.getElementById('results').innerHTML = html;
+                    document.getElementById('export-buttons').style.display = 'block';
                 } catch (e) {
                     document.getElementById('results').innerHTML = 
                         '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
@@ -70,6 +89,7 @@ init(Req0, State) ->
                 }
                 
                 document.getElementById('results').innerHTML = '<div class=\"loading\">Detecting biases...</div>';
+                document.getElementById('export-buttons').style.display = 'none';
                 
                 try {
                     const res = await fetch('/api/analysis/detect-biases', {
@@ -78,6 +98,8 @@ init(Req0, State) ->
                         body: JSON.stringify({text: text})
                     });
                     const data = await res.json();
+                    lastAnalysisResult = data;
+                    lastAnalysisType = 'biases';
                     
                     let html = '<div class=\"card\"><h2>Bias Detection Results</h2>';
                     if (data.biases && data.biases.length > 0) {
@@ -98,10 +120,202 @@ init(Req0, State) ->
                     }
                     html += '</div>';
                     document.getElementById('results').innerHTML = html;
+                    document.getElementById('export-buttons').style.display = 'block';
                 } catch (e) {
                     document.getElementById('results').innerHTML = 
                         '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
                 }
+            }
+            
+            async function runFullAnalysis() {
+                const text = document.getElementById('analysis-text').value;
+                if (!text.trim()) {
+                    alert('Please enter some text to analyze');
+                    return;
+                }
+                
+                document.getElementById('results').innerHTML = '<div class=\"loading\">Running full analysis...</div>';
+                document.getElementById('export-buttons').style.display = 'none';
+                
+                try {
+                    const [modelsRes, biasesRes] = await Promise.all([
+                        fetch('/api/analysis/analyze', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({text: text, top_n: 5})
+                        }),
+                        fetch('/api/analysis/detect-biases', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({text: text})
+                        })
+                    ]);
+                    
+                    const modelsData = await modelsRes.json();
+                    const biasesData = await biasesRes.json();
+                    
+                    lastAnalysisResult = {
+                        models: modelsData,
+                        biases: biasesData,
+                        timestamp: new Date().toISOString(),
+                        inputText: text.substring(0, 200) + (text.length > 200 ? '...' : '')
+                    };
+                    lastAnalysisType = 'full';
+                    
+                    let html = '<div class=\"card\"><h2>Full Analysis Results</h2>';
+                    
+                    // Models section
+                    html += '<h3 style=\"margin-top: 20px;\">Mental Models</h3>';
+                    if (modelsData.models && modelsData.models.length > 0) {
+                        html += '<p>Found ' + modelsData.models.length + ' relevant mental models:</p><br>';
+                        for (const model of modelsData.models) {
+                            html += '<div class=\"model-card\">';
+                            html += '<h4>' + model.name + '</h4>';
+                            html += '<span class=\"category\">' + model.category + '</span>';
+                            html += '<p>' + model.description + '</p>';
+                            html += '</div>';
+                        }
+                    } else {
+                        html += '<p>No specific mental models detected.</p>';
+                    }
+                    
+                    // Biases section
+                    html += '<h3 style=\"margin-top: 20px;\">Cognitive Biases</h3>';
+                    if (biasesData.biases && biasesData.biases.length > 0) {
+                        html += '<p>Found ' + biasesData.biases.length + ' potential cognitive biases:</p><br>';
+                        for (const bias of biasesData.biases) {
+                            const severityClass = bias.severity === 'high' ? 'status-unhealthy' : 
+                                                  bias.severity === 'medium' ? 'status-unknown' : 'status-healthy';
+                            html += '<div class=\"model-card\">';
+                            html += '<h4>' + bias.bias.replace(/_/g, ' ').replace(/\\b\\w/g, l => l.toUpperCase()) + '</h4>';
+                            html += '<span class=\"' + severityClass + '\">Severity: ' + bias.severity + '</span>';
+                            html += '</div>';
+                        }
+                    } else {
+                        html += '<p>No obvious cognitive biases detected.</p>';
+                    }
+                    
+                    html += '</div>';
+                    document.getElementById('results').innerHTML = html;
+                    document.getElementById('export-buttons').style.display = 'block';
+                } catch (e) {
+                    document.getElementById('results').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
+            }
+            
+            function exportJSON() {
+                if (!lastAnalysisResult) {
+                    alert('No analysis results to export');
+                    return;
+                }
+                
+                const exportData = {
+                    exportedAt: new Date().toISOString(),
+                    analysisType: lastAnalysisType,
+                    results: lastAnalysisResult
+                };
+                
+                const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'mental-models-analysis-' + new Date().toISOString().split('T')[0] + '.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+            
+            function exportPDF() {
+                if (!lastAnalysisResult) {
+                    alert('No analysis results to export');
+                    return;
+                }
+                
+                // Create printable HTML
+                let content = '<html><head><title>Mental Models Analysis</title>';
+                content += '<style>body{font-family:Arial,sans-serif;padding:40px;max-width:800px;margin:0 auto;}';
+                content += 'h1{color:#4361ee;}h2{color:#3f37c9;margin-top:30px;}';
+                content += '.model{border:1px solid #e0e0e0;padding:15px;margin:10px 0;border-radius:8px;}';
+                content += '.category{background:#4895ef;color:white;padding:2px 8px;border-radius:4px;font-size:12px;}';
+                content += '.severity-high{color:#dc3545;}.severity-medium{color:#ffc107;}.severity-low{color:#28a745;}';
+                content += '</style></head><body>';
+                content += '<h1>Mental Models Analysis Report</h1>';
+                content += '<p>Generated: ' + new Date().toLocaleString() + '</p>';
+                
+                if (lastAnalysisType === 'models' || lastAnalysisType === 'full') {
+                    const models = lastAnalysisType === 'full' ? lastAnalysisResult.models.models : lastAnalysisResult.models;
+                    content += '<h2>Mental Models Detected</h2>';
+                    if (models && models.length > 0) {
+                        for (const model of models) {
+                            content += '<div class=\"model\">';
+                            content += '<h3>' + model.name + '</h3>';
+                            content += '<span class=\"category\">' + model.category + '</span>';
+                            content += '<p>' + model.description + '</p>';
+                            content += '</div>';
+                        }
+                    } else {
+                        content += '<p>No mental models detected.</p>';
+                    }
+                }
+                
+                if (lastAnalysisType === 'biases' || lastAnalysisType === 'full') {
+                    const biases = lastAnalysisType === 'full' ? lastAnalysisResult.biases.biases : lastAnalysisResult.biases;
+                    content += '<h2>Cognitive Biases Detected</h2>';
+                    if (biases && biases.length > 0) {
+                        for (const bias of biases) {
+                            content += '<div class=\"model\">';
+                            content += '<h3>' + bias.bias.replace(/_/g, ' ').replace(/\\b\\w/g, l => l.toUpperCase()) + '</h3>';
+                            content += '<p class=\"severity-' + bias.severity + '\">Severity: ' + bias.severity + '</p>';
+                            content += '</div>';
+                        }
+                    } else {
+                        content += '<p>No cognitive biases detected.</p>';
+                    }
+                }
+                
+                content += '</body></html>';
+                
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(content);
+                printWindow.document.close();
+                printWindow.print();
+            }
+            
+            function copyToClipboard() {
+                if (!lastAnalysisResult) {
+                    alert('No analysis results to copy');
+                    return;
+                }
+                
+                let text = 'Mental Models Analysis Report\\n';
+                text += '========================\\n\\n';
+                
+                if (lastAnalysisType === 'models' || lastAnalysisType === 'full') {
+                    const models = lastAnalysisType === 'full' ? lastAnalysisResult.models.models : lastAnalysisResult.models;
+                    text += 'MENTAL MODELS:\\n';
+                    if (models && models.length > 0) {
+                        for (const model of models) {
+                            text += '- ' + model.name + ' (' + model.category + ')\\n';
+                            text += '  ' + model.description + '\\n\\n';
+                        }
+                    }
+                }
+                
+                if (lastAnalysisType === 'biases' || lastAnalysisType === 'full') {
+                    const biases = lastAnalysisType === 'full' ? lastAnalysisResult.biases.biases : lastAnalysisResult.biases;
+                    text += 'COGNITIVE BIASES:\\n';
+                    if (biases && biases.length > 0) {
+                        for (const bias of biases) {
+                            text += '- ' + bias.bias.replace(/_/g, ' ') + ' (Severity: ' + bias.severity + ')\\n';
+                        }
+                    }
+                }
+                
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Results copied to clipboard!');
+                }).catch(err => {
+                    console.error('Failed to copy:', err);
+                });
             }
         </script>">>
     ],
