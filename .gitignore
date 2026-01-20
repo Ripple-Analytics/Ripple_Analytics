@@ -64,3 +64,14 @@ Thumbs.db
 *.key
 credentials.json
 secrets.json
+
+# Clojure
+.cpcache/
+target/
+.nrepl-port
+.lsp/
+.clj-kondo/.cache/
+
+# Node.js
+node_modules/
+package-lock.json

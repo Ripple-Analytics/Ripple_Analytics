@@ -2154,8 +2154,12 @@
     (try
       (let [github-token (or (get-in @*state [:settings :github-token]) (:github-token config))
             url (str (:github-api config) "/repos/" (:github-repo config) "/releases/latest")
-            headers {"Accept" "application/vnd.github.v3+json"
-                     "Authorization" (str "token " github-token)}
+            ;; Only include Authorization header if token is valid (non-nil, non-empty)
+            ;; For public repos, unauthenticated requests work fine (just with lower rate limits)
+            headers (if (and github-token (not (str/blank? github-token)))
+                      {"Accept" "application/vnd.github.v3+json"
+                       "Authorization" (str "token " github-token)}
+                      {"Accept" "application/vnd.github.v3+json"})
             result (http-get url :headers headers)]
         (swap! *state assoc-in [:update :checking] false)
         (if (:success result)
