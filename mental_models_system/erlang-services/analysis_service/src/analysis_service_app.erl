@@ -33,6 +33,9 @@ start(_StartType, _StartArgs) ->
             {"/api/analysis/report", report_handler, []},
             {"/api/analysis/notifications", notification_handler, []},
             {"/api/analysis/notifications/recent", notification_handler, []},
+            {"/api/analysis/analytics", analytics_handler, []},
+            {"/api/analysis/analytics/trends", analytics_handler, []},
+            {"/api/analysis/analytics/reset", analytics_handler, []},
             {"/[...]", not_found_handler, []}
         ]}
     ]),
