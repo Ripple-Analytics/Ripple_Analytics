@@ -354,7 +354,42 @@ rebuild_services() ->
         %% This ensures the UI shows the correct folder path without manual intervention
         detect_and_set_host_path(BasePath),
         
-        %% Backend services (not blue-green, just restart)
+        %% Build services one at a time to handle failures gracefully
+        %% If a service fails to build, log it and continue with others
+        AllServices = [
+            "deployment-controller-blue", "deployment-controller-green",
+            "auto-updater-blue", "auto-updater-green", "auto-updater-service",
+            "desktop-ui-blue", "desktop-ui-green",
+            "api-gateway-blue", "api-gateway-green",
+            "analysis-service-blue", "analysis-service-green",
+            "harvester-service-blue", "harvester-service-green",
+            "storage-service-blue", "storage-service-green",
+            "chaos-engineering-blue", "chaos-engineering-green"
+        ],
+        
+        %% Build each service individually, tracking successes and failures
+        CommitHash = get_current_commit(),
+        CommitHashStr = case CommitHash of
+            undefined -> "unknown";
+            Hash -> binary_to_list(Hash)
+        end,
+        BuildTime = calendar:system_time_to_rfc3339(erlang:system_time(second), [{unit, second}]),
+        BuildArgs = "--build-arg COMMIT_HASH=" ++ CommitHashStr ++ " --build-arg BUILD_TIME=" ++ BuildTime,
+        
+        {SuccessfulServices, FailedServices} = build_services_individually(BasePath, AllServices, BuildArgs, [], []),
+        
+        io:format("[UPDATER] Build results: ~p successful, ~p failed~n", 
+                  [length(SuccessfulServices), length(FailedServices)]),
+        
+        case FailedServices of
+            [] -> ok;
+            _ -> io:format("[UPDATER] WARNING: Failed services: ~p~n", [FailedServices])
+        end,
+        
+        %% Only restart services that built successfully
+        restart_successful_services(BasePath, SuccessfulServices),
+        
+        %% Legacy backend services variable for compatibility
         BackendServices = "api-gateway analysis-service harvester-service storage-service chaos-engineering",
         
         %% Step 1: Determine which environment is currently active
@@ -540,3 +575,45 @@ format_time(undefined) -> null;
 format_time({MegaSecs, Secs, _MicroSecs}) ->
     Seconds = MegaSecs * 1000000 + Secs,
     list_to_binary(calendar:system_time_to_rfc3339(Seconds, [{unit, second}])).
+
+
+%% ============================================================================
+%% RESILIENT SERVICE BUILDING - Build services one at a time
+%% ============================================================================
+
+%% Build services one at a time, collecting successes and failures
+build_services_individually(_BasePath, [], _BuildArgs, Successes, Failures) ->
+    {lists:reverse(Successes), lists:reverse(Failures)};
+build_services_individually(BasePath, [Service | Rest], BuildArgs, Successes, Failures) ->
+    io:format("[UPDATER] Building ~s...~n", [Service]),
+    BuildCmd = "cd " ++ BasePath ++ " && docker-compose build --no-cache " ++ BuildArgs ++ " " ++ Service ++ " 2>&1",
+    Result = os:cmd(BuildCmd),
+    
+    %% Check if build succeeded by looking for error indicators
+    BuildFailed = string:find(Result, "failed to solve") =/= nomatch orelse
+                  string:find(Result, "error:") =/= nomatch orelse
+                  string:find(Result, "ERROR:") =/= nomatch,
+    
+    case BuildFailed of
+        true ->
+            io:format("[UPDATER] FAILED to build ~s - continuing with other services~n", [Service]),
+            %% Log the error but continue
+            io:format("[UPDATER] Error output (truncated): ~s~n", 
+                      [string:slice(Result, 0, min(500, length(Result)))]),
+            build_services_individually(BasePath, Rest, BuildArgs, Successes, [Service | Failures]);
+        false ->
+            io:format("[UPDATER] Successfully built ~s~n", [Service]),
+            build_services_individually(BasePath, Rest, BuildArgs, [Service | Successes], Failures)
+    end.
+
+%% Restart only the services that built successfully
+restart_successful_services(_BasePath, []) ->
+    io:format("[UPDATER] No services to restart~n"),
+    ok;
+restart_successful_services(BasePath, Services) ->
+    io:format("[UPDATER] Restarting ~p successful services...~n", [length(Services)]),
+    ServiceList = string:join(Services, " "),
+    RestartCmd = "cd " ++ BasePath ++ " && docker-compose up -d --no-deps " ++ ServiceList ++ " 2>&1",
+    _Result = os:cmd(RestartCmd),
+    io:format("[UPDATER] Restart command completed~n"),
+    ok.

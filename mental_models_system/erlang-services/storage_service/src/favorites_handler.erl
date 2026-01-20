@@ -20,7 +20,7 @@ handle_request(<<"GET">>, Req0, State) ->
 handle_request(<<"POST">>, Req0, State) ->
     %% Add a favorite
     {ok, Body, Req1} = cowboy_req:read_body(Req0),
-    try
+    Result = try
         Data = jsx:decode(Body, [return_maps]),
         ModelId = maps:get(<<"model_id">>, Data),
         ModelName = maps:get(<<"model_name">>, Data, ModelId),
@@ -34,16 +34,15 @@ handle_request(<<"POST">>, Req0, State) ->
         },
         
         add_favorite(Favorite),
-        
-        Response = jsx:encode(#{success => true, message => <<"Favorite added">>}),
-        Req = cowboy_req:reply(200, #{<<"content-type">> => <<"application/json">>}, Response, Req1),
-        {ok, Req, State}
+        {200, #{success => true, message => <<"Favorite added">>}}
     catch
         _:_ ->
-            Response = jsx:encode(#{success => false, error => <<"Invalid request">>}),
-            Req = cowboy_req:reply(400, #{<<"content-type">> => <<"application/json">>}, Response, Req1),
-            {ok, Req, State}
-    end;
+            {400, #{success => false, error => <<"Invalid request">>}}
+    end,
+    {Status, ResponseBody} = Result,
+    ResponseJson = jsx:encode(ResponseBody),
+    Req2 = cowboy_req:reply(Status, #{<<"content-type">> => <<"application/json">>}, ResponseJson, Req1),
+    {ok, Req2, State};
 
 handle_request(<<"DELETE">>, Req0, State) ->
     %% Remove a favorite by model_id in query string

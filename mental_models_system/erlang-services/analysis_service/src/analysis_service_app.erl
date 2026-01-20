@@ -33,6 +33,16 @@ start(_StartType, _StartArgs) ->
             {"/api/analysis/report", report_handler, []},
             {"/api/analysis/notifications", notification_handler, []},
             {"/api/analysis/notifications/recent", notification_handler, []},
+            {"/api/analysis/analytics", analytics_handler, []},
+            {"/api/analysis/analytics/trends", analytics_handler, []},
+            {"/api/analysis/analytics/reset", analytics_handler, []},
+            {"/api/analysis/improver", code_improver_handler, []},
+            {"/api/analysis/improver/start", code_improver_handler, []},
+            {"/api/analysis/improver/stop", code_improver_handler, []},
+            {"/api/analysis/improver/suggest", code_improver_handler, []},
+            {"/api/analysis/improver/apply", code_improver_handler, []},
+            {"/api/analysis/improver/history", code_improver_handler, []},
+            {"/api/analysis/improver/config", code_improver_handler, []},
             {"/[...]", not_found_handler, []}
         ]}
     ]),

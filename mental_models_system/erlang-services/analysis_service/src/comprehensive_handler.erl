@@ -47,6 +47,10 @@ handle_comprehensive(Body, Req0, State) ->
                     LollapaloozaResult = lollapalooza_detector:analyze_comprehensive(Text, TopN),
                     TextAnalysisResult = text_analyzer:analyze_text(Text),
                     Result = merge_analysis_results(LollapaloozaResult, TextAnalysisResult),
+                    
+                    %% Record analysis for analytics
+                    analytics_service:record_analysis(Result),
+                    
                     Req2 = cowboy_req:reply(200, cors_headers(),
                         jsx:encode(Result), Req0),
                     {ok, Req2, State}

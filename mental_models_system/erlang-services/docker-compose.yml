@@ -130,6 +130,7 @@ services:
   # ============================================================================
   
   # Deployment Controller - BLUE Environment
+  # ZERO DEPENDENCIES - Foundational service for orchestrating deployments
   deployment-controller-blue:
     build: ./deployment_controller
     container_name: mental-models-deploy-ctrl-blue
@@ -141,6 +142,7 @@ services:
       - DEPLOYMENT_ENV=blue
       - PEER_URL=http://deployment-controller-green:8007
       - PORT=8007
+    # NO depends_on - deployment controller is foundational
     restart: always
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8007/health"]
@@ -152,6 +154,7 @@ services:
       - mental-models-network
 
   # Deployment Controller - GREEN Environment
+  # ZERO DEPENDENCIES - Foundational service for orchestrating deployments
   deployment-controller-green:
     build: ./deployment_controller
     container_name: mental-models-deploy-ctrl-green
@@ -163,6 +166,7 @@ services:
       - DEPLOYMENT_ENV=green
       - PEER_URL=http://deployment-controller-blue:8007
       - PORT=8007
+    # NO depends_on - deployment controller is foundational
     restart: always
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8007/health"]
@@ -590,6 +594,87 @@ services:
       - mental-models-network
 
   # ============================================================================
+  # AI CODE IMPROVER - Autonomous Code Enhancement with LM Studio
+  # Uses local LM Studio to continuously improve the codebase 24/7
+  # ============================================================================
+  
+  # AI Code Improver - BLUE Environment
+  ai-code-improver-blue:
+    build: ./ai_code_improver
+    container_name: mental-models-ai-improver-blue
+    volumes:
+      - .:/app/services:rw
+      - ai-improver-data:/data
+    environment:
+      - LM_STUDIO_URL=http://host.docker.internal:1234
+      - IMPROVEMENT_INTERVAL=300000
+      - MAX_CHANGES_PER_CYCLE=3
+      - AUTO_DEPLOY=true
+      - REQUIRE_VALIDATION=true
+      - AUTO_START=false
+      - DEPLOYMENT_ENV=blue
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8025/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - mental-models-network
+
+  # AI Code Improver - GREEN Environment
+  ai-code-improver-green:
+    build: ./ai_code_improver
+    container_name: mental-models-ai-improver-green
+    volumes:
+      - .:/app/services:rw
+      - ai-improver-data:/data
+    environment:
+      - LM_STUDIO_URL=http://host.docker.internal:1234
+      - IMPROVEMENT_INTERVAL=300000
+      - MAX_CHANGES_PER_CYCLE=3
+      - AUTO_DEPLOY=true
+      - REQUIRE_VALIDATION=true
+      - AUTO_START=false
+      - DEPLOYMENT_ENV=green
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8025/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - mental-models-network
+
+  # AI Code Improver Proxy - Routes to active improver instance
+  ai-code-improver:
+    build: ./nginx_proxy
+    container_name: mental-models-ai-improver-proxy
+    ports:
+      - "8025:8025"
+    volumes:
+      - ai-improver-config:/etc/nginx/conf.d
+    environment:
+      - UPSTREAM_BLUE=ai-code-improver-blue:8025
+      - UPSTREAM_GREEN=ai-code-improver-green:8025
+      - ACTIVE_ENV=${AI_IMPROVER_ACTIVE:-blue}
+      - LISTEN_PORT=8025
+    depends_on:
+      - ai-code-improver-blue
+      - ai-code-improver-green
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8025/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    networks:
+      - mental-models-network
+
+  # ============================================================================
   # BLUE-GREEN DEPLOYMENT - Zero Downtime Updates
   # ============================================================================
   
@@ -613,10 +698,18 @@ services:
     depends_on:
       - deployment-controller-blue
       - deployment-controller-green
-      - auto-updater-blue
-      - auto-updater-green
-      - chaos-engineering-blue
-      - chaos-eng    restart: unless-stopped    healthcheck:
+      - desktop-ui-blue
+      - desktop-ui-green
+      - api-gateway-blue
+      - api-gateway-green
+      - analysis-service-blue
+      - analysis-service-green
+      - harvester-service-blue
+      - harvester-service-green
+      - storage-service-blue
+      - storage-service-green
+    restart: unless-stopped
+    healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
       interval: 10s
       timeout: 5s
@@ -739,4 +832,8 @@ volumes:
   code-improver-backups:
     driver: local
   code-improver-logs:
+    driver: local
+  ai-improver-data:
+    driver: local
+  ai-improver-config:
     driver: local
