@@ -109,11 +109,29 @@ init(Req0, State) ->
                 });
             }
             
-            // Activity chart (simulated data for now)
-            function initActivityChart() {
+            // Activity chart with real data from history
+            function initActivityChart(historyData) {
                 const ctx = document.getElementById('activityChart').getContext('2d');
-                const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-                const data = [12, 19, 8, 15, 22, 10, 14];
+                
+                // Group analyses by day (last 7 days)
+                const days = [];
+                const counts = [];
+                const now = new Date();
+                
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date(now);
+                    date.setDate(date.getDate() - i);
+                    const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                    const dateStr = date.toISOString().split('T')[0];
+                    days.push(dayName);
+                    
+                    // Count analyses for this day
+                    const count = historyData.filter(h => {
+                        const hDate = new Date(h.timestamp).toISOString().split('T')[0];
+                        return hDate === dateStr;
+                    }).length;
+                    counts.push(count);
+                }
                 
                 if (activityChart) activityChart.destroy();
                 activityChart = new Chart(ctx, {
@@ -122,7 +140,7 @@ init(Req0, State) ->
                         labels: days,
                         datasets: [{
                             label: 'Analyses',
-                            data: data,
+                            data: counts,
                             borderColor: '#4361ee',
                             backgroundColor: 'rgba(67, 97, 238, 0.1)',
                             fill: true,
@@ -135,7 +153,7 @@ init(Req0, State) ->
                             legend: { display: false }
                         },
                         scales: {
-                            y: { beginAtZero: true }
+                            y: { beginAtZero: true, ticks: { stepSize: 1 } }
                         }
                     }
                 });
@@ -175,7 +193,18 @@ init(Req0, State) ->
                     
                     document.getElementById('categories-count').textContent = categories.length + '+';
                     initCategoryChart(categories);
-                    initActivityChart();
+                    
+                    // Load history for activity chart and recent analyses
+                    let historyData = [];
+                    try {
+                        const historyRes = await fetch('/api/storage/history?limit=100');
+                        const historyJson = await historyRes.json();
+                        historyData = historyJson.analyses || [];
+                    } catch (e) {
+                        console.log('Could not load history:', e);
+                    }
+                    
+                    initActivityChart(historyData);
                     
                     // Load service health
                     const health = await fetch('/api/gateway/health').then(r => r.json()).catch(() => ({status: 'unknown'}));
@@ -204,9 +233,33 @@ init(Req0, State) ->
                     }
                     document.getElementById('service-health').innerHTML = healthHtml;
                     
-                    // Load recent analyses (placeholder for now)
-                    document.getElementById('recent-analyses').innerHTML = 
-                        '<p style=\"color: #666;\">No recent analyses. <a href=\"/analysis\">Start your first analysis</a></p>';
+                    // Display recent analyses from history
+                    if (historyData.length > 0) {
+                        const recent = historyData.slice(0, 5);
+                        let recentHtml = '<table style=\"width:100%;border-collapse:collapse;\">';
+                        recentHtml += '<tr style=\"border-bottom:1px solid #e0e0e0;\"><th style=\"text-align:left;padding:8px;\">Type</th><th style=\"text-align:left;padding:8px;\">Input</th><th style=\"text-align:left;padding:8px;\">Models</th><th style=\"text-align:left;padding:8px;\">Biases</th><th style=\"text-align:left;padding:8px;\">Date</th><th style=\"padding:8px;\"></th></tr>';
+                        for (const analysis of recent) {
+                            const typeLabel = analysis.type === 'full' ? 'Full' : analysis.type === 'models' ? 'Models' : 'Biases';
+                            const inputPreview = (analysis.input_text || '').substring(0, 50) + ((analysis.input_text || '').length > 50 ? '...' : '');
+                            const date = new Date(analysis.timestamp).toLocaleDateString();
+                            recentHtml += '<tr style=\"border-bottom:1px solid #f0f0f0;\">';
+                            recentHtml += '<td style=\"padding:8px;\"><span class=\"category\">' + typeLabel + '</span></td>';
+                            recentHtml += '<td style=\"padding:8px;color:#666;\">' + inputPreview + '</td>';
+                            recentHtml += '<td style=\"padding:8px;\">' + (analysis.model_count || 0) + '</td>';
+                            recentHtml += '<td style=\"padding:8px;\">' + (analysis.bias_count || 0) + '</td>';
+                            recentHtml += '<td style=\"padding:8px;color:#666;\">' + date + '</td>';
+                            recentHtml += '<td style=\"padding:8px;\"><a href=\"/history\" class=\"btn btn-secondary\" style=\"font-size:11px;padding:4px 8px;\">View</a></td>';
+                            recentHtml += '</tr>';
+                        }
+                        recentHtml += '</table>';
+                        if (historyData.length > 5) {
+                            recentHtml += '<p style=\"margin-top:10px;\"><a href=\"/history\">View all ' + historyData.length + ' analyses</a></p>';
+                        }
+                        document.getElementById('recent-analyses').innerHTML = recentHtml;
+                    } else {
+                        document.getElementById('recent-analyses').innerHTML = 
+                            '<p style=\"color: #666;\">No recent analyses. <a href=\"/analysis\">Start your first analysis</a></p>';
+                    }
                     
                 } catch (e) {
                     console.error('Dashboard load error:', e);
