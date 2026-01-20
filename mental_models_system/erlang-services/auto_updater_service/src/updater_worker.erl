@@ -61,7 +61,8 @@ init([]) ->
     filelib:ensure_dir(?DATA_DIR ++ "/"),
     
     Interval = get_check_interval(),
-    Branch = get_env_binary("GITHUB_BRANCH", <<"release2">>),
+    %% HARDCODED - don't rely on env vars that might be wrong
+    Branch = <<"release2">>,
     ActiveEnv = read_active_env(),
     StandbyEnv = case ActiveEnv of "blue" -> "green"; _ -> "blue" end,
     
