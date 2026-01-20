@@ -680,6 +680,34 @@ services:
     networks:
       - mental-models-network
 
+  # ============================================================================
+  # CODE IMPROVER SERVICE - Autonomous Code Improvement with Munger Philosophy
+  # Uses LM Studio to analyze and improve code 24/7 aligned with design philosophy
+  # ============================================================================
+  code-improver-service:
+    build: ./code_improver_service
+    container_name: mental-models-code-improver
+    volumes:
+      - updater-repo:/repo
+      - code-improver-backups:/repo/.code_improver_backups
+      - code-improver-logs:/repo/.code_improver_logs
+    environment:
+      - LM_STUDIO_URL=http://host.docker.internal:1234
+      - CHECK_INTERVAL=300000
+      - AUTO_DEPLOY=false
+      - REQUIRE_TESTS_PASS=true
+      - REQUIRE_LINT_PASS=true
+      - IMPROVEMENT_BATCH_SIZE=5
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8010/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - mental-models-network
+
 networks:
   mental-models-network:
     driver: bridge
@@ -702,4 +730,8 @@ volumes:
   orchestrator-data:
     driver: local
   orchestrator-config:
+    driver: local
+  code-improver-backups:
+    driver: local
+  code-improver-logs:
     driver: local
