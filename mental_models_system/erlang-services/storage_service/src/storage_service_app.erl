@@ -20,6 +20,7 @@ start(_StartType, _StartArgs) ->
             {"/api/storage/history/:id", history_item_handler, []},
             {"/api/storage/favorites", favorites_handler, []},
             {"/api/storage/notes", notes_handler, []},
+            {"/api/storage/tags", tags_handler, []},
             {"/[...]", not_found_handler, []}
         ]}
     ]),

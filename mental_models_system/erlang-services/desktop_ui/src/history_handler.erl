@@ -158,16 +158,21 @@ init(Req0, State) ->
                     const notesData = await notesRes.json();
                     const notes = notesData.notes || [];
                     
+                    // Also fetch tags for this analysis
+                    const tagsRes = await fetch('/api/storage/tags?analysis_id=' + id);
+                    const tagsData = await tagsRes.json();
+                    const tags = tagsData.tags || [];
+                    
                     if (data.analysis) {
                         const a = data.analysis;
-                        showDetailsModal(a, notes);
+                        showDetailsModal(a, notes, tags);
                     }
                 } catch (e) {
                     alert('Error loading details: ' + e.message);
                 }
             }
             
-            function showDetailsModal(a, notes) {
+            function showDetailsModal(a, notes, tags) {
                 let html = '<div class=\"modal-overlay\" onclick=\"closeDetailsModal()\">';
                 html += '<div class=\"modal-content\" onclick=\"event.stopPropagation()\" style=\"max-width: 700px; max-height: 80vh; overflow-y: auto;\">';
                 html += '<button class=\"modal-close\" onclick=\"closeDetailsModal()\">&times;</button>';
@@ -176,6 +181,22 @@ init(Req0, State) ->
                 html += '<p><strong>ID:</strong> ' + a.id + '</p>';
                 html += '<p><strong>Type:</strong> ' + a.type + '</p>';
                 html += '<p><strong>Date:</strong> ' + new Date(a.timestamp * 1000).toLocaleString() + '</p>';
+                
+                // Tags section
+                html += '<div style=\"margin-top: 15px;\" id=\"tags-section-' + a.id + '\">';
+                html += '<strong>Tags:</strong> ';
+                if (tags.length > 0) {
+                    for (const tag of tags) {
+                        html += '<span style=\"background: #e9ecef; padding: 3px 10px; border-radius: 12px; margin-right: 5px; font-size: 12px;\">' + tag + ' <button onclick=\"removeTag(\\'' + a.id + '\\', \\'' + tag + '\\')\" style=\"background: none; border: none; color: #dc3545; cursor: pointer; font-size: 12px; padding: 0 0 0 5px;\">&times;</button></span>';
+                    }
+                } else {
+                    html += '<span style=\"color: #666; font-style: italic;\">No tags</span>';
+                }
+                html += '<div style=\"margin-top: 8px; display: flex; gap: 5px;\">';
+                html += '<input type=\"text\" id=\"new-tag-' + a.id + '\" placeholder=\"Add tag...\" style=\"padding: 5px 10px; border-radius: 6px; border: 1px solid #e0e0e0; font-size: 12px; width: 120px;\">';
+                html += '<button class=\"btn btn-secondary\" onclick=\"addTag(\\'' + a.id + '\\')\" style=\"padding: 5px 10px; font-size: 12px;\">Add</button>';
+                html += '</div>';
+                html += '</div>';
                 
                 html += '<div style=\"margin-top: 15px; padding: 15px; background: #f8f9fa; border-radius: 8px;\">';
                 html += '<strong>Input Text:</strong><br><span style=\"font-style: italic; color: #666;\">' + (a.input_text || 'N/A') + '</span>';
@@ -262,6 +283,37 @@ init(Req0, State) ->
                     viewDetails(analysisId);
                 } catch (e) {
                     alert('Error deleting note: ' + e.message);
+                }
+            }
+            
+            async function addTag(analysisId) {
+                const input = document.getElementById('new-tag-' + analysisId);
+                const tag = input.value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-');
+                if (!tag) {
+                    alert('Please enter a tag');
+                    return;
+                }
+                
+                try {
+                    await fetch('/api/storage/tags', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({analysis_id: analysisId, tag: tag})
+                    });
+                    closeDetailsModal();
+                    viewDetails(analysisId);
+                } catch (e) {
+                    alert('Error adding tag: ' + e.message);
+                }
+            }
+            
+            async function removeTag(analysisId, tag) {
+                try {
+                    await fetch('/api/storage/tags?analysis_id=' + analysisId + '&tag=' + encodeURIComponent(tag), {method: 'DELETE'});
+                    closeDetailsModal();
+                    viewDetails(analysisId);
+                } catch (e) {
+                    alert('Error removing tag: ' + e.message);
                 }
             }
             
