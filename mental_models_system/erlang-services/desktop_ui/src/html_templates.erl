@@ -244,6 +244,71 @@ base_layout(Title, Content) ->
             }
         });
         
+        // System notifications
+        let notificationQueue = [];
+        let notificationContainer = null;
+        
+        function initNotifications() {
+            if (!notificationContainer) {
+                notificationContainer = document.createElement('div');
+                notificationContainer.id = 'notification-container';
+                notificationContainer.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;';
+                document.body.appendChild(notificationContainer);
+            }
+        }
+        
+        function showNotification(message, type = 'info', duration = 5000) {
+            initNotifications();
+            
+            const colors = {
+                info: {bg: '#e7f3ff', border: '#4361ee', text: '#084298'},
+                success: {bg: '#d1e7dd', border: '#28a745', text: '#0f5132'},
+                warning: {bg: '#fff3cd', border: '#ffc107', text: '#664d03'},
+                error: {bg: '#f8d7da', border: '#dc3545', text: '#842029'}
+            };
+            const c = colors[type] || colors.info;
+            
+            const notification = document.createElement('div');
+            notification.style.cssText = 'padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-width: 350px; animation: slideIn 0.3s ease;';
+            notification.style.backgroundColor = c.bg;
+            notification.style.borderLeft = '4px solid ' + c.border;
+            notification.style.color = c.text;
+            notification.innerHTML = '<div style=\"display: flex; justify-content: space-between; align-items: start;\"><span>' + message + '</span><button onclick=\"this.parentElement.parentElement.remove()\" style=\"background: none; border: none; cursor: pointer; font-size: 18px; margin-left: 10px;\">&times;</button></div>';
+            
+            notificationContainer.appendChild(notification);
+            
+            if (duration > 0) {
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, duration);
+            }
+        }
+        
+        // Add CSS animation for notifications
+        const notifStyle = document.createElement('style');
+        notifStyle.textContent = '@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } } @keyframes slideOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }';
+        document.head.appendChild(notifStyle);
+        
+        // Check for updates and show notification
+        let lastUpdateCheck = null;
+        async function checkForUpdatesNotification() {
+            try {
+                const res = await fetch('http://localhost:8006/api/updater/status');
+                const data = await res.json();
+                
+                if (data.update_available && lastUpdateCheck !== data.current_commit) {
+                    showNotification('New update available! The system will auto-update shortly.', 'info', 10000);
+                    lastUpdateCheck = data.current_commit;
+                }
+            } catch (e) {
+                // Silently fail
+            }
+        }
+        
+        // Check for updates every 60 seconds
+        setInterval(checkForUpdatesNotification, 60000);
+        
         function showKeyboardShortcuts() {
             // Remove existing modal if present
             const existing = document.getElementById('shortcuts-modal');
