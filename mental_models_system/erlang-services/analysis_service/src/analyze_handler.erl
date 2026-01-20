@@ -30,31 +30,30 @@ init(Req0, State) ->
     end.
 
 handle_analyze(Body, Req0, State) ->
-    try
-        Params = jsx:decode(Body, [return_maps]),
-        Text = maps:get(<<"text">>, Params, <<>>),
-        TopN = maps:get(<<"top_n">>, Params, 5),
-        
-        case Text of
-            <<>> ->
-                Req = cowboy_req:reply(400, cors_headers(),
-                    jsx:encode(#{<<"error">> => <<"No text provided">>}), Req0),
-                {ok, Req, State};
-            _ ->
-                Result = llm_client:analyze(Text, TopN),
-                Response = case Result of
-                    {ok, Data} -> Data;
-                    Data when is_map(Data) -> Data
-                end,
-                Req = cowboy_req:reply(200, cors_headers(),
-                    jsx:encode(Response), Req0),
-                {ok, Req, State}
-        end
+    try jsx:decode(Body, [return_maps]) of
+        Params ->
+            Text = maps:get(<<"text">>, Params, <<>>),
+            TopN = maps:get(<<"top_n">>, Params, 5),
+            case Text of
+                <<>> ->
+                    Req1 = cowboy_req:reply(400, cors_headers(),
+                        jsx:encode(#{<<"error">> => <<"No text provided">>}), Req0),
+                    {ok, Req1, State};
+                _ ->
+                    Result = llm_client:analyze(Text, TopN),
+                    Response = case Result of
+                        {ok, Data} -> Data;
+                        Data when is_map(Data) -> Data
+                    end,
+                    Req2 = cowboy_req:reply(200, cors_headers(),
+                        jsx:encode(Response), Req0),
+                    {ok, Req2, State}
+            end
     catch
         _:_ ->
-            Req = cowboy_req:reply(400, cors_headers(),
+            Req3 = cowboy_req:reply(400, cors_headers(),
                 jsx:encode(#{<<"error">> => <<"Invalid JSON">>}), Req0),
-            {ok, Req, State}
+            {ok, Req3, State}
     end.
 
 cors_headers() ->

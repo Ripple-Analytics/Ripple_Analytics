@@ -21,30 +21,29 @@ init(Req0, State) ->
     end.
 
 handle_scrape(Body, Req0, State) ->
-    try
-        Params = jsx:decode(Body, [return_maps]),
-        Url = maps:get(<<"url">>, Params, <<>>),
-        
-        case Url of
-            <<>> ->
-                Req = cowboy_req:reply(400, cors_headers(),
-                    jsx:encode(#{<<"error">> => <<"No URL provided">>}), Req0),
-                {ok, Req, State};
-            _ ->
-                Result = scraper_pool:scrape_url(Url),
-                stats_collector:record_scrape(Result),
-                Response = case Result of
-                    {ok, Data} -> jsx:encode(maps:put(<<"success">>, true, Data));
-                    {error, Error} -> jsx:encode(maps:put(<<"success">>, false, Error))
-                end,
-                Req = cowboy_req:reply(200, cors_headers(), Response, Req0),
-                {ok, Req, State}
-        end
+    try jsx:decode(Body, [return_maps]) of
+        Params ->
+            Url = maps:get(<<"url">>, Params, <<>>),
+            case Url of
+                <<>> ->
+                    Req1 = cowboy_req:reply(400, cors_headers(),
+                        jsx:encode(#{<<"error">> => <<"No URL provided">>}), Req0),
+                    {ok, Req1, State};
+                _ ->
+                    Result = scraper_pool:scrape_url(Url),
+                    stats_collector:record_scrape(Result),
+                    Response = case Result of
+                        {ok, Data} -> jsx:encode(maps:put(<<"success">>, true, Data));
+                        {error, Error} -> jsx:encode(maps:put(<<"success">>, false, Error))
+                    end,
+                    Req2 = cowboy_req:reply(200, cors_headers(), Response, Req0),
+                    {ok, Req2, State}
+            end
     catch
         _:_ ->
-            Req = cowboy_req:reply(400, cors_headers(),
+            Req3 = cowboy_req:reply(400, cors_headers(),
                 jsx:encode(#{<<"error">> => <<"Invalid JSON">>}), Req0),
-            {ok, Req, State}
+            {ok, Req3, State}
     end.
 
 cors_headers() ->

@@ -1,14 +1,26 @@
-version: '3.8'
-
 # Mental Models System - Erlang/OTP Microservices Architecture
 # 
 # Start all services: docker-compose up -d
 # View logs: docker-compose logs -f
 # Stop all services: docker-compose down
+# Update from GitHub: run update.bat (Windows) or ./update.sh (Linux/Mac)
 # 
 # Access the UI at: http://localhost:3000
 
 services:
+  # Watchtower - Automatically updates containers when images change
+  watchtower:
+    image: containrrr/watchtower
+    container_name: mental-models-watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=300
+      - WATCHTOWER_INCLUDE_RESTARTING=true
+    restart: unless-stopped
+    networks:
+      - mental-models-network
   # API Gateway - Routes requests to backend services
   api-gateway:
     build: ./api_gateway

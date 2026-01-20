@@ -6,18 +6,18 @@ init(Req0, State) ->
     case cowboy_req:method(Req0) of
         <<"POST">> ->
             {ok, Body, Req1} = cowboy_req:read_body(Req0),
-            try
-                Params = jsx:decode(Body, [return_maps]),
-                Target = maps:get(<<"target">>, Params, <<"api_gateway">>),
-                Requests = maps:get(<<"requests">>, Params, 100),
-                Concurrency = maps:get(<<"concurrency">>, Params, 10),
-                Result = load_tester:run_test(Target, Requests, Concurrency),
-                Req = cowboy_req:reply(200, cors_headers(), jsx:encode(Result), Req1),
-                {ok, Req, State}
+            try jsx:decode(Body, [return_maps]) of
+                Params ->
+                    Target = maps:get(<<"target">>, Params, <<"api_gateway">>),
+                    Requests = maps:get(<<"requests">>, Params, 100),
+                    Concurrency = maps:get(<<"concurrency">>, Params, 10),
+                    Result = load_tester:run_test(Target, Requests, Concurrency),
+                    Req2 = cowboy_req:reply(200, cors_headers(), jsx:encode(Result), Req1),
+                    {ok, Req2, State}
             catch _:_ ->
-                Req = cowboy_req:reply(400, cors_headers(),
+                Req3 = cowboy_req:reply(400, cors_headers(),
                     jsx:encode(#{<<"error">> => <<"Invalid request">>}), Req1),
-                {ok, Req, State}
+                {ok, Req3, State}
             end;
         <<"OPTIONS">> ->
             Req = cowboy_req:reply(200, cors_headers(), <<>>, Req0),

@@ -15,16 +15,16 @@ init(Req0, State) ->
             {ok, Req, State};
         <<"POST">> ->
             {ok, Body, Req1} = cowboy_req:read_body(Req0),
-            try
-                Doc = jsx:decode(Body, [return_maps]),
-                Id = maps:get(<<"id">>, Doc, generate_id()),
-                {ok, Stored} = document_store:store(Id, Doc),
-                Req = cowboy_req:reply(201, cors_headers(), jsx:encode(Stored), Req1),
-                {ok, Req, State}
+            try jsx:decode(Body, [return_maps]) of
+                Doc ->
+                    Id = maps:get(<<"id">>, Doc, generate_id()),
+                    {ok, Stored} = document_store:store(Id, Doc),
+                    Req2 = cowboy_req:reply(201, cors_headers(), jsx:encode(Stored), Req1),
+                    {ok, Req2, State}
             catch _:_ ->
-                Req = cowboy_req:reply(400, cors_headers(),
+                Req3 = cowboy_req:reply(400, cors_headers(),
                     jsx:encode(#{<<"error">> => <<"Invalid JSON">>}), Req1),
-                {ok, Req, State}
+                {ok, Req3, State}
             end;
         <<"OPTIONS">> ->
             Req = cowboy_req:reply(200, cors_headers(), <<>>, Req0),
