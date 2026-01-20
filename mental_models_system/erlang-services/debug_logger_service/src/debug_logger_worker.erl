@@ -231,11 +231,15 @@ do_heartbeat(State) ->
 
 do_push_sync() ->
     try
-        %% Get GitHub token from environment
-        Token = case os:getenv("GITHUB_TOKEN") of
+        %% Get GitHub token from environment and clean it
+        RawToken = case os:getenv("GITHUB_TOKEN") of
             false -> "";
             T -> T
         end,
+        %% Trim whitespace, newlines, and carriage returns
+        Token = string:trim(RawToken, both, " \t\n\r"),
+        
+        io:format("[DEBUG_LOGGER] Token length: ~p~n", [length(Token)]),
         
         %% Configure git
         os:cmd("cd " ++ ?REPO_PATH ++ " && git config user.email 'debug@mental-models.local' 2>&1"),
@@ -245,11 +249,19 @@ do_push_sync() ->
         case Token of
             "" -> 
                 io:format("[DEBUG_LOGGER] No GITHUB_TOKEN found, using default auth~n");
+            _ when length(Token) > 30 ->
+                %% Use credential helper instead of embedding in URL
+                os:cmd("cd " ++ ?REPO_PATH ++ " && git config credential.helper store 2>&1"),
+                %% Write credentials to git credentials file
+                CredLine = "https://" ++ Token ++ ":x-oauth-basic@github.com\n",
+                file:write_file("/root/.git-credentials", CredLine),
+                io:format("[DEBUG_LOGGER] Set up git credentials~n");
             _ ->
-                AuthUrl = "https://" ++ Token ++ "@github.com/Ripple-Analytics/Ripple_Analytics.git",
-                os:cmd("cd " ++ ?REPO_PATH ++ " && git remote set-url origin '" ++ AuthUrl ++ "' 2>&1"),
-                io:format("[DEBUG_LOGGER] Set authenticated remote URL~n")
+                io:format("[DEBUG_LOGGER] Token too short (~p chars), skipping auth~n", [length(Token)])
         end,
+        
+        %% Reset remote to clean URL (no embedded token)
+        os:cmd("cd " ++ ?REPO_PATH ++ " && git remote set-url origin https://github.com/Ripple-Analytics/Ripple_Analytics.git 2>&1"),
         
         %% Fetch first to ensure we have remote refs
         FetchResult = os:cmd("cd " ++ ?REPO_PATH ++ " && git fetch origin release2 2>&1"),
