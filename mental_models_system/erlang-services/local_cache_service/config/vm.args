@@ -1,0 +1,4 @@
+-name local_cache@127.0.0.1
+-setcookie mental_models_secret
++K true
++A 10

@@ -1,16 +1,27 @@
 {application, auto_updater_service,
  [{description, "Mental Models Auto-Updater Service"},
   {vsn, "1.0.0"},
-  {registered, []},
+  {registered, [updater_worker]},
   {mod, {auto_updater_app, []}},
   {applications,
    [kernel,
     stdlib,
+    inets,
+    crypto,
     cowboy,
     jsx
    ]},
   {env,[]},
-  {modules, []},
+  {modules, [
+    auto_updater_app,
+    auto_updater_sup,
+    updater_worker,
+    health_handler,
+    updater_status_handler,
+    updater_check_handler,
+    updater_update_handler,
+    updater_config_handler
+  ]},
   {licenses, ["Apache-2.0"]},
   {links, []}
  ]}.

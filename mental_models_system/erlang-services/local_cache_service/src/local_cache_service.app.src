@@ -1,0 +1,13 @@
+{application, local_cache_service,
+ [{description, "Local Cache Update Source Service"},
+  {vsn, "1.0.0"},
+  {registered, [cache_worker]},
+  {mod, {local_cache_app, []}},
+  {applications, [kernel, stdlib, inets, crypto, cowboy, jsx]},
+  {env, []},
+  {modules, [
+    local_cache_app, local_cache_sup, cache_worker,
+    health_handler, source_status_handler, source_download_handler,
+    cache_save_handler, cache_versions_handler, cache_rollback_handler
+  ]}
+ ]}.
