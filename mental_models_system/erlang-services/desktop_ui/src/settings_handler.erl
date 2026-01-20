@@ -9,6 +9,26 @@
 init(Req0, State) ->
     Content = [
         <<"
+        <div class=\"card\" style=\"border-left: 4px solid #6366f1;\">
+            <h2>Appearance</h2>
+            <p>Customize the look and feel of the application.</p>
+            <div style=\"margin-top: 15px;\">
+                <label style=\"display: flex; align-items: center; gap: 10px; cursor: pointer;\">
+                    <input type=\"checkbox\" id=\"dark-mode-toggle\" onchange=\"toggleDarkMode()\" style=\"width: 20px; height: 20px;\">
+                    <span><strong>Dark Mode</strong></span>
+                </label>
+                <small style=\"color: #666; display: block; margin-top: 5px;\">Enable dark theme for reduced eye strain in low-light environments</small>
+            </div>
+            <div style=\"margin-top: 15px;\">
+                <label><strong>Font Size</strong></label>
+                <select id=\"font-size-select\" onchange=\"changeFontSize()\" style=\"margin-left: 10px; padding: 8px; border-radius: 4px; border: 1px solid #e0e0e0;\">
+                    <option value=\"small\">Small</option>
+                    <option value=\"medium\" selected>Medium</option>
+                    <option value=\"large\">Large</option>
+                </select>
+            </div>
+        </div>
+        
         <div class=\"card\" style=\"border-left: 4px solid #4361ee;\">
             <h2>Software Updates</h2>
             <div id=\"update-status\">
@@ -321,7 +341,95 @@ init(Req0, State) ->
                 }
             }
             
+            // Dark mode and appearance functions
+            function toggleDarkMode() {
+                const isDark = document.getElementById('dark-mode-toggle').checked;
+                localStorage.setItem('darkMode', isDark);
+                applyTheme(isDark);
+            }
+            
+            function applyTheme(isDark) {
+                if (isDark) {
+                    document.body.style.backgroundColor = '#1a1a2e';
+                    document.body.style.color = '#e0e0e0';
+                    document.querySelectorAll('.card').forEach(el => {
+                        el.style.backgroundColor = '#16213e';
+                        el.style.borderColor = '#0f3460';
+                    });
+                    document.querySelectorAll('.model-card').forEach(el => {
+                        el.style.backgroundColor = '#16213e';
+                        el.style.borderColor = '#0f3460';
+                    });
+                    document.querySelectorAll('.stat-card').forEach(el => {
+                        el.style.backgroundColor = '#16213e';
+                        el.style.borderColor = '#0f3460';
+                    });
+                    document.querySelectorAll('input, textarea, select').forEach(el => {
+                        el.style.backgroundColor = '#0f3460';
+                        el.style.color = '#e0e0e0';
+                        el.style.borderColor = '#1a1a2e';
+                    });
+                    document.querySelectorAll('.nav a').forEach(el => {
+                        if (!el.classList.contains('active')) {
+                            el.style.backgroundColor = '#16213e';
+                            el.style.color = '#e0e0e0';
+                            el.style.borderColor = '#0f3460';
+                        }
+                    });
+                } else {
+                    document.body.style.backgroundColor = '#ffffff';
+                    document.body.style.color = '#1a1a2e';
+                    document.querySelectorAll('.card').forEach(el => {
+                        el.style.backgroundColor = '#f8f9fa';
+                        el.style.borderColor = '#e0e0e0';
+                    });
+                    document.querySelectorAll('.model-card').forEach(el => {
+                        el.style.backgroundColor = 'white';
+                        el.style.borderColor = '#e0e0e0';
+                    });
+                    document.querySelectorAll('.stat-card').forEach(el => {
+                        el.style.backgroundColor = 'white';
+                        el.style.borderColor = '#e0e0e0';
+                    });
+                    document.querySelectorAll('input, textarea, select').forEach(el => {
+                        el.style.backgroundColor = 'white';
+                        el.style.color = '#1a1a2e';
+                        el.style.borderColor = '#e0e0e0';
+                    });
+                    document.querySelectorAll('.nav a').forEach(el => {
+                        if (!el.classList.contains('active')) {
+                            el.style.backgroundColor = '#f8f9fa';
+                            el.style.color = '#1a1a2e';
+                            el.style.borderColor = '#e0e0e0';
+                        }
+                    });
+                }
+            }
+            
+            function changeFontSize() {
+                const size = document.getElementById('font-size-select').value;
+                localStorage.setItem('fontSize', size);
+                applyFontSize(size);
+            }
+            
+            function applyFontSize(size) {
+                const sizes = {small: '13px', medium: '14px', large: '16px'};
+                document.body.style.fontSize = sizes[size] || '14px';
+            }
+            
+            function loadAppearanceSettings() {
+                const isDark = localStorage.getItem('darkMode') === 'true';
+                const fontSize = localStorage.getItem('fontSize') || 'medium';
+                
+                document.getElementById('dark-mode-toggle').checked = isDark;
+                document.getElementById('font-size-select').value = fontSize;
+                
+                applyTheme(isDark);
+                applyFontSize(fontSize);
+            }
+            
             // Load status and config on page load
+            loadAppearanceSettings();
             loadUpdateStatus();
             loadConfig();
             loadGdriveStatus();
