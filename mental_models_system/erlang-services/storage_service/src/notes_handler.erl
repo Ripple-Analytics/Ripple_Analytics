@@ -27,7 +27,7 @@ handle_request(<<"GET">>, Req0, State) ->
 handle_request(<<"POST">>, Req0, State) ->
     %% Add a note
     {ok, Body, Req1} = cowboy_req:read_body(Req0),
-    try
+    Result = try
         Data = jsx:decode(Body, [return_maps]),
         AnalysisId = maps:get(<<"analysis_id">>, Data),
         Content = maps:get(<<"content">>, Data),
@@ -42,36 +42,34 @@ handle_request(<<"POST">>, Req0, State) ->
         },
         
         add_note(Note),
-        
-        Response = jsx:encode(#{success => true, note => Note}),
-        Req = cowboy_req:reply(200, #{<<"content-type">> => <<"application/json">>}, Response, Req1),
-        {ok, Req, State}
+        {200, #{success => true, note => Note}}
     catch
         _:_ ->
-            Response = jsx:encode(#{success => false, error => <<"Invalid request">>}),
-            Req = cowboy_req:reply(400, #{<<"content-type">> => <<"application/json">>}, Response, Req1),
-            {ok, Req, State}
-    end;
+            {400, #{success => false, error => <<"Invalid request">>}}
+    end,
+    {Status, ResponseBody} = Result,
+    ResponseJson = jsx:encode(ResponseBody),
+    Req2 = cowboy_req:reply(Status, #{<<"content-type">> => <<"application/json">>}, ResponseJson, Req1),
+    {ok, Req2, State};
 
 handle_request(<<"PUT">>, Req0, State) ->
     %% Update a note
     {ok, Body, Req1} = cowboy_req:read_body(Req0),
-    try
+    Result = try
         Data = jsx:decode(Body, [return_maps]),
         NoteId = maps:get(<<"id">>, Data),
         Content = maps:get(<<"content">>, Data),
         
         update_note(NoteId, Content),
-        
-        Response = jsx:encode(#{success => true, message => <<"Note updated">>}),
-        Req = cowboy_req:reply(200, #{<<"content-type">> => <<"application/json">>}, Response, Req1),
-        {ok, Req, State}
+        {200, #{success => true, message => <<"Note updated">>}}
     catch
         _:_ ->
-            Response = jsx:encode(#{success => false, error => <<"Invalid request">>}),
-            Req = cowboy_req:reply(400, #{<<"content-type">> => <<"application/json">>}, Response, Req1),
-            {ok, Req, State}
-    end;
+            {400, #{success => false, error => <<"Invalid request">>}}
+    end,
+    {Status, ResponseBody} = Result,
+    ResponseJson = jsx:encode(ResponseBody),
+    Req2 = cowboy_req:reply(Status, #{<<"content-type">> => <<"application/json">>}, ResponseJson, Req1),
+    {ok, Req2, State};
 
 handle_request(<<"DELETE">>, Req0, State) ->
     %% Delete a note by id in query string

@@ -21,6 +21,7 @@ services:
   # ============================================================================
   
   # Deployment Controller - BLUE Environment
+  # ZERO DEPENDENCIES - Foundational service for orchestrating deployments
   deployment-controller-blue:
     build: ./deployment_controller
     container_name: mental-models-deploy-ctrl-blue
@@ -32,6 +33,7 @@ services:
       - DEPLOYMENT_ENV=blue
       - PEER_URL=http://deployment-controller-green:8007
       - PORT=8007
+    # NO depends_on - deployment controller is foundational
     restart: always
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8007/health"]
@@ -43,6 +45,7 @@ services:
       - mental-models-network
 
   # Deployment Controller - GREEN Environment
+  # ZERO DEPENDENCIES - Foundational service for orchestrating deployments
   deployment-controller-green:
     build: ./deployment_controller
     container_name: mental-models-deploy-ctrl-green
@@ -54,6 +57,7 @@ services:
       - DEPLOYMENT_ENV=green
       - PEER_URL=http://deployment-controller-blue:8007
       - PORT=8007
+    # NO depends_on - deployment controller is foundational
     restart: always
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8007/health"]
@@ -70,6 +74,7 @@ services:
   # ============================================================================
   
   # Auto-Updater - BLUE Environment
+  # ZERO DEPENDENCIES - This is the foundational service that must always start
   auto-updater-blue:
     build: ./auto_updater_service
     container_name: mental-models-auto-updater-blue
@@ -92,11 +97,7 @@ services:
       - LOCAL_CACHE_URL=http://local-cache:8012
       - DEPLOY_CONTROLLER_URL=http://nginx-proxy:8007
       - DEPLOYMENT_ENV=blue
-    depends_on:
-      - github-source
-      - gdrive-source
-      - local-cache
-      - deployment-controller-blue
+    # NO depends_on - auto-updater is foundational and must start independently
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
@@ -108,6 +109,7 @@ services:
       - mental-models-network
 
   # Auto-Updater - GREEN Environment
+  # ZERO DEPENDENCIES - This is the foundational service that must always start
   auto-updater-green:
     build: ./auto_updater_service
     container_name: mental-models-auto-updater-green
@@ -130,11 +132,7 @@ services:
       - LOCAL_CACHE_URL=http://local-cache:8012
       - DEPLOY_CONTROLLER_URL=http://nginx-proxy:8007
       - DEPLOYMENT_ENV=green
-    depends_on:
-      - github-source
-      - gdrive-source
-      - local-cache
-      - deployment-controller-green
+    # NO depends_on - auto-updater is foundational and must start independently
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
@@ -146,6 +144,7 @@ services:
       - mental-models-network
 
   # Legacy alias for backward compatibility
+  # ZERO DEPENDENCIES - This is the foundational service that must always start
   auto-updater-service:
     build: ./auto_updater_service
     container_name: mental-models-auto-updater
@@ -170,10 +169,7 @@ services:
       - LOCAL_CACHE_URL=http://local-cache:8012
       - DEPLOY_CONTROLLER_URL=http://nginx-proxy:8007
       - DEPLOYMENT_ENV=blue
-    depends_on:
-      - github-source
-      - gdrive-source
-      - local-cache
+    # NO depends_on - auto-updater is foundational and must start independently
     restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
