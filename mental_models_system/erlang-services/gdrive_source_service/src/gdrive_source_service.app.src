@@ -1,0 +1,13 @@
+{application, gdrive_source_service,
+ [{description, "Google Drive Update Source Service"},
+  {vsn, "1.0.0"},
+  {registered, [gdrive_worker]},
+  {mod, {gdrive_source_app, []}},
+  {applications, [kernel, stdlib, inets, crypto, cowboy, jsx]},
+  {env, []},
+  {modules, [
+    gdrive_source_app, gdrive_source_sup, gdrive_worker,
+    health_handler, source_status_handler, source_check_handler,
+    source_fetch_handler, source_download_handler, backup_upload_handler
+  ]}
+ ]}.

@@ -4,27 +4,21 @@
 # View logs: docker-compose logs -f
 # Stop all services: docker-compose down
 # 
-# AUTO-UPDATE: The system automatically checks GitHub every 5 minutes for updates.
-# If GitHub is unavailable, it falls back to Google Drive backup.
-# Configure Google Drive backup URL via GDRIVE_BACKUP_URL environment variable.
+# BULLETPROOF AUTO-UPDATE SYSTEM:
+# Multiple independent update sources with automatic fallback:
+#   1. GitHub Source (SSH → PAT → Public HTTPS)
+#   2. Google Drive Source (backup sync)
+#   3. Local Cache (last known good versions)
+# 
+# Chaos Monkey tests resilience by simulating failures.
 # 
 # Access the UI at: http://localhost:3000
-# Access the Settings page for one-click updates
+# Access the Settings page for one-click updates and chaos testing
 
 services:
-  # Auto-Updater Service (Erlang/OTP) - Bulletproof update system with REST API
-  # Update Source Priority:
-  #   1. SSH (private repo with deploy key) - Primary
-  #   2. HTTPS with token (authenticated) - Fallback 1
-  #   3. HTTPS public (if repo is public) - Fallback 2
-  #   4. Google Drive backup - Fallback 3
-  # 
-  # REST API Endpoints (port 8006):
-  #   GET  /health              - Health check
-  #   GET  /api/updater/status  - Current updater status
-  #   POST /api/updater/check   - Trigger update check
-  #   POST /api/updater/update  - Perform update
-  #   GET  /api/updater/config  - View configuration
+  # ============================================================================
+  # UPDATE ORCHESTRATOR - Coordinates all update sources
+  # ============================================================================
   auto-updater-service:
     build: ./auto_updater_service
     container_name: mental-models-auto-updater
@@ -35,23 +29,23 @@ services:
       - updater-repo:/repo
       - updater-data:/data
       - .:/services:ro
-      # Mount SSH deploy key for private repo access (optional but recommended)
-      # Create key with: ssh-keygen -t ed25519 -f ./ssh_deploy_key -N ""
-      # Add public key to GitHub repo Settings > Deploy keys (read-only)
       - ${SSH_KEY_PATH:-./ssh_deploy_key}:/root/.ssh/deploy_key:ro
     environment:
-      # SSH URL for private repo access (primary)
       - GITHUB_SSH_URL=git@github.com:Ripple-Analytics/Ripple_Analytics.git
-      # HTTPS URL for public/fallback access
       - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
       - GITHUB_BRANCH=release
       - UPDATE_CHECK_INTERVAL=300
-      # GitHub token for authenticated HTTPS (from .env file)
       - GITHUB_TOKEN=${GITHUB_TOKEN:-}
       - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
-      # Configure Google Drive backup URL (optional)
-      # Format: https://drive.google.com/file/d/FILE_ID/view or direct download link
       - GDRIVE_BACKUP_URL=${GDRIVE_BACKUP_URL:-}
+      # Internal source service URLs
+      - GITHUB_SOURCE_URL=http://github-source:8010
+      - GDRIVE_SOURCE_URL=http://gdrive-source:8011
+      - LOCAL_CACHE_URL=http://local-cache:8012
+    depends_on:
+      - github-source
+      - gdrive-source
+      - local-cache
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
@@ -62,7 +56,106 @@ services:
     networks:
       - mental-models-network
 
-  # Watchtower - Automatically updates containers when images change
+  # ============================================================================
+  # UPDATE SOURCE SERVICES - Independent backup sources
+  # ============================================================================
+  
+  # GitHub Source - Primary update source with multi-auth fallback
+  github-source:
+    build: ./github_source_service
+    container_name: mental-models-github-source
+    ports:
+      - "8010:8010"
+    volumes:
+      - github-repo:/repo/github
+      - ${SSH_KEY_PATH:-./ssh_deploy_key}:/root/.ssh/deploy_key:ro
+    environment:
+      - GITHUB_SSH_URL=git@github.com:Ripple-Analytics/Ripple_Analytics.git
+      - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
+      - GITHUB_BRANCH=release
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8010/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - mental-models-network
+
+  # Google Drive Source - Backup update source
+  gdrive-source:
+    build: ./gdrive_source_service
+    container_name: mental-models-gdrive-source
+    ports:
+      - "8011:8011"
+    volumes:
+      - gdrive-repo:/repo/gdrive
+      - ${RCLONE_CONFIG:-./rclone.conf}:/root/.config/rclone/rclone.conf:ro
+    environment:
+      - GDRIVE_BACKUP_URL=${GDRIVE_BACKUP_URL:-}
+      - GDRIVE_RCLONE_REMOTE=${GDRIVE_RCLONE_REMOTE:-}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8011/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # Local Cache - Stores last known good versions for rollback
+  local-cache:
+    build: ./local_cache_service
+    container_name: mental-models-local-cache
+    ports:
+      - "8012:8012"
+    volumes:
+      - local-cache-data:/cache
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8012/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # ============================================================================
+  # CHAOS MONKEY - Resilience Testing
+  # ============================================================================
+  update-chaos-monkey:
+    build: ./update_chaos_monkey
+    container_name: mental-models-update-chaos
+    ports:
+      - "8013:8013"
+    environment:
+      - AUTO_UPDATER_URL=http://auto-updater-service:8006
+      - GITHUB_SOURCE_URL=http://github-source:8010
+      - GDRIVE_SOURCE_URL=http://gdrive-source:8011
+      - LOCAL_CACHE_URL=http://local-cache:8012
+    depends_on:
+      - auto-updater-service
+      - github-source
+      - gdrive-source
+      - local-cache
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8013/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - mental-models-network
+
+  # ============================================================================
+  # WATCHTOWER - Container Auto-Update
+  # ============================================================================
   watchtower:
     image: containrrr/watchtower
     container_name: mental-models-watchtower
@@ -76,7 +169,10 @@ services:
     networks:
       - mental-models-network
 
-  # API Gateway - Routes requests to backend services
+  # ============================================================================
+  # CORE SERVICES
+  # ============================================================================
+  
   api-gateway:
     build: ./api_gateway
     container_name: mental-models-api-gateway
@@ -100,7 +196,6 @@ services:
     networks:
       - mental-models-network
 
-  # Analysis Service - Mental model analysis and LLM integration
   analysis-service:
     build: ./analysis_service
     container_name: mental-models-analysis
@@ -118,7 +213,6 @@ services:
     networks:
       - mental-models-network
 
-  # Harvester Service - Web scraping and file processing
   harvester-service:
     build: ./harvester_service
     container_name: mental-models-harvester
@@ -134,7 +228,6 @@ services:
     networks:
       - mental-models-network
 
-  # Storage Service - Data persistence with DETS
   storage-service:
     build: ./storage_service
     container_name: mental-models-storage
@@ -152,7 +245,6 @@ services:
     networks:
       - mental-models-network
 
-  # Chaos Engineering Service - Resilience testing
   chaos-engineering:
     build: ./chaos_engineering
     container_name: mental-models-chaos
@@ -175,7 +267,9 @@ services:
     networks:
       - mental-models-network
 
-  # Desktop UI - Web-based interface
+  # ============================================================================
+  # DESKTOP UI - Web Interface
+  # ============================================================================
   desktop-ui:
     build: ./desktop_ui
     container_name: mental-models-ui
@@ -184,129 +278,18 @@ services:
     environment:
       - API_GATEWAY_URL=http://api-gateway:8000
       - AUTO_UPDATER_URL=http://auto-updater-service:8006
+      - GITHUB_SOURCE_URL=http://github-source:8010
+      - GDRIVE_SOURCE_URL=http://gdrive-source:8011
+      - LOCAL_CACHE_URL=http://local-cache:8012
+      - CHAOS_MONKEY_URL=http://update-chaos-monkey:8013
     depends_on:
       - api-gateway
       - chaos-engineering
       - auto-updater-service
+      - update-chaos-monkey
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    networks:
-      - mental-models-network
-
-  # Google Drive Backup Service - Independent backup management
-  gdrive-backup:
-    build: ./gdrive_backup
-    container_name: mental-models-gdrive-backup
-    ports:
-      - "8006:8006"
-    volumes:
-      - gdrive-data:/data
-    environment:
-      - GDRIVE_URL=${GDRIVE_BACKUP_URL:-}
-      - BACKUP_INTERVAL=3600
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8006/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    networks:
-      - mental-models-network
-
-  # Chaos Monkey - Proactive resilience testing
-  chaos-monkey:
-    build: ./chaos_monkey
-    container_name: mental-models-chaos-monkey
-    ports:
-      - "8007:8007"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - chaos-data:/data
-    environment:
-      - ENABLED=${CHAOS_MONKEY_ENABLED:-false}
-      - ATTACK_INTERVAL=300
-      - TARGET_SERVICES=mental-models-api-gateway,mental-models-analysis,mental-models-harvester,mental-models-storage
-      - API_GATEWAY_URL=http://api-gateway:8000
-      - DESKTOP_UI_URL=http://desktop-ui:3000
-    depends_on:
-      - api-gateway
-      - desktop-ui
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8007/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    networks:
-      - mental-models-network
-
-  # S3/MinIO Backup Service - Cloud storage backup
-  s3-backup:
-    build: ./s3_backup
-    container_name: mental-models-s3-backup
-    ports:
-      - "8008:8008"
-    volumes:
-      - s3-data:/data
-    environment:
-      - S3_ENDPOINT=${S3_ENDPOINT:-}
-      - S3_BUCKET=${S3_BUCKET:-}
-      - S3_ACCESS_KEY=${S3_ACCESS_KEY:-}
-      - S3_SECRET_KEY=${S3_SECRET_KEY:-}
-      - S3_REGION=${S3_REGION:-us-east-1}
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8008/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    networks:
-      - mental-models-network
-
-  # HTTP/HTTPS Backup Service - Direct URL downloads
-  http-backup:
-    build: ./http_backup
-    container_name: mental-models-http-backup
-    ports:
-      - "8009:8009"
-    volumes:
-      - http-data:/data
-    environment:
-      - HTTP_BACKUP_URL=${HTTP_BACKUP_URL:-}
-      - CHECK_INTERVAL=3600
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8009/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    networks:
-      - mental-models-network
-
-  # LAN/Local Network Backup Service - Peer-to-peer sync
-  lan-backup:
-    build: ./lan_backup
-    container_name: mental-models-lan-backup
-    ports:
-      - "8010:8010"
-      - "8011:8011/udp"
-    volumes:
-      - lan-data:/data
-    environment:
-      - LAN_BROADCAST_PORT=8011
-      - LAN_DISCOVERY_ENABLED=true
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8010/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -325,13 +308,9 @@ volumes:
     driver: local
   updater-data:
     driver: local
-  gdrive-data:
+  github-repo:
     driver: local
-  chaos-data:
+  gdrive-repo:
     driver: local
-  s3-data:
-    driver: local
-  http-data:
-    driver: local
-  lan-data:
+  local-cache-data:
     driver: local
