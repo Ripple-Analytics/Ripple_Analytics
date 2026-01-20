@@ -342,12 +342,34 @@ get_current_commit() ->
     end.
 
 get_remote_commit(Branch) ->
-    Cmd = "cd /repo && git rev-parse origin/" ++ binary_to_list(Branch) ++ " 2>/dev/null",
+    BranchStr = binary_to_list(Branch),
+    %% First ensure we have the latest refs
+    FetchCmd = "cd /repo && git fetch origin " ++ BranchStr ++ " 2>&1",
+    _FetchResult = os:cmd(FetchCmd),
+    
+    %% Now get the remote commit - use FETCH_HEAD as fallback
+    Cmd = "cd /repo && git rev-parse origin/" ++ BranchStr ++ " 2>/dev/null",
     Result = os:cmd(Cmd),
-    case string:trim(Result) of
-        "" -> undefined;
-        Commit when length(Commit) >= 7 -> list_to_binary(string:sub_string(Commit, 1, 7));
-        _ -> undefined
+    TrimmedResult = string:trim(Result),
+    
+    %% Debug logging
+    io:format("[UPDATER] get_remote_commit cmd: ~s~n", [Cmd]),
+    io:format("[UPDATER] get_remote_commit result: ~s~n", [TrimmedResult]),
+    
+    case TrimmedResult of
+        "" -> 
+            %% Try FETCH_HEAD as fallback
+            FallbackCmd = "cd /repo && git rev-parse FETCH_HEAD 2>/dev/null",
+            FallbackResult = string:trim(os:cmd(FallbackCmd)),
+            case FallbackResult of
+                "" -> undefined;
+                FB when length(FB) >= 7 -> list_to_binary(string:sub_string(FB, 1, 7));
+                _ -> undefined
+            end;
+        Commit when length(Commit) >= 7 -> 
+            list_to_binary(string:sub_string(Commit, 1, 7));
+        _ -> 
+            undefined
     end.
 
 rebuild_services() ->
