@@ -613,7 +613,9 @@ services:
       - auto-updater-blue
       - auto-updater-green
       - chaos-engineering-blue
-      - chaos-eng    restart: unless-stopped    healthcheck:
+      - chaos-engineering-green
+    restart: unless-stopped
+    healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
       interval: 10s
       timeout: 5s
