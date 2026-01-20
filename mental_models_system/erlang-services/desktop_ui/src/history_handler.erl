@@ -30,6 +30,19 @@ init(Req0, State) ->
                 <button class=\"btn btn-secondary\" onclick=\"loadStats()\">View Stats</button>
                 <button class=\"btn btn-secondary\" onclick=\"toggleCompareMode()\" id=\"compare-btn\">Compare Mode</button>
                 <button class=\"btn\" onclick=\"compareSelected()\" id=\"compare-action-btn\" style=\"display: none;\">Compare Selected (<span id=\"compare-count\">0</span>)</button>
+                <button class=\"btn btn-secondary\" onclick=\"toggleBulkMode()\" id=\"bulk-btn\">Bulk Actions</button>
+                <button class=\"btn\" onclick=\"exportAllHistory()\" style=\"background: #28a745;\">Export All</button>
+            </div>
+            
+            <div id=\"bulk-actions-bar\" style=\"display: none; background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #e0e0e0;\">
+                <div style=\"display: flex; gap: 10px; align-items: center; flex-wrap: wrap;\">
+                    <span><strong id=\"bulk-count\">0</strong> selected</span>
+                    <button class=\"btn btn-secondary\" onclick=\"selectAllVisible()\">Select All</button>
+                    <button class=\"btn btn-secondary\" onclick=\"deselectAll()\">Deselect All</button>
+                    <input type=\"text\" id=\"bulk-tag-input\" placeholder=\"Add tag to selected...\" style=\"padding: 8px; border-radius: 4px; border: 1px solid #e0e0e0; width: 150px;\">
+                    <button class=\"btn\" onclick=\"bulkAddTag()\">Add Tag</button>
+                    <button class=\"btn\" onclick=\"bulkDelete()\" style=\"background: #dc3545;\">Delete Selected</button>
+                </div>
             </div>
         </div>
         
@@ -142,6 +155,16 @@ init(Req0, State) ->
                         html += '<label style=\"cursor: pointer; display: flex; align-items: center; gap: 8px;\">';
                         html += '<input type=\"checkbox\" ' + (isSelected ? 'checked' : '') + ' onchange=\"toggleSelectForCompare(\\'' + analysis.id + '\\')\" style=\"width: 18px; height: 18px;\">';
                         html += '<span style=\"font-weight: bold;\">' + (isSelected ? 'Selected for comparison' : 'Select to compare') + '</span>';
+                        html += '</label></div>';
+                    }
+                    
+                    // Bulk mode checkbox
+                    if (bulkMode) {
+                        const isBulkSelected = selectedForBulk.includes(analysis.id);
+                        html += '<div style=\"margin-bottom: 10px;\">';
+                        html += '<label style=\"cursor: pointer; display: flex; align-items: center; gap: 8px;\">';
+                        html += '<input type=\"checkbox\" ' + (isBulkSelected ? 'checked' : '') + ' onchange=\"toggleSelectForBulk(\\'' + analysis.id + '\\')\" style=\"width: 18px; height: 18px;\">';
+                        html += '<span style=\"font-weight: bold;\">' + (isBulkSelected ? 'Selected' : 'Select') + '</span>';
                         html += '</label></div>';
                     }
                     
@@ -622,6 +645,137 @@ init(Req0, State) ->
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
+            }
+            
+            // Bulk operations
+            let bulkMode = false;
+            let selectedForBulk = [];
+            
+            function toggleBulkMode() {
+                bulkMode = !bulkMode;
+                selectedForBulk = [];
+                document.getElementById('bulk-btn').textContent = bulkMode ? 'Exit Bulk Mode' : 'Bulk Actions';
+                document.getElementById('bulk-actions-bar').style.display = bulkMode ? 'block' : 'none';
+                updateBulkCount();
+                filterAnalyses();
+            }
+            
+            function updateBulkCount() {
+                document.getElementById('bulk-count').textContent = selectedForBulk.length;
+            }
+            
+            function toggleSelectForBulk(id) {
+                const idx = selectedForBulk.indexOf(id);
+                if (idx > -1) {
+                    selectedForBulk.splice(idx, 1);
+                } else {
+                    selectedForBulk.push(id);
+                }
+                updateBulkCount();
+                filterAnalyses();
+            }
+            
+            function selectAllVisible() {
+                selectedForBulk = allAnalysesData.map(a => a.id);
+                updateBulkCount();
+                filterAnalyses();
+            }
+            
+            function deselectAll() {
+                selectedForBulk = [];
+                updateBulkCount();
+                filterAnalyses();
+            }
+            
+            async function bulkAddTag() {
+                const tag = document.getElementById('bulk-tag-input').value.trim();
+                if (!tag) {
+                    alert('Please enter a tag');
+                    return;
+                }
+                if (selectedForBulk.length === 0) {
+                    alert('No analyses selected');
+                    return;
+                }
+                
+                let successCount = 0;
+                for (const id of selectedForBulk) {
+                    try {
+                        await fetch('/api/storage/tags', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({analysis_id: id, tag: tag})
+                        });
+                        successCount++;
+                    } catch (e) {
+                        console.error('Error adding tag to ' + id, e);
+                    }
+                }
+                
+                alert('Added tag \"' + tag + '\" to ' + successCount + ' analyses');
+                document.getElementById('bulk-tag-input').value = '';
+                await loadTags();
+                await loadHistory();
+            }
+            
+            async function bulkDelete() {
+                if (selectedForBulk.length === 0) {
+                    alert('No analyses selected');
+                    return;
+                }
+                
+                if (!confirm('Are you sure you want to delete ' + selectedForBulk.length + ' analyses? This cannot be undone.')) {
+                    return;
+                }
+                
+                let successCount = 0;
+                for (const id of selectedForBulk) {
+                    try {
+                        await fetch('/api/storage/history/' + id, {method: 'DELETE'});
+                        successCount++;
+                    } catch (e) {
+                        console.error('Error deleting ' + id, e);
+                    }
+                }
+                
+                alert('Deleted ' + successCount + ' analyses');
+                selectedForBulk = [];
+                updateBulkCount();
+                await loadHistory();
+            }
+            
+            async function exportAllHistory() {
+                try {
+                    const res = await fetch('/api/storage/history?limit=1000');
+                    const data = await res.json();
+                    const analyses = data.analyses || [];
+                    
+                    if (analyses.length === 0) {
+                        alert('No analyses to export');
+                        return;
+                    }
+                    
+                    const exportData = {
+                        exported_at: new Date().toISOString(),
+                        total_count: analyses.length,
+                        analyses: analyses.map(a => ({
+                            id: a.id,
+                            type: a.type,
+                            timestamp: a.timestamp,
+                            date: new Date(a.timestamp * 1000).toISOString(),
+                            model_count: a.model_count || 0,
+                            bias_count: a.bias_count || 0,
+                            models: (a.models || []).map(m => m.name || m),
+                            biases: (a.biases || []).map(b => b.bias || b),
+                            input_text: a.input_text || '',
+                            tags: analysisTagsMap[a.id] || []
+                        }))
+                    };
+                    
+                    downloadFile('all_analyses_' + Date.now() + '.json', JSON.stringify(exportData, null, 2), 'application/json');
+                } catch (e) {
+                    alert('Export failed: ' + e.message);
+                }
             }
             
             // Load history on page load
