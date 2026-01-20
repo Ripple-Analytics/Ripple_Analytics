@@ -518,11 +518,25 @@ get_current_commit() ->
     end.
 
 get_remote_commit(Branch) ->
+    %% MUST fetch from remote first to get latest commits
+    io:format("[UPDATER] Fetching from remote...~n"),
+    FetchCmd = "cd /repo && git fetch origin " ++ Branch ++ " 2>&1",
+    FetchResult = os:cmd(FetchCmd),
+    io:format("[UPDATER] Fetch result: ~s~n", [string:sub_string(FetchResult, 1, min(200, length(FetchResult)))]),
+    
+    %% Now get the remote commit hash
     Cmd = "cd /repo && git rev-parse origin/" ++ Branch ++ " 2>/dev/null",
     Result = string:trim(os:cmd(Cmd)),
+    io:format("[UPDATER] Remote commit raw: ~s~n", [Result]),
+    
     case length(Result) >= 7 of
-        true -> list_to_binary(string:sub_string(Result, 1, 7));
-        false -> undefined
+        true -> 
+            Commit = list_to_binary(string:sub_string(Result, 1, 7)),
+            io:format("[UPDATER] Remote commit: ~s~n", [Commit]),
+            Commit;
+        false -> 
+            io:format("[UPDATER] Failed to get remote commit~n"),
+            undefined
     end.
 
 %%====================================================================
