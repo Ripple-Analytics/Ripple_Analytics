@@ -5,7 +5,7 @@
 -module(file_utils).
 
 -export([read/1, write/2, delete/1, ensure_dir/1]).
--export([fmt/1, format_time/1, truncate/2]).
+-export([fmt/1, fmt/2, format_time/1, truncate/2]).
 
 %% @doc Read file, return undefined if missing/empty
 read(Path) ->
@@ -42,6 +42,12 @@ ensure_dir(Path) ->
 %% Internal: ensure parent directory exists
 ensure_parent_dir(Path) ->
     filelib:ensure_dir(Path).
+
+%% @doc Format with io_lib:format - returns flat string
+fmt(Format, Args) when is_list(Format), is_list(Args) ->
+    lists:flatten(io_lib:format(Format, Args));
+fmt(Format, Arg) when is_list(Format) ->
+    lists:flatten(io_lib:format(Format, [Arg])).
 
 %% @doc Format value for logging - always returns a flat string
 fmt(undefined) -> "undefined";
