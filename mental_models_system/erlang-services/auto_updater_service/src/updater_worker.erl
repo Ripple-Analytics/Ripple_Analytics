@@ -476,17 +476,33 @@ check_health(Env) ->
     Result =:= "true".
 
 switch_traffic(NewEnv) ->
-    %% Update active env file
+    io:format("[UPDATER] Switching traffic to: ~s~n", [NewEnv]),
+    
+    %% Update active env file for persistence
     write_file(?DATA_DIR ++ "/active_env", NewEnv),
     
-    %% Update nginx config
-    BasePath = "/repo/mental_models_system/erlang-services",
-    ActiveConf = BasePath ++ "/nginx_proxy/active_env/active.conf",
-    Config = "set $active_env " ++ NewEnv ++ ";\n",
-    file:write_file(ActiveConf, Config),
+    %% Update ALL nginx config files inside the nginx container
+    %% Each service has its own config file that needs to be updated
+    Services = [
+        {"active.conf", "ui-" ++ NewEnv},
+        {"active_api.conf", "api-" ++ NewEnv},
+        {"active_analysis.conf", "analysis-" ++ NewEnv},
+        {"active_harvester.conf", "harvester-" ++ NewEnv},
+        {"active_storage.conf", "storage-" ++ NewEnv},
+        {"active_updater.conf", "updater-" ++ NewEnv}
+    ],
     
-    %% Reload nginx
-    os:cmd("docker exec mental-models-proxy nginx -s reload 2>&1").
+    lists:foreach(fun({ConfigFile, Upstream}) ->
+        ConfigContent = "# Active environment: " ++ NewEnv ++ "\nlocation / {\n    proxy_pass http://" ++ Upstream ++ ";\n}\n",
+        %% Write config directly into nginx container
+        Cmd = "docker exec mental-models-proxy sh -c 'echo \"" ++ ConfigContent ++ "\" > /etc/nginx/conf.d/" ++ ConfigFile ++ "'",
+        Result = os:cmd(Cmd ++ " 2>&1"),
+        io:format("[UPDATER] Updated ~s: ~s~n", [ConfigFile, string:sub_string(Result, 1, erlang:min(100, length(Result)))])
+    end, Services),
+    
+    %% Reload nginx to apply changes
+    ReloadResult = os:cmd("docker exec mental-models-proxy nginx -s reload 2>&1"),
+    io:format("[UPDATER] Nginx reload: ~s~n", [string:sub_string(ReloadResult, 1, erlang:min(200, length(ReloadResult)))]).
 
 read_active_env() ->
     case read_file(?DATA_DIR ++ "/active_env") of

@@ -7,6 +7,7 @@ COPY active_api.conf /etc/nginx/conf.d/active_api.conf
 COPY active_analysis.conf /etc/nginx/conf.d/active_analysis.conf
 COPY active_harvester.conf /etc/nginx/conf.d/active_harvester.conf
 COPY active_storage.conf /etc/nginx/conf.d/active_storage.conf
+COPY active_updater.conf /etc/nginx/conf.d/active_updater.conf
 COPY active_env /etc/nginx/active_env
 
 # Create directory for dynamic config
