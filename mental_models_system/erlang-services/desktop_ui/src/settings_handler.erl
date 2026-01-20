@@ -47,7 +47,7 @@ init(Req0, State) ->
             <div class=\"card\">
                 <h2>System Information</h2>
                 <p><strong>Architecture:</strong> Erlang/OTP Microservices</p>
-                <p><strong>Version:</strong> <span id=\"app-version\">1.2.0</span></p>
+                <p><strong>Version:</strong> <span id=\"app-version\">1.3.0</span></p>
                 <p><strong>Branch:</strong> <span id=\"git-branch\" style=\"font-family: monospace; background: #f0f0f0; padding: 2px 6px; border-radius: 3px;\">loading...</span></p>
                 <p><strong>Commit:</strong> <span id=\"git-commit\" style=\"font-family: monospace; background: #f0f0f0; padding: 2px 6px; border-radius: 3px;\">loading...</span></p>
                 <p><strong>Commit Date:</strong> <span id=\"commit-date\">loading...</span></p>
