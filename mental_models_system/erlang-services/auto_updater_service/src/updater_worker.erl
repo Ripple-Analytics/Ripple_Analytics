@@ -270,8 +270,13 @@ get_remote_commit(Branch) ->
 
 rebuild_services() ->
     io:format("[UPDATER] Triggering service rebuild~n"),
-    os:cmd("cd /repo/mental_models_system/erlang-services && docker-compose build --parallel 2>&1"),
-    os:cmd("cd /repo/mental_models_system/erlang-services && docker-compose up -d 2>&1"),
+    %% Build and restart only the application services, NOT the auto-updater itself
+    %% This prevents the auto-updater from stopping itself during updates
+    Services = "api-gateway analysis-service harvester-service storage-service chaos-engineering desktop-ui",
+    BuildCmd = "cd /repo/mental_models_system/erlang-services && docker-compose build --parallel " ++ Services ++ " 2>&1",
+    RestartCmd = "cd /repo/mental_models_system/erlang-services && docker-compose up -d --no-deps " ++ Services ++ " 2>&1",
+    os:cmd(BuildCmd),
+    os:cmd(RestartCmd),
     io:format("[UPDATER] Rebuild complete~n").
 
 run_cmd(Cmd) ->
