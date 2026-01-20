@@ -246,6 +246,11 @@ do_perform_update(State) ->
     NewCommit = get_current_commit(),
     io:format("[UPDATER] Pulled commit: ~s~n", [fmt(NewCommit)]),
     
+    %% Step 1.5: Run pre-build syntax check and auto-fix
+    io:format("[UPDATER] Running pre-build syntax check...~n"),
+    PreBuildResult = os:cmd("cd /repo/mental_models_system/erlang-services && bash scripts/fix_erlang_syntax.sh 2>&1"),
+    io:format("[UPDATER] Pre-build result: ~s~n", [string:sub_string(PreBuildResult, 1, min(500, length(PreBuildResult)))]),
+    
     %% Step 2: Build ONLY the standby services
     StandbyServices = get_standby_services(StandbyEnv),
     BuildResult = build_standby(StandbyServices),
@@ -328,19 +333,27 @@ build_standby(Services) ->
 build_services(_BasePath, [], _Failed) ->
     ok;
 build_services(BasePath, [Service | Rest], Failed) ->
+    io:format("[UPDATER] ==========================================~n"),
     io:format("[UPDATER] Building: ~s~n", [Service]),
+    io:format("[UPDATER] Command: docker-compose build --no-cache ~s~n", [Service]),
     Cmd = "cd " ++ BasePath ++ " && docker-compose build --no-cache " ++ Service ++ " 2>&1",
     Result = os:cmd(Cmd),
     
+    %% Log last 1000 chars of build output
+    OutputLen = length(Result),
+    TruncatedOutput = if OutputLen > 1000 -> string:sub_string(Result, OutputLen - 999, OutputLen); true -> Result end,
+    io:format("[UPDATER] Build output (last 1000 chars):~n~s~n", [TruncatedOutput]),
+    
     case is_build_error(Result) of
         true ->
-            io:format("[UPDATER] Build FAILED: ~s~n", [Service]),
-            %% Log error for debugging
+            io:format("[UPDATER] *** BUILD FAILED: ~s ***~n", [Service]),
+            %% Log full error for debugging
             ErrorFile = ?DATA_DIR ++ "/build_error_" ++ Service ++ ".log",
             file:write_file(ErrorFile, Result),
+            io:format("[UPDATER] Error log saved to: ~s~n", [ErrorFile]),
             {error, "Build failed: " ++ Service};
         false ->
-            io:format("[UPDATER] Built: ~s~n", [Service]),
+            io:format("[UPDATER] *** BUILD SUCCESS: ~s ***~n", [Service]),
             build_services(BasePath, Rest, Failed)
     end.
 
