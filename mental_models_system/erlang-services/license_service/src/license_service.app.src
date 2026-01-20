@@ -1,0 +1,10 @@
+{application, license_service,
+ [{description, "Machine-specific license verification service"},
+  {vsn, "1.0.0"},
+  {registered, []},
+  {applications, [kernel, stdlib, crypto]},
+  {env, []},
+  {modules, [license_checker]},
+  {licenses, ["Proprietary"]},
+  {links, []}
+ ]}.

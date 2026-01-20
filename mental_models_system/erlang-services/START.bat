@@ -22,6 +22,16 @@ if errorlevel 1 (
 echo [OK] Docker is running
 echo.
 
+:: Get Machine GUID for license verification
+echo [INFO] Getting Machine GUID for license verification...
+for /f "tokens=2*" %%a in ('reg query "HKLM\SOFTWARE\Microsoft\Cryptography" /v MachineGuid 2^>nul ^| find "MachineGuid"') do set MACHINE_GUID=%%b
+if defined MACHINE_GUID (
+    echo [OK] Machine GUID: %MACHINE_GUID%
+) else (
+    echo [WARN] Could not get Machine GUID - license check may fail
+)
+echo.
+
 :: Check if .env file exists, create if not
 if not exist ".env" (
     echo [INFO] Creating .env file...
@@ -30,9 +40,16 @@ if not exist ".env" (
     echo GITHUB_TOKEN= >> .env
     echo # Add your Google Drive backup URL ^(optional^) >> .env
     echo GDRIVE_BACKUP_URL= >> .env
+    echo # Machine GUID for license verification ^(auto-detected^) >> .env
+    echo MACHINE_GUID=%MACHINE_GUID% >> .env
     echo.
     echo [WARN] Edit .env file to add GITHUB_TOKEN for private repo access.
     echo.
+) else (
+    :: Update MACHINE_GUID in existing .env file
+    findstr /v "MACHINE_GUID" .env > .env.tmp 2>nul
+    echo MACHINE_GUID=%MACHINE_GUID% >> .env.tmp
+    move /y .env.tmp .env >nul 2>&1
 )
 
 :: Pull latest changes if this is a git repo

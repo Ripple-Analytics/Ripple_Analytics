@@ -288,6 +288,8 @@ services:
       - GDRIVE_SOURCE_URL=http://gdrive-source:8011
       - LOCAL_CACHE_URL=http://local-cache:8012
       - CHAOS_MONKEY_URL=http://update-chaos-monkey:8013
+      # Machine-specific licensing - pass host machine GUID to container
+      - MACHINE_GUID=${MACHINE_GUID:-}
     depends_on:
       - api-gateway
       - chaos-engineering
