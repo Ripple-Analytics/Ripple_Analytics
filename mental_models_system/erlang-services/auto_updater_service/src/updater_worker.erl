@@ -369,9 +369,17 @@ rebuild_services() ->
         %% Step 2: Build all services including the standby UI
         %% CRITICAL: Use --no-cache to ensure Erlang code changes are picked up
         %% Without --no-cache, Docker may use cached layers and skip recompiling .erl files
+        %% Use --build-arg to bust Docker cache and ensure source changes are picked up
         StandbyService = "desktop-ui-" ++ StandbyEnv,
-        io:format("[UPDATER] Building backend services and ~s (with --no-cache to ensure code changes are applied)...~n", [StandbyService]),
-        BuildCmd = "cd " ++ BasePath ++ " && docker-compose build --no-cache --parallel " ++ BackendServices ++ " " ++ StandbyService ++ " 2>&1",
+        CommitHash = get_current_commit(),
+        CommitHashStr = case CommitHash of
+            undefined -> "unknown";
+            Hash -> binary_to_list(Hash)
+        end,
+        BuildTime = calendar:system_time_to_rfc3339(erlang:system_time(second), [{unit, second}]),
+        io:format("[UPDATER] Building backend services and ~s with commit ~s (with --no-cache to ensure code changes are applied)...~n", [StandbyService, CommitHashStr]),
+        BuildArgs = "--build-arg COMMIT_HASH=" ++ CommitHashStr ++ " --build-arg BUILD_TIME=" ++ BuildTime,
+        BuildCmd = "cd " ++ BasePath ++ " && docker-compose build --no-cache " ++ BuildArgs ++ " " ++ BackendServices ++ " " ++ StandbyService ++ " 2>&1",
         io:format("[UPDATER] Build command: ~s~n", [BuildCmd]),
         BuildResult = os:cmd(BuildCmd),
         io:format("[UPDATER] Build output (last 500 chars): ~s~n", [string:slice(BuildResult, max(0, length(BuildResult) - 500))]),
