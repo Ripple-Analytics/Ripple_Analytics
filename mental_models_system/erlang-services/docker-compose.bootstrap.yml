@@ -1,0 +1,31 @@
+# BOOTSTRAP DOCKER-COMPOSE - ONLY the auto-updater
+# Use this to get the auto-updater running when everything else is broken
+
+services:
+  auto-updater-service:
+    build: ./auto_updater_service
+    container_name: mental-models-auto-updater
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - updater-repo:/repo
+      - updater-data:/data
+      - .:/services:ro
+    environment:
+      - GITHUB_REPO_URL=https://github.com/Ripple-Analytics/Ripple_Analytics.git
+      - GITHUB_BRANCH=release
+      - UPDATE_CHECK_INTERVAL=300
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - GITHUB_REPO=Ripple-Analytics/Ripple_Analytics
+    restart: always
+    ports:
+      - "8006:8006"
+    networks:
+      - mental-models-network
+
+networks:
+  mental-models-network:
+    driver: bridge
+
+volumes:
+  updater-repo:
+  updater-data:
