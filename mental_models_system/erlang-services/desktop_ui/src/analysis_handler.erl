@@ -30,6 +30,7 @@ init(Req0, State) ->
                 <button class=\"btn\" onclick=\"analyzeText()\">Analyze for Models</button>
                 <button class=\"btn btn-secondary\" onclick=\"detectBiases()\">Detect Biases</button>
                 <button class=\"btn btn-secondary\" onclick=\"runBayesianAnalysis()\">Bayesian Analysis</button>
+                <button class=\"btn btn-secondary\" onclick=\"runPatternAnalysis()\">Pattern Analysis</button>
                 <button class=\"btn btn-secondary\" onclick=\"runFullAnalysis()\">Full Analysis</button>
                 <button class=\"btn btn-secondary\" onclick=\"document.getElementById('analysis-text').value=''\">Clear</button>
             </div>
@@ -248,6 +249,99 @@ init(Req0, State) ->
                     html += '<li><strong>95% CI:</strong> Confidence interval for the posterior estimate</li>';
                     html += '</ul>';
                     html += '</div>';
+                    
+                    document.getElementById('results').innerHTML = html;
+                    document.getElementById('export-buttons').style.display = 'block';
+                } catch (e) {
+                    document.getElementById('results').innerHTML = 
+                        '<div class=\"alert alert-error\">Error: ' + e.message + '</div>';
+                }
+            }
+            
+            async function runPatternAnalysis() {
+                const text = document.getElementById('analysis-text').value;
+                if (!text.trim()) {
+                    alert('Please enter some text to analyze');
+                    return;
+                }
+                
+                document.getElementById('results').innerHTML = '<div class=\"loading\">Extracting patterns and generating insights...</div>';
+                document.getElementById('export-buttons').style.display = 'none';
+                
+                try {
+                    const res = await fetch('/api/analysis/patterns', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({text: text, action: 'all'})
+                    });
+                    const data = await res.json();
+                    lastAnalysisResult = data;
+                    lastAnalysisType = 'patterns';
+                    
+                    // Save to history
+                    saveToHistory('patterns', text, [], []);
+                    
+                    let html = '';
+                    
+                    // Inversions section (Munger's Inversion)
+                    const inversions = data.inversions || [];
+                    if (inversions.length > 0) {
+                        html += '<div class=\"card\" style=\"background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); color: white;\">';
+                        html += '<h2 style=\"color: white;\">Inverted Perspective (Munger\\'s Inversion)</h2>';
+                        html += '<p style=\"font-style: italic;\">' + (data.munger_quote || '') + '</p><br>';
+                        for (const inv of inversions) {
+                            html += '<div style=\"background: rgba(255,255,255,0.15); padding: 15px; border-radius: 8px; margin-bottom: 10px;\">';
+                            html += '<p><strong>Original:</strong> ' + inv.original + '</p>';
+                            html += '<p><strong>Inverted:</strong> ' + inv.inverted + '</p>';
+                            html += '<p style=\"margin-top: 10px; font-style: italic;\"><strong>Key Question:</strong> ' + inv.question + '</p>';
+                            html += '</div>';
+                        }
+                        html += '</div>';
+                    }
+                    
+                    // Insights section
+                    const insights = data.insights || [];
+                    if (insights.length > 0) {
+                        html += '<div class=\"card\">';
+                        html += '<h2>Key Insights</h2>';
+                        html += '<p>Actionable insights extracted from your text:</p><br>';
+                        for (const insight of insights) {
+                            const typeColor = insight.type === 'absolute' ? '#dc3545' : insight.type === 'causal' ? '#17a2b8' : '#6c757d';
+                            html += '<div class=\"model-card\" style=\"border-left: 4px solid ' + typeColor + ';\">';
+                            html += '<h4>' + (insight.type || 'Insight').replace(/_/g, ' ').replace(/\\b\\w/g, l => l.toUpperCase()) + '</h4>';
+                            html += '<p>' + insight.insight + '</p>';
+                            if (insight.action) {
+                                html += '<p style=\"margin-top: 10px;\"><strong>Action:</strong> ' + insight.action + '</p>';
+                            }
+                            html += '</div>';
+                        }
+                        html += '</div>';
+                    }
+                    
+                    // Patterns section
+                    const patterns = data.patterns || [];
+                    if (patterns.length > 0) {
+                        html += '<div class=\"card\">';
+                        html += '<h2>Detected Patterns</h2>';
+                        html += '<p>Recurring patterns identified in your text:</p><br>';
+                        for (const pattern of patterns) {
+                            const confidence = pattern.confidence || 0;
+                            const confColor = confidence >= 75 ? '#28a745' : confidence >= 50 ? '#ffc107' : '#6c757d';
+                            html += '<div class=\"model-card\">';
+                            html += '<div style=\"display: flex; justify-content: space-between; align-items: center;\">';
+                            html += '<h4>' + pattern.pattern + '</h4>';
+                            html += '<span style=\"background: ' + confColor + '; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;\">' + confidence + '% confidence</span>';
+                            html += '</div>';
+                            html += '<span class=\"category\">' + (pattern.type || 'Pattern').replace(/_/g, ' ').replace(/\\b\\w/g, l => l.toUpperCase()) + '</span>';
+                            html += '<p>' + pattern.description + '</p>';
+                            html += '</div>';
+                        }
+                        html += '</div>';
+                    }
+                    
+                    if (inversions.length === 0 && insights.length === 0 && patterns.length === 0) {
+                        html += '<div class=\"card\"><p>No significant patterns detected. Try providing more detailed text.</p></div>';
+                    }
                     
                     document.getElementById('results').innerHTML = html;
                     document.getElementById('export-buttons').style.display = 'block';
