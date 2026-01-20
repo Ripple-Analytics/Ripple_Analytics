@@ -691,8 +691,16 @@ services:
     depends_on:
       - deployment-controller-blue
       - deployment-controller-green
-      - auto-updater-blue
-      - auto-updater-green
+      - desktop-ui-blue
+      - desktop-ui-green
+      - api-gateway-blue
+      - api-gateway-green
+      - analysis-service-blue
+      - analysis-service-green
+      - harvester-service-blue
+      - harvester-service-green
+      - storage-service-blue
+      - storage-service-green
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
